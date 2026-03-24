@@ -14,6 +14,71 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== ===========================================================================
+    ric01 06/11/2024 Rimosso classe ah-jquery-date ai campi data_ultima_dich e data_scad_dich se
+    ric01            loggato come manutentore, non permetto la modifica delle date. (Ticket 11112)
+
+    rom23 27/03/2024 Su richiesta di Salerno se un utente non manutentore sta mettendo l'impianto in stato
+    rom23            Nonattivo, Annullato, Rottamato, ImpiantoChiuso, Respinto devo saltare i controlli sui campi obbligatori.
+
+    but01 Aggiunto la classe ah-jquery-date ai campi:data_variaz, data_ini_valid.
+
+    sim20 14/06/2023 Se un amministratore di UCIT bypassava i controlli, veniva salvata la targa sull'impianto
+    sim20            ma non veniva registrato l'utilizzo sul portale.
+    sim20            Ora abbiamo fatto in modo che la registri sempre a meno che non superi i controlli sulla targa.
+
+    rom22 22/02/2023 Regione Friuli ha richiesto che per gli utenti amministratori e dell'ente si saltino i controlli sui campi obbligatori.
+
+    rom21 27/07/2022 Modifiche per allinemanto enti di ucit al nuovo cvs: i controlli sulle abilitazioni vengono fatti
+    rom21            in base al parametro flag_controllo_abilitazioni.
+    rom21            Sistemato link per forzare la targatura, andava in errore se nei vari paramaetri
+    rom21            era presente un apice.
+
+    rom20 30/11/2022 Corretta la query di controllo sull'associazione di una targa all'impianto:
+    rom20            non teneva in considerazione solo l'impianto dove mi trovo e questo faceva saltare tutti i
+    rom20            controlli sulle targhe perche' la targa poteva gia' essere associata ad un altro impianto.
+
+    rom19 29/11/2022 Corretta anomalia per modifica di rom18, se si annullavano tutti i generatori per gli impianti del freddo
+    rom19            il programma andava in errore perche' non trovava le potenze.
+
+    rom18 22/11/2022 Corretta anomalia su potenze del freddo per Regione Marche: ci sono casi in cui le potenze del riscaldamento
+    rom18            o raffrescamento sono nulle sul generatore e in questa schermata non devono dare messaggi di errore.
+
+    mic03 08/07/2022 Corretto link per bonifica targa di mic01.
+
+    mic02 07/07/2022 Su segnalazione di Sandro sono state inserite le query di ricalcolo delle potenze dalla coimgend all'inizio
+    mic02            inizio del form is_valid; prima, infatti, ad ogni refresh della pagina venivano presi i valori dalla
+    mic02            coimaimp mediante la query nel file postgresql, nella quale venivano estratti per targa e non per
+    mic02            cod_impianto, il che generava strani incroci di valori in presenza di piu' impianti con la stessa targa.
+
+    mic01 06/07/2022 Introdotta funzione di bonifica targa per Regione Marche: creato link bon_targa che punta a coimtarg-bon
+    mic01            e aggiunto element refresh_targa. Da coimtarg-bon, alla conferma, viene restituito refresh_targa col
+    mic01            valore 1 che fa entrare nella if di generazione della nuova targa.
+    mic01            Aggiunta condizione su refresh_targa:
+    mic01            quando si bonifica la targa non devo mostrare gli eventuali messaggi di errore
+    mic01            sugli altri campi per evitare di generare dei buchi con la sequence coimaimp_est_s.
+    
+    rom17 20/05/2022 Coretta anomalia sul controllo della fascia di potenza che si presentava in
+    rom17            alcuni casi per Regione Marche.
+    rom17.1          Corretto intervento di rom17.
+    
+    rom16 04/05/2022 Su richiesta di Giuliodori fatta per mail "nuova nota campo ibrido e testo label" il 29/04
+    rom16            modificata la label dal campo flag_ibrido per le Marche.
+
+    rom15 27/04/2022 MEV Regione Marche per sistemi ibridi: dopo l'ennesima richiesta scritta di Giuliodori
+    rom15            con mail "campo Ibrido/policombustibile/generatori misti: nota aggiornata" il 22 Apr 2022,
+    rom15            Per Regione Marche il campo flag_ibrido e' sempre obbligatorio e aggiunta l'opzione
+    rom15            "Nessun collegamento con altri impianti".
+    
+    rom14 20/04/2022 Modificato intervento di rom13 su richiesta di Regione Marche.
+
+    rom13 22/03/2022 MEV Regione Marche per sistemi ibridi.
+
+    rom12 10/02/2022 Corretto baco sul controllo delle targhe: se ho gia' la targa salvata sul db
+    rom12            e in fase di modifica non la cambio, allora non devo richiamare il targhe-controllo.
+
+    rom11 06/10/2021 Modificato intervento di sim19: il campo tipologia generatore veniva sbiancato
+    rom11            anche per gli enti diversi dalle Marche e non si riusciva a cancellarlo.
+
     rom10 21/12/2020 Modifica per Regione Marche: aggiunto link "Inserisci" a fianco del campo
     rom10            targa che permette agli utenti non manutentori di inserire la targa sugli
     rom10            impianti che ne sono sprovvisti.
@@ -183,6 +248,7 @@ ad_page_contract {
     {f_data_libretto   ""}
     {f_cod_via         ""}
     {msg_cod_combustibile ""}
+    {is_forza_targa_p  "f"}
 } -properties {
     page_title:onevalue
     context_bar:onevalue
@@ -232,12 +298,17 @@ set clientip [lindex [ns_set iget [ns_conn headers] x-forwarded-for] end]
 # Controlla lo user
 set id_utente [lindex [iter_check_login $lvl $nome_funz] 1]
 
-set id_ruolo [db_string sel_ruolo "select id_ruolo from coimuten where id_utente = :id_utente"]
+#rom21set id_ruolo [db_string sel_ruolo "select id_ruolo from coimuten where id_utente = :id_utente"]
+
+db_1row query "select id_settore
+                    , id_ruolo
+                 from coimuten
+                where id_utente = :id_utente";#rom21
 
 # controllo se l'utente e' un manutentore
 #sim09 spostato all'inizio
 set cod_manutentore [iter_check_uten_manu $id_utente]
-
+set cod_ispettore   [iter_check_uten_opve $id_utente];#rom21
 
 
 # controllo il parametro di "propagazione" per la navigation bar
@@ -365,6 +436,7 @@ set cod_combustibile_contr [db_string q "select cod_combustibile from coimaimp w
 
 # sproteggo la chiave solo in inserimento e gli attributi in inserimento e mod.
 set form_name    "coimaimp"
+set focus_field  "";#rom13
 set readonly_key "readonly"
 set readonly_fld "readonly"
 set readonly_cod "readonly"
@@ -415,6 +487,8 @@ if {$funzione ne "V"
      "]
 } {#sim06: aggiunta if e suo contenuto
     set readonly_fld_targa \{\}
+} else {#rom21 else e suo contenuto
+set is_forza_targa_p "t"
 }
 
 if {$coimtgen(regione) eq "CALABRIA" && $coimtgen(ente) ne "PRC" && ![string equal $cod_manutentore ""]} {;#sim09 if e else e loro contenuto
@@ -429,6 +503,17 @@ if {$f_data_libretto eq "t"} {#rom01M if e contenuto
     incr error_num
 };#rom01M
 
+if {$coimtgen(regione) eq "FRIULI-VENEZIA GIULIA" && ![string equal $cod_manutentore ""]} {#rom21 if else e loro contenuto
+    set readonly_data_rottamaz "readonly"
+} else {
+    set readonly_data_rottamaz $readonly_fld
+}
+
+
+set jq_date "";#but01
+if {$funzione in "M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
 
 form create $form_name \
     -html    $onsubmit_cmd
@@ -466,7 +551,6 @@ if {$flag_gest_targa eq "F"} {#sim06: aggiunta if, else e contenuto dell'else
 	}
     }
 
-
     element create $form_name targa \
 	-label   "Targa" \
 	-widget   text \
@@ -476,10 +560,21 @@ if {$flag_gest_targa eq "F"} {#sim06: aggiunta if, else e contenuto dell'else
     
     element create $form_name cod_impianto_princ -widget hidden -datatype text -optional
 
+    if {$coimtgen(regione) eq "FRIULI-VENEZIA GIULIA"} {#rom21 Aggiunte if, else e il loro contenuto
+	set label_targa "Targa"
+    } else {
+	set label_targa "Codice Catasto/Targa"
+    }
+
 } 
 
+element create $form_name refresh_targa -widget hidden -datatype text -optional;#mic01
+
+set bon_targa "";#mic01
 if {($funzione == "I" || $funzione == "M") && $coimtgen(regione) eq "MARCHE" && $cod_manutentore eq ""} {#gac01 aggiunto if else e loro contenuto
     set cerca_targa  "[iter_search $form_name coimtarg-list [list dummy targa]] | "
+    set testo_link "Gen. nuova targa";#mic01
+    append bon_targa "[iter_search $form_name coimtarg-bon [list dummy targa] "" $testo_link] | ";#mic01
 } else {
     set cerca_targa ""
 }
@@ -501,6 +596,9 @@ element create $form_name provenienza_dati \
 
 set where_cod_combustibile "";#rom01
 set label_combustibile "Combustibile";#rom01
+
+if {$coimtgen(regione) ne "FRIULI-VENEZIA GIULIA"} {#rom21 Aggiunta if ma non il suo contenuto
+    
 db_1row q "select flag_tipo_impianto from coimaimp where cod_impianto = :cod_impianto";#rom01
 if {$flag_tipo_impianto eq "" || $flag_tipo_impianto eq "R"} {#rom01 aggiunte if, elseif e loro contenuto
     set where_cod_combustibile "where cod_combustibile not in ('7','20','88')"
@@ -522,6 +620,10 @@ if {$coimtgen(regione) eq "MARCHE"} {#rom07 aggiunta if, else e loro contenuto
     set html_combustibile $disabled_fld
     set label_combustibile "Combustile"
 };#rom07
+} else {#rom21 Aggiunta else e il suo contenuto
+    set html_combustibile $disabled_fld
+    set label_combustibile "Combustile"
+}
 
 #rom01 Modificata -options, ora uso la proc iter_selbox_from_table_wherec con la condizione $where_cod_combustibile
 #rom07 Modificato -html per le marche, loro hanno il campo non editabile.
@@ -614,22 +716,22 @@ element create $form_name data_installaz \
     -label   "data_installaz" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_dt_instal {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_dt_instal {} class form_element $jq_date" \
     -optional
 
-
+#rom21 messo readonly_data_rottamaz al posto di readonly_fld
 element create $form_name data_rottamaz \
     -label   "data_rottamaz" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_data_rottamaz {} class form_element $jq_date" \
     -optional
 
 element create $form_name data_attivaz \
     -label   "data_attivaz" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name flag_dichiarato \
@@ -648,6 +750,7 @@ element create $form_name data_prima_dich \
     -optional
 
 if {$id_ruolo ==  "manutentore"} {
+    #ric01 rimosso $jq_date nell'html
 element create $form_name data_ultim_dich \
     -label   "data prima dichiarazione" \
     -widget   text \
@@ -659,23 +762,24 @@ element create $form_name data_ultim_dich \
     -label   "data prima dichiarazione" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 }
 
 if {$id_ruolo ==  "manutentore"} {
+    #ric01 rimosso $jq_date nell'html
 element create $form_name data_scad_dich \
     -label   "data scadenza dichiarazione" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 readonly {} class form_element" \
+    -html    "size 10 maxlength 10 readonly {} class form_element " \
     -optional
 } else {
 element create $form_name data_scad_dich \
     -label   "data scadenza dichiarazione" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 }
 
@@ -699,7 +803,7 @@ element create $form_name anno_costruzione \
     -label   "anno costruzione" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name marc_effic_energ \
@@ -824,7 +928,7 @@ element create $form_name data_libretto \
     -label "data_libretto" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 #rom03
@@ -863,14 +967,181 @@ element create $form_name altra_tipologia_generatore \
     -datatype text \
     -html    "size 40 maxlength 40 $readonly_fld {} class form_element" \
     -optional
+
+if {$coimtgen(regione) in [list "MARCHE"]} {#rom13 Aggiunte if, else e loro contenuto
+
+    #Se sono gia' censito come impianto ibrido e ho almeno un altro impianto ibrido associato allora non devo poter cambiare il flag_ibrido.
+    if {[db_0or1row q "select a.flag_ibrido as flag_ibrido_imp_princ_non_mod
+                         from coimaimp a
+                         left join coimaimp_ibrido i
+                           on a.cod_impianto = i.cod_impianto_princ
+                        where a.cod_impianto = :cod_impianto
+                          and i.cod_impianto_princ = :cod_impianto
+                        limit 1"]} {
+	switch $flag_ibrido_imp_princ_non_mod {
+	    "S" {set options_ibrido "{\"Sistema ibrido\" S}"}
+	    "M" {set options_ibrido "{\"Generatori misti (con combustibili diversi)\" M}"}
+	}
+	#rom15 Regione Marche ha chiesto che il freddo sia trattato come il caldo
+	#rom15 quindi ho cambiato le condizione dell'if e dell'elseif.
+	if {$flag_tipo_impianto in [list "R" "F"]} {
+	    #rom16set label_ibrido "Ibrido / Policombustibile / Generatori misti"
+	    set label_ibrido "Ibrido / Policombustibile / Generatori misti /<font color=red>*</font><br>Nessun collegamento con altri impianti";#rom16
+	} elseif {$flag_tipo_impianto eq "F" && 1 == 0} {
+	    set label_ibrido "Ibrido / Policombustibile"
+	} else {
+	    set label_ibrido ""
+	}
+    } else {
+
+	#rom14 Regione Marche ha chiesto che il freddo sia trattato come il caldo
+	#rom14 quindi ho cambiato le condizione dell'if e dell'elseif.
+	if {$flag_tipo_impianto in [list "R" "F"]} {
+
+	    #rom15set options_ibrido "{{} {}} {\"Sistema ibrido\" S} {\"Unico generatore policombustibile\" P} {\"Generatori misti (con combustibili diversi)\" M}"
+	    set options_ibrido "{{} {}} {\"Sistema ibrido\" S} {\"Unico generatore policombustibile\" P} {\"Generatori misti (con combustibili diversi)\" M} {\"Nessun collegamento con altri impianti\" N}";#rom15
+	    #rom16set label_ibrido "Ibrido / Policombustibile / Generatori misti"
+	    set label_ibrido "Ibrido / Policombustibile / Generatori misti /<font color=red>*</font><br>Nessun collegamento con altri impianti";#rom16
+	    
+	} elseif {$flag_tipo_impianto eq "F" && 1 == 0} {
+
+	    set options_ibrido "{{} {}} {\"Sistema ibrido\" S} {\"Unico generatore policombustibile\" P}"
+	    set label_ibrido "Ibrido / Policombustibile"
+	    
+	} else {
+	    set options_ibrido "{{} {}}"
+	    set label_ibrido ""
+	}
+	
+    }
+
+    set label_cod_impianto_ibrido       ""
+    set label_cod_impianto_princ_ibrido ""
+    set cod_impianto_ibrido             ""
+
+    if {[db_0or1row q "select 1 from coimaimp_ibrido where cod_impianto_princ = :cod_impianto limit 1"]} {
+
+	set label_cod_impianto_ibrido "Cod. impianto ibrido associato/i"
+	set ls_impianti_ibridi_figlio [db_list q "select cod_impianto_ibrido 
+                                                    from coimaimp_ibrido 
+                                                   where cod_impianto_princ = :cod_impianto"]
+
+	set ls_url_cod_impianto_ibrido [list]
+	foreach  impianti_ibridi_figlio $ls_impianti_ibridi_figlio {
+
+	    set link_cod_imp [export_url_vars nome_funz nome_funz_caller]
+	    lappend ls_url_cod_impianto_ibrido "<a href=\"coimaimp-gest?cod_impianto=$impianti_ibridi_figlio&$link_cod_imp\">$impianti_ibridi_figlio</a>"
+
+	}
+
+	set cod_impianto_ibrido [join $ls_url_cod_impianto_ibrido " - "]
+		
+	element create $form_name cod_impianto_ibrido \
+	    -label   "cod_impianto_ibrido" \
+	    -widget   inform \
+	    -datatype text \
+	    -html    "size 20 maxlength 20 readonly {} class form_element" \
+	    -optional
+	
+	element create $form_name cod_impianto_princ_ibrido -widget hidden -datatype text -optional
+
+    } else {
+	# In base all'impianto in cui mi trovo devo estrarre i cod_impianto che:
+	# - Hanno la mia stessa targa
+	# - Hanno il mio stesso flag_ibrido
+	# - Non sono gia' associati ad altri impianti come impianti ibridi "figli"
+	
+    	set ls_impianti_padre [db_list_of_lists q "select padre.cod_impianto_est
+                                                        , padre.cod_impianto 
+                                                     from coimaimp as padre
+                                                        , coimaimp as figlio
+                                                    where padre.targa         = figlio.targa
+                                                      and padre.cod_impianto != figlio.cod_impianto
+                                                      and padre.flag_ibrido   = figlio.flag_ibrido
+                                                      and figlio.cod_impianto = :cod_impianto
+                                                      and padre.flag_ibrido  in ('S', 'M')
+                                                      and padre.cod_impianto not in (select cod_impianto_ibrido
+                                                                                       from coimaimp_ibrido
+                                                                                      where cod_impianto_ibrido = padre.cod_impianto)
+                                                    order by padre.cod_impianto_est"] 
+
+	set ls_impianti_padre [linsert $ls_impianti_padre 0 [list "" ""]]
+
+	#rom14set label_cod_impianto_princ_ibrido "Cod. impianto ibrido principale"
+	set label_cod_impianto_princ_ibrido "Cod. impianto principale";#rom14
+	
+	set oc_cod_impianto_princ_ibrido "onChange document.$form_name.__refreshing_p.value='1';document.$form_name.changed_field.value='cod_impianto_princ_ibrido';document.$form_name.submit.click()"
+	element create $form_name cod_impianto_princ_ibrido \
+	    -label   "cod_impianto_princ_ibrido" \
+	    -widget   select \
+	    -datatype text \
+	    -html    "$disabled_fld {} class form_element $oc_cod_impianto_princ_ibrido" \
+	    -optional \
+	    -options  $ls_impianti_padre \
+
+	
+	
+	element create $form_name cod_impianto_ibrido -widget hidden -datatype text -optional
+	    
+    }
+    
+    element create $form_name is_regolazione_primaria_unica \
+	-label   "Regolazione primaria (scheda 5.1)" \
+	-widget   select \
+	-datatype text \
+	-html    "$disabled_fld {} class form_element" \
+	-optional \
+	-options {{Sì S} {No N}}
+	
+    element create $form_name is_coimaccu_aimp_unici \
+	-label   "Sistemi di accumulo (scheda 8)" \
+	-widget   select \
+	-datatype text \
+	-html    "$disabled_fld {} class form_element" \
+	-optional \
+	-options {{Sì S} {No N}}
+
+    element create $form_name is_coimscam_calo_aimp_unici \
+	-label   "Scambiatori di calore intermedi (scheda 9.3)" \
+	-widget   select \
+	-datatype text \
+	-html    "$disabled_fld {} class form_element" \
+	-optional \
+	-options {{Sì S} {No N}}
+
+    element create $form_name is_coimrecu_calo_aimp_unici \
+	-label   "Recuperatori di calore (scheda 9.6)" \
+	-widget   select \
+	-datatype text \
+	-html    "$disabled_fld {} class form_element" \
+	-optional \
+	-options {{Sì S} {No N}}
+    
+    set oc_flag_ibrido "onChange document.$form_name.__refreshing_p.value='1';document.$form_name.changed_field.value='flag_ibrido';document.$form_name.submit.click()"
+
+} else {
+    set options_ibrido "{{{} {}} {{S&igrave;} S} {{No} N}}"
+    set label_ibrido "Ibrido"
+    set oc_flag_ibrido ""
+
+    element create $form_name cod_impianto_ibrido            -widget hidden -datatype text -optional
+    element create $form_name cod_impianto_princ_ibrido      -widget hidden -datatype text -optional
+    element create $form_name is_regolazione_primaria_unica -widget hidden -datatype text -optional
+    element create $form_name is_coimaccu_aimp_unici        -widget hidden -datatype text -optional
+    element create $form_name is_coimscam_calo_aimp_unici   -widget hidden -datatype text -optional
+    element create $form_name is_coimrecu_calo_aimp_unici   -widget hidden -datatype text -optional
+    
+}
+
 #rom04.bis aggiunto campo flag_ibrido, per ora è visibile solo sulle marche
 element create $form_name flag_ibrido \
     -label   "ibrido" \
     -widget   select \
     -datatype text \
-    -html    "$disabled_fld {} class form_element" \
+    -html    "$disabled_fld {} class form_element $oc_flag_ibrido" \
     -optional \
-    -options {{{} {}} {{S&igrave;} S} {{No} N}}
+    -options $options_ibrido
+
 #rom07 aggiunte le options CLINV+PRACS, CLEST+CLINV, CLEST+CLINV+PRACS, CLEST+PRACS
 element create $form_name integrazione_per \
     -label   "Per" \
@@ -948,15 +1219,15 @@ if { ![string equal $cod_manutentore ""] && ($currentscandate > $expireddate) } 
 	    }
 	}
 
-	if {$coimtgen(ente) eq "PUD" || $coimtgen(ente) eq "PGO"} {
+	#rom21	if {$coimtgen(ente) eq "PUD" || $coimtgen(ente) eq "PGO"} {}
 	    # Richiesta di Ucit del 07/03/2013
-	    set stato_options1 {{Attivo A} {Rottamato R} {Nonattivo N} }
-	    set newList $stato_options1
+#rom21	    set stato_options1 {{Attivo A} {Rottamato R} {Nonattivo N} }
+#rom21	    set newList $stato_options1
 
 	    #sim13 aggiunto condizione su Taranto
-	} elseif {($coimtgen(regione) eq "CALABRIA" && $coimtgen(ente) ne "PRC") || $coimtgen(ente) eq "PTA"} {#nic06: aggiunta esleif e suo contenuto
+        if {($coimtgen(regione) eq "CALABRIA" && $coimtgen(ente) ne "PRC") || $coimtgen(ente) eq "PTA" || $coimtgen(regione) eq "FRIULI-VENEZIA GIULIA"} {#nic06: aggiunta esleif e suo contenuto
 	    # I manutentori dei 4 enti della Regione Calabria (esclusa la Provincia di Reggio
-	    # Calabria) non possono modificare lo stato dell'impianto.
+	    # Calabria) non possono modificare lo stato dell'impianto. Aggiunto anche Reggio il 18022020 da Sandro
 	    if {![db_0or1row query "
             select descr_imst
               from coimimst
@@ -1139,12 +1410,12 @@ if {$coimtgen(regione) eq "MARCHE"} {#rom05 aggiunta if e suo contenuto
 	-datatype text \
 	-html    "size 27 maxlength 80 $disabled_imp {} class form_element" \
 -optional \
-	
+#but01 Aggiunto la classe ah-jquery-date ai campi:data_variaz, data_ini_valid
     element create $form_name data_variaz \
 	-label   "data_variaz" \
 	-widget   text \
 	-datatype text \
-	-html    "size 10 maxlength 10 $disabled_imp {} class form_element" \
+	-html    "size 10 maxlength 10 $disabled_imp {} class form_element $jq_date" \
 	-optional
     
     if {$funzione == "M"
@@ -1153,7 +1424,7 @@ if {$coimtgen(regione) eq "MARCHE"} {#rom05 aggiunta if e suo contenuto
 	    -label   "data_ini_valid" \
 	    -widget   text \
 	    -datatype text \
-	    -html    "size 10 maxlength 10 $disabled_imp {} class form_element" \
+	    -html    "size 10 maxlength 10 $disabled_imp {} class form_element $jq_date" \
 	    -optional
     }
     
@@ -1234,6 +1505,8 @@ element create $form_name nome_funz_caller -widget hidden -datatype text -option
 element create $form_name extra_par        -widget hidden -datatype text -optional
 element create $form_name cod_comune       -widget hidden -datatype text -optional
 element create $form_name cod_istat        -widget hidden -datatype text -optional
+element create $form_name __refreshing_p   -widget hidden -datatype text -optional;#rom13
+element create $form_name changed_field    -widget hidden -datatype text -optional;#rom13
 
 if {$funzione == "C"
     && $flag_ins_inco == "S"}  {
@@ -1257,13 +1530,14 @@ if {$funzione != "I"} {
 	set stato ""
     }
     #gab03 aggiunto colore al nuovo stato E
+    #rom21 messo il grigio sullo stato U-ImpiantoChiuso e #cd853f sullo stato R-Rottamato
     switch $stato {
 	"A"     {set color "green"}
 	"D"     {set color "yellow"}
 	"L"     {set color "red"}
 	"N"     {set color "black"}
-	"R"     {set color "black"}
-        "U"     {set color "black"}
+	"R"     {set color "#cd853f"}
+        "U"     {set color "gray"}
         "E"     {set color "red"}
 	default {set color "gainsboro"}
     }
@@ -1283,7 +1557,8 @@ if {[form is_request $form_name]} {
     element set_properties $form_name url_aimp          -value $url_aimp
     element set_properties $form_name url_list_aimp     -value $url_list_aimp
     element set_properties $form_name conferma_inco     -value $conferma_inco 
-    
+    element set_properties $form_name __refreshing_p   -value 0;#rom13
+    element set_properties $form_name changed_field    -value "";#rom13    
 
     if {$funzione == "I"} {
 	# TODO: settare eventuali default!!
@@ -1466,6 +1741,7 @@ if {[form is_request $form_name]} {
 	element set_properties $form_name cod_impianto_est -value $cod_impianto_est
 	element set_properties $form_name cod_impianto_princ    -value $cod_impianto_princ;#sim01
 	element set_properties $form_name targa                 -value $targa;#sim06
+	element set_properties $form_name refresh_targa                 -value 0; #mic01
         element set_properties $form_name cod_impianto_est_prov -value $cod_impianto_est_prov
         element set_properties $form_name cod_impianto     -value $cod_impianto
         element set_properties $form_name provenienza_dati -value $provenienza_dati
@@ -1484,8 +1760,8 @@ if {[form is_request $form_name]} {
 		element set_properties $form_name potenza_utile    -value $potenza_utile
 	    }
 	    if {$flag_tipo_impianto eq "F"} {
-		db_1row q "select iter_edit_num(coalesce(sum(pot_focolare_lib),'0.00'), 2) as potenza_utile
-                                , iter_edit_num(coalesce(sum(pot_focolare_nom),'0.00'), 2) as potenza
+		db_1row q "select iter_edit_num(coalesce(sum(pot_focolare_lib),null), 2) as potenza_utile
+                                , iter_edit_num(coalesce(sum(pot_focolare_nom),null), 2) as potenza
                                                   from coimgend
                                                  where cod_impianto = :cod_impianto
                                                    and flag_attivo = 'S'"
@@ -1506,11 +1782,21 @@ if {[form is_request $form_name]} {
 
 		if {$flag_tipo_impianto eq "F" } {
 		    
-		    if {[iter_check_num $potenza 2] > [iter_check_num $potenza_utile 2] } {
-			set pot_maggiore [iter_check_num $potenza 2]
-		    } else {
+		    if {[string is space $potenza] && [string is space $potenza_utile]} {#rom19 Aggiunta if e contenuto
+			set pot_maggiore 0
+			#rom19 Trasformata if in elseif, non toccato il contenuto
+		    } elseif {[string is space $potenza]} {#rom18 Aggiunte if, elseif e il loro contenuto
+			
 			set pot_maggiore [iter_check_num $potenza_utile 2]
-		    }
+		    } elseif {[string is space $potenza_utile]} {
+			set pot_maggiore [iter_check_num $potenza 2]
+		    } else {#rom18 Aggiunta else ma non il suo contenuto
+			if {[iter_check_num $potenza 2] > [iter_check_num $potenza_utile 2] } {
+			    set pot_maggiore [iter_check_num $potenza 2]
+			} else {
+			    set pot_maggiore [iter_check_num $potenza_utile 2]
+			}
+		    };#rom18
 		    
 		} else {
 		
@@ -1595,7 +1881,30 @@ if {[form is_request $form_name]} {
         element set_properties $form_name nota_altra_integrazione -value $nota_altra_integrazione ;#gac03
         element set_properties $form_name pot_utile_integrazione  -value $pot_utile_integrazione  ;#gac03
 	element set_properties $form_name flag_ibrido             -value $flag_ibrido             ;#rom04.bis
+	
 	if {$coimtgen(regione) eq "MARCHE"} {#rom05 if e contenuto
+
+	    if {![db_0or1row q "select cod_impianto_princ as cod_impianto_princ_ibrido
+                                     , is_regolazione_primaria_unica
+                                     , is_coimaccu_aimp_unici
+                                     , is_coimscam_calo_aimp_unici
+                                     , is_coimrecu_calo_aimp_unici
+	                          from coimaimp_ibrido
+	                         where cod_impianto_ibrido = :cod_impianto"]} {#rom13 Aggiunta if e il suo contenuto
+		
+		set cod_impianto_princ_ibrido      ""
+		set is_regolazione_primaria_unica ""
+		set is_coimaccu_aimp_unici        ""
+		set is_coimscam_calo_aimp_unici   ""
+		set is_coimrecu_calo_aimp_unici   ""
+	    }
+
+	    element set_properties $form_name cod_impianto_ibrido           -value $cod_impianto_ibrido          ;#rom13
+	    element set_properties $form_name cod_impianto_princ_ibrido     -value $cod_impianto_princ_ibrido    ;#rom13
+	    element set_properties $form_name is_regolazione_primaria_unica -value $is_regolazione_primaria_unica;#rom13
+	    element set_properties $form_name is_coimaccu_aimp_unici        -value $is_coimaccu_aimp_unici       ;#rom13
+	    element set_properties $form_name is_coimscam_calo_aimp_unici   -value $is_coimscam_calo_aimp_unici  ;#rom13
+	    element set_properties $form_name is_coimrecu_calo_aimp_unici   -value $is_coimrecu_calo_aimp_unici  ;#rom13
 	    element set_properties $form_name localita         -value $localita   
 	    element set_properties $form_name descr_via        -value $descr_via
 	    element set_properties $form_name descr_topo       -value $descr_topo
@@ -1634,6 +1943,9 @@ if {[form is_request $form_name]} {
 if {[form is_valid $form_name]} {
     # form valido dal punto di vista del templating system
 
+    set __refreshing_p   [element::get_value $form_name __refreshing_p];#rom13
+    set changed_field    [element::get_value $form_name changed_field];#rom13
+    
     set dati_scheda      [string trim [element::get_value $form_name dati_scheda]]
     set data_scheda      [string trim [element::get_value $form_name data_scheda]]
     if {$coimtgen(regione) ne "MARCHE"} {#rom08 aggiunta if, aggiunta else e contenuto
@@ -1652,7 +1964,7 @@ if {[form is_valid $form_name]} {
 	    element set_properties $form_name targa -value $targa
 	}
     }
-
+    set refresh_targa [string trim [element::get_value $form_name refresh_targa]];#mic01
     set cod_impianto_est_prov [string trim [element::get_value $form_name cod_impianto_est_prov]]
     set provenienza_dati [string trim [element::get_value $form_name provenienza_dati]]
     set stato            [string trim [element::get_value $form_name stato]]
@@ -1679,9 +1991,94 @@ if {[form is_valid $form_name]} {
 	} else {
 	    element set_properties $form_name cod_combustibile -value $cod_combustibile;#rom08
 	}
-	element set_properties $form_name potenza          -value $potenza;#rom08
-	element set_properties $form_name potenza_utile    -value $potenza_utile;#rom08
-	element set_properties $form_name cod_potenza      -value $cod_potenza;#rom08
+	#mic02element set_properties $form_name potenza          -value $potenza;#rom08
+	#mic02element set_properties $form_name potenza_utile    -value $potenza_utile;#rom08
+	if {$flag_tipo_impianto eq "R" || $flag_tipo_impianto eq "C"} {#mic02 aggiunta if e suo contenuto
+
+	    db_1row q "select iter_edit_num(coalesce(sum(pot_utile_nom),'0.00'), 2)    as potenza_utile
+                            , iter_edit_num(coalesce(sum(pot_focolare_nom),'0.00'), 2) as potenza
+                         from coimgend
+                        where cod_impianto = :cod_impianto
+                          and flag_attivo  = 'S'"
+	    
+	    element set_properties $form_name potenza          -value $potenza
+	    element set_properties $form_name potenza_utile    -value $potenza_utile
+	}
+	if {$flag_tipo_impianto eq "F"} {#mic02 aggiunta if e suo contenuto
+
+	    db_1row q "select iter_edit_num(coalesce(sum(pot_focolare_lib),null), 2) as potenza_utile
+                            , iter_edit_num(coalesce(sum(pot_focolare_nom),null), 2) as potenza
+                         from coimgend
+                        where cod_impianto = :cod_impianto
+                          and flag_attivo  = 'S'"
+
+	    element set_properties $form_name potenza       -value $potenza
+	    element set_properties $form_name potenza_utile -value $potenza_utile
+	}
+	if {$flag_tipo_impianto eq "T"} {#mic02 aggiunta if e suo contenuto
+
+	    db_1row q "select iter_edit_num(coalesce(sum(pot_focolare_nom),'0.00'), 2) as potenza
+                         from coimgend
+                        where cod_impianto = :cod_impianto
+                          and flag_attivo  = 'S'"
+
+	    element set_properties $form_name potenza          -value $potenza
+	}
+
+	if {$flag_tipo_impianto ne "T"} {#mic02 aggiunta if e suo contenuto
+	    
+	    if {$flag_tipo_impianto eq "F" } {
+
+		if {[string is space $potenza] && [string is space $potenza_utile]} {#rom19 Aggiunta if e contenuto
+		    set pot_maggiore 0
+		    #rom19 Trasformata if in elseif, non toccato il contenuto
+		} elseif {[string is space $potenza]} {#rom18 Aggiunte if, elseif e il loro contenuto
+		    set pot_maggiore [iter_check_num $potenza_utile 2]
+		} elseif {[string is space $potenza_utile]} {
+		    set pot_maggiore [iter_check_num $potenza 2]
+		} else {#rom18 Aggiunta else ma non il suo contenuto
+		    if {[iter_check_num $potenza 2] > [iter_check_num $potenza_utile 2] } {
+			set pot_maggiore [iter_check_num $potenza 2]
+		    } else {
+			set pot_maggiore [iter_check_num $potenza_utile 2]
+		    }
+		};#rom18
+		
+	    } else {
+		
+		if {$coimtgen(flag_potenza) eq "pot_utile_nom"} {
+		    set pot_maggiore [iter_check_num $potenza_utile 2]
+		} else {
+		    set pot_maggiore [iter_check_num $potenza 2]
+		}
+		
+	    }
+	} else {
+	    set pot_maggiore [iter_check_num $potenza 2]
+	}
+
+	if {[db_0or1row q "select cod_potenza
+                                , descr_potenza
+                             from coimpote
+                            where :pot_maggiore between potenza_min and potenza_max
+                              and flag_tipo_impianto = :flag_tipo_impianto"] == 0} {#mic02 aggiunta if e suo contenuto
+	    switch $flag_tipo_impianto {
+		R {
+		    set cod_potenza "0"
+		    set descr_potenza "POTENZA NON NOTA"
+		} F {
+		    set cod_potenza "FO"
+		    set descr_potenza "POTENZA NON NOTA"
+		} T {
+		    set cod_potenza "TO"
+		    set descr_potenza "POTENZA NON NOTA"
+		} C {
+		    set cod_potenza "CA"
+		    set cod_potenza "POTENZA DA 0 A 999 KW"
+		}
+	    }
+	}
+	element set_properties $form_name cod_potenza      -value $cod_potenza;#rom08        
     };#rom08
     
     set portata          [string trim [element::get_value $form_name portata]]
@@ -1718,6 +2115,12 @@ if {[form is_valid $form_name]} {
     set pot_utile_integrazione  [string trim [element::get_value $form_name pot_utile_integrazione]];#gac03
     set flag_ibrido             [string trim [element::get_value $form_name flag_ibrido]];#rom04.bis
     if {$coimtgen(regione) eq "MARCHE"} {#rom05 if e contenuto
+	set cod_impianto_ibrido           [string trim [element::get_value $form_name cod_impianto_ibrido]]          ;#rom13
+	set cod_impianto_princ_ibrido     [string trim [element::get_value $form_name cod_impianto_princ_ibrido]]    ;#rom13
+	set is_regolazione_primaria_unica [string trim [element::get_value $form_name is_regolazione_primaria_unica]];#rom13
+	set is_coimaccu_aimp_unici        [string trim [element::get_value $form_name is_coimaccu_aimp_unici]]       ;#rom13
+	set is_coimscam_calo_aimp_unici   [string trim [element::get_value $form_name is_coimscam_calo_aimp_unici]]  ;#rom13
+	set is_coimrecu_calo_aimp_unici   [string trim [element::get_value $form_name is_coimrecu_calo_aimp_unici]]  ;#rom13
 	#rom05 Visto che i campi sono in disabled facendo element::get_value perdevano il loro valore
 	#rom05 se in modifica, dando la conferma, si veniva bloccati da un controllo.
 	element set_properties $form_name localita         -value $localita   
@@ -1745,21 +2148,73 @@ if {[form is_valid $form_name]} {
 	element set_properties $form_name sezione          -value $sezione;#rom01M
 	element set_properties $form_name data_variaz  -value $data_variaz
 
-	if {$funzione eq "D"} {#sim19 if e suo contenuto
-	    db_0or1row q "select tipologia_generatore
-                               , flag_ibrido 
-                            from coimaimp 
-                           where cod_impianto = :cod_impianto"
-	    element set_properties $form_name tipologia_generatore -value $tipologia_generatore
-	    element set_properties $form_name tipologia_generatore -value $flag_ibrido
-	}
+#rom11	if {$funzione eq "D"} {#sim19 if e suo contenuto
+#	    db_0or1row q "select tipologia_generatore
+#                               , flag_ibrido 
+#                            from coimaimp 
+#                           where cod_impianto = :cod_impianto"
+#	    element set_properties $form_name tipologia_generatore -value $tipologia_generatore
+#	    element set_properties $form_name tipologia_generatore -value $flag_ibrido
+#rom11	}
 
 	
     };#rom05
 
+    if {$funzione eq "D"} {#rom11 if e suo contenuto: spostata fuori dalla if per le marche.
+	db_0or1row q "select tipologia_generatore
+                           , flag_ibrido 
+                        from coimaimp 
+                       where cod_impianto = :cod_impianto"
+	element set_properties $form_name tipologia_generatore -value $tipologia_generatore
+	element set_properties $form_name tipologia_generatore -value $flag_ibrido
+    }
+
+    if {[string equal $__refreshing_p "1"]} {#rom13 Aggiunta if e il suo contenuto
+	
+	if {$changed_field eq "flag_ibrido"} {
+	    set focus_field "$form_name.flag_ibrido"
+	    set cod_impianto_princ_ibrido "" 
+	}
+	    set ls_impianti_padre [db_list_of_lists q "select padre.cod_impianto_est
+                                                            , padre.cod_impianto 
+                                                         from coimaimp as padre
+                                                            , coimaimp as figlio
+                                                        where padre.targa         = figlio.targa
+                                                          and padre.cod_impianto != figlio.cod_impianto
+                                                          and figlio.cod_impianto = :cod_impianto
+                                                          and (   padre.flag_ibrido   = :flag_ibrido
+                                                              and padre.flag_ibrido  in ('S', 'M')
+                                                              )
+                                                          and padre.cod_impianto  not in (select cod_impianto_ibrido
+                                                                                            from coimaimp_ibrido
+                                                                                       where cod_impianto_ibrido = padre.cod_impianto)
+                                                        order by padre.cod_impianto_est"] 
+
+	    set ls_impianti_padre [linsert $ls_impianti_padre 0 [list "" ""]]
+
+	    element set_properties $form_name cod_impianto_princ_ibrido     -options $ls_impianti_padre	    
+	    
+	
+	
+	if {$changed_field eq "cod_impianto_princ_ibrido"} {
+	    set focus_field "$form_name.cod_impianto_princ_ibrido"
+	    element set_properties $form_name cod_impianto_princ_ibrido -value $cod_impianto_princ_ibrido
+	}
+
+#	element set_properties $form_name cod_impianto_princ_ibrido -options $ls_impianti_padre
+
+	
+	element set_properties $form_name __refreshing_p -value 0;#rom13
+	element set_properties $form_name changed_field  -value "";#rom13
+
+	ad_return_template;#rom13
+	return
+	
+    }
+
     set error_num 0
     if {$funzione == "I" ||  $funzione == "M" || $funzione == "C"} {
-
+	
 	if {$stato eq "E" && $note eq ""} {;#gab04
 	    element::set_error $form_name note "Se l'impianto è stato respinto, bisogna indicare la motivazione nelle note "
             incr error_num
@@ -1905,6 +2360,18 @@ if {[form is_valid $form_name]} {
 		set nome_campo_potenza       potenza_utile
 	    }
 
+	    if {$coimtgen(regione) eq "MARCHE" && $flag_tipo_impianto eq "F"} {#rom17 Aggiunta if e il suo contenuto
+		#Per il freddo devo considerare la maggiore tra la potenza in riscaldamento e in  raffrescamento
+		#rom17.1set potenza_tot [db_string q "select greatest(:potenza_utile, :potenza)"]
+		if {$potenza > $potenza_utile} {#rom17.1 Aggiunte if, else e loro contenuto
+		    set potenza_tot $potenza
+		    set nome_campo_potenza potenza
+		} else {
+		    set potenza_tot $potenza_utile
+		    set nome_campo_potenza potenza_utile
+		}
+	    }
+	    
 	    if {$coimtgen(regione) eq "MARCHE" && $flag_tipo_impianto eq "T"} {#il teleriscldamento della regione non ha mai la potenza utile ma la potenza
 		if {![string equal $potenza ""] && $potenza != "Error"} {
 		    set sw_controlla_totenza_tot "t"
@@ -2213,27 +2680,118 @@ if {[form is_valid $form_name]} {
 	};#sim01
     };#sim01
 
+#ROM21 RIPORTATI I CONTROLLI DELLE ABILITAZIONI PRIMA DEI CONTROLLI PER LE TARGHE!!!!
+    if {$coimtgen(flag_controllo_abilitazioni)} {#rom21 aggiunta if ma non il suo contenuto
+    set tipo_comb [db_string q "select tipo
+                                  from coimcomb
+                                 where cod_combustibile = :cod_combustibile" -default ""];#rom01
+    set cod_coimtpin "";#rom01
+    set descrizione_tpin "";#rom01
+
+
+    if {$coimtgen(regione) ne "MARCHE" && $flag_tipo_impianto ne "" && $cod_combustibile ne "" && $cod_manutentore ne ""} {#rom01 if e suo co\ntenuto
+	if {[db_0or1row q "select 1
+                             from coimtpin_abilitazioni
+                            where flag_tipo_impianto = :flag_tipo_impianto
+                              and tipo_combustibile is not null
+                            limit 1"]} {
+	    
+	    db_0or1row q "select a.cod_coimtpin
+                               , b.descrizione as descrizione_tpin
+                            from coimtpin_abilitazioni a
+                               , coimtpin b
+                           where a.flag_tipo_impianto = :flag_tipo_impianto
+                             and a.tipo_combustibile  = :tipo_comb
+                             and a.cod_coimtpin       = b.cod_coimtpin"
+	    
+	} else {
+	    
+	    db_0or1row q "select a.cod_coimtpin
+                               , b.descrizione as descrizione_tpin
+                            from coimtpin_abilitazioni a
+                               , coimtpin b
+                           where a.flag_tipo_impianto = :flag_tipo_impianto
+                             and a.cod_coimtpin = b.cod_coimtpin"
+	    
+	}
+
+	if {![db_0or1row q "select 1
+                              from coimtpin_manu
+                             where cod_coimtpin    = :cod_coimtpin
+                               and cod_manutentore = :cod_manutentore"]} {
+	    
+	    #rom21element::set_error $form_name cod_combustibile "Utente non abilitato per l'inserimento<br>di \"$descrizione_tpin\""
+	    element::set_error $form_name cod_combustibile "Utente non abilitato per la modifica<br>di \"$descrizione_tpin\"";#rom21
+	    incr error_num
+	}
+	
+    };#rom01
+    };#rom21
+    
+    set inserire_targa "t";#sim20
     #rom01M aggiunta condizione temporanea $coimtgen(regione) ne "MARCHE" 
     if {$flag_gest_targa eq "T" && $coimtgen(regione) ne "MARCHE"} {#sim06: aggiunta if e suo contenuto
 	if {$targa eq ""} {
 	    if {$cod_manutentore ne ""} {#sim07: ho aggiunto solo l'if
 		#nic05 element::set_error $form_name targa "Inserire la Targa"
 		#nic05 incr error_num
+
+                if {$coimtgen(regione) eq "FRIULI-VENEZIA GIULIA"} {#rom21 Aggiunta if e contenuto
+                    element::set_error $form_name targa "Inserire la Targa"
+                    incr error_num
+                }
+
 	    };#sim07
+        } elseif {[db_0or1row q "select 1
+                                   from coimaimp
+                                  where targa = :targa 
+                                    and cod_impianto = :cod_impianto --rom20
+                          --rom20 limit 1 --mic01 "]} {#rom04 Aggiunta elseif e il suo contenuto
+
+	    # Se ho gia' una targa a db e in fase di modifica non la tocco
+	    # non devo fare il controllo della targa perche' nel tempo il
+	    # manutentore potrebbe essere cambiato e il controllo sull'associazione
+	    # della targa potrebbe mostrare un messaggio di errore.
+	    
 	} else {
-	    set cod_manutentore_targa ""
-	    if {$cod_manutentore ne ""} {
-		set cod_manutentore_targa $cod_manutentore
-	    } else {
+	    
+	    if {![string equal $cod_ispettore ""]} {#rom21 Aggiunta if e contenuto
 		db_1row query "
+                 select cod_portale
+                   from coimopve
+                  where cod_opve = :cod_ispettore"
+		set programma_dyn_url "targhe-insp-controllo?targa=$targa&iter_code=$cod_portale"
+		set msg_err_targa "Targa non associata al'ispettore"
+	    } else {#rom21 Aggiunta else ma non il suo contenuto
+		
+		set cod_manutentore_targa ""
+		if {$cod_manutentore ne ""} {
+		    set cod_manutentore_targa $cod_manutentore
+		} else {
+		    db_1row query "
                  select cod_manutentore as cod_manutentore_targa
                    from coimaimp
                   where cod_impianto = :cod_impianto" 
-	    }
+		}
+		
+		if {$id_settore in [list "ente" "system"] && [string equal $id_ruolo "admin"]} {#rom21 Aggiunte if, else e il loro contenuto
+		    set ctrl_targa_manu "f"
+		    set msg_err_targa "Targa inesistente"
+		} else {
+		    set ctrl_targa_manu "t"
+		    set msg_err_targa "Targa non associata al manutentore"		
+
+		}
+		
+		set programma_dyn_url "targhe-controllo?targa=$targa&cod_manutentore=$cod_manutentore_targa&ctrl_targa_manu=$ctrl_targa_manu";#rom21
+		
+	    };#rom21
+	    
 
 	    set nome_db     [db_get_database]
 	    set url_portale [parameter::get_from_package_key -package_key iter -parameter url_portale]
-	    set dyn_url    "$url_portale/iter-portal/targhe/targhe-controllo?targa=$targa&cod_manutentore=$cod_manutentore_targa"
+	    #rom21set dyn_url    "$url_portale/iter-portal/targhe/targhe-controllo?targa=$targa&cod_manutentore=$cod_manutentore_targa"
+	    set dyn_url    "$url_portale/iter-portal/targhe/$programma_dyn_url";#rom21
 
 	    set spool_dir     [iter_set_spool_dir];#sim12
 	    set nome_file_tmp "httpget_wallet";#sim12
@@ -2265,11 +2823,25 @@ if {[form is_valid $form_name]} {
 	    #sim12 set data         [ad_httpget -url $dyn_url -timeout 100]
 	    #sim12 array set result $data
 	    #sim12 set risultato    [string range $result(page) 0 [expr [string first " " $result(page)] - 1]]
-	    set inserire_targa "t"
+	    #sim20set inserire_targa "t"
+
+	    if {$error_num >0} {#sim20 if e suo contenuto
+		#se ho errori precedenti non potrò inserire la targa
+		set inserire_targa "f"
+	    }
+
+	    if {$coimtgen(regione) eq "FRIULI-VENEZIA GIULIA" && ($id_settore in [list "ente" "system"] && [string equal $id_ruolo "admin"])} {#sim20 if e suo contenuto
+		#se sono un amministratore di UCIT bypasso i controlli quindi posso inserire la targa
+		set inserire_targa "t"
+	    }
+
+
 	    #	    if {$risultato != "OK"} {}
 	    #rom01M per il momento tolgo il controllo della targa assegnata al manutentore alla regione Marche.
 	    if {$risultato != "OK" && $coimtgen(regione) ne "MARCHE"} {#rom01M aggiunta if
-		element::set_error $form_name targa "Targa non assegnata al manutentore"
+		#rom21element::set_error $form_name targa "Targa non assegnata al manutentore"
+		
+		element::set_error $form_name targa "$msg_err_targa";#rom21
 		set inserire_targa "f"
 		incr error_num
 	    } else {
@@ -2353,50 +2925,80 @@ if {[form is_valid $form_name]} {
                                     from coimaimp
                                    where cod_impianto = :cod_impianto"
 
-			    #se lavoro su un impianto del freddo
-			    if {$flag_tipo_impianto eq "F" && $cod_impianto_freddo_targa ne ""} {
-				#ha gia0 un impianto del freddo associato
-				set inserire_targa "f"
-				element::set_error $form_name targa "Targa gi&agrave; associata all'impianto $cod_impianto_est_freddo"
-				incr error_num
-			    } else {
-				
-				#la targa ha associato un impianto del caldo che non ha i medesimi dati ubicazione e resp del nostro
-				if {$cod_impianto_caldo_targa ne ""
-				&& (   $cod_responsabile_caldo  ne $cod_responsabile
-				    || $cod_comune_caldo        ne $cod_comune
-				    || $cod_via_caldo           ne $cod_via
-				    || $numero_caldo            ne $numero
-				    || $esponente_caldo         ne $esponente
-				   )
-				} {
-				    set inserire_targa "f"
-				    element::set_error $form_name targa "Targa gi&agrave; associata all'impianto $cod_impianto_est_caldo"
-				    incr error_num
-				}			    
-			    }
+			    #rom21 se sto forzando l'inesrimento salto questi controlli
+			    if {$is_forza_targa_p eq "f"} {#rom21 aggiunto solo if
 
-			    if {$flag_tipo_impianto eq "R" && $cod_impianto_caldo_targa ne ""} {
-				set inserire_targa "f"
-				element::set_error $form_name targa "Targa gi&agrave; associata all'impianto $cod_impianto_est_caldo"
-				incr error_num
-			    } else {
+				set forza_targa_url [export_vars -base [ad_conn url] -entire_form -no_empty {{is_forza_targa_p t}}];#rom21
+				set forza_targa_url [ad_quotehtml $forza_targa_url];#rom21
+                                set forza_targa_url [string map {' &#39;} $forza_targa_url];#rom21
 				
-				#la targa ha associato un impianto del freddo che non ha i medesimi dati ubicazione e resp del nostro
-				if {$cod_impianto_freddo_targa ne ""
-				&& (   $cod_responsabile_freddo ne $cod_responsabile
-				    || $cod_comune_freddo       ne $cod_comune
-				    || $cod_via_freddo          ne $cod_via
-				    || $numero_freddo           ne $numero
-				    || $esponente_freddo        ne $esponente
-                                   )
-				} {
+				#se lavoro su un impianto del freddo
+				if {$flag_tipo_impianto eq "F" && $cod_impianto_freddo_targa ne ""} {
+				    #ha gia' un impianto del freddo associato
 				    
 				    set inserire_targa "f"
 				    element::set_error $form_name targa "Targa gi&agrave; associata all'impianto $cod_impianto_est_freddo"
+				    
+				    if {$cod_responsabile_freddo    eq $cod_responsabile
+					&& $cod_comune_freddo       eq $cod_comune
+					&& $cod_via_freddo          eq $cod_via
+					&& $numero_freddo           eq $numero
+					&& $esponente_freddo        eq $esponente} {#rom21 if e suo contenuto
+                                        #permetto di forzare la targa solo se ho i medesimi dati
+					element::set_error $form_name targa "Targa gi&agrave; associata all'impianto $cod_impianto_est_freddo. Se vuoi comunque forzare l'inserimento della targa premi <a href='$forza_targa_url'>QUI</a>"
+				    }
 				    incr error_num
+				} else {
+
+				    #la targa ha associato un impianto del caldo che non ha i medesimi dati ubicazione e resp del nostro
+				    if {$cod_impianto_caldo_targa ne ""
+					&& (   $cod_responsabile_caldo  ne $cod_responsabile
+					       || $cod_comune_caldo        ne $cod_comune
+					       || $cod_via_caldo           ne $cod_via
+					       || $numero_caldo            ne $numero
+					       || $esponente_caldo         ne $esponente
+					       )
+				    } {
+					
+					set inserire_targa "f"
+					element::set_error $form_name targa "Targa gi&agrave; associata all'impianto $cod_impianto_est_caldo"
+					incr error_num
+				    }			    
 				}
-			    }
+				
+				#rom21 if {$flag_tipo_impianto eq "R" && $cod_impianto_caldo_targa ne ""} {}
+				if {$flag_tipo_impianto ne "F"  && $cod_impianto_caldo_targa ne ""} {#sim21 modificato la if
+				    set inserire_targa "f"
+				    element::set_error $form_name targa "Targa gi&agrave; associata all'impianto $cod_impianto_est_caldo"
+
+				    if {$cod_responsabile_caldo  eq $cod_responsabile
+					&& $cod_comune_caldo        eq $cod_comune
+					&& $cod_via_caldo           eq $cod_via
+					&& $numero_caldo            eq $numero
+					&& $esponente_caldo         eq $esponente} {#rom21 if e suo contenuto
+					#permetto di forzare la targa solo se ho i medesimi dati
+					element::set_error $form_name targa "Targa gi&agrave; associata all'impianto $cod_impianto_est_caldo. Se vuoi comunque forzare l'inserimento della targa premi <a href='$forza_targa_url'>QUI</a>"
+
+				    }
+				    incr error_num
+				} else {
+				
+				    #la targa ha associato un impianto del freddo che non ha i medesimi dati ubicazione e resp del nostro
+				    if {$cod_impianto_freddo_targa ne ""
+					&& (   $cod_responsabile_freddo ne $cod_responsabile
+					       || $cod_comune_freddo       ne $cod_comune
+					       || $cod_via_freddo          ne $cod_via
+					       || $numero_freddo           ne $numero
+					       || $esponente_freddo        ne $esponente
+					       )
+				    } {
+				    
+					set inserire_targa "f"
+					element::set_error $form_name targa "Targa gi&agrave; associata all'impianto $cod_impianto_est_freddo"
+					incr error_num
+				    }
+				}
+			    };#rom21
 			}
 		    }
 		}
@@ -2404,15 +3006,16 @@ if {[form is_valid $form_name]} {
 	    }
 
 	    #aggiorno la targa
-	    if {$inserire_targa eq "t" && $error_num == 0} {
+	    #sim20 tolto $error_num ==0. MI baso solo sul inserire_targa gestito sopra 
+	    if {$inserire_targa eq "t"} {
 
-		if {$flag_tipo_impianto eq "R"} {
+#rom21		if {$flag_tipo_impianto eq "R"} {
 		    set cod_impianto_targa $cod_impianto
-		}
+#rom21		}
 
-		if {$flag_tipo_impianto eq "F"} {
-		    set cod_impianto_targa $cod_impianto
-		}
+#rom21		if {$flag_tipo_impianto eq "F"} {
+#rom21		    set cod_impianto_targa $cod_impianto
+#rom21		}
 
 		set dyn_url "$url_portale/iter-portal/targhe/targhe-associa?targa=$targa&nome_db_utilizzo=$nome_db&cod_impianto_targa=$cod_impianto_targa&flag_tipo_impianto=$flag_tipo_impianto"
 
@@ -2443,8 +3046,10 @@ if {[form is_valid $form_name]} {
 		fconfigure    $file_id -encoding utf-8;#sim12
 		set response  [read $file_id];#sim12
 		
-		set risultato [string range $response 0 [expr [string first " " $response] - 1]]
-
+		#rom21 set risultato [string range $response 0 [expr [string first " " $response] - 1]]
+		#rom21 la risposta del ws è solo OK senza altri dati. Come veniva letto prima non salva correttamente la
+		#rom21 risposta e quindi poi non aggiornava la targa sull'impianto
+		set risultato $response;#rom21
 
 		#sim12 set data [ad_httpget -url $dyn_url -timeout 100]
 		#sim12 array set result $data
@@ -2459,59 +3064,64 @@ if {[form is_valid $form_name]} {
 	    }
 	}
     }
-    
-    set tipo_comb [db_string q "select tipo
-                                  from coimcomb
-                                 where cod_combustibile = :cod_combustibile" -default ""];#rom01
-    set cod_coimtpin "";#rom01
-    set descrizione_tpin "";#rom01
 
+#ROM21 Spostati i controlli delle abilitazioni prima dei controlli della targa.
+#    set tipo_comb [db_string q "select tipo
+#                                  from coimcomb
+#                                 where cod_combustibile = :cod_combustibile" -default ""];#rom01
+#    set cod_coimtpin "";#rom01
+#    set descrizione_tpin "";#rom01
+#
+#
+#    if {$coimtgen(regione) ne "MARCHE" && $flag_tipo_impianto ne "" && $cod_combustibile ne "" && $cod_manutentore ne ""} {#rom01 if e suo co\ntenuto
+#	if {[db_0or1row q "select 1
+#                             from coimtpin_abilitazioni
+#                            where flag_tipo_impianto = :flag_tipo_impianto
+#                              and tipo_combustibile is not null
+#                            limit 1"]} {
+#	    
+#	    db_0or1row q "select a.cod_coimtpin
+#                               , b.descrizione as descrizione_tpin
+#                            from coimtpin_abilitazioni a
+#                               , coimtpin b
+#                           where a.flag_tipo_impianto = :flag_tipo_impianto
+#                             and a.tipo_combustibile  = :tipo_comb
+#                             and a.cod_coimtpin       = b.cod_coimtpin"
+#	    
+#	} else {
+#	    
+#	    db_0or1row q "select a.cod_coimtpin
+#                               , b.descrizione as descrizione_tpin
+#                            from coimtpin_abilitazioni a
+#                               , coimtpin b
+#                           where a.flag_tipo_impianto = :flag_tipo_impianto
+#                             and a.cod_coimtpin = b.cod_coimtpin"
+#	    
+#	}
+#
+#	if {![db_0or1row q "select 1
+#                              from coimtpin_manu
+#                             where cod_coimtpin    = :cod_coimtpin
+#                               and cod_manutentore = :cod_manutentore"]} {
+#	    
+#	    element::set_error $form_name cod_combustibile "Utente non abilitato per l'inserimento<br>di \"$descrizione_tpin\""
+#	    incr error_num
+#	}
+#	
+#    };#rom01   
 
-    if {$coimtgen(regione) ne "MARCHE" && $flag_tipo_impianto ne "" && $cod_combustibile ne "" && $cod_manutentore ne ""} {#rom01 if e suo co\ntenuto
-	if {[db_0or1row q "select 1
-                             from coimtpin_abilitazioni
-                            where flag_tipo_impianto = :flag_tipo_impianto
-                              and tipo_combustibile is not null
-                            limit 1"]} {
-	    
-	    db_0or1row q "select a.cod_coimtpin
-                               , b.descrizione as descrizione_tpin
-                            from coimtpin_abilitazioni a
-                               , coimtpin b
-                           where a.flag_tipo_impianto = :flag_tipo_impianto
-                             and a.tipo_combustibile  = :tipo_comb
-                             and a.cod_coimtpin       = b.cod_coimtpin"
-	    
-	} else {
-	    
-	    db_0or1row q "select a.cod_coimtpin
-                               , b.descrizione as descrizione_tpin
-                            from coimtpin_abilitazioni a
-                               , coimtpin b
-                           where a.flag_tipo_impianto = :flag_tipo_impianto
-                             and a.cod_coimtpin = b.cod_coimtpin"
-	    
-	}
-
-	if {![db_0or1row q "select 1
-                              from coimtpin_manu
-                             where cod_coimtpin    = :cod_coimtpin
-                               and cod_manutentore = :cod_manutentore"]} {
-	    
-	    element::set_error $form_name cod_combustibile "Utente non abilitato per l'inserimento<br>di \"$descrizione_tpin\""
-	    incr error_num
-	}
-	
-    };#rom01
-    
-	
     ###########
     
     #se tipologia_generatore è selezionato altro bisogna perforza scrivere qualcosa
     if {$tipologia_generatore eq ""} {
         element::set_error $form_name tipologia_generatore "Selezionare tipologia generatore"
         incr error_num
-    } 
+    }
+    #mic02 Aggiunta condizione su Regione Marche
+    if {$flag_ibrido eq "" && $flag_tipo_impianto in [list "R" "F"] && $coimtgen(regione) eq "MARCHE"} {#rom15 Aggiunta if e il suo contenuto
+	element::set_error $form_name flag_ibrido "Campo obbligatorio."
+	incr error_num
+    }
     
     if {$tipologia_generatore ne ""} {#rom04
 	if {$tipologia_generatore ne "ALTRO"} {
@@ -2520,7 +3130,8 @@ if {[form is_valid $form_name]} {
 		incr error_num
 	    }
 	    if {$coimtgen(regione) eq "MARCHE"} {
-		if {$flag_ibrido ne ""} {#rom04.bis if e contenuto
+		#rom14 Aggiunta condizione 1 == 0 perche' le Marche hanno chiesto che il flag_ibrido non sia vincolato dalla tipologia_generatore.
+		if {$flag_ibrido ne "" && $flag_tipo_impianto eq "R" && 1 == 0} {#rom04.bis if e contenuto
 		    element::set_error $form_name flag_ibrido "Compilare solo se la<br>\"Tipologia generatore\" &egrave; \"Altro\""
 		    incr error_num
 		}
@@ -2530,7 +3141,8 @@ if {[form is_valid $form_name]} {
 	    if {$tipologia_generatore eq "ALTRO"} {
 		#sim19 aggiunto condizione su flag_tipo_impianto
 		if {$flag_ibrido eq "" && $flag_tipo_impianto eq "R"} {
-		    element::set_error $form_name flag_ibrido "Indicare se &egrave; un Ibrido"
+		    #rom15element::set_error $form_name flag_ibrido "Indicare se &egrave; un Ibrido"
+		    element::set_error $form_name flag_ibrido "Campo obbligatorio.";#rom15
 		    incr error_num
 		}
 		if {$flag_ibrido eq "S" && $altra_tipologia_generatore ne "" } {
@@ -2649,14 +3261,26 @@ if {[form is_valid $form_name]} {
                                              from coimaimp 
                                             where cod_impianto = :cod_impianto 
                                               and stato='F'"]} {
-	#Se sto attivando un'impanto in stato Da controllare vado a saltare tutti i controlli
+	#Se sto attivando un'impianto in stato Da controllare vado a saltare tutti i controlli
+	set error_num 0
+    }
+
+    if {$coimtgen(ente) in [list "PSA"] && $cod_manutentore eq "" && $stato in [list "N" "L" "R" "U" "E"]} {#rom23 Aggiunta if e il suo contenuto
+	set error_num 0
+    }
+
+    #sim20 aggiunto $inserire_targa eq "t". Se la targa non è corretta blocco anche se è un amministratore 
+    if {$coimtgen(regione) eq "FRIULI-VENEZIA GIULIA" && ($id_settore in [list "ente" "system"] && [string equal $id_ruolo "admin"]) && $inserire_targa eq "t"} {#rom22 Aggiunta if e il suo contenuto
 	set error_num 0
     }
 
     #[template::form::get_errors $form_name]
     # se sono in assegnazione dell'impianto (funzione per manutentori) 
     # aggiorno il manutentore e aggiorno lo storico dei soggetti
-    if {$error_num > 0} {
+    #mic01 Aggiunta condizione su refresh_targa:
+    #mic01 quando si bonifica la targa non devo mostrare gli eventuali messaggi di errore
+    #mic01 sugli altri campi per evitare di generare dei buchi con la sequence coimaimp_est_s. 
+    if {$error_num > 0 && $refresh_targa eq 0} {
         ad_return_template
         return
     }
@@ -2729,6 +3353,103 @@ if {[form is_valid $form_name]} {
                                , data_libretto       = :data_libretto
                            where targa= :targa"
 
+		if {![string equal $cod_impianto_princ_ibrido ""]} {#rom13 Aggiunta if e il suo contenuto
+
+		    # Se il cod_impianto in cui mi trovo non e' gia' associato ad un altro cod_impianto_princ_ibrido
+		    # allora vado a inserire un nuovo record sulla tabella coimaimp_ibrido.
+		    if {![db_0or1row q "select 1
+                                          from coimaimp_ibrido
+                                         where cod_impianto_ibrido = :cod_impianto"]} {
+
+			db_dml q "insert into coimaimp_ibrido 
+                                            ( cod_impianto_princ
+                                            , cod_impianto_ibrido
+                                            , is_regolazione_primaria_unica
+                                            , is_coimaccu_aimp_unici
+                                            , is_coimscam_calo_aimp_unici
+                                            , is_coimrecu_calo_aimp_unici
+                                            , data_ins
+                                            , utente_ins
+                                            ) values
+                                            ( :cod_impianto_princ_ibrido
+                                            , :cod_impianto
+                                            , :is_regolazione_primaria_unica
+                                            , :is_coimaccu_aimp_unici
+                                            , :is_coimscam_calo_aimp_unici
+                                            , :is_coimrecu_calo_aimp_unici                                            
+                                            , current_date
+                                            , :id_utente
+                                            )"
+			
+		    } else {
+			
+			# Nel caso in cui si modifichi qualche dato riferito all'ibrido vado ad aggiornare la tabella coimaimp_ibrido.
+			db_dml q "update coimaimp_ibrido
+                                     set cod_impianto_princ             = :cod_impianto_princ_ibrido
+                                       , is_regolazione_primaria_unica  = :is_regolazione_primaria_unica
+                                       , is_coimaccu_aimp_unici         = :is_coimaccu_aimp_unici
+                                       , is_coimscam_calo_aimp_unici    = :is_coimscam_calo_aimp_unici
+                                       , is_coimrecu_calo_aimp_unici    = :is_coimrecu_calo_aimp_unici
+                                       , data_mod                       = current_date
+                                       , utente_mod                     = :id_utente
+                                   where cod_impianto_ibrido = :cod_impianto"
+
+		    }
+		} else {
+		    # Se ho lasciato il campo cod_impianto_princ_ibrido vuoto ma il cod_impianto in cui mi trovo e' gia' associato
+		    # ad un altro cod_impianto_princ_ibrido vado a cancellare il record su comaimp_ibrido		    
+		    if {[db_0or1row q "select 1
+                                         from coimaimp_ibrido
+                                        where cod_impianto_ibrido = :cod_impianto"]} {
+		    
+			db_dml q "delete from coimaimp_ibrido where cod_impianto_ibrido = :cod_impianto"
+		    }
+		}
+	    }
+	    if {$refresh_targa == "1"} {#mic01 Aggiunta if e contenuto
+		#Generazione nuova targa prima dell'update
+		if {$flag_codifica_reg == "T"} {
+		    if {$coimtgen(regione) eq "MARCHE"} {
+			if {$coimtgen(ente) eq "CPESARO"} {
+			    set sigla_est "CMPS"
+			} elseif {$coimtgen(ente) eq "CFANO"} {
+			    set sigla_est "CMFA"
+			} elseif {$coimtgen(ente) eq "CANCONA"} {
+			    set sigla_est "CMAN"
+			} elseif {$coimtgen(ente) eq "PAN"} {
+			    set sigla_est "PRAN"
+			} elseif {$coimtgen(ente) eq "CJESI"} {
+			    set sigla_est "CMJE"
+			} elseif {$coimtgen(ente) eq "CSENIGALLIA"} {
+			    set sigla_est "CMSE"
+			} elseif {$coimtgen(ente) eq "PPU"} {
+			    set sigla_est "PRPU"
+			} elseif {$coimtgen(ente) eq "PMC"} {
+			    set sigla_est "PRMC"
+			} elseif {$coimtgen(ente) eq "CMACERATA"} {
+			    set sigla_est "CMMC"
+			} elseif {$coimtgen(ente) eq "CCIVITANOVA MARCHE"} {
+			set sigla_est "CMCM"
+			} elseif {$coimtgen(ente) eq "CASCOLI PICENO"} {
+			    set sigla_est "CMAP"
+			} elseif {$coimtgen(ente) eq "CSAN BENEDETTO DEL TRONTO"} {
+			    set sigla_est "CMSB"
+			} elseif {$coimtgen(ente) eq "PAP"} {
+			    set sigla_est "PRAP"
+			} elseif {$coimtgen(ente) eq "PFM"} {
+			    set sigla_est "PRFM"
+			} else {
+			    set sigla_est ""
+			}
+			
+			set progressivo_est [db_string sel "select nextval('coimaimp_est_s')"]
+			
+			# devo fare l'lpad con una seconda query altrimenti mi va in errore
+			set progressivo_est [db_string sel "select lpad(:progressivo_est,:lun_num_cod_imp_est,'0')"]
+			
+			set targa "$sigla_est$progressivo_est"
+		    }
+		}
 	    }
 	    set dml_sql  [db_map upd_aimp]
 	}

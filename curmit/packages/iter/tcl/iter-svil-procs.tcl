@@ -6,6 +6,58 @@ ad_library {
 
     USER    DATA       MODIFICHE
     ======= ========== ======================================================================
+    ric01   12/09/2025 Modificata proc iter_check_uten_manu per bloccare l'utente che non abbia
+    ric01              un abilitazione giuridica attiva. ("Nuova richiesta 2025") MEV regione Marche.
+
+    rom21   21/03/2025 Aggiuntao alla iter_get_coimtgen il campo protocollo_automatico_ente.
+
+    rom20   23/05/2024 Aggiunto alla iter_get_coimtgen il campo flag_cind.
+    
+    rom19   19/09/2023 Modificata proc iter_delete_permanenti, anche Napoli non cancella gli allegati.
+
+    rom18   18/09/2023 Aggiunto alla iter_get_coimtgen il campo flag_asse_data.
+
+    but01 19/07/2023   Aggiunta class"link-button-2" nel actions"Selez
+
+    rom17   05/07/2023 Modificata proc iter_check_mandatory_fields, i campi cod_tpim e unita_immobiliari_servite
+    rom17              sono obbligatori anche per il freddo.
+
+    rom16   08/05/2023 Modificata proc iter_delete_permanenti, anche Palermo non cancella gli allegati.
+    
+    rom15   12/04/2023 Aggiunto alla iter_get_coimtgen i campi flag_firma_ispe_stampa_cimp e flag_firma_resp_stampa_cimp.
+
+    rom14   23/11/2022 Aggiunto alla iter_get_coimtgen i campi flag_firma_manu_stampa_rcee e flag_firma_resp_stampa_rcee.
+
+    sim09   01/02/2023 Corretto sim06S che non funzionava correttamente se nel formname erano presenti
+    sim09              più di un "_"
+
+    rom13   19/03/2021 Modificata proc iter_get_coimtgen per nuova variabile coimtgen(login_spid_p).
+    rom13              Copiato da vecchio cvs per allineamento enti di Ucit.
+
+    rom12   30/11/2020 Modificata proc iter_get_coimtgen per nuova variabile coimtgen(flag_controllo_abilitazioni).
+    rom12              Copiato da vecchio cvs per allineamento enti di Ucit.
+
+    rom11   06/07/2022 Modificata proc iter_search: aggiunto parametro per il nome del link o bottone.
+
+    mic01   30/05/2022 Modificata proc iter_check_mandatory_fields, Il dpr 660 96 deve essere
+    mic01              obbligatorio solo se il combustibile non e' solido per il caldo.
+
+    rom10   20/05/2022 Corretta modifica di rom09, il campo flag_ibrido in realta' era stato
+    rom10              indicato obbligatorio per tutte le tipologie di impianto, deve esserlo
+    rom10              solo per caldo e freddo.
+
+    rom09   27/04/2022 Modificata proc iter_check_mandatory_fields per MEV Sistemi Ibridi delle Marche.
+    rom09              Il campo flag_ibrido e' diventato sempre obbligatorio per il caldo e per il freddo
+    rom09              quindi, quando manca, mostro la X rossa per la Scheda 1.
+
+    rom08   31/03/2022 Su richiesta di Giuliodori con mail "MEV rilasciata in produzione." del 28/03/2022
+    rom08              vado a modificare la proc iter_check_mandatory_fields per la MEV
+    rom08              Stato impianto "Rottamato". La X rossa per i generatori va mostrata solo in caso
+    rom08              in cui non ci siano generatori attivi in un impianto in stato attivo.
+
+    rom07   13/01/2022 Modificata proc iter_check_mandatory_fields, aggiunto controllo su pod se
+    rom07              il combustibile e' GPL o GNL, su segnalazione di Regione Marche o Sandro
+
     rom06   03/12/2020 Modificata proc iter_check_mandatory_fields, aggiunti dei controlli
     rom06              su pod e pdr.
 
@@ -157,6 +209,7 @@ ad_proc iter_search {
     script_name
     what_list
     {lista_par ""}
+    {label "Cerca"}
 } {
 } {
 
@@ -166,7 +219,8 @@ ad_proc iter_search {
     #            2. nome dello script che propone la lista
     #            3. lista parametri attesi da script_name alternata ai 
     #               corrispondenti campi di form_name   
-
+    #            4. nome del link o bottone.
+    
     # genera un link al programma script_name, i cui url parameter vengono popolati
     # dai campi del form in base alla lista what_list. Quest'ultima contiene una o
     # piu' coppie di nomi, in cui il primo rappresenta il nome del parametro atteso
@@ -177,7 +231,8 @@ ad_proc iter_search {
 
     # per questioni di sicurezza verifico che form_name contenga solo numeri o lettere. In questo modo impedisco
     # che venganno innestati dei javascript.
-    if {[regexp {[^A-Za-z0-9]} [regsub "_" $form_name ""] ""]} {#sim06 if e suo contenuto
+    #sim09 aggiunto -all
+    if {[regexp {[^A-Za-z0-9]} [regsub -all "_" $form_name ""] ""]} {#sim06 if e suo contenuto
 	return ""
     }
     
@@ -198,11 +253,13 @@ ad_proc iter_search {
     set receiving_element [string trimright $receiving_element |]
 
     if {$button_p} {
-        set tag_iniz {<input type=button value="Cerca"}
+        #rom11set tag_iniz {<input type=button value="Cerca"}
+        set tag_iniz {<input type=button value="$label"};#rom11
         set tag_fine {</input>}
     } else {
         set tag_iniz {<a href="#"}
-        set tag_fine {Cerca</a>}
+	#rom11set tag_fine {Cerca</a>}	
+        set tag_fine "$label</a>";#rom11
     }
     set link_to " $tag_iniz onclick=\"javascript:window.open('$script_name?caller=$form_name$extra_par&receiving_element=$receiving_element'" 
 
@@ -249,7 +306,7 @@ ad_proc iter_select {what_list} {} {
 	append action "\$$p1 "
     }
 
-    append action "])\\\">Selez.</a>"
+    append action "])\\\" class=\"link-button-2\">Selez.</a>"
 
     return $action
 
@@ -275,7 +332,8 @@ ad_proc iter_selected {form_name what_list {callback "onSearchClose()"}} {} {
 
     # per questioni di sicurezza verifico che form_name contenga solo numeri o lettere. In questo modo impedisco
     # che venganno innestati dei javascript.
-    if {[regexp {[^A-Za-z0-9]} [regsub "_" $form_name ""] ""]} {#sim06 if e suo contenuto
+    #sim09 aggiunto -all
+    if {[regexp {[^A-Za-z0-9]} [regsub -all "_" $form_name ""] ""]} {#sim06 if e suo contenuto
 	return ""
     }
 
@@ -487,7 +545,22 @@ ad_proc iter_check_uten_manu {id_utente} {
 	    set lung_cod_uten [expr $lung_cod_uten - 3]
 	    set cod_manut [string range $id_utente 0 $lung_cod_uten ]
 	}
-    } 
+    }
+    iter_get_coimtgen
+    if {$coimtgen(regione) eq "MARCHE"} {#ric01 aggiunta if e contenuto
+	if {[db_0or1row q "select (coalesce(o.cognome, '') || ' ' || coalesce(o.nome, '')) as nome_opma
+                                , (coalesce(m.cognome, '') || ' ' || coalesce(m.nome, '')) as nome_manu
+                            from coimopma o
+                               , coimmanu m
+                           where cod_opma = :id_utente
+                             and o.cod_manutentore = m.cod_manutentore
+                             and (abilitazione_giuridica_p is null 
+                                  or abilitazione_giuridica_p = 'f')"]} {
+
+	    set logout_url "<center><a href=logout?nome_funz=logout>Logout</a></center>"
+	    iter_return_complaint "$nome_opma, per poter operare sul gestionale è necessario avere un titolo giuridico VALIDO.<br>Rivolgersi alla ditta $nome_manu che deve dichiarare sul portale che puo' operare per suo conto.<br><br> Si ricorda che la modifica avrà effetto dopo 48 ore dopo l'inserimento.<br><br><br> $logout_url"
+	}
+    }
     return $cod_manut
 }
 
@@ -893,7 +966,10 @@ ad_proc iter_get_coimtgen {
     flag_potenza: Potenza da considerare per la fascia di potenza (pot_focolare_nom, pot_utile_nom).
     flag_portafoglio: Indica se gestire o meno il portafoglio dall'istanza di iter
     flag_obbligo_dati_catastali: Indica se i dati catastali sono obbligatori 
-
+    flag_firma_manu_stampa_rcee - flag_firma_resp_stampa_rcee: Indicano se e' attiva la firma grafometrica nelle stampe rcee. 
+    flag_firma_ispe_stampa_cimp - flag_firma_resp_stampa_cimp: Indicano se e' attiva la firma grafometrica nelle stampe dei rapporti di ispezione.
+    flag_asse_data: Indica se e' attiva la gestione dell'agenda degli ispettori.
+    
     -dbn: se lasciato vuoto, usa il dbn di default, altrimenti usa quello indicato.
 } {
     if {[db_0or1row -dbn $dbn sel_tgen ""] == 1} {
@@ -946,7 +1022,16 @@ ad_proc iter_get_coimtgen {
 	uplevel [list set coimtgen(flag_gest_targa)            $flag_gest_targa];#sim04
 	uplevel [list set coimtgen(flag_gest_rcee_legna)       $flag_gest_rcee_legna];#gab01
 	uplevel [list set coimtgen(flag_verifica_impianti)     $flag_verifica_impianti];#gab02
-
+        uplevel [list set coimtgen(flag_controllo_abilitazioni) $flag_controllo_abilitazioni];#rom12
+        uplevel [list set coimtgen(login_spid_p)               $login_spid_p];#rom13
+	uplevel [list set coimtgen(flag_firma_manu_stampa_rcee) $flag_firma_manu_stampa_rcee];#rom14
+	uplevel [list set coimtgen(flag_firma_resp_stampa_rcee) $flag_firma_resp_stampa_rcee];#rom14
+	uplevel [list set coimtgen(flag_firma_ispe_stampa_cimp) $flag_firma_ispe_stampa_cimp];#rom15
+	uplevel [list set coimtgen(flag_firma_resp_stampa_cimp) $flag_firma_resp_stampa_cimp];#rom15
+	uplevel [list set coimtgen(flag_asse_data)              $flag_asse_data]             ;#rom18
+	uplevel [list set coimtgen(flag_cind)                   $flag_cind]                  ;#rom20
+	uplevel [list set coimtgen(protocollo_automatico_ente)  $protocollo_automatico_ente] ;#rom21
+	
 	set regione    "";#nic06
 	if {[db_0or1row -dbn $dbn sel_tgen_prov ""] == 1} {
 	    uplevel [list set coimtgen(sigla_prov) $sigla_prov]
@@ -1156,7 +1241,9 @@ ad_proc -public iter_delete_permanenti { } {
         } {
 	    iter_get_coimtgen;#sim08
 	    #sim08 su Marche non li cancello perchè li uso per gli allegati
-	    if {$coimtgen(regione) ne "MARCHE"} {#sim08
+	    #rom16 Aggiunta condizione di Palermo
+	    #rom19 Aggiunta condizione di Napoli
+	    if {$coimtgen(regione) ne "MARCHE" && !($coimtgen(ente) in [list "PPA" "PNA"]} {#sim08
 		file delete -force $dir_to_del
 		lappend lista_dir_deleted $dir_to_del
 	    };#sim08
@@ -1694,6 +1781,7 @@ ad_proc iter_check_mandatory_fields {
           --  case when data_libretto = null then 'f' else 't' end  as data_libretto
             , coalesce(tipologia_intervento, 'f')                   as tipologia_intervento
             , coalesce(tipologia_generatore, 'f')                   as tipologia_generatore
+            , coalesce(flag_ibrido, 'f')                            as flag_ibrido --rom09
             , coalesce(cod_proprietario, 'f')                       as cod_proprietario
             , coalesce(cod_occupante, 'f')                          as cod_occupante
             , coalesce(cod_amministratore, 'f')                     as cod_amministratore
@@ -1714,16 +1802,24 @@ ad_proc iter_check_mandatory_fields {
         where cod_impianto = :cod_impianto
 "
     #Controlli scheda 1 Dati Generali
+    #rom09 Aggiunta condizione || flag_ibrido eq "f"
+    #rom10 Tolta condizione di rom09
     if {$data_libretto eq "" || $tipologia_intervento eq "f" || $tipologia_generatore eq "f"} {#controlli su scheda 1
 	incr conta_imp 
     }
+
+    if {$flag_tipo_impianto in [list "R" "F"]} {#rom10 Aggiunta if e il suo contenuto
+	if {$flag_ibrido eq "f"} {
+	    incr conta_imp
+	}
+    }
     
     #Controlli scheda 1_bis
-    if {$flag_tipo_impianto ne "F"} {
+    #rom17if {$flag_tipo_impianto ne "F"} {
 	if {$cod_tpim eq "f" || $unita_immobiliari_servite eq "f"} {
 	    incr conta_imp_bis
 	}
-    }
+    #rom17}
     
     if {$pdr ne "f"} {
 	if {[db_0or1row query "select 1
@@ -1771,7 +1867,11 @@ ad_proc iter_check_mandatory_fields {
                               and cod_combustibile = :db_cod_combustibile"]} {
 	    incr conta_imp_bis
 	}
-	
+
+	if {$db_cod_combustibile in [list "4" "21"]} {#rom07 Aggiunta if e suo contenuto
+	    incr conta_imp_bis
+	}
+
 	#il pod è obbligatorio su tutti gli impianti del freddo
 	if {$flag_tipo_impianto eq "F"} {
 	    incr conta_imp_bis
@@ -1820,10 +1920,18 @@ ad_proc iter_check_mandatory_fields {
                                    where cod_impianto = :cod_impianto limit 1"]} {
 	incr conta_imp_resp
     }
+
+    #rom08 La x rossa va mostrata nel caso in cui non ci siano generatori attivi in un impianto attivo.
     if {![db_0or1row aimp_gend "select 1 
                                   from coimgend
                                  where cod_impianto = :cod_impianto
-                                   and flag_attivo = 'S' limit 1"]} {
+                                   and flag_attivo  = 'S'
+                                 limit 1"] &&
+	![db_0or1row aimp "select 1 
+                             from coimaimp
+                            where cod_impianto = :cod_impianto
+                              and stato       != 'A'"]} {
+
 	incr conta_imp_gen
     }
     db_foreach sel_gend "select data_installaz                                            as gen_data_installaz
@@ -1886,6 +1994,15 @@ ad_proc iter_check_mandatory_fields {
 	
 	switch $flag_tipo_impianto {
 	    R {
+		if {[db_0or1row q "select 1
+                                     from coimcomb
+                                    where upper(tipo) != 'S'
+                                      and cod_combustibile=:cod_combustibile"]
+		    && $dpr_660_96 eq "f"} {#mic01 Aggiunta if e il suo contenuto
+		    # Il dpr 660 96 deve essere obbligatorio solo se il combustibile non è solido
+		    incr conta_imp_gen
+		}
+		#mic01 Tolta condizione || $dpr_660_96 eq "f"
 		if {$mod_funz eq "f" ||
 		    $num_prove_fumi eq "f" ||
 		    $pot_focolare_nom eq "f" ||
@@ -1893,8 +2010,7 @@ ad_proc iter_check_mandatory_fields {
 		    $rend_ter_max eq "f" ||
 		    $data_costruz_gen eq "f" ||
 		    $tipo_foco eq "f" ||
-		    $tiraggio eq "f" ||
-		    $dpr_660_96 eq "f"
+		    $tiraggio eq "f" 
 		} {
 		    incr conta_imp_gen
 		}

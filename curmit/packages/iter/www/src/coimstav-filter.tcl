@@ -11,6 +11,11 @@ ad_page_contract {
     
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    ric01 28/08/2023 Su richiesta di Sandro, solo per la Provincia di Palermo, ho impostato 
+    ric01            il numero massimo di avvisi stampabili a 40.
+
+    but01 19/06/2023 Aggiunto la classe ah-jquery-date ai campo Data.
+
     rom01 21/10/2020 Su segnalazione di Salerno modificato page_title per renderlo 
     rom01            uguale al nome del menu', Sandro ha detto che va bene per tutti.
 
@@ -115,6 +120,10 @@ if {$flag_cod_tecn == "t"} {
     set readonly_tecn  \{\}
 }
 
+set jq_date "";#but01
+if {$funzione in "V M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
 form create $form_name \
     -html    $onsubmit_cmd
 
@@ -135,12 +144,12 @@ element create $form_name f_tipo_data \
     -datatype text \
     -html    "class form_element" \
     -optional
-
+#but01 Aggiunto la classe ah-jquery-date ai campo Data partenza.
 element create $form_name f_data \
     -label   "Data " \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 class form_element" \
+    -html    "size 10 maxlength 10 class form_element $jq_date" \
     -optional
 
 element create $form_name f_cod_impianto \
@@ -498,13 +507,19 @@ if {[form is_valid $form_name]} {
 	    incr error_num
 	}
     }
-
+    
     if {[string equal $f_num_max ""]} {
-	   element::set_error $form_name f_num_max "Dato Obbligatorio"
+	element::set_error $form_name f_num_max "Dato Obbligatorio"
+	incr error_num
+    }
+
+    if {$coimtgen(ente) eq "PPA"} {#ric01 aggiunta if e suo contenuto
+	if {$f_num_max > 40} {
+	    element::set_error $form_name f_num_max "Numero massimo consentito 40"
 	    incr error_num
 	}
-  
-
+    }
+    
     #routine generica per controllo codice tecnico
     set check_cod_tecn {
 	set chk_out_rc       0

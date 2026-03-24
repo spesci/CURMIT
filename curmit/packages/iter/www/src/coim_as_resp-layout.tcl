@@ -10,6 +10,9 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    ric01 31/08/2023 Ticket 9261 aggiornati i riferimenti a normative obsolete e aggiunto 
+    ric01            diciture richieste. Sandro ha detto che va bene per tutti.
+
     rom01 12/10/2020 Sandro ha detto che va mostrato sempre il nome e cognome del proprietario
     rom01            e non del responsabile. Vale per tutti gli enti.
 
@@ -259,7 +262,8 @@ if {$flag_tracciato == "LMANU"} {
 		<tr><td >&nbsp;</td></tr>
 		$logo<!-- sim01 -->
                 <tr><td >&nbsp;</td></tr>
-		<tr><td ><i>Allegato $alleg - Modello per impianti $inf_sup a 35 kW</i></td></tr> 
+    <!-- ric01  <tr><td ><i>Allegato $alleg - Modello per impianti $inf_sup a 35 kW</i></td></tr> -->
+                <tr><td align=center><font size=\"4\"><b>Comunicazione di nomina/cessazione del terzo responsabile</b></font></td></tr><!-- ric01 -->
 		<tr><td ><table>
                        <tr><td width=60%>&nbsp;</td>
                            <td nowrap width=40%><b>$ente
@@ -272,7 +276,8 @@ if {$flag_tracciato == "LMANU"} {
                  </table>
 		</td></tr>
 		<tr><td >&nbsp;</td></tr>
-		<tr><td ><b>Oggetto: comunicazione ai sensi dell'art.11, comma 6, del DPR 412/93.</b></td></tr>
+     <!-- ric01	<tr><td ><b>Oggetto: comunicazione ai sensi dell'art.11, comma 6, del DPR 412/93.</b></td></tr> -->
+                <tr><td ><b>Oggetto: Comunicazione di responsabilità dell'impianto termico</b></td></tr> <!-- ric01 -->
 		<tr>
 		   <td  align=left class=form_title width=20%>Il sottoscritto $cognome_legale $nome_legale
 		   </td>
@@ -299,9 +304,10 @@ if {$flag_tracciato == "LMANU"} {
 		   </table>
 		</td></tr>
 		</tr>
-		<tr><td >&nbsp;</td></tr>
+	<!-- ric01 <tr><td >&nbsp;</td></tr> -->
 		<tr>
-		   <td width=100% align=left>dell'articolo 1 della legge 46/90, ed in possesso dell'ulteriore requisito di:</td>
+	<!-- ric01   <td width=100% align=left>dell'articolo 1 della legge 46/90, ed in possesso dell'ulteriore requisito di:</td> -->
+                 <td width=100% align=left>dell'articolo 1 del D.M. 37/08.<br>In possesso dell'ulteriore requisito di:</td> <!--ric01-->
 		</tr>
 		<tr>
 			<td width=100%>
@@ -330,7 +336,8 @@ if {$flag_tracciato == "LMANU"} {
 			</td>
 		</tr>
 		<tr>
-			<td width=100% align=center><b>Comunica</b></td>
+		 <!--ric01 <td width=100% align=center><b>Comunica</b></td> -->
+                           <td width=100% align=center><b><u>COMUNICA</u></b></td> <!--ric01-->
 		</tr>
 		<tr>
 			<td width=100%>
@@ -401,10 +408,11 @@ if {$flag_tracciato == "LMANU"} {
 		</tr>
 		<tr><td >&nbsp;</td></tr>
 		<tr>
-		   <td><b>Consapevole che la dichiarazione mendace e la falsit&agrave; in atti costituiscono reati ai sensi dell'art. 76 del D.P.R. 445/00 e comportano l'applicazione della sanzione penale, ai fini dell'assunzione dell'incarico di terzo responsabile, <br><br>il sottoscritto dichiara: <u>$fornitore_energia </u></b></td>
+		   <td><b>Consapevole che la dichiarazione mendace e la falsit&agrave; in atti costituiscono reati ai sensi dell'art. 76 del D.P.R. 445/00 e comportano l'applicazione della sanzione penale, ai fini dell'assunzione dell'incarico di Terzo Responsabile il sottoscritto dichiara: <u>$fornitore_energia </u></b></td>
 		</tr>
-		<tr><td >&nbsp;</td></tr>
+                <tr><td><i>Dichiara altresì di essere informato, ai sensi e per gli effetti di cui all'articolo 10 della Legge 675/96, che i dati personali raccolti saranno trattati, anche con strumenti informatici, esclusivamente nell'ambito del procedimento per il quale la presente dichiarazione viene resa.</i> </td></tr><!--ric01-->
 		<tr><td valign=top align=left class=form_title>Firma ..........................................................................................................</td></tr>
+		<tr><td >&nbsp;</td></tr>
 		<tr><td valign=top align=left class=form_title>Ragione sociale della Ditta $cognome_manu $nome_manu</td></tr>
 		<tr><td valign=top align=left class=form_title>Nome e cognome del legale rappresentante $cognome_legale $nome_legale</td></tr>
 		<tr><td valign=top align=left class=form_title>Indirizzo $ind_legale</td></tr>
@@ -413,7 +421,8 @@ if {$flag_tracciato == "LMANU"} {
 		<tr><td valign=top align=left class=form_title>A cura del committente dell'incarico di terzo responsabile:</td></tr>
 		<tr><td valign=top align=left class=form_title>Nominativo del fornitore di energia: $forn_energia</td></tr>
 		<tr><td valign=top align=left class=form_title>Nome e cognome/ Ragione sociale del committente $committente</td></tr>
-		<tr><td valign=top align=left class=form_title>Firma del committente ................................................................................</td></tr>
+		<tr><td valign=top align=left class=form_title>Firma del committente* ..................................................................................</td></tr>
+                <tr><td valign=top align=left class=form_title>* Nelle comunicazioni di fine responsabilità la firma del committente è obbligatoria solo in caso di revoca o decadenza, mentre è facoltativa in caso di scadenza naturale o dismissioni.</td></tr> <!--ric01-->
 	
 	
 		</table>"

@@ -23,6 +23,17 @@ ad_proc iter_inco_cari3 {
 
 	    # reperisco le colonne della tabella parametri
 	    iter_get_coimtgen
+	    set flag_cod_aimp_auto  $coimtgen(flag_cod_aimp_auto)
+	    set flag_ente           $coimtgen(flag_ente)
+	    set sigla_prov          $coimtgen(sigla_prov)
+	    set flag_codifica_reg   $coimtgen(flag_codifica_reg)
+	    set lun_num_cod_imp_est $coimtgen(lun_num_cod_imp_est);#nic04
+
+
+	    set flag_ente           $coimtgen(flag_ente);#rom02
+	    set sigla_prov          $coimtgen(sigla_prov);#rom02
+	    set flag_codifica_reg   $coimtgen(flag_codifica_reg);#rom02
+	    set lun_num_cod_imp_est $coimtgen(lun_num_cod_imp_est);#rom02
 
 	    # valorizzo la data_corrente (serve per l'inserimento)
 	    set data_corrente  [iter_set_sysdate]
@@ -272,6 +283,22 @@ ns_log notice "|file_cols=$file_cols|"
 		    }
 		}
 
+
+		# ROM 13/10/2023 Controllo se esiste gia' un impianto con ws_cod_fisc e indirizzo ws_nome_toponimo.
+		# ROM            Al momento Sandro ha detto di non controllare anche il civico ws_civico.
+		if {[db_0or1row q "select 1
+                                     from coimaimp a
+                                     left join coimviae v on v.cod_via       = a.cod_via
+                                     left join coimcitt c on c.cod_cittadino = a.cod_responsabile
+                                    where upper(v.descrizione) = upper(:ws_nome_toponimo)
+                                      and upper(v.descr_topo)  = upper(:ws_tipo_toponimo)
+                                      and v.cod_comune       = :cod_comune
+                              --      and a.numero           = :ws_civico
+                                      and c.cod_fiscale      = :ws_cod_fisc
+                                    limit 1"]} {
+		    set carica "N"
+		    set motivo_scarto "Esiste già un impianto con Cod.Fiscale $ws_cod_fisc all'indirizzo $ws_nome_toponimo"
+		}
 		# ws_prefisso_telefonico non obbligatorio
 
 		# ws_numero_telefonico non obbligatorio
@@ -385,6 +412,9 @@ ns_log notice "|file_cols=$file_cols|"
 			set data_mod         ""
 			set utente_ult       ""
 			set note             ""
+			if {$numero ne ""} {#rom03 Aggiunta if e il suo contenuto
+			    set indirizzo        "$indirizzo $numero"
+			}
 
 			db_dml ins_citt ""
 			incr ctr_ins_citt
@@ -408,6 +438,7 @@ ns_log notice "|file_cols=$file_cols|"
 		    # inserisco l'impianto
 		    set cod_impianto      [db_string sel_dual_cod_impianto ""]
 
+		    if {1 == 0} {#rom02 Aggiunta if ma non il contenuto
 		    if {$coimtgen(regione) eq "MARCHE"} {#rom01 aggiunta if e suo contenuto
 			#Per le Marche il cod_impianto_est deve essere uguale al cod_impianto
 			set cod_impianto_est $cod_impianto
@@ -424,7 +455,159 @@ ns_log notice "|file_cols=$file_cols|"
 			    set cod_impianto_est  [format %010d $max_cod_impianto_est]
 			}
 		    };#rom01
+		    };#rom02
 		    
+		    #ROM02 INIZIO inserimento impianto
+		    if {$flag_codifica_reg == "T"} {
+			if {$coimtgen(regione) eq "MARCHE"} {
+			    if {$coimtgen(ente) eq "CPESARO"} {
+				set sigla_est "CMPS"
+			    } elseif {$coimtgen(ente) eq "CFANO"} {
+				set sigla_est "CMFA"
+			    } elseif {$coimtgen(ente) eq "CANCONA"} {
+				set sigla_est "CMAN"
+			    } elseif {$coimtgen(ente) eq "PAN"} {
+				set sigla_est "PRAN"
+			    } elseif {$coimtgen(ente) eq "CJESI"} {
+				set sigla_est "CMJE"
+			    } elseif {$coimtgen(ente) eq "CSENIGALLIA"} {
+				set sigla_est "CMSE"
+			    } elseif {$coimtgen(ente) eq "PPU"} {
+				set sigla_est "PRPU"
+			    } elseif {$coimtgen(ente) eq "PMC"} {
+				set sigla_est "PRMC"
+			    } elseif {$coimtgen(ente) eq "CMACERATA"} {
+				set sigla_est "CMMC"
+			    } elseif {$coimtgen(ente) eq "CCIVITANOVA MARCHE"} {
+				set sigla_est "CMCM"
+			    } elseif {$coimtgen(ente) eq "CASCOLI PICENO"} {
+				set sigla_est "CMAP"
+			    } elseif {$coimtgen(ente) eq "CSAN BENEDETTO DEL TRONTO"} {
+				set sigla_est "CMSB"
+			    } elseif {$coimtgen(ente) eq "PAP"} {
+				set sigla_est "PRAP"
+			    } elseif {$coimtgen(ente) eq "PFM"} {
+				set sigla_est "PRFM"
+			    } else {
+				set sigla_est ""
+			    }
+			    
+			    set progressivo_est [db_string sel "select nextval('coimaimp_est_s')"]
+
+			    # devo fare l'lpad con una seconda query altrimenti mi va in errore
+			    #set progressivo_est [db_string sel "select lpad(:progressivo_est,6,'0')"]
+			    set progressivo_est [db_string sel "select lpad(:progressivo_est,:lun_num_cod_imp_est,'0')"]
+			    
+			    set cod_impianto_est "$sigla_est$progressivo_est"
+			} else {
+			    if {$coimtgen(ente) eq "PGO"} {
+				set lun_progressivo 7
+			    } else {
+				set lun_progressivo 6
+			    }
+			    
+			    db_1row sel_dati_comu "select coalesce(progressivo,0) + 1 as progressivo
+                                                        , cod_istat
+                                                        , id_belfiore -- rom20
+                                                     from coimcomu
+                                                    where cod_comune = :cod_comune"
+
+			    if {$coimtgen(ente) eq "PMS"} {
+				set progressivo [db_string query "select lpad(:progressivo, 5, '0')"]
+				set cod_istat  "[string range $cod_istat 5 6]/"
+			    } elseif {$coimtgen(ente) eq "PTA"} {
+				set progressivo [db_string query "select lpad(:progressivo, 7, '0')"]
+				set fine_istat  [string length $cod_istat]
+				set iniz_ist    [expr $fine_istat -3]
+				set cod_istat  "[string range $cod_istat $iniz_ist $fine_istat]"
+			    } elseif {$coimtgen(ente) eq "PNA"} {#rom17 Aggiunta elseif e il suo contenuto
+				
+				set progressivo [db_string query "select lpad(:progressivo, $lun_progressivo, '0')"]
+				set fine_istat  [string length $cod_istat]
+				set iniz_ist    [expr $fine_istat -3]
+				set cod_istat  "[string range $cod_istat $iniz_ist $fine_istat]"
+				
+			    } else {
+				# caso standard
+				# La sel_dati_comu andava in errore sul lpad di progressivo.Quindi faccio lpad dopo la query
+				set progressivo [db_string query "select lpad(:progressivo, $lun_progressivo, '0')"]
+				#if {$coimtgen(ente) eq "CPESARO" || $coimtgen(ente) eq "PPU"} {
+				#     set cod_istat [string range $cod_istat 3 5];#nic02 (fatto da Sandro)
+				# }
+			    }
+			    set potenza "0.00"
+			    set cod_potenza "0"
+			    if {![string equal $potenza "0.00"]
+				&&  ![string equal $potenza ""]
+			    } {
+				if {$potenza < 35} {
+				    set tipologia "IN"
+				} else {
+				    set tipologia "CT"
+				}
+				if {$coimtgen(ente) eq "PNA"} {#rom17 Aggiunta if e il suo contenuto
+				    set cod_impianto_est "$progressivo/$cod_istat"
+
+				} elseif {$coimtgen(ente) eq "PCE"} {#rom20 Aggiunta elseif e il cuo contenuto
+				    set annorif  [db_string query_aa "select (substr(current_date,3,2))"]
+				    set cod_impianto_est "$annorif$id_belfiore$progressivo"
+				    #set cod_impianto_est "$cod_istat$tipologia$progressivo"
+
+				} else {#rom17 Aggiunta else ma non il suo contenuto
+				    set cod_impianto_est "$cod_istat$progressivo"
+				};#rom17
+				set dml_comu [db_map upd_prog_comu]
+			    } else {
+				if {![string equal $cod_potenza "0"]
+				    &&  ![string equal $cod_potenza ""]
+				} {
+				    switch $cod_potenza {
+					"B"  {set tipologia "IN"}
+					"A"  {set tipologia "CT"}
+					"MA" {set tipologia "CT"}
+					"MB" {set tipologia "CT"}
+				    }
+				    
+				    if {$coimtgen(ente) eq "PNA"} {#rom17 Aggiunta if e il suo contenuto
+					set cod_impianto_est "$progressivo/$cod_istat"
+
+				    } elseif {$coimtgen(ente) eq "PCE"} {#rom20 Aggiunta elseif e il cuo contenuto
+					set annorif  [db_string query_aa "select (substr(current_date,3,2))"]
+					set cod_impianto_est "$annorif$id_belfiore$progressivo"
+					#set cod_impianto_est "$cod_istat$tipologia$progressivo"
+					
+				    } else {#rom17 Aggiunta else ma non il suo contenuto
+					set cod_impianto_est "$cod_istat$progressivo"
+				    };#rom17
+				    set dml_comu [db_map upd_prog_comu]
+				} else {
+				    if {$coimtgen(ente) eq "PNA"} {#rom17 Aggiunta if e il suo contenuto
+					set cod_impianto_est "$progressivo/$cod_istat"
+
+				    } elseif {$coimtgen(ente) eq "PCE"} {#rom20 Aggiunta elseif e il cuo contenuto
+					set annorif  [db_string query_aa "select (substr(current_date,3,2))"]
+					set cod_impianto_est "$annorif$id_belfiore$progressivo"
+					#set cod_impianto_est "$cod_istat$tipologia$progressivo"
+
+				    } else {#rom17 Aggiunta else ma non il suo contenuto
+					set cod_impianto_est "$cod_istat$progressivo"
+				    };#rom17
+				    set dml_comu         [db_map upd_prog_comu]
+				}
+			    }
+			    
+			}
+		    } else {
+			db_1row sel_dual_cod_impianto_est ""
+		    }
+		    if {$coimtgen(regione) eq "MARCHE"} {
+			if {$targa eq ""} {
+			    set targa $cod_impianto_est
+			}
+			set cod_impianto_est $cod_impianto
+		    }
+		    #ROM02 FINE
+		        
 		    set cod_impianto_prov  ""
 		    set descrizione        ""
 		    set provenienza_dati   0;# Archivio esterno
@@ -536,6 +719,10 @@ ns_log notice "|file_cols=$file_cols|"
 			set motivo_scarto "Impianto esistente codice: $cod_impianto_es" 
 		    } else {
 			db_dml ins_aimp ""
+			if {[info exists dml_comu]} {#rom 18/02/2025
+			    db_dml dml_coimcomu $dml_comu
+			}
+			#rom 18/02/2025 db_dml dml_coimcomu $dml_comu
 			incr ctr_ins_aimp
 
 			# out_cod_impianto viene scritto sul file degli
@@ -811,7 +998,7 @@ ns_log notice "|file_cols=$file_cols|"
 	# fine db_transaction ed ora fine with_catch
     } {
 	iter_batch_upd_flg_sta -abend $cod_batc
-	ns_log Error "iter_inco_cari: $error_msg"
+	ns_log Error "iter_inco_cari3: $error_msg"
     }
     return
 }

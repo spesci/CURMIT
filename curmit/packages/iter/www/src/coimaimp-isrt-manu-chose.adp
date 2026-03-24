@@ -1,6 +1,14 @@
+<!DOCTYPE html>
 <!-- 
     USER  DATA       MODIFICHE
     ===== ========== ==========================================================================
+    ric01 18/11/2025 Aggiunto link "Vedi nota" con pdf mandato da regione Marche per il regupero della targa.
+
+    rom09 06/02/2023 Per Regione Friuli non mostro piu' label messa da gac01 come deciso con call del 06/02/2023.
+
+    rom08 29/12/2022 Giuliodori ha richiesto di cambiare la dicitura sopra al campo della tipologia di
+    rom08            impianto eliminando "impianti Ibridi".
+
     rom07 09/09/2021 Aggiunto pop-up richiesto da Giuliodori di Regione Marche per dare indicazioni
     rom07            sulla procedura da seguire per l'accatastamento di caminetti autocostruiti e simili. 
 
@@ -29,7 +37,7 @@
 
 
 <center>
-<formtemplate id="@form_name;noquote@">
+<formtemplate id="@form_name@">
 <formwidget   id="funzione">
 <formwidget   id="caller">
 <formwidget   id="nome_funz">
@@ -98,14 +106,21 @@
   <else><!--rom06 aggiunta else e suo contenuto-->
     <table width="100%" align="center">
       <tr>
-	<td align=center colspan=2><b>Scheda iniziale per l'inserimento di un nuovo Impianto</td>
+	<td align=center colspan=2><b>Scheda iniziale per l'inserimento di un nuovo impianto</td>
 	</tr>
   </else>
+<if @coimtgen.regione@ ne "FRIULI-VENEZIA GIULIA"><!-- rom09 Aggiunta if ma non il contenuto -->
 <tr><!--gac01 aggiunto tr e suo contenuto-->
 <td>
   &nbsp;
 </td>
     <td align=left><br>Dati relativi al generatore principale (con potenza nominale più elevata)<br></td></tr>
+</if>
+<else> <!-- rom09 Aggiunta else e il suo contenuto -->
+  <tr>
+    <td colspan=2>&nbsp;</td>
+  </tr>
+</else>
 <tr>
 <td valign=top width="50%" align=right class=form_title>Costruttore</td>
     <td valign=top align=left nowrap><formwidget id="cod_cost">
@@ -152,14 +167,14 @@
     </tr>
 <tr><td>&nbsp;</td>
 <!--rom03        <td valign="top" align=left colspan=1><i>Compilare il campo targa solo se si vuole collegare<br>il nuovo impianto ad  un impianto già esistente (stesso sistema edificio/impianto)</i></td> -->
-  <td valign="top" align=left colspan=1><i>Compilare il campo "Codice catasto(targa)" solo se si vuole inserire <br>il nuovo impianto in un libretto gi&agrave; esistente (stesso sistema edificio/impianto)</i></td><!--rom03-->
+  <td valign="top" align=left colspan=1><i>Compilare il campo "Codice catasto(targa)" solo se si vuole inserire <br>il nuovo impianto in un libretto gi&agrave; esistente (stesso sistema edificio/impianto)<a href="recupero_targa.pdf" target="_blank"> <b>Vedi nota</b></a></i></td><!--rom03--> <!--ric01 -->
 </tr>
 </if>
 <tr><td colspan=2>&nbsp;</td></tr>
 <tr><td>&nbsp;</td>
-  <td><i>Per impianti Ibridi, campi solari termici e altre tipologie generatore selezionare "Generatore a Combustione"</i></td>
+  <td><i>Per campi solari termici e altre tipologie generatore selezionare "Generatore a combustione"</i></td> <!-- rom08  tolta parte "impianti Ibridi," a inizio frase-->
 </tr>
-<tr>   <td valign=top width="50%" align=right class=form_title>Tipologia Impianto</td>
+<tr>   <td valign=top width="50%" align=right class=form_title>Tipologia impianto</td>
     <td valign=top align=left nowrap><formwidget id="flag_tipo_impianto">
         <formerror id="flag_tipo_impianto"><br>
         <span class="errori">@formerror.flag_tipo_impianto;noquote@</span>

@@ -19,7 +19,41 @@ ad_page_contract {
     @cvs-id          coimdimp-gest.tcl
 
     USER  DATA       MODIFICHE
-    ===== ========== =========================================================================
+    ===== ========== =================================================================================
+    rom10 25/11/2024 Su Frosinone se manca dfm i manutentori non possono inserire rcee.
+
+    rom09 31/10/2024 Se siamo in ambiente demo non blocco inserimento rcee
+
+    rom08 31/07/2024 Palermo ha chiesto che i manutentori con uno strumento analizzatore scaduto non
+    rom08            possano inserire rcee. Sandro ha detto che deve valere solo per il caldo.
+
+    rom07 23/05/2024 Per Terra di Lavoro di Caserta gestiti i programmi per i Ravvedimenti Operosi.
+
+    but02 08/05/2024  Su richiesta di Sandro Per i soli impianti di teleriscaldamento al momento
+    but02             dell'inserimento dell'RCEE la DFM non deve essere obbligatoria.
+    
+    rom06 20/09/2023 Su indicazione di Sandro anche Regione Campania non puo' inserire rcee se
+    rom06            e' presente un avviso di ispezione con il flag blocca_rcee a t.
+
+    rom05 19/06/2023 Corretto intervento di but01: per gli impianti del freddo il controllo va fatto solo
+    rom05            sui generatori con potenza superiore ai 12 KW.
+    
+    but01 16/06/2023 Su richiesta di Sandro e della Regione marche metto bloccante se non esistono DFM
+    
+    mic01 28/07/2022 Allineato ucit a nuovo cvs e riportate modifiche fatte sul vecchio cvs:
+    mic01            Riportata modifica rom02 da iter-dev:
+    mic01            Se e' attiva la gestione della targa e questa manca sull'impianto non do
+    mic01            la possibilita' di aggiungere l'RCEE ma blocco con un messaggio di errore.
+    mic01            Il controllo non deve essere fatto per Regione Calabria.
+    mic01            Riportata modifica rom01 da iter-dev:
+    mic01            Modificate if e controlli fatti sulle varie Province di UCIT. Ora la
+    mic01            condizione usata e' sulla regione Friuli.
+
+    rom04 04/11/2022 Gestito per Palermo il no wallet del freddo.
+
+    rom03 08/11/2021 Su indicazione di Sandro solo le Marche non possono inserire un RCEE se
+    rom03            e' presente un avviso di ispezione con il flag blocca_rcee a t.
+
     rom02 12/01/2021 Le particolarita' della Provincia di Salerno ora sono sostituite dalla condizione
     rom02            su tutta la Regione Campania.
 
@@ -114,6 +148,8 @@ set pack_key [iter_package_key]
 set pack_dir [apm_package_url_from_key $pack_key]
 append pack_dir "src"
 
+set db_name [parameter::get_from_package_key -package_key iter -parameter dbname_portale -default ""];#rom09
+
 set directory ""
 #switch $flag_ente {
 #    "P" {set directory "$flag_ente$sigla_prov"}
@@ -128,15 +164,50 @@ if {$funzione != "I" && ![exists_and_not_null tabella]} {
     }
 }
 
-if {$funzione == "I" && [db_0or1row q "select 1 
-                                         from coiminco
-                                        where cod_impianto     = :cod_impianto 
-                                          and flag_blocca_rcee = 't' 
-                                        limit 1"]} {
-    iter_return_complaint "Impossibile procedere all'inserimento del RCEE sull'impianto in quanto è stato spedito un avviso di ispezione "
-    return
+if {$coimtgen(regione) eq "FRIULI-VENEZIA GIULIA"} { #mic01 aggiunta if e suo contenuto
+    set flag_gest_targa $coimtgen(flag_gest_targa)
+    if {$flag_gest_targa eq "T"} {
+	
+	if {![db_0or1row q "select 1
+                          from coimaimp
+                         where cod_impianto = :cod_impianto
+                           and targa is not null"]
+	    && $coimtgen(regione) ne "CALABRIA"} {
+	    
+#	    iter_return_complaint "
+#            Funzione impossibile per impianti senza targa."
+#	    ad_script_abort
+	}
+	
+    }
 }
 
+set cod_manu [iter_check_uten_manu $id_utente];#rom08
+if {$coimtgen(ente) eq "PPA" && $cod_manu ne "" && $flag_tracciato eq "R1"} {#rom08 Aggiunta if e contenuto
+    if {[db_0or1row q "select 1
+                         from coimstru_manu
+                        where cod_manutentore = :cod_manu
+                          and dt_tar_strum    < to_char(current_date - interval '1 year', 'yyyy-mm-dd')::date
+                          and dt_tar_strum    is not null
+                          and tipo_strum      = '0'
+                          and is_active_p     = 't'"]} {
+	iter_return_complaint "Impossibile procedere all'inserimento del RCEE in quanto sono presenti uno o più analizzatori attivi scaduti."
+	return
+    }
+}
+
+#rom06 Modificata if per condizione su CAMPANIA
+#rom09 Aggiunta parte su db_name
+if {$coimtgen(regione) in [list "MARCHE" "CAMPANIA"] && $db_name ne "iter2019-portal-dev"} {#rom03 Aggiunta if ma non il suo contenuto
+    if {$funzione == "I" && [db_0or1row q "select 1 
+                                             from coiminco
+                                            where cod_impianto     = :cod_impianto 
+                                              and flag_blocca_rcee = 't' 
+                                            limit 1"]} {
+	iter_return_complaint "Impossibile procedere all'inserimento del RCEE sull'impianto in quanto è stato spedito un avviso di ispezione"
+	return
+    }
+};#rom03
 
 set context_bar  [iter_context_bar -nome_funz $nome_funz_caller]
 
@@ -167,12 +238,16 @@ if {$flag_tracciato == "F" && [string equal $gen_prog ""] && $funzione == "I"} {
 
     #sim03 aggiunto || per PRC
     #sim06 aaggiunto || per PUD PGO PTS PPN
+#mic01if {$coimtgen(ente) eq "PTA" || ($coimtgen(ente) eq "PRC" && $cod_manu eq "" ) ||
+#	$coimtgen(ente) eq "PUD" ||
+#	$coimtgen(ente) eq "PGO" ||
+#	$coimtgen(ente) eq "PTS" ||
+#	$coimtgen(ente) eq "PPN" 
+#mic01} {};#sim02
+    #mic01 Aggiunta condizione unica su regione Friuli.
     if {$coimtgen(ente) eq "PTA" || ($coimtgen(ente) eq "PRC" && $cod_manu eq "" ) ||
-	$coimtgen(ente) eq "PUD" ||
-	$coimtgen(ente) eq "PGO" ||
-	$coimtgen(ente) eq "PTS" ||
-	$coimtgen(ente) eq "PPN" 
-    } {;#sim02 
+	$coimtgen(regione) eq "FRIULI-VENEZIA GIULIA"
+    } {
 	set tipologia_costo ""	    
 	if {$cod_dimp ne ""} {
 	    db_0or1row  q "select tipologia_costo
@@ -262,8 +337,10 @@ if {$flag_tracciato == "F" && [string equal $gen_prog ""] && $funzione == "I"} {
 	    "R3"    {set return_url $pack_dir/$directory/coimaimp-warning?cod_impianto=$cod_impianto&redirect=coimdimp-r3-gest&$link&funzione=$funzione&caller=$caller}
 	    "R4"    {set return_url $pack_dir/$directory/coimaimp-warning?cod_impianto=$cod_impianto&redirect=coimdimp-r4-gest&$link&funzione=$funzione&caller=$caller}
 	    "DA"    {set return_url $pack_dir/$directory/coimaimp-warning?cod_impianto=$cod_impianto&redirect=coimdimp-dam-gest&$link&funzione=$funzione&caller=$caller}
-	    "NW" {set return_url $pack_dir/$directory/coimdimp-rct-nowallet-gest?$link_nw}
-	    "NF" {set return_url $pack_dir/$directory/coimdimp-fr-nowallet-gest?$link_nw}
+	    "NW"    {set return_url $pack_dir/$directory/coimdimp-rct-nowallet-gest?$link_nw}
+	    "NF"    {set return_url $pack_dir/$directory/coimdimp-fr-nowallet-gest?$link_nw}
+	    "O1"    {set return_url $pack_dir/$directory/coimdimp-rct-rv-op-gest?$link_nw}
+	    "O2"    {set return_url $pack_dir/$directory/coimdimp-fr-rv-op-gest?$link_nw}
 	    default {set return_url $pack_dir/$directory/coimaimp-warning?cod_impianto=$cod_impianto&redirect=coimdimp-g-gest&$link&funzione=$funzione&caller=$caller}
 	}
     } else {
@@ -279,11 +356,14 @@ if {$flag_tracciato == "F" && [string equal $gen_prog ""] && $funzione == "I"} {
 	    "R4"    {set return_url $pack_dir/$directory/coimdimp-r4-gest?$link}
 	    "DA"    {set return_url $pack_dir/$directory/coimdimp-dam-gest?$link}
 	    "NW"    {set return_url $pack_dir/$directory/coimdimp-rct-nowallet-gest?$link}
+	    "O1"    {set return_url $pack_dir/$directory/coimdimp-rct-rv-op-gest?$link_nw}
+	    "O2"    {set return_url $pack_dir/$directory/coimdimp-fr-rv-op-gest?$link_nw}
 	    default {set return_url $pack_dir/$directory/coimdimp-g-gest?$link}
 	}
 
 	#rom02if {$coimtgen(ente) eq "PSA" && $flag_tracciato eq "NF"} {}
-	if {$coimtgen(regione) eq "CAMPANIA" && $flag_tracciato eq "NF"} {#rom02 if ma non contenuto
+	#rom04 Aggiunta condizione su PALERMO
+	if {($coimtgen(regione) eq "CAMPANIA" || $coimtgen(ente) eq "PPA")  && $flag_tracciato eq "NF"} {#rom02 if ma non contenuto
 	    set return_url $pack_dir/$directory/coimdimp-fr-nowallet-gest?$link
 	}
 	
@@ -293,6 +373,48 @@ if {$flag_tracciato == "F" && [string equal $gen_prog ""] && $funzione == "I"} {
     if {$coimtgen(regione) eq "MARCHE" && [iter_check_uten_manu $id_utente] eq "" && $flag_tracciato eq "DA"} {#sim10 if e suo contenuto
 	set return_url $pack_dir/$directory/coimdimp-dam-gest?$link_nw
     }
+
+    #but01 Per regione marche se non esistono dfm mostro il messaggio bloccante: "Manca la DFM"
+    #rom10 Aggiunta condizione su Provincia di Frosinone
+    if {$coimtgen(regione) eq "MARCHE" || ($coimtgen(ente) in [list "PFR"] && $cod_manu ne "")} {#but01 aggiunta if e suo contenuto
+	if {$funzione eq "I"} {
+
+	    if {$flag_tipo_impianto != "F"} {#rom05 Aggiunta if ma non il suo contenuto
+	    set ls_gen_att [db_list_of_lists q "select gen_prog
+                                                     , gen_prog_est
+                                                  from coimgend
+                                                 where cod_impianto = :cod_impianto
+                                                   and flag_attivo  = 'S'"]
+	    } else {#rom05 Aggiunta else e il suo contenuto
+
+		set ls_gen_att [db_list_of_lists q "select gen_prog
+                                                     , gen_prog_est
+                                                  from coimgend
+                                                 where cod_impianto = :cod_impianto
+                                                   and flag_attivo  = 'S'
+                                                   and greatest(pot_focolare_nom, pot_focolare_lib) >= '12'"]
+	    }
+		
+	    foreach gen_att $ls_gen_att {
+		util_unlist $gen_att gen_prog_att gen_prog_est_att
+		
+		if {![db_0or1row q "select 1 
+                                      from coimdope_aimp a
+                                         , coimdope_gend b
+                                     where a.cod_impianto = :cod_impianto
+                                       and a.cod_dope_aimp = b.cod_dope_aimp 
+                                       and b.gen_prog     = :gen_prog_att
+                                     limit 1"]} {
+		    if {$flag_tipo_impianto != "T"} {#but02 aggiunto if e non suo contenuto
+			
+			iter_return_complaint "Manca la DFM sul generatore numero $gen_prog_est_att.
+                                          Tornare indietro e aggiungere la DFM tramito l'apposito link."
+		    };#but02
+		}
+	    }
+	}
+  };#but01
+
     
     ad_returnredirect $return_url
     # Claudio

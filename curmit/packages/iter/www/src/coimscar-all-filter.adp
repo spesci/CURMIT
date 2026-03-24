@@ -35,15 +35,14 @@
 <%=[iter_form_fine]%>
 </formtemplate>
 
-Per aggiornare i file pdf contenenti gli impianti e le verifiche presenti nel
-DB Cliccare sul tasto in alto.<br> Per scaricare le ultime copie estratte su PC
-cliccare sugli appositi link  <br> Attenzione il programma non puo' essere
-rilanciato piu' volte e si deve attendere la fine prima di eventuali
-rielaborazioni. Se per errore si dovesse ricliccare sul tasto prima della fine
+<big><b>Dati aggiornati al @last_update_pretty;noquote@.</b></big><br><!--ric01 aggiunto frase -->
+<big><b>Per aggiornare i file csv contenenti gli impianti e le verifiche presenti nel DB cliccare sul tasto in alto.</b></big><br> <br>
+Per scaricare le ultime copie estratte su PC cliccare sugli appositi link.  <br>
+Attenzione il programma non puo' essere rilanciato piu' volte e si deve attendere la fine prima di eventuali rielaborazioni. <br>
+Se per errore si dovesse ricliccare sul tasto prima della fine
 comparira' una segnalazione di errore e in questo caso si potrà rientrare nel
 programma solo al suo termine e si potranno comunque scaricare i file senza
-doverlo rielaborare 
-
+doverlo rielaborare.
 
 </center>
 

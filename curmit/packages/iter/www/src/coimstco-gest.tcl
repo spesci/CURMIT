@@ -9,6 +9,8 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    but01 31/10/2024 Aggiunto class=table_s nella tabella.
+
     san01 19/01/2021 Aggiunta sezione relativa la numero di RCEE inseriti tramite la funzione
     san01            Inserisci RCEE in PDF. Aggiunto nel .xql la query sel_count_dimp_doc
 
@@ -76,15 +78,15 @@ set a_data_edit [iter_edit_date $a_data]
 if {[string equal $a_data_edit ""]} {
     set a_data_edit [iter_edit_date [iter_set_sysdate]]
 }
-
-set table "<table border=1 cellpadding=0 cellspacing=0>
+#but01 aggiunto class=table_s
+set table "<table border=1 cellpadding=0 cellspacing=0 class=table_s>
            <tr>
-               <td align=center><b>Utente di inserimento</b></td>
-               <td align=center><b>Numero modelli Toatali</b></td>
-               <td align=center><b>Num. Risc.</b></td>
-               <td align=center><b>Num. Raff.</b></td>
-               <td align=center><b>Num. Tele.</b></td>
-               <td align=center><b>Num. Cog.</b></td>
+               <th align=center><b>Utente di inserimento</b></th>
+               <th align=center><b>Numero modelli Toatali</b></th>
+               <th align=center><b>Num. Risc.</b></th>
+               <th align=center><b>Num. Raff.</b></th>
+               <th align=center><b>Num. Tele.</b></th>
+               <th align=center><b>Num. Cog.</b></th>
 
            </tr>"
 

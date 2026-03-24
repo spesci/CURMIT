@@ -8,6 +8,12 @@ ad_page_contract {
     @param nome_funz identifica l'entrata di menu, server per le autorizzazioni
     serve se lista e' uno zoom che permetti aggiungi.
     @cvs-id          coimstpm-stat-opve-filter.tcl
+
+     USER  DATA       MODIFICHE
+    ===== ========== =========================================================================
+    but01 19/06/2023 Aggiunto la classe ah-jquery-date ai campi: f_data_da, f_data_a.
+
+
 } {
     {funzione        "V"}
     {caller      "index"}
@@ -68,19 +74,19 @@ element create $form_name flag_tipo_impianto \
     -optional \
     -options { {{} {}} {Riscaldamento R} {Raffreddamento F} {Cogenerazione C} {Teleriscaldamento T}}
 # fine dpr74
-
+#but01 Aggiunto la classe ah-jquery-date ai campi: f_data_da, f_data_a.
 element create $form_name f_data_da \
     -label   "Da data" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 class form_element" \
+    -html    "size 10 maxlength 10 class form_element class ah-jquery-date" \
     -optional
 
 element create $form_name f_data_a \
     -label   "A data" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 class form_element" \
+    -html    "size 10 maxlength 10 class form_element class ah-jquery-date" \
     -optional
 
 element create $form_name f_costo_da \

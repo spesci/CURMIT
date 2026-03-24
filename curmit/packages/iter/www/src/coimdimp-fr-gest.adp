@@ -1,6 +1,33 @@
+<!DOCTYPE html>
 <!--
     USER  DATA       MODIFICHE
     ===== ========== =================================================================================
+    rom14 19/11/2025 Aggiunto campo cognome_opma_delegato
+
+    ric02 27/10/2025 Come richiesto da regione Marche: modificata label in "Ditta delegante".
+
+    ric01 01/10/2025 Mostro il campo ditta installazione delegata se presente una delega attiva 
+    ric01            Punto 40 MEV regione Marche.
+
+    but05 04/12/2024 Modificato intervento di rom13: in caso di stampa con firma non viene più
+    but05            aperto un pop-up ma viene aperta una nuova schermata.
+	
+    but04 23/07/2024 Aggiunto pop-up bonifica campagna solo per amministratori.
+
+    but03 26/04/2024 Modificato label del Controllo del rendimento di combustione a Verifica energetica.
+    
+    rom13 28/11/2022 Aggiunta possibilita' di stampare gli rcee con la firma grafometrica in base
+    rom13            ai parametri flag_firma_manu_stampa_rcee e flag_firma_resp_stampa_rcee.
+
+    rom05 03/08/2022 Modifiche per allineamento Ucit al nuovo cvs.
+
+    gia02 08/11/2021 Commentata la visione  dei campi "Stagione di riscaldamento attuale" e i 
+    gia02            suoi "Consumi stagione", "Stagione di riscaldamento precedente" e i suoi "Consumi stagione"
+    gia02            nella sezione "E. CONTROLLO E VERIFICA ENERGETICA DEL GRUPPO FRIGO GF 1" in quanto già 
+    gia02            presenti in "D.bis. CONSUMI".
+
+    gia01 05/11/2021 Commentata l'inserzione delle anomalie perchè non venga mostrata
+
     rom04 12/01/2021 Le particolarita' della Provincia di Salerno ora sono sostituite dalla condizione
     rom04            su tutta la Regione Campania.
 
@@ -59,7 +86,7 @@
    </if>
    <else>
    <td width="12.5%" nowrap class=@func_i;noquote@>
-       <a href="coimdimp-gest?funzione=I&flag_tracciato=R2&@link_gest;noquote@" class=@func_i;noquote@>Nuovo Allegato</a>
+       <a href="coimdimp-gest?funzione=I&flag_tracciato=R2&@link_gest;noquote@" class=@func_i;noquote@>Nuovo allegato</a>
    </td>
    </else>
    <if @funzione@ ne I and @menu@ eq 1>
@@ -90,13 +117,30 @@
        <td width="12.5%" nowrap class=func-menu>
            <a href="@pack_dir;noquote@/coim_d_anom-list?@link_d_anom;noquote@" class=func-menu>Anomalie Dich.</a>
        </td>
-
+        <if @coimtgen.flag_firma_manu_stampa_rcee@ eq "t" or @coimtgen.flag_firma_resp_stampa_rcee@ eq "t"><!--rom13 Aggiunta if e il suo contenuto-->
+          <!-- but05
+           <td width="12.5%" nowrap class=func-menu>
+   	        <a href="#" onclick="javascript:window.open('@pack_dir;noquote@/coimdimp-firma-layout?@link_gest;noquote@&flag_ins=N&flag_traccaito=@flag_tracciato;noquote@' , 'help', 'scrollbars=yes, resizable=yes, width=840, height=520').moveTo(110,140)">Stampa RCEE (Tipo 2) e firma</a>
+              </td>
+       	      <td width="12.5%" nowrap class=func-menu>
+	        <a href="#" onclick="javascript:window.open('@pack_dir;noquote@/coimdimp-firma-layout?@link_gest;noquote@&flag_ins=S' , 'help', 'scrollbars=yes, resizable=yes, width=840, height=520').moveTo(110,140)">Storicizza stampa RCEE (Tipo 2) e firma</a>
+	      </td>
+           -->
+         <td width="12.5%" nowrap class=func-menu>
+         <a href="@pack_dir;noquote@/coimdimp-firma-layout?@link_gest;noquote@&flag_ins=N&flag_traccaito=@flag_tracciato;noquote@" class=func-menu target="Stampa ">Stampa RCEE (Tipo 2) e firma</a>
+        </td>
+        <td width="12.5%" nowrap class=func-menu>
+	<a href="@pack_dir;noquote@/coimdimp-firma-layout?@link_gest;noquote@&flag_ins=S" class=func-menu target="Stampa RCCEE (Tipo 2)">Storicizza stampa RCEE (Tipo 2) e firma</a></td>
+	</if>
+       <else><!--rom13 Aggiunta else ma non il suo contenuto-->
        <td width="12.5%" nowrap class=func-menu>
            <a href="@pack_dir;noquote@/coimdimp-fr-layout?@link_gest;noquote@&flag_ins=N" class=func-menu target="Stampa ">Stampa RCEE (Tipo 2)</a>
        </td>
+       
        <td width="12.5%" nowrap class=func-menu>
            <a href="@pack_dir;noquote@/coimdimp-fr-layout?@link_gest;noquote@&flag_ins=S" class=func-menu target="Stampa RCCEE (Tipo 2)">Storicizza stampa RCEE</a><!--rom03 rinominato bottone-->
        </td>
+       </else><!-- rom13 -->
    </if>
    <else>
        <td width="12.5%" nowrap class=func-menu>Visualizza</td>
@@ -113,7 +157,7 @@
 </table>
 
 <center>
-<formtemplate id="@form_name;noquote@">
+<formtemplate id="@form_name@">
 <formwidget   id="funzione">
 <formwidget   id="caller">
 <formwidget   id="nome_funz">
@@ -143,6 +187,7 @@
 <formwidget   id="nome_funz_gest">
 <formwidget   id="flag_tracciato">
 <formwidget   id="locale">
+<formwidget   id="esente"><!-- sim40 -->
 <if @vis_desc_contr@ eq t>
     <formwidget id="flag_status"
 </if>
@@ -186,13 +231,14 @@
   </tr>
 </if>
 <tr>
-  <td colspan=2>&nbsp;</td>
+  <td align="center" colspan="2" >@delegation_warning;noquote@</td>
 </tr>
 </table></td></tr>
 </if>
 <else>
 </table></td></tr>
 </else>
+@warning_scansione_mancante;noquote@
 <tr><td><table width="100%" border=0>
       <if @coimtgen.regione@ eq "MARCHE"><!--gac02 if e suo contenuto-->
 	<tr>
@@ -291,6 +337,10 @@
          <span class="errori">@formerror.cod_cind;noquote@</span>
          </formerror>
        </td>
+       <td><if @funzione@ eq "V" and @id_ruolo@ eq "admin"><a href="#" align=left onclick="javascript:window.open('@modif_cind@', 'help', 'scrollbars=yes, esizable=yes, width=600, height=300').moveTo(110,140)"><b>\
+Bonifica</b></a></if><!--but04 aggiunto pop-up modifica campagna-->
+       </td>
+
     </if>
 
     </tr></table></td>
@@ -299,7 +349,8 @@
     <tr>
         <td width="17%" valign=top align=left class=form_title>Responsabile d'impianto</td>
         <td width="16%" valign=top align=left class=form_title>Impresa manutentrice<font color=red>*</font></td>
-        <td width="17%" valign=top align=left class=form_title>Tecnico che ha effettuato il controllo<if @coimtgen.regione@ eq "MARCHE"><font color=red>*</font></if>
+        <!-- <td width="17%" valign=top align=left class=form_title>Tecnico che ha effettuato il controllo<if @coimtgen.regione@ eq "MARCHE"><font color=red>*</font></if> -->
+	<td width="17%" valign=top align=left class=form_title>Tecnico che ha effettuato il controllo<if @coimtgen.regione@ eq "MARCHE">@ast_delega;noquote@</if><!--ric01 -->
 	  <!--rom04 modificata condizione su PSA con quella di regione CAMPANIA -->
 	  <if @coimtgen.regione@ eq "CAMPANIA" and @id_utente_ma;noquote@ eq "MA">
             <font color=red>*</font></if>
@@ -691,7 +742,7 @@
       </tr>
     </if>
     <tr>
-      <if @coimtgen.regione@ eq "MARCHE"><!--gac02-->
+      <if @coimtgen.regione@ eq "MARCHE" or @coimtgen.regione@ eq "FRIULI-VENEZIA GIULIA"><!--gac02-->
 	<td valign=top align=right class=form_title>Potenza frigorifera nominale in raffrescamento (kW)</td>
 	<td valign=top><formwidget id="pot_focolare_nom">
         <formerror  id="pot_focolare_nom"><br>
@@ -707,7 +758,7 @@
         </formerror>
 	</td>
       </else>
-      <if @coimtgen.regione@ eq "MARCHE"><!--gac02-->
+      <if @coimtgen.regione@ eq "MARCHE" or @coimtgen.regione@ eq "FRIULI-VENEZIA GIULIA"><!--gac02-->
 	<td valign=top align=right class=form_title>Potenza termica nominale in riscaldamento (kW)</td>
       </if>
       <else>
@@ -756,6 +807,8 @@
         <span class="errori">@formerror.volimetria_risc;noquote@</span>
         </formerror>
 </tr>
+
+<!--gia02
 <tr>
     <td valign=top align=right class=form_title>Stagione di riscaldamento attuale</td>
     <td valign=top><formwidget id="stagione_risc">
@@ -784,6 +837,7 @@
         </formerror>
     </td>
 </tr>
+-->
 </if>
 <!--
 <tr>
@@ -876,7 +930,7 @@
     </tr>
     <if @coimtgen.regione@ ne "MARCHE">
       <tr>
-	<td valign=top align=right class=form_title colspan=2>Prova eseguita in modalita' raffreddamento/riscaldamento</td>
+	<td valign=top align=right class=form_title colspan=2>Prova eseguita in modalita&#039; raffreddamento/riscaldamento</td>
 	<td valign=top><formwidget id="fr_prova_modalita">
             <formerror  id="fr_prova_modalita"><br>
               <span class="errori">@formerror.fr_prova_modalita;noquote@</span>
@@ -910,7 +964,8 @@
 </if>
 <tr>
   <if @coimtgen.regione@ eq "MARCHE">
-    <th valign=top align=left class=form_title colspan=2>Controllo del rendimento di combustione</th>
+   <!--but03  <th valign=top align=left class=form_title colspan=2>Controllo del rendimento di combustione</th>-->
+   <th valign=top align=left class=form_title colspan=2>Verifica energetica</th>
     <td valign=top><formwidget id="cont_rend_gen"><a href="#" onclick="javascript:window.open('coimaimp-gest-help?caller=cont_rend_fr', 'help', 'scrollbars=yes, esizable=yes, width=520, height=280').moveTo(110,140)"><b>Vedi nota</b></a> <!--gac02 aggiunto pop-up su richiesta delle Marche-->
         <formerror  id="cont_rend"><br>
         <span class="errori">@formerror.cont_rend;noquote@</span>
@@ -946,7 +1001,7 @@
 </if>
 <if @coimtgen.regione@ eq "MARCHE">
       <tr>
-	<td valign=top align=right class=form_title colspan=2>Prova eseguita in modalita' raffreddamento/riscaldamento</td>
+	<td valign=top align=right class=form_title colspan=2>Prova eseguita in modalita&#039; raffreddamento/riscaldamento</td>
 	<td valign=top><formwidget id="fr_prova_modalita">
             <formerror  id="fr_prova_modalita"><br>
               <span class="errori">@formerror.fr_prova_modalita;noquote@</span>
@@ -960,15 +1015,15 @@
 <tr>
   <td colspan=2 width=100%><table border=0 cellspacing=0 cellpadding=0 width=100%>
     <tr>
-       <td valign=top align=center class=form_title>Surrisc. (&deg;C)<if @cont_rend;noquote@ eq "S"><font color=red>*</font></if></td>
-       <td valign=top align=center class=form_title>Sottoraff. (&deg;C)<if @cont_rend;noquote@ eq "S"><font color=red>*</font></if></td>
-       <td valign=top align=center class=form_title>T. condens. (&deg;C)<if @cont_rend;noquote@ eq "S"><font color=red>*</font></if></td>
-       <td valign=top align=center class=form_title>T. evapor. (&deg;C)<if @cont_rend;noquote@ eq "S"><font color=red>*</font></if></td>
-       <td valign=top align=center class=form_title>T. ing. lato. est. (&deg;C)<if @cont_rend;noquote@ eq "S"><font color=red>*</font></if></td>
-       <td valign=top align=center class=form_title>T. usc. lato. est. (&deg;C)<if @cont_rend;noquote@ eq "S"><font color=red>*</font></if></td>
-       <td valign=top align=center class=form_title>T. ing. lato. utenze (&deg;C)<if @cont_rend;noquote@ eq "S"><font color=red>*</font></if></td>
-       <td valign=top align=center class=form_title>T. usc. lato. utenze (&deg;C)<if @cont_rend;noquote@ eq "S"><font color=red>*</font></if></td>
-       <td valign=top align=center class=form_title>N. Circuito<if @cont_rend;noquote@ eq "S"><font color=red>*</font></if></td>
+       <td valign=top align=center class=form_title>Surrisc. (&deg;C)<if @cont_rend@ eq "S"><font color=red>*</font></if></td>
+       <td valign=top align=center class=form_title>Sottoraff. (&deg;C)<if @cont_rend@ eq "S"><font color=red>*</font></if></td>
+       <td valign=top align=center class=form_title>T. condens. (&deg;C)<if @cont_rend@ eq "S"><font color=red>*</font></if></td>
+       <td valign=top align=center class=form_title>T. evapor. (&deg;C)<if @cont_rend@ eq "S"><font color=red>*</font></if></td>
+       <td valign=top align=center class=form_title>T. ing. lato. est. (&deg;C)<if @cont_rend@ eq "S"><font color=red>*</font></if></td>
+       <td valign=top align=center class=form_title>T. usc. lato. est. (&deg;C)<if @cont_rend@ eq "S"><font color=red>*</font></if></td>
+       <td valign=top align=center class=form_title>T. ing. lato. utenze (&deg;C)<if @cont_rend@ eq "S"><font color=red>*</font></if></td>
+       <td valign=top align=center class=form_title>T. usc. lato. utenze (&deg;C)<if @cont_rend@ eq "S"><font color=red>*</font></if></td>
+       <td valign=top align=center class=form_title>N. Circuito<if @cont_rend@ eq "S"><font color=red>*</font></if></td>
     </tr>
     <tr>
     <td valign=top align=center><formwidget id="fr_surrisc">
@@ -1032,68 +1087,68 @@
 <multiple name=multiple_form_prfumi>
 <tr><td colspan=2 width=100%><table border=0 cellspacing=0 cellpadding=0 width=100%>
     <tr>
-       <td valign=top align=center class=form_title>Surrisc. (&deg;C)<if @cont_rend;noquote@ eq "S"><font color=red>*</font></if></td>
-       <td valign=top align=center class=form_title>Sottoraff. (&deg;C)<if @cont_rend;noquote@ eq "S"><font color=red>*</font></if></td>
-       <td valign=top align=center class=form_title>T. condens. (&deg;C)<if @cont_rend;noquote@ eq "S"><font color=red>*</font></if></td>
-       <td valign=top align=center class=form_title>T. evapor. (&deg;C)<if @cont_rend;noquote@ eq "S"><font color=red>*</font></if></td>
-       <td valign=top align=center class=form_title>T. ing. lato. est. (&deg;C)<if @cont_rend;noquote@ eq "S"><font color=red>*</font></if></td>
-       <td valign=top align=center class=form_title>T. usc. lato. est. (&deg;C)<if @cont_rend;noquote@ eq "S"><font color=red>*</font></if></td>
-       <td valign=top align=center class=form_title>T. ing. lato. utenze (&deg;C)<if @cont_rend;noquote@ eq "S"><font color=red>*</font></if></td>
-       <td valign=top align=center class=form_title>T. usc. lato. utenze (&deg;C)<if @cont_rend;noquote@ eq "S"><font color=red>*</font></if></td>
-       <td valign=top align=center class=form_title>N. Circuito<if @cont_rend;noquote@ eq "S"><font color=red>*</font></if></td>
+       <td valign=top align=center class=form_title>Surrisc. (&deg;C)<if @cont_rend@ eq "S"><font color=red>*</font></if></td>
+       <td valign=top align=center class=form_title>Sottoraff. (&deg;C)<if @cont_rend@ eq "S"><font color=red>*</font></if></td>
+       <td valign=top align=center class=form_title>T. condens. (&deg;C)<if @cont_rend@ eq "S"><font color=red>*</font></if></td>
+       <td valign=top align=center class=form_title>T. evapor. (&deg;C)<if @cont_rend@ eq "S"><font color=red>*</font></if></td>
+       <td valign=top align=center class=form_title>T. ing. lato. est. (&deg;C)<if @cont_rend@ eq "S"><font color=red>*</font></if></td>
+       <td valign=top align=center class=form_title>T. usc. lato. est. (&deg;C)<if @cont_rend@ eq "S"><font color=red>*</font></if></td>
+       <td valign=top align=center class=form_title>T. ing. lato. utenze (&deg;C)<if @cont_rend@ eq "S"><font color=red>*</font></if></td>
+       <td valign=top align=center class=form_title>T. usc. lato. utenze (&deg;C)<if @cont_rend@ eq "S"><font color=red>*</font></if></td>
+       <td valign=top align=center class=form_title>N. Circuito<if @cont_rend@ eq "S"><font color=red>*</font></if></td>
     </tr>
     <tr>
-    <td valign=top align=center><formwidget id="fr_surrisc.@multiple_form_prfumi.conta_prfumi;noquote@">
-        <formerror  id="fr_surrisc.@multiple_form_prfumi.conta_prfumi;noquote@"><br>
-        <span class="errori"><%= $formerror(fr_surrisc.@multiple_form_prfumi.conta_prfumi;noquote@) %></span>
+    <td valign=top align=center><formwidget id="fr_surrisc.@multiple_form_prfumi.conta_prfumi@">
+        <formerror  id="fr_surrisc.@multiple_form_prfumi.conta_prfumi@"><br>
+        <span class="errori"><%= $formerror(fr_surrisc.@multiple_form_prfumi.conta_prfumi@) %></span>
         </formerror>
     </td>
 
-    <td valign=top align=center><formwidget id="fr_sottoraff.@multiple_form_prfumi.conta_prfumi;noquote@">
-        <formerror  id="fr_sottoraff.@multiple_form_prfumi.conta_prfumi;noquote@"><br>
-        <span class="errori"><%= $formerror(fr_sottoraff.@multiple_form_prfumi.conta_prfumi;noquote@) %></span>
+    <td valign=top align=center><formwidget id="fr_sottoraff.@multiple_form_prfumi.conta_prfumi@">
+        <formerror  id="fr_sottoraff.@multiple_form_prfumi.conta_prfumi@"><br>
+        <span class="errori"><%= $formerror(fr_sottoraff.@multiple_form_prfumi.conta_prfumi@) %></span>
         </formerror>
     </td>
     
-    <td valign=top align=center><formwidget id="fr_tcondens.@multiple_form_prfumi.conta_prfumi;noquote@">
-        <formerror  id="fr_tcondens.@multiple_form_prfumi.conta_prfumi;noquote@"><br>
-        <span class="errori"><%= $formerror(fr_tcondens.@multiple_form_prfumi.conta_prfumi;noquote@) %></span>
+    <td valign=top align=center><formwidget id="fr_tcondens.@multiple_form_prfumi.conta_prfumi@">
+        <formerror  id="fr_tcondens.@multiple_form_prfumi.conta_prfumi@"><br>
+        <span class="errori"><%= $formerror(fr_tcondens.@multiple_form_prfumi.conta_prfumi@) %></span>
         </formerror>
     </td>
     
-    <td valign=top align=center><formwidget id="fr_tevapor.@multiple_form_prfumi.conta_prfumi;noquote@">
-        <formerror  id="fr_tevapor.@multiple_form_prfumi.conta_prfumi;noquote@"><br>
-        <span class="errori"><%= $formerror(fr_tevapor.@multiple_form_prfumi.conta_prfumi;noquote@) %></span>
+    <td valign=top align=center><formwidget id="fr_tevapor.@multiple_form_prfumi.conta_prfumi@">
+        <formerror  id="fr_tevapor.@multiple_form_prfumi.conta_prfumi@"><br>
+        <span class="errori"><%= $formerror(fr_tevapor.@multiple_form_prfumi.conta_prfumi@) %></span>
         </formerror>
     </td>
 
-    <td valign=top align=center><formwidget id="fr_t_ing_lato_est.@multiple_form_prfumi.conta_prfumi;noquote@">
-        <formerror  id="fr_t_ing_lato_est.@multiple_form_prfumi.conta_prfumi;noquote@"><br>
-        <span class="errori"><%= $formerror(fr_t_ing_lato_est.@multiple_form_prfumi.conta_prfumi;noquote@) %></span>
+    <td valign=top align=center><formwidget id="fr_t_ing_lato_est.@multiple_form_prfumi.conta_prfumi@">
+        <formerror  id="fr_t_ing_lato_est.@multiple_form_prfumi.conta_prfumi@"><br>
+        <span class="errori"><%= $formerror(fr_t_ing_lato_est.@multiple_form_prfumi.conta_prfumi@) %></span>
         </formerror>
     </td>
 
-    <td valign=top align=center><formwidget id="fr_t_usc_lato_est.@multiple_form_prfumi.conta_prfumi;noquote@">
-        <formerror  id="fr_t_usc_lato_est.@multiple_form_prfumi.conta_prfumi;noquote@"><br>
-        <span class="errori"><%= $formerror(fr_t_usc_lato_est.@multiple_form_prfumi.conta_prfumi;noquote@) %></span>
+    <td valign=top align=center><formwidget id="fr_t_usc_lato_est.@multiple_form_prfumi.conta_prfumi@">
+        <formerror  id="fr_t_usc_lato_est.@multiple_form_prfumi.conta_prfumi@"><br>
+        <span class="errori"><%= $formerror(fr_t_usc_lato_est.@multiple_form_prfumi.conta_prfumi@) %></span>
         </formerror>
     </td>
 
-    <td valign=top align=center><formwidget id="fr_t_ing_lato_ute.@multiple_form_prfumi.conta_prfumi;noquote@">
-        <formerror  id="fr_t_ing_lato_ute.@multiple_form_prfumi.conta_prfumi;noquote@"><br>
-        <span class="errori"><%= $formerror(fr_t_ing_lato_ute.@multiple_form_prfumi.conta_prfumi;noquote@) %></span>
+    <td valign=top align=center><formwidget id="fr_t_ing_lato_ute.@multiple_form_prfumi.conta_prfumi@">
+        <formerror  id="fr_t_ing_lato_ute.@multiple_form_prfumi.conta_prfumi@"><br>
+        <span class="errori"><%= $formerror(fr_t_ing_lato_ute.@multiple_form_prfumi.conta_prfumi@) %></span>
         </formerror>
     </td>
 
-       <td valign=top align=center><formwidget id="fr_t_usc_lato_ute.@multiple_form_prfumi.conta_prfumi;noquote@">
-        <formerror  id="fr_t_usc_lato_ute.@multiple_form_prfumi.conta_prfumi;noquote@"><br>
-        <span class="errori"><%= $formerror(fr_t_usc_lato_ute.@multiple_form_prfumi.conta_prfumi;noquote@) %></span>
+       <td valign=top align=center><formwidget id="fr_t_usc_lato_ute.@multiple_form_prfumi.conta_prfumi@">
+        <formerror  id="fr_t_usc_lato_ute.@multiple_form_prfumi.conta_prfumi@"><br>
+        <span class="errori"><%= $formerror(fr_t_usc_lato_ute.@multiple_form_prfumi.conta_prfumi@) %></span>
         </formerror>
     </td>
 
-    <td valign=top align=center><formwidget id="fr_nr_circuito.@multiple_form_prfumi.conta_prfumi;noquote@">
-        <formerror  id="fr_nr_circuito.@multiple_form_prfumi.conta_prfumi;noquote@"><br>
-        <span class="errori"><%= $formerror(fr_nr_circuito.@multiple_form_prfumi.conta_prfumi;noquote@) %></span>
+    <td valign=top align=center><formwidget id="fr_nr_circuito.@multiple_form_prfumi.conta_prfumi@">
+        <formerror  id="fr_nr_circuito.@multiple_form_prfumi.conta_prfumi@"><br>
+        <span class="errori"><%= $formerror(fr_nr_circuito.@multiple_form_prfumi.conta_prfumi@) %></span>
         </formerror>
     </td>
 
@@ -1218,7 +1273,7 @@
     </td>
     </tr></table></td>
 </tr>
-
+<!--gia01
 <tr><td align=right><table border=0 width="100%">
     <tr>
         <td valign=top align=right class=form_title>Data utile interv.</td>
@@ -1229,19 +1284,20 @@
 
     <multiple name=multiple_form>
     <tr>
-        <formwidget id="prog_anom.@multiple_form.conta;noquote@">
-        <td valign=top align=right><formwidget id="data_ut_int.@multiple_form.conta;noquote@">
-            <formerror  id="data_ut_int.@multiple_form.conta;noquote@"><br>
-            <span class="errori"><%= $formerror(data_ut_int.@multiple_form.conta;noquote@) %></span>
+        <formwidget id="prog_anom.@multiple_form.conta@">
+        <td valign=top align=right><formwidget id="data_ut_int.@multiple_form.conta@">
+            <formerror  id="data_ut_int.@multiple_form.conta@"><br>
+            <span class="errori"><%= $formerror(data_ut_int.@multiple_form.conta@) %></span>
             </formerror>
         </td>
-        <td valign=top><formwidget id="cod_anom.@multiple_form.conta;noquote@">
-            <formerror  id="cod_anom.@multiple_form.conta;noquote@"><br>
-            <span class="errori"><%= $formerror(cod_anom.@multiple_form.conta;noquote@) %></span>
+        <td valign=top><formwidget id="cod_anom.@multiple_form.conta@">
+            <formerror  id="cod_anom.@multiple_form.conta@"><br>
+            <span class="errori"><%= $formerror(cod_anom.@multiple_form.conta@) %></span>
             </formerror>
         </td>
     </tr>
     </multiple>
+ -->
 </table></td></tr>
 </if>
 <tr><td><table border=0 width="100%"><tr>
@@ -1261,7 +1317,12 @@
                 </formerror>
         </else>
     </td>
+    <if @coimtgen.regione@ ne "FRIULI-VENEZIA GIULIA">
     <td width="30%" valign=top align=right class=form_title>Data scadenza RCEE con segno identificativo</td>
+  </if>
+  <else>
+        <td width="30%" valign=top align=right class=form_title>Data scadenza dichiarazione</td>
+  </else>
     <td width="20%" valign=top><formwidget id="data_scadenza_autocert">
         <formerror  id="data_scadenza_autocert"><br>
         <span class="errori">@formerror.data_scadenza_autocert;noquote@</span>
@@ -1400,6 +1461,35 @@
       </formerror>
   </td>
   </tr></table></td>
+    <if @delegation_active_p@ eq "t"><!--ric01 -->
+    <td align="center">
+      <table border="0">
+	<tr>
+	  <td valign="top" align="left" nowrap class="form_title">Ditta delegante</td> <!-- ric02 Ditta che ha effettuato il controllo su delega -->
+	</tr>
+	<tr>
+	  <td valign="top" align="left"> <formwidget id="rag_sociale_delegato">@cerca_manu_dele;noquote@</td> 
+	      <formerror  id="rag_sociale_delegato"><br>
+		<span class="errori">@formerror.rag_sociale_delegato;noquote@</span>
+	      </formerror>
+	  </td>
+	</tr>
+	<tr>
+	  <td valign="top" align="left" nowrap class="form_title">Tecnico che ha effettuato il controllo su delega</td>
+	</tr>
+        <tr><!-- rom14 Aggiunta riga e contenuto -->
+	  <td valign="top" align="left"><formwidget id="cognome_opma_delegato"></td>
+	</tr>
+	<tr>
+	  <td valign="top" align="left"> <formwidget id="nome_opma_delegato">@cerca_opma_dele;noquote@</td>
+	      <formerror  id="nome_opma_delegato"><br>
+		<span class="errori">@formerror.nome_opma_delegato;noquote@</span>
+	      </formerror>
+	  </td>
+	</tr>
+      </table>
+    </td>
+  </if><!--ric01 -->
 </tr>
 
 <tr><td valign=top colspan=2 align=center><formwidget id="msg_rcee">

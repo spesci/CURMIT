@@ -2,6 +2,10 @@
 <!--
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    ric01 29/09/2025 Aggiunto condizione su ditta di manutenzione presente assente (punto 33 MEV regione Marche 2025)
+
+    rom03 06/04/2022 MEV Ibrido per regione Marche: aggiunto sel_ibrido.
+
     rom02 19/03/2019 Aggiunta condizione where_gend 
 
     rom01 12/07/2018 Aggiunta condizione where_manu.
@@ -56,6 +60,7 @@
                       $sel_date_controllo
                       $sel_matricola
                       $sel_num_cimp
+		      $sel_ibrido  --rom03
                      , coalesce((select to_char(max(cimp.data_controllo), 'dd/mm/yyyy')
                                    from coimcimp cimp
                                   where cimp.cod_impianto = a.cod_impianto)
@@ -106,7 +111,8 @@
                 and vv.cod_impianto = a.cod_impianto
                 and vv.flag_attivo  = 'S'                -- 31/07/2013
 	       $and_gend_gen_prog_uguale_a_dimp_gen_prog -- 31/07/2013
-                and a.cod_impianto = (select tt.cod_impianto from coimgend tt where a.cod_impianto = tt.cod_impianto and tt.flag_attivo = 'S' limit 1)
+               and a.cod_impianto = (select tt.cod_impianto from coimgend tt where a.cod_impianto = tt.cod_impianto and tt.flag_attivo = 'S' limit 1)
+	       $and_manu_present  --ric01
                 $order_by
                 limit $num_max
             ) result_table     -- nic01
@@ -138,6 +144,7 @@
                       $sel_date_controllo
                       $sel_matricola
                       $sel_num_cimp
+		      $sel_ibrido  --rom03
                      , coalesce((select to_char(max(cimp.data_controllo), 'dd/mm/yyyy')
                                    from coimcimp cimp
                                   where cimp.cod_impianto = a.cod_impianto)
@@ -181,7 +188,8 @@
                 and vv.cod_impianto = a.cod_impianto
                 and vv.flag_attivo  = 'S'                -- 31/07/2013
 	         $and_gend_gen_prog_uguale_a_dimp_gen_prog -- 31/07/2013
-                and a.cod_impianto = (select tt.cod_impianto from coimgend tt where a.cod_impianto = tt.cod_impianto and tt.flag_attivo = 'S' limit 1)
+                 and a.cod_impianto = (select tt.cod_impianto from coimgend tt where a.cod_impianto = tt.cod_impianto and tt.flag_attivo = 'S' limit 1)
+		 $and_manu_present  --ric01
                 $order_by
                 limit $num_max
             ) result_table     -- nic01
@@ -243,7 +251,8 @@
                                     where e.cod_impianto    = a.cod_impianto
                                       and e.data_controllo >=  :data_controllo
                                       and flag_tracciato <> 'MA'
-                                  )
+                                      )
+            $and_manu_present  --ric01
        </querytext>
     </partialquery>
 

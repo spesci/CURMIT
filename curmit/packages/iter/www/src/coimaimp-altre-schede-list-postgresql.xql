@@ -2,6 +2,10 @@
 <!--
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    rom04 14/11/2022 Aggiunte query sel_cons_comb e sel_cons_elet
+
+    rom03 16/11/2021 Aggiunte query sel_cons_acqua_rein e sel_cons_prod_chimici
+
     rom02 08/11/2018 Aggiunti i campiflag_sostituito e data_installaz_nuova_conf nella
     rom02            "Scheda 4.7: Campi Solari termici".			 
     rom02            Cambiata gestione di installato_uta_vmc
@@ -99,9 +103,13 @@ select a.cod_accu_aimp
      , iter_edit_num(a.capacita,2)        as capacita
 
      , case utilizzo
-            when 'A' then 'Acqua Sanitaria'
+            when 'A' then 'Acqua sanitaria'
             when 'R' then 'Riscaldamento'
             when 'F' then 'Raffreddamento'
+	    when 'T' then 'Riscaldamento + Raffredamento'
+	    when 'U' then 'Riscaldamento + Acqua sanitaria'
+	    when 'V' then 'Raffredamento + Acqua sanitaria'
+	    when 'Z' then 'Riscaldamento + Raffredamento + Acqua sanitaria'
             else          ''
        end                                as utilizzo
 
@@ -295,5 +303,67 @@ select a.cod_vent_aimp
 order by a.num_vm
        </querytext>
 	   </fullquery>
-	
+
+<fullquery name="sel_cons_acqua_rein"><!--rom03-->
+  <querytext>
+    select cons_acqua_rein_id
+         , esercizio1||' / '||esercizio2   as esercizio
+	 , iter_edit_num(lett_iniziale, 2) as lett_iniziale
+	 , iter_edit_num(lett_finale, 2)   as lett_finale
+	 , iter_edit_num(consumo_tot, 2)   as consumo_tot
+	 from coimcons_acqua_rein
+     where cod_impianto = :cod_impianto
+     order by cons_acqua_rein_id
+  </querytext>
+</fullquery>
+
+<fullquery name="sel_cons_prod_chimici"><!--rom03-->
+  <querytext>
+    select cons_prod_chimici_id
+         , esercizio1||' / '||esercizio2 as esercizio
+	 , case when circ_imp_term = 't' then 'S&igrave;'
+                when circ_imp_term = 'f' then 'No'
+      	        else '' end as circ_imp_term
+	 , case when circ_acs = 't' then 'S&igrave;'
+	        when circ_acs = 'f' then 'No'
+	        else '' end as circ_acs
+	 , case when altri_circ_ausi = 't' then 'S&igrave;'
+	        when altri_circ_ausi = 'f' then 'No'
+	        else '' end as altri_circ_ausi 
+	 , nome_prodotto
+	 , iter_edit_num(qta_cons, 2) as qta_cons
+	 , unita_misura
+	 from coimcons_prod_chimici
+     where cod_impianto = :cod_impianto
+     order by cons_prod_chimici_id
+       </querytext>
+	   </fullquery>
+
+<fullquery name="sel_cons_comb"><!--rom04-->
+  <querytext>
+    select cons_comb_id
+         , esercizio                       as esercizio_comb
+	 , iter_edit_num(acquisti, 2)      as acquisti_comb
+	 , iter_edit_num(lett_iniziale, 2) as lett_iniziale_comb
+	 , iter_edit_num(lett_finale, 2)   as lett_finale_comb
+	 , iter_edit_num(consumo_tot, 2)   as consumo_tot_comb
+	 from coimcons_comb
+     where cod_impianto = :cod_impianto
+     order by cons_comb_id
+  </querytext>
+</fullquery>
+
+<fullquery name="sel_cons_elet"><!--rom04-->
+  <querytext>
+    select cons_elet_id
+         , esercizio1||' / '||esercizio2   as esercizio_elet
+	 , iter_edit_num(lett_iniziale, 2) as lett_iniziale_elet
+	 , iter_edit_num(lett_finale, 2)   as lett_finale_elet
+	 , iter_edit_num(consumo_tot, 2)   as consumo_tot_elet
+	 from coimcons_elet
+     where cod_impianto = :cod_impianto
+     order by cons_elet_id
+  </querytext>
+</fullquery>
+ 
 </queryset>

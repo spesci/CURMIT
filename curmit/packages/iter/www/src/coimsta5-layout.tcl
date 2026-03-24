@@ -8,6 +8,11 @@ ad_page_contract {
     @param nome_funz identifica l'entrata di menu, server per le autorizzazioni
                      serve se lista e' uno zoom che permetti aggiungi.
     @cvs-id          coiminco-filter.tcl     
+
+    USER  DATA       MODIFICHE
+    ===== ========== =======================================================================
+    but01 31/10/2024 Aggiunto class=table_s nella tabella.
+
 } {
    {f_data1           ""}
    {f_data2           ""}
@@ -125,22 +130,18 @@ append stampa "<br><br>
                <br><br>"
 
 # Costruisco descrittivi tabella
-append stampa "<center><table border=1 width=50%>"
+append stampa "<center><table border=1 width=50% class=table_s>"
 
 set inizio "S"
 set conta 0
 
 db_1row sel_tot_inco ""
 
-append stampa "<tr><td width=40%><b>Totale incontri:</b></td>
-                   <td width=60%><b>$tot_inco</b></td>
-               </tr>"
+append stampa "<tr><th><b>Totale incontri: $tot_inco</b></th></tr>"
 
 append stampa "</table><br>
-               <table width=50%>
-                 <tr><td><b>Suddivisi per stato dell'incontro:</b></td></tr>
-               </table>
-               <table border=1 width=50%>"
+               <table width=50% border=1 class=table_s>
+                 <tr><th colspan=2><b>Suddivisi per stato dell'incontro:</b></th></tr>"
 
 db_foreach sel_inco_stato "" {
     append stampa "<tr><td width=40%>$stato</td>
@@ -149,10 +150,8 @@ db_foreach sel_inco_stato "" {
 }
 
 append stampa "</table><br>
-               <table width=50%>
-                 <tr><td><b>I motivi dell'annullamento degli incontri codificati sono:</b></td></tr>
-               </table>
-               <table border=1 width=50%>"
+               <table class=table_s border=1 width=50%>
+                 <tr><th colspan=2><b>I motivi dell'annullamento degli incontri codificati sono:</b></th></tr>"
 
 db_foreach sel_inco_motivi_ann "" {
     append stampa "<tr><td width=40%>$motivo_ann</td>
@@ -161,10 +160,8 @@ db_foreach sel_inco_motivi_ann "" {
 }
 
 append stampa "</table><br>
-               <table width=50%>
-                 <tr><td><b>Gli incontri in stato effettuato suddivisi per fascia di potenza e tipo estrazione:</b></td></tr>
-               </table>
-               <table border=1 width=50%>"
+               <table class=table_s border=1 width=50%>
+                 <tr><th colspan=2><b>Gli incontri in stato effettuato suddivisi per fascia di potenza e tipo estrazione:</b></th></tr>"
 
 db_foreach sel_inco_eff_pote "" {
     append stampa "<tr><td width=40%><b>$inco_count_pote</b></td>
@@ -178,10 +175,8 @@ db_foreach sel_inco_eff_pote "" {
 }
 
 append stampa "</table><br>
-               <table width=50%>
-                 <tr><td><b>Riepilogo incontri effettuati suddivisi per tipo estrazione:</b></td></tr>
-               </table>
-               <table border=1 width=50%>"
+               <table class=table_s border=1 width=50%>
+                 <tr><th colspan=2><b>Riepilogo incontri effettuati suddivisi per tipo estrazione:</b></th></tr>"
 
 db_foreach sel_inco_eff_tpes "" {
     append stampa "<tr><td width=40%>$tipo_estrazione</td>

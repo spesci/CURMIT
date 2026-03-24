@@ -8,6 +8,14 @@ ad_page_contract {
     @param nome_funz identifica l'entrata di menu, server per le autorizzazioni
                      serve se lista e' uno zoom che permetti aggiungi.
     @cvs-id          coiminco-filter.tcl
+  
+    USER  DATA       MODIFICHE
+    ===== ========== ===========================================================
+    rom01 20/06/2025 Aggiunto campo f_enve che ha preso il posto di f_rgen.
+
+    but01 19/06/2023 Aggiunto la classe ah-jquery-date ai campi: f_data_evas_a,
+    but01            f_data_controllo_da, f_data_controllo_a
+    
 } {  
     {f_tipologia        ""}
     {f_evaso            ""}
@@ -21,6 +29,7 @@ ad_page_contract {
     {f_tpimp            ""}
     {f_cod_comune       ""}
     {f_rgen             ""}
+    {f_enve             ""}
     {flag_tipo_impianto   ""}
     {caller        "index"}
     {funzione          "V"}
@@ -42,9 +51,9 @@ if {[string is space $nome_funz_caller]} {
 }
 
 # Personalizzo la pagina
-set titolo       "Impostazioni per stampa Attivit&agrave; sospese"
+set titolo       "Stampa attivit&agrave; sospese"
 set button_label "Seleziona"
-set page_title   "Impostazione per stampa Attivit&agrave; sospese"
+set page_title   "Stampa attivit&agrave; sospese"
 
 iter_get_coimtgen
 set flag_ente $coimtgen(flag_ente)
@@ -98,28 +107,28 @@ element create $form_name f_data_evas_da \
 -label   "Data evaso" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+-html    "size 10 maxlength 10 $readonly_fld {} class form_element class ah-jquery-date" \
 -optional 
-
+#but01 Aggiunto la classe ah-jquery-date ai campi: f_data_evas_a, f_data_controllo_da, f_data_controllo_a
 element create $form_name f_data_evas_a \
 -label   "Data evaso" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+-html    "size 10 maxlength 10 $readonly_fld {} class form_element class ah-jquery-date" \
 -optional 
 
 element create $form_name f_data_controllo_da \
     -label   "Da data controllo" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element class ah-jquery-date" \
     -optional 
 
 element create $form_name f_data_controllo_a \
     -label   "A ata controllo" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element class ah-jquery-date" \
     -optional 
 
 element create $form_name f_potenza_da \
@@ -159,6 +168,15 @@ element create $form_name f_rgen \
 -html    "$disabled_fld {} class form_element" \
 -optional \
 -options [iter_selbox_from_table coimrgen cod_rgen descrizione]
+
+#rom01
+element create $form_name f_enve \
+    -label   "ente Verificatore" \
+    -widget   select \
+    -datatype text \
+    -html    "$disabled_fld {} class form_element" \
+    -optional \
+    -options [iter_selbox_from_table coimenve cod_enve ragione_01]
 
 if {$flag_ente == "P"} {
     element create $form_name comune \
@@ -207,6 +225,7 @@ if {[form is_valid $form_name]} {
     set f_cod_combustibile [element::get_value $form_name f_cod_combustibile]
     set f_cod_tpim         [element::get_value $form_name f_cod_tpim]
     set f_rgen             [element::get_value $form_name f_rgen]
+    set f_enve             [element::get_value $form_name f_enve];#rom01
     #dpr74
     set flag_tipo_impianto [element::get_value $form_name flag_tipo_impianto]
     #dpr74 
@@ -324,8 +343,9 @@ if {[form is_valid $form_name]} {
         ad_return_template
         return
     }
-#dpr74
-    set link [export_url_vars set f_cod_comune f_tipologia f_evaso f_data_evas_da f_data_evas_a f_data_controllo_da f_data_controllo_a f_potenza_da f_potenza_a f_cod_combustibile f_cod_tpim f_rgen flag_tipo_impianto nome_funz nome_funz_caller]
+    #dpr74
+    #rom01 Aggiunto f_enve
+    set link [export_url_vars set f_cod_comune f_tipologia f_evaso f_data_evas_da f_data_evas_a f_data_controllo_da f_data_controllo_a f_potenza_da f_potenza_a f_cod_combustibile f_cod_tpim f_rgen f_enve flag_tipo_impianto nome_funz nome_funz_caller]
 
     set return_url "coimtodo-layout?$link"    
 

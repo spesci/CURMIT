@@ -45,6 +45,7 @@ select a.cod_boap
   from coimboap a
   left outer join coimmanu b on b.cod_manutentore = a.cod_manutentore_a
  where a.cod_bollini = :cod_bollini
+       $where_a_cod_manutentore --rom01
        </querytext>
     </partialquery>
 

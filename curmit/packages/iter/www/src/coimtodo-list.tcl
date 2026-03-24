@@ -18,6 +18,11 @@ ad_page_contract {
                              separati da '|' ed impostarli come segue:
 
     @cvs-id coimtodo-list.tcl 
+
+     USER  DATA       MODIFICHE
+    ===== ========== =======================================================================
+    but01 14/07/2023 Aggiunta class"link-button-2" nel actions"Selez"
+
 } { 
    {search_word       ""}
    {rows_per_page     ""}
@@ -87,8 +92,9 @@ set rows_per_page   [iter_set_rows_per_page $rows_per_page $id_utente]
 set link_righe      [iter_rows_per_page     $rows_per_page]
 
 set link    "\[export_url_vars flag_impianti cod_todo url_aimp url_list_aimp cod_impianto last_cod_todo nome_funz nome_funz_caller  extra_par\]"
+#but01
  set actions "
-    <td nowrap><a href=\"$gest_prog?funzione=V&$link\">Selez.</a></td>"
+    <td nowrap><a href=\"$gest_prog?funzione=V&$link\" class=\" link-button-2\">Selez.</a></td>"
 set js_function ""
 
 

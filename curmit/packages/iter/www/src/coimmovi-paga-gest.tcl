@@ -15,6 +15,10 @@ ad_page_contract {
 
     USER   DATA       MODIFICHE
     ====== ========== =======================================================================
+    rom01  10/07/2024 Modifiche per Caserta.
+    
+    but01  21/06/2023 Aggiunto la classe ah-jquery-date ai campi:ata_scad,data_pag, data_incasso,data_compet 
+
     san01  30/08/2017 Gestito il nuovo campo data_incasso
 
 } {
@@ -50,6 +54,8 @@ iter_set_func_class $funzione
 if {[string is space $nome_funz_caller]} {
     set nome_funz_caller $nome_funz
 }
+
+iter_get_coimtgen;#rom01
 
 #proc per la navigazione 
 set link_tab [iter_links_form $cod_impianto $nome_funz_caller $url_list_aimp $url_aimp]
@@ -101,7 +107,10 @@ switch $funzione {
     "D" {set readonly_fld_canc \{\}
     }
 }
-
+set jq_date "";#but01
+if {$funzione in "M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
 
 form create $form_name \
     -html    $onsubmit_cmd
@@ -114,9 +123,17 @@ element create $form_name cod_movi \
     -optional
 
 
+if {$coimtgen(ente) eq "PCE"} {#rom01 Aggiunta if e contenuto
 
-set l_of_l_caus [db_list_of_lists query "select descrizione, id_caus from coimcaus order by descrizione"]
-set l_of_l_caus [linsert $l_of_l_caus 0 [list "" ""]]
+    set l_of_l_caus [db_list_of_lists query "select descrizione, id_caus from coimcaus where id_caus != 2 order by descrizione"]
+    set l_of_l_caus [linsert $l_of_l_caus 0 [list "Pagamento onere visita di controllo" "2"]]
+
+} else {#rom01 Aggiunta else ma non il contenuto
+    
+    set l_of_l_caus [db_list_of_lists query "select descrizione, id_caus from coimcaus order by descrizione"]
+    set l_of_l_caus [linsert $l_of_l_caus 0 [list "" ""]]
+};#rom01
+
 element create $form_name id_caus \
     -label   "Causale pagamento" \
     -widget   select \
@@ -124,12 +141,12 @@ element create $form_name id_caus \
     -html    "$disabled_fld {} class form_element" \
     -optional \
     -options $l_of_l_caus
-
+#but01 Aggiunto la classe ah-jquery-date al campo data_scad
 element create $form_name data_scad \
     -label   "Data scadenza" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name importo \
@@ -145,12 +162,12 @@ element create $form_name importo_pag \
     -datatype text \
     -html    "size 20 maxlength 20 $readonly_fld {} class form_element" \
     -optional
-
+#but01 Aggiunto la classe ah-jquery-date ai campi:data_pag, data_incasso,data_compet
 element create $form_name data_pag \
     -label   "Data pagamento" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld_canc {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld_canc {} class form_element $jq_date" \
     -optional
 
 #san01 aggiunto data_incasso
@@ -158,7 +175,7 @@ element create $form_name data_incasso \
     -label   "Data Incasso" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 set l_of_l [db_list_of_lists sel_lol "select descrizione, cod_tipo_pag from coimtp_pag order by ordinamento"]
@@ -183,8 +200,14 @@ element create $form_name data_compet \
     -label   "Data competenza" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional 
+
+set options_flag_pagato {{{} {}} {S&igrave; S} {No N}}
+
+if {$coimtgen(ente) eq "PCE"} {#rom01 Aggiunta if e il suo contenuto
+    set options_flag_pagato {{{} {}} {S&igrave; S} {No N} {Rimborsato R}}
+}
 
 element create $form_name flag_pagato \
     -label   "flag_pagato" \
@@ -192,7 +215,7 @@ element create $form_name flag_pagato \
     -datatype text \
     -html    "size 1 maxlength 1 $disabled_fld {} class form_element" \
     -optional \
-    -options {{{} {}} {S&igrave; S} {No N}}
+    -options $options_flag_pagato
 
  element create $form_name riferimento \
     -label   "riferimento" \

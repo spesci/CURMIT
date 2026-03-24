@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <!--
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
@@ -60,7 +61,7 @@
 </table>
 
 <center>
-<formtemplate id="@form_name;noquote@">
+<formtemplate id="@form_name@">
 <formwidget   id="cod_impianto">
 <formwidget   id="cod_dimp">
 <formwidget   id="cod_opmanu_new">

@@ -1,7 +1,14 @@
+<!DOCTYPE html>
 <!--
 
     USER  DATA       MODIFICHE
-    ===== ========== ==========================================================================
+    ===== ========== =============================================================================
+    mat01 16/03/2026 Aggiunta la gestione delle deleghe. Sandro ha detto di aggiungere il tecnico.
+
+    mic01 24/08/2022 Ora viene mostrato l'utente che ha inserito la DFM e la data di inserimento.
+
+    rom04 08/02/2022 Modifica di Regione Marche per Teleriscaldamento.
+
     rom03 12/02/2019 Ulteriori modifiche delle marche su impianti del freddo 
 
     rom02 16/01/2019 Modifiche fatte su richiesta della regione marche per impianti del freddo
@@ -71,7 +78,7 @@ Ext.require([
 </table>
 
 <center>
-<formtemplate id="@form_name;noquote@">
+<formtemplate id="@form_name@">
 <formwidget   id="cod_impianto">
 <formwidget   id="flag_tipo_impianto">
 <formwidget   id="cod_dope_aimp">
@@ -93,9 +100,23 @@ Ext.require([
 <formwidget   id="cod_legale_rapp">
 <formwidget   id="cognome_legale">
 <formwidget   id="nome_legale">
-
+<formwidget   id="cod_opma"><!--mat01-->
+<formwidget   id="cod_opma_dele"><!--mat01-->
+<formwidget   id="cod_manu_dele"><!--mat01-->    
+  
 <!-- Inizio della form colorata -->
 <%=[iter_form_iniz]%>
+<if @funzione@ eq "V"><!-- mic01 aggiunta if e suo contenuto -->
+  <tr>
+    <td align="right" colspan=10>Inserito da: @nome_utente_ins;noquote@</td>
+  </tr>
+  <tr>
+    <td align="right" colspan=10>In data: @data_ins_edit;noquote@</td>
+  </tr>
+</if>
+
+      <tr><td align="center" colspan="10">@delegation_warning;noquote@</td></tr><!--mat01-->
+     
         <tr>
           <td colspan=10 align="center" class="errori">@errori;noquote@</td>
         </tr>
@@ -148,6 +169,15 @@ Ext.require([
               <span class="errori">@formerror.cognome_manu;noquote@</span>
             </formerror>
           </td>
+	</tr>
+	<tr>  
+	  <td valign="top" align="right" nowrap class="form_title">tecnico</td>
+	  <td valign="top" align="left" colspan=9><formwidget id="cognome_opma"><!--mat01-->
+	      <formwidget id="nome_opma">@cerca_opma;noquote@
+		<formerror  id="cognome_opma"><br>
+		  <span class="errori">@formerror.cognome_opma;noquote@</span>
+		</formerror>
+           </td>
         </tr>
 
         <tr>
@@ -265,10 +295,16 @@ s, width=450, height=220').moveTo(110,140)"><b>vedi nota</b></a><!--rom01-->
             <td valign=top colspan=9><formwidget id="descr_comune"></td>
           </else>
         </tr>
-
-      <if @flag_tipo_impianto@ eq "R">
+      <!--rom04 Aggiunta condizione su Teleriscaldamento -->
+      <if @flag_tipo_impianto@ eq "R" or @flag_tipo_impianto@ eq "T">
         <tr>
-          <td valign=top align=right class=form_title>Di potenza termica nominale utile complessiva</td><!--rom01 aggiunto complessiva-->
+          <% if {$flag_tipo_impianto eq "R"} {#rom04 Aggiunte if, else e loro contenuto
+	     set label_pot_nom_risc "Di potenza termica nominale utile complessiva"
+	     } else {
+	     set label_pot_nom_risc "Di potenza termica nominale complessiva pari a"
+	     }
+	     %><!--rom100-->
+          <td valign=top align=right class=form_title>@label_pot_nom_risc;noquote@</td><!--rom01 aggiunto complessiva-->
           <td colspan=9>
             <formwidget id="pot_nom_risc">kW
             <formerror  id="pot_nom_risc"><br>
@@ -522,7 +558,34 @@ s, width=450, height=220').moveTo(110,140)"><b>vedi nota</b></a><!--rom01-->
             </tr>
         </group>
       </multiple>
-
+      <if @delegation_active_p@ eq "t"><!--mat01 aggiunta if e contenuto -->
+	<td align="center">
+	  <table border="0">
+	    <tr>
+	      <td valign="top" align="left" nowrap class="form_title">Ditta delegante</td>
+	    </tr>
+	    <tr>
+	      <td valign="top" align="left"> <formwidget id="rag_sociale_delegato">@cerca_manu_dele;noquote@
+		  <formerror  id="rag_sociale_delegato"><br>
+		    <span class="errori">@formerror.rag_sociale_delegato;noquote@</span>
+		  </formerror>
+	      </td>
+	    </tr>
+	    <tr>
+	      <td valign="top" align="left" nowrap class="form_title">Tecnico che ha effettuato il controllo su delega</td>
+	    </tr>
+	    <tr>
+	      <td valign="top" align="left">
+		<formwidget id="cognome_opma_delegato">
+		  <formwidget id="nome_opma_delegato">@cerca_opma_dele;noquote@
+		    <formerror  id="nome_opma_delegato"><br>
+		      <span class="errori">@formerror.nome_opma_delegato;noquote@</span>
+		    </formerror>
+	      </td>
+	    </tr>
+	  </table>
+	</td>
+      </if>
 <tr><td colspan=8>&nbsp;</td></tr>
 
 <if @funzione@ ne "V">

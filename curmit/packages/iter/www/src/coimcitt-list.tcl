@@ -19,6 +19,10 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    but01 13/07/2023 Aggiunta class"link-button-2" nel actions"Selez"
+
+    rom01 01/02/2023 Aggiunta colonna per cod_piva.
+
     sim02 16/05/2017 Tolto il codice soggetto dalla lista. Richiesto da Reggio calabria ma va
     sim02            bene per tutti.
 
@@ -105,13 +109,13 @@ if {$conta_flag != "t"} {
 }
 
 set cod_tecn   [iter_check_uten_opve $id_utente]
-
+#but01 aggiunta class"link-button-2" nel actions"Selez" 
 if {$caller == "index"
     && [string equal $flag_ins_manu ""]} {
     set link_aggiungi "<a href=\"$gest_prog?funzione=I&[export_url_vars caller nome_funz last_concat_key extra_par]\">Aggiungi</a>"
     set link    "\[export_url_vars cod_cittadino nome_funz last_concat_key extra_par\]"
     set actions "
-    <td nowrap><a href=\"$gest_prog?funzione=V&$link\">Selez.</a></td>"
+    <td nowrap><a href=\"$gest_prog?funzione=V&$link\"class=\"link-button-2\">Selez.</a></td>"
     set js_function ""
 } else {
     if {$caller == "index"} {
@@ -125,7 +129,7 @@ if {$caller == "index"
     set receiving_element [split $receiving_element |]
 
     if {[llength $receiving_element] eq 4} {#sim01
-	set actions "[iter_select [list cod_cittadino cognome nome cod_fiscale]]|<a href=\"$gest_prog?funzione=M&$link\">Mod.</a>";#sim01
+	set actions "[iter_select [list cod_cittadino cognome nome cod_fiscale]]|<a href=\"$gest_prog?funzione=M&$link\" class=\"link-button-2\">Mod.</a>";#sim01
 	set js_function [iter_selected $caller [list \
 						    [lindex $receiving_element 0] cod_cittadino \
 						    [lindex $receiving_element 1] cognome \
@@ -133,7 +137,7 @@ if {$caller == "index"
 						    [lindex $receiving_element 3] cod_fiscale] \
 			];#sim01
     } else {#sim01
-	set actions "[iter_select [list cod_cittadino cognome nome]]|<a href=\"$gest_prog?funzione=M&$link\">Mod.</a>"
+	set actions "[iter_select [list cod_cittadino cognome nome]]|<a href=\"$gest_prog?funzione=M&$link\" class=\"link-button-2\">Mod.</a>"
 	set js_function [iter_selected $caller [list \
 						    [lindex $receiving_element 0] cod_cittadino \
 						    [lindex $receiving_element 1] cognome \
@@ -144,12 +148,14 @@ if {$caller == "index"
 
 # imposto la struttura della tabella
 #sim02 tolto         [list cod_cittadino "Codice"             no_sort {r}] 
+#rom01 Aggiunto cod_piva
 set table_def [list \
         [list actions       "Azioni"             no_sort $actions] \
     	[list nominativo    "Nominativo"         no_sort {l}] \
 	[list indirizzo     "Indirizzo"          no_sort {l}] \
 	[list comune        "Comune"             no_sort {l}] \
-	[list cod_fiscale   "Cod.Fisc. / P.Iva"  no_sort {l}] \
+	[list cod_fiscale   "Cod.Fisc."          no_sort {l}] \
+        [list cod_piva      "P.Iva"              no_sort {l}] \
         [list stato_citt    "Stato"              no_sort {l}] \
 ]
 

@@ -8,7 +8,7 @@
 select a.cod_opma
      , a.cod_impianto
      , case
-         when a.stato = '1' then 'Da eseguire'
+         when a.stato = '1' then 'Da Eseg.'
          when a.stato = '2' then 'Eseguito'
        end                               as stato_ed
      , a.stato
@@ -25,6 +25,8 @@ select a.cod_opma
      , b.numero
      , b.cod_impianto_est
      , coalesce(e.cognome,' ')||' '||coalesce(e.nome,' ')   as resp
+     , coalesce(e.telefono, '/')||' '|| coalesce(e.cellulare, '/') as tel
+     , coalesce(substr(a.note,1,20), '/') as not
   from coimgage a
        inner join coimaimp b on b.cod_impianto  = a.cod_impianto
                             and b.stato         = 'A'
@@ -66,6 +68,8 @@ select a.cod_opma
      , b.numero
      , b.cod_impianto_est
      , coalesce(e.cognome,' ')||' '||coalesce(e.nome,' ')   as resp
+     , coalesce(e.telefono, '/')||' '|| coalesce(e.cellulare, '/') as tel
+     , coalesce(substr(a.note,1,20), '/') as not
   from coimgage a 
        inner join coimaimp b on b.cod_impianto  = a.cod_impianto
                             and b.stato         = 'A'

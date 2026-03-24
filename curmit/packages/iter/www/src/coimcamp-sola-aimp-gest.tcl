@@ -20,8 +20,8 @@ ad_page_contract {
     
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    but01 22/06/2023 Aggiunto la classe ah-jquery-date ai campi:data_installaz, data_installaz_nuova_conf.
     rom02 21/12/2018 Aggiunto il campo num_cs_sostituente
-
     rom01 07/11/2018 Aggiunti i campi data_installaz_nuova_conf e flag_sostituito
     
 } {
@@ -109,20 +109,21 @@ element create $form_name num_cs \
     -datatype text \
     -html    "size 8 maxlength 8 readonly {} class form_element" \
     -optional
-
+#but01
 element create $form_name data_installaz \
     -label   "Data installazione" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element class ah-jquery-date" \
     -optional
 
 #rom01
+#but01
 element create $form_name data_installaz_nuova_conf \
     -label   "Data installazione nuova configurazione" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element class ah-jquery-date" \
     -optional
 
 #rom01

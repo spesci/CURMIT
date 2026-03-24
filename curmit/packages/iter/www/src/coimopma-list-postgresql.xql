@@ -15,6 +15,7 @@ select cod_opma
        when '1' then 'Non attivo'
        else ''
        end as desc_stato
+     , email_operator  --but01
   from coimopma
  where 1 = 1
    and cod_manutentore = :cod_manutentore

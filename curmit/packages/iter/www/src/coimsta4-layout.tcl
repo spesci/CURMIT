@@ -8,6 +8,9 @@ ad_page_contract {
     @param nome_funz identifica l'entrata di menu, server per le autorizzazioni
                      serve se lista e' uno zoom che permetti aggiungi.
     @cvs-id          coiminco-filter.tcl     
+
+    rom01 11/07/2023 Modifiche chieste da Sandro
+
 } {
    {f_data1           ""}
    {f_data2           ""}
@@ -87,14 +90,17 @@ set assessorato       $coimdesc(assessorato)
 # Titolo della stampa
 
 
+#but01 append stampa "<br><br>
+#               <hr>
+#               RAPPORTO TOTALE CONTROLLI DAL $data1_ok AL $data2_ok
+#               <hr>
+ #              <br><br>"
 append stampa "<br><br>
-               <hr>
-               RAPPORTO TOTALE CONTROLLI DAL $data1_ok AL $data2_ok
-               <hr>
-               <br><br>"
+              <table border=1 width=100% class=table_s>
+                <tr> <th align=center valign=top><b> RAPPORTO TOTALE CONTROLLI DAL $data1_ok AL $data2_ok </b></th></tr></table>";#but01
 
 # Costruisco descrittivi tabella
-append stampa "<table border=1 width=100%>"
+append stampa "<table border=1 width=100% class=table_s>";#but01
 
 set inizio "S"
 set conta 0
@@ -114,6 +120,7 @@ db_1row count_controlli_eff_inf_gasn ""
 db_1row count_controlli_eff_inf_gaso ""
 db_1row count_controlli_eff_inf_gpl ""
 db_1row count_controlli_eff_inf_olio ""
+db_1row count_controlli_eff_inf_pcalo "";#rom01
 db_1row count_controlli_eff_sup ""
 db_1row count_controlli_eff_sup_nnoto ""
 db_1row count_controlli_eff_sup_csolid ""
@@ -121,6 +128,7 @@ db_1row count_controlli_eff_sup_gasn ""
 db_1row count_controlli_eff_sup_gaso ""
 db_1row count_controlli_eff_sup_gpl ""
 db_1row count_controlli_eff_sup_olio ""
+db_1row count_controlli_eff_sup_pcalo "";#rom01
 db_1row count_controlli_eff_pos ""
 db_1row count_mancate_ver ""
 db_1row count_controlli_con_note ""
@@ -155,7 +163,7 @@ append stampa "
               <td colspan=6>&nbsp;</td></tr>
 	  <tr><td align=right>Totale controlli effettuati</td>
 	      <td align=center>$controlli_eff</td>
-              <td align=center>Non noto</td>
+              <td align=center>Pompa di cal.</td> <!-- rom01 modificata label, prima era Non noto -->
               <td align=center>Comb. solido</td>
               <td align=center>Gas nat.</td>
               <td align=center>Gasolio</td>
@@ -163,7 +171,7 @@ append stampa "
               <td align=center>Altro</td></tr>
 	  <tr><td align=right>di cui, per potenza inf. 35 kW</td>
 	      <td align=center>$controlli_eff_inf</td>
-              <td align=center>$controlli_eff_inf_nnoto</td>
+              <td align=center>$controlli_eff_inf_pcalo</td> <!-- rom01 Sostiuito $controlli_eff_inf_nnoto -->
               <td align=center>$controlli_eff_inf_csolid</td>
               <td align=center>$controlli_eff_inf_gasn</td>
               <td align=center>$controlli_eff_inf_gaso</td>
@@ -171,7 +179,7 @@ append stampa "
               <td align=center>$controlli_eff_inf_olio</td></tr>
 	  <tr><td align=right>di cui, per potenza sup. 35 kW</td>
 	      <td align=center>$controlli_eff_sup</td>
-              <td align=center>$controlli_eff_sup_nnoto</td>
+              <td align=center>$controlli_eff_sup_pcalo</td> <!-- rom01 Sostiuito $controlli_eff_sup_nnoto -->
               <td align=center>$controlli_eff_sup_csolid</td>
               <td align=center>$controlli_eff_sup_gasn</td>
               <td align=center>$controlli_eff_sup_gaso</td>

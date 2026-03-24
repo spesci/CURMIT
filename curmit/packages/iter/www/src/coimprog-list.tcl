@@ -16,6 +16,12 @@ ad_page_contract {
                              separati da '|' ed impostarli come segue:
 
     @cvs-id coimprog-list.tcl 
+
+    USER  DATA       MODIFICHE
+    ===== ========== =======================================================================
+    but01 13/07/2023 Aggiunta class"link-button-2" nel actions"Selez"
+
+
 } { 
    {search_word       ""}
    {rows_per_page     ""}
@@ -71,12 +77,12 @@ set extra_par       [list rows_per_page     $rows_per_page \
                           receiving_element $receiving_element]
 set rows_per_page   [iter_set_rows_per_page $rows_per_page $id_utente]
 set link_righe      [iter_rows_per_page     $rows_per_page]
-
+#but01
 if {$caller == "index"} {
     set link_aggiungi   "<a href=\"$gest_prog?funzione=I&[export_url_vars last_cognome caller nome_funz nome_funz_caller extra_par]\">Aggiungi</a>"
     set link    "\[export_url_vars cod_progettista last_cognome nome_funz extra_par\]"
     set actions "
-    <td nowrap><a href=\"$gest_prog?funzione=V&$link\">Selez.</a></td>"
+    <td nowrap><a href=\"$gest_prog?funzione=V&$link\" class=\"link-button-2\">Selez.</a></td>"
 
     set js_function ""
 } else { 

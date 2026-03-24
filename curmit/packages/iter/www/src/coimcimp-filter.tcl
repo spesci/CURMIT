@@ -8,6 +8,11 @@ ad_page_contract {
     @param nome_funz identifica l'entrata di menu, server per le autorizzazioni
                      serve se lista e' uno zoom che permetti aggiungi.
     @cvs-id          coimcimp-filter.tcl
+
+    USER  DATA       MODIFICHE
+    ===== ========== =========================================================================
+    but02 19/06/2023 Aggiunto la classe ah-jquery-date ai campi Da Data controllo e A Data controllo .
+    but01 31-03-2023  Sandro mi ha chiesto di modificare i titoli della pagina
 } {
     {funzione           "V"}
     {caller         "index"}
@@ -63,9 +68,10 @@ if {![string equal $cod_enve ""]} {
 }
 
 # Personalizzo la pagina
-set titolo       "Selezione Rapporti di Verifica"
+#but01 modifica di titoli di pagina 
+set titolo       "Consultazione Rapporti di ispezione"
 set button_label "Seleziona" 
-set page_title   "Selezione Rapporti di Verifica"
+set page_title   "Consultazione Rapporti di ispezione"
 
 set context_bar  [iter_context_bar -nome_funz $nome_funz] 
 
@@ -79,6 +85,10 @@ if {$flag_cod_tecn == "t"} {
     set readonly_tecn "readonly"
 } else {
     set readonly_tecn  \{\}
+}
+set jq_date "";#but02
+if {$funzione in "V M I S"} {#but02 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
 }
 
 form create $form_name \
@@ -94,19 +104,19 @@ element create $form_name flag_tipo_impianto \
     -options { {{} {}} {Riscaldamento R} {Raffreddamento F} {Cogenerazione C} {Teleriscaldamento T}}
 
 # fine dpr74
-
+#but02 Aggiunto la classe ah-jquery-date al campi Da Data controllo e A Data controllo.
 element create $form_name f_data_controllo_da \
 -label   "Data controllo" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 class form_element" \
+-html    "size 10 maxlength 10 class form_element $jq_date" \
 -optional
 
 element create $form_name f_data_controllo_a \
 -label   "Data controllo" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 class form_element" \
+-html    "size 10 maxlength 10 class form_element $jq_date" \
 -optional
 
 

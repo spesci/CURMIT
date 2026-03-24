@@ -18,6 +18,10 @@ ad_page_contract {
                              separati da '|' ed impostarli come segue:
 
     @cvs-id coimopve-list.tcl 
+    
+    USER  DATA       MODIFICHE
+    ===== ========== =======================================================================================================
+    mic01 28/07/2022 Riportata modifica di rom01 fatta sul nuovo CVS, per gestire la targatura solo su regione Friuli.
 } { 
     {search_word       ""}
     {rows_per_page     ""}
@@ -66,6 +70,8 @@ if {$caller == "index"} {
                     "$page_title"]
 }
 
+iter_get_coimtgen;#mic01
+
 if {[db_0or1row sel_enve ""] == 0} {
     if {$caller != "index"} {
 	iter_return_complaint "Ente verificatore non selezionato, <a href=\"javascript:window.close()\">Ritorna</a>"
@@ -97,16 +103,28 @@ if {$caller == "index"} {
 }
 
 # imposto la struttura della tabella
-set table_def [list \
-        [list actions    "Azioni"    no_sort $actions] \
-    	[list cod_opve   "Cod."      no_sort      {r}] \
-	[list cognome    "Cognome"   no_sort      {l}] \
-	[list nome       "Nome"      no_sort      {l}] \
-	[list matricola  "Matricola" no_sort      {l}] \
-	[list desc_stato "Stato"     no_sort      {l}] \
-]
-
-# imposto la query SQL 
+if {$coimtgen(regione) eq "FRIULI-VENEZIA GIULIA"} {#mic01 aggiunta if e contenuto, aggiunta else ma non il contenuto
+    #mic01 riportata modifica di rom01: Aggiunta colonna cod_portale per targatura ispettori.
+    set table_def [list \
+		       [list actions    "Azioni"    no_sort $actions] \
+		       [list cod_opve   "Cod."      no_sort      {r}] \
+		       [list cod_portale "Cod.Portale" no_sort   {r}] \
+		       [list cognome    "Cognome"   no_sort      {l}] \
+		       [list nome       "Nome"      no_sort      {l}] \
+		       [list matricola  "Matricola" no_sort      {l}] \
+		       [list desc_stato "Stato"     no_sort      {l}] \
+		      ]
+} else {
+    set table_def [list \
+		       [list actions    "Azioni"    no_sort $actions] \
+		       [list cod_opve   "Cod."      no_sort      {r}] \
+		       [list cognome    "Cognome"   no_sort      {l}] \
+		       [list nome       "Nome"      no_sort      {l}] \
+		       [list matricola  "Matricola" no_sort      {l}] \
+		       [list desc_stato "Stato"     no_sort      {l}] \
+		      ]
+}
+    # imposto la query SQL 
 if {[string equal $search_word ""]} {
     set where_word ""
 } else {
@@ -123,7 +141,13 @@ if {![string is space $last_cod_opve]} {
 
 set sel_opve [db_map sel_opve]
 
-set table_result [ad_table -Tmax_rows $rows_per_page -Tmissing_text "Nessun dato corrisponde ai criteri impostati." -Textra_vars {cod_enve cod_opve last_cod_opve nome_funz nome_funz_caller extra_par url_enve} go $sel_opve $table_def]
+#mic01 riportata modifica di rom01: aggiunto cod_portale al Textra_vars
+#mic01 aggiunta if, else e contenuto
+if {$coimtgen(regione) eq "FRIULI-VENEZIA GIULIA"} {
+    set table_result [ad_table -Tmax_rows $rows_per_page -Tmissing_text "Nessun dato corrisponde ai criteri impostati." -Textra_vars {cod_enve cod_opve cod_portale last_cod_opve nome_funz nome_funz_caller extra_par url_enve} go $sel_opve $table_def]
+} else {
+    set table_result [ad_table -Tmax_rows $rows_per_page -Tmissing_text "Nessun dato corrisponde ai criteri impostati." -Textra_vars {cod_enve cod_opve last_cod_opve nome_funz nome_funz_caller extra_par url_enve} go $sel_opve $table_def]
+}
 
 # preparo url escludendo last_cod_opve che viene passato esplicitamente
 # per poi preparare il link alla prima ed eventualmente alla prossima pagina

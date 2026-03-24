@@ -20,6 +20,9 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== ======================================================================================================
+    ric01 08/09/2025 Punto 16 MEV regione Marche: aggiungo sulle note del nuovo impianto i codici degli impianti di provenienza.
+    ric01            Modifica valida per tutti gli enti.
+
     sim03 22/05/2017 Personaliz. per Comune di Jesi: ricodificare gli impianti come da Legge Reg. Marche CMJE.
     sim03            Per Comune di Senigalli: CMSE
 
@@ -205,7 +208,7 @@ set form_request {
     element set_properties $form_name f_manu_nome          -value $f_manu_nome
     element set_properties $form_name f_cod_manu           -value $f_cod_manu
 
-    set aimp_da_compattare "<table border=1 cellpadding=1 cellspacing=0>
+    set aimp_da_compattare "<table border=1  class=table_s>
                            <tr>
                               <th>Responsabile</th>
                               <th>Comune</th>
@@ -241,7 +244,7 @@ set form_request {
 	set codice_tab2 ""
     }
 
-    set aimp_destinazione "<table border=1 cellpadding=1 cellspacing=>
+    set aimp_destinazione "<table border=1 class=table_s>
                           <tr>
                               $codice_tab1
                               <th>Responsabile</th>
@@ -462,6 +465,12 @@ set form_valid {
 	    }
 
 	    foreach cod_impianto $compatta_list {
+
+		db_1row cod_imp_est_old "select cod_impianto_est as cod_impianto_est_old
+                                           from coimaimp
+                                          where cod_impianto = :cod_impianto";#ric01
+		lappend ls_cod_imp_est_old $cod_impianto_est_old;#ric01
+
 		db_1row query "select note
                                  from coimaimp
                                 where cod_impianto = :cod_impianto";#nic01
@@ -590,6 +599,29 @@ set form_valid {
                 }
 	    
 	    }
+
+	    db_1row query "select note as note_destinazione
+                             from coimaimp
+                            where cod_impianto = :destinazione";#ric01
+
+	    set label_destinazione "codice dell'impianto";#ric01
+	    if {[llength $ls_cod_imp_est_old] > 1} {#ric01 aggiunta if e contenuto
+		set label_destinazione "codici degli impianti"
+		set ls_cod_imp_est_old [join $ls_cod_imp_est_old ", "]
+	    }
+	    
+	    set testo_da_aggiungere_alle_note_di_destinazione "Da bonifica del [iter_edit_date [iter_set_sysdate]]; $label_destinazione di provenienza: $ls_cod_imp_est_old.";#ric01
+
+	    if {[string is space $note_destinazione]} {#ric01 aggiunta if,else e contenuto
+		set note_destinazione $testo_da_aggiungere_alle_note_di_destinazione
+	    } else {
+		append note_destinazione "\n$testo_da_aggiungere_alle_note_di_destinazione"
+		set note_destinazione [string range $note_destinazione 0 3999]
+	    }
+
+	    set dml_upd_aimp_destinazione [db_map upd_aimp_destinazione];#ric01
+	    db_dml dml_aimp_destinazione $dml_upd_aimp_destinazione;#ric01
+	    
 	}
     } {
 	iter_return_complaint "Spiacente, ma il DBMS ha restituito il
@@ -600,7 +632,7 @@ set form_valid {
 
     set return_url   "coimaimp-gest?funzione=V&[export_url_vars nome_funz_caller search_word cod_impianto_est_new]&nome_funz=[iter_get_nomefunz coimaimp-list]&cod_impianto=$cod_impianto_new"    
 
-    ad_returnredirect $return_url
+    ad_returnredirect -message "Bonifica avvenuta correttamente" $return_url
     ad_script_abort
 }
 

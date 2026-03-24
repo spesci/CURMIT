@@ -15,6 +15,14 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== ============================================================================================
+    but01 29/03/2024 Modificato il controllo e il messagio d'errore nell'inserimento di un nuovo operatore.
+    but01            Ora è possibile mettere lo stesso operatore su un ente verificatore diverso.
+
+    rom02 15/09/2021 Modifiche per targatura Ispettori: Aggiunto il campo cod_portale, va valorizzato con lo stesso
+    rom02            valore dell'omonimo campo del portale (iter_inspectors) dopo che viene registrato l'ispettore.
+    rom02            Modifica riportata per allinemanto di UCIT al nuovo cvs. E' stata una modifica fatta appositamente
+    rom02            per Ucit e con Sandro si e' deciso di rendere il campo visibile solo per Regione Friuli.
+
     rom01 13/09/2018 Aggiunto campo email
 } {
     
@@ -172,6 +180,14 @@ element create $form_name codice_fiscale \
 -datatype text \
 -html    "size 18 maxlength 16 $readonly_fld {} class form_element" \
 -optional
+
+#rom02
+element create $form_name cod_portale \
+    -label   "" \
+    -widget   text \
+    -datatype text \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -optional
 
 element create $form_name note \
 -label   "recapito" \
@@ -457,6 +473,7 @@ if {[form is_request $form_name]} {
 	    element set_properties $form_name telefono       -value $telefono
 	    element set_properties $form_name cellulare      -value $cellulare
 	    element set_properties $form_name codice_fiscale -value $codice_fiscale
+	    element set_properties $form_name cod_portale    -value $cod_portale;#rom02
 	    element set_properties $form_name note           -value $note
             element set_properties $form_name email          -value $email;#rom01
             element set_properties $form_name cod_listino    -value $cod_listino
@@ -494,6 +511,7 @@ if {[form is_valid $form_name]} {
     set email          [string trim [element::get_value $form_name email]];#rom01
     set cod_listino    [string trim [element::get_value $form_name cod_listino]]
     set codice_fiscale [element::get_value $form_name codice_fiscale]
+    set cod_portale    [string trim [element::get_value $form_name cod_portale]];#rom02
 
     set link_aggiungi_gen "<a href=\"coimopve-gest?funzione=$funzione&[export_url_vars cod_opve last_cod_opve conta_max nome_funz nome_funz_caller extra_par caller cod_enve url_enve]&flag_conta=S\">Aggiungi strumento</a>"        
 
@@ -633,7 +651,8 @@ if {[form is_valid $form_name]} {
     &&  [db_0or1row sel_opve_check {}] == 1
     } {
       # controllo univocita'/protezione da double_click
-        element::set_error $form_name cognome "Il nominativo che stai tentando di inserire &egrave; gi&agrave; esistente nel Data Base."
+	#but01 element::set_error $form_name cognome "Il nominativo che stai tentando di inserire &egrave; gi&agrave; esistente nel Data Base."
+   	       element::set_error $form_name cognome "Il nominativo che stai tentando di inserire &egrave; gi&agrave; esistente nel Data Base per questo Ente Verificatore.";#but01
         incr error_num
     }
 

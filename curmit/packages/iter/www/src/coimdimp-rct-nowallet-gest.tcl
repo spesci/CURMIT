@@ -20,6 +20,23 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== ============================================================================================
+    but02 23/07/2024  Aggiunto il pop-up bonifica campagna.
+    
+    but01 22/06/2023 Aggiunto la classe ah-jquery-date ai campi:data_insta, data_costruz_gen, data_utile_inter, data_controllo
+                     , data_prot, data_prox_manut, data_scad_pagamento, data_scadenza_autocert, data_arrivo_ente, data_ut_int.
+
+    ric01 14/06/2023 Gestita, per regione Marche, combo punto D del RCEE a seconda se il tipo locale è esterno/interno. Rimosso opzione
+    ric01            blank a rct_canale_fumo_idoneo.
+
+    rom09 04/11/2022 Settate le scadenze per Palermo, con Sandro si e' deciso di fare le if solo per Palermo e non
+    rom09            per tutta la Regione Sicilia perche' la citta' metropolitana ha particolarita' proprie.
+    rom09            Sandro ha chiesto che Palermo abbia anche Bollettino postale come opzione di tipologia_costo.
+
+    gia01 08/11/2021 Commentati i controlli sulle anomalie
+
+    rom08 08/11/2021 Gli utenti degli enti di Regione Basilicata devono poter inseire il dimp-nowallet anche se
+    rom08            l'impianto e' sprovvisto di targa.
+    
     rom07 28/05/2021 La Regione Campania ha chiesto che la data di scadenza possa essere inserita anche manualmente.
     rom07            Se non la mettono a mano deve essere calcolata automaticamente come adesso, se la mettono loro
     rom07            non deve essere sovrascritta.
@@ -637,7 +654,10 @@ if {$funzione_stn eq "I"} {
     set readonly_fld \{\}
     set disabled_fld \{\}
 }
-
+set jq_date "";#but01
+if {$funzione in "M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
 form create $form_name \
     -html    $onsubmit_cmd 
 element create $form_name cognome_manu \
@@ -720,6 +740,12 @@ if {$funzione == "I" || $funzione == "M"} {
     set cerca_resp [iter_search $form_name [ad_conn package_url]/src/coimcitt-filter [list dummy cod_responsabile f_cognome cognome_resp f_nome nome_resp dummy cod_fiscale_resp]]
 } else {
     set cerca_resp ""
+}
+set modif_cind "";#but02
+if {$funzione == "V"} {#but02 aggiunto if e suo contenuto
+    set cod_cind_dimp [db_string query "select max(cod_cind) from coimdimp where cod_dimp = :cod_dimp " -default ""]
+    set link_gest [export_url_vars flag_tracciato cod_dimp last_cod_dimp nome_funz nome_funz_caller extra_par caller cod_impianto url_list_aimp url_aimp url_gage flag_no_link cod_opma data_ins cod_cind_dimp]
+    set modif_cind [export_vars -base "coimdimp-bon-cind?$link_gest"]
 }
 
 element create $form_name cognome_prop \
@@ -842,12 +868,12 @@ if {$flag_mod_gend == "S"} {
 	-datatype text \
 	-html    "$disabled_fld {} class form_element" \
 	-optional
-
+#but01
     element create $form_name data_insta \
 	-label   "Data installazione" \
 	-widget   text \
 	-datatype text \
-	-html    "size 15 maxlength 100 $readonly_fld {} class form_element" \
+	-html    "size 15 maxlength 100 $readonly_fld {} class form_element $jq_date" \
 	-optional
 
     element create $form_name destinazione \
@@ -857,12 +883,12 @@ if {$flag_mod_gend == "S"} {
 	-html    "$disabled_fld {} class form_element" \
 	-optional \
 	-options [iter_selbox_from_table_obblig coimutgi cod_utgi descr_utgi cod_utgi] 
-    
+#but01 
     element create $form_name data_costruz_gen \
 	-label   "Data costruzione generatore" \
 	-widget   text \
 	-datatype text \
-	-html    "size 10 $readonly_fld {} class form_element" \
+	-html    "size 10 $readonly_fld {} class form_element $jq_date" \
 	-optional
     
     element create $form_name marc_effic_energ \
@@ -938,12 +964,12 @@ if {$flag_mod_gend == "S"} {
 	-datatype text \
 	-html    "disabled {} class form_element" \
 	-optional
-    
+#but01 
     element create $form_name data_insta \
 	-label   "Data installazione" \
 	-widget   text \
 	-datatype text \
-	-html    "size 15 maxlength 100 readonly {} class form_element" \
+	-html    "size 15 maxlength 100 readonly {} class form_element $jq_date" \
 	-optional
     
     element create $form_name destinazione \
@@ -952,12 +978,12 @@ if {$flag_mod_gend == "S"} {
 	-datatype text \
 	-html    "size 40 maxlength 100 readonly {} class form_element" \
 	-optional
-    
+#but01
     element create $form_name data_costruz_gen \
 	-label   "Data costruzione generatore" \
 	-widget   text \
 	-datatype text \
-	-html    "size 10 readonly {} class form_element" \
+	-html    "size 10 readonly {} class form_element $jq_date" \
 	-optional
     
     element create $form_name marc_effic_energ \
@@ -1117,10 +1143,36 @@ element create $form_name inst_in_out \
     -html    "$disabled_fld {} class form_element" \
     -optional
 
+#ric01 setto default per gli altri enti
+set options_interno {{S&igrave; S} {No N} {N.C. E} {{} {}}}
+set options_esterno {{S&igrave; S} {No N} {N.C. C} {{} {}}}
+
+if {$coimtgen(regione) eq "MARCHE"} {#ric01 aggiunta if e suo contenuto
+
+    #ric01 ricavo il tipo del locale del generatore 
+    db_1row tipo_locale "select locale as tipo_locale
+                           from coimgend 
+                          where cod_impianto = :cod_impianto 
+                            and gen_prog = :gen_prog
+                            and flag_attivo = 'S'"
+
+    # 'E' = ESTERNO
+    # 'T' = USO ESCLUSIVO
+    # 'I' = INTERNO
+    if {$tipo_locale eq "E"} {#ric01 aggiunta if, else e loro contenuto 
+	set options_interno {}
+	set options_esterno {{S&igrave; S} {No N}}
+    } else {
+	set options_interno {{S&igrave; S} {No N}}
+	set options_esterno {}
+    }
+}
+
+#ric01 modificato options, prima era {{S&igrave; S} {No N} {N.C. E} {{} {}}} 
 element create $form_name idoneita_locale \
     -label   "Idoneit&agrave; del locale" \
     -widget   select \
-    -options  {{S&igrave; S} {No N} {N.C. E} {{} {}}} \
+    -options  $options_interno \
     -datatype text \
     -html    "$disabled_fld {} class form_element" \
     -optional
@@ -1148,10 +1200,11 @@ element create $form_name rct_tratt_in_acs \
     -html    "$disabled_fld {} class form_element" \
     -optional
 
+#ric01 modificato options, prima era {{S&igrave; S} {No N} {N.C. C} {{} {}}}
 element create $form_name rct_install_interna \
     -label   "Installazione Interna" \
     -widget   select \
-    -options  {{S&igrave; S} {No N} {N.C. C} {{} {}}} \
+    -options  $options_esterno \
     -datatype text \
     -html    "$disabled_fld {} class form_element" \
     -optional
@@ -1182,11 +1235,16 @@ element create $form_name ap_ventilaz \
     -html    "$disabled_fld {} class form_element" \
     -optional
 
+if {$coimtgen(regione) eq "MARCHE"} {#ric01 aggiunta if, else e loro contenuto
+    set options_canale_fumo {{S&igrave; S} {No N} {N.C. C} }    
+} else {
+    set options_canale_fumo {{S&igrave; S} {No N} {N.C. C} {{} {}} }
+}
 
 element create $form_name rct_canale_fumo_idoneo  \
     -label   "canale_fumo_idoneo " \
     -widget   select \
-    -options  {{S&igrave; S} {No N} {N.C. C} {{} {}}} \
+    -options  $options_canale_fumo \
     -datatype text \
     -html    "$disabled_fld {} class form_element" \
     -optional
@@ -1627,19 +1685,19 @@ element create $form_name prescrizioni \
     -datatype text \
     -html    "cols 100 rows 2 $readonly_fld {} class form_element" \
     -optional
-
+#but01
 element create $form_name data_utile_inter \
     -label   "Data utile intervento" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
-
+#but01
 element create $form_name data_controllo \
     -label   "Data controllo" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_key {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_key {} class form_element $jq_date" \
     -optional
 
 set readonly_n_prot "readonly"
@@ -1650,12 +1708,12 @@ element create $form_name n_prot \
     -datatype text \
     -html    "size 10 maxlength 20 $readonly_n_prot {} class form_element" \
     -optional
-
+#but01
 element create $form_name data_prot \
     -label   "Data protocollo" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name saldo_manu   -widget hidden -datatype text -optional
@@ -1688,12 +1746,12 @@ element create $form_name costo \
     -datatype text \
     -html    "size 10 maxlength 10 $readonly_costo {} class form_element" \
     -optional
-
+#but01
 element create $form_name data_prox_manut \
     -label   "Data prossima Manutenzione" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional;#san04
 
 if {$flag_portafoglio == "T"} {
@@ -1734,6 +1792,10 @@ if {$coimtgen(regione) eq "CAMPANIA"} {#rom04 if e contenuto
     set options_cod_tp_pag [db_list_of_lists sel_lol "select descrizione, cod_tipo_pag from coimtp_pag where cod_tipo_pag = 'BP'"]
 }
 
+if {$coimtgen(ente) eq "PPA"} {#rom09 Aggiunta if e il suo contenuto.
+    set options_cod_tp_pag [db_list_of_lists sel_lol "select descrizione, cod_tipo_pag from coimtp_pag where cod_tipo_pag in ('BO','BP')"]
+}
+
 element create $form_name tipologia_costo \
     -label   "Tipo pagamento" \
     -widget   select \
@@ -1755,12 +1817,12 @@ if {$id_ruolo ==  "manutentore"} {
 } else {
     set data_scad_pagamento_readonly $readonly_fld
 }
-
+#but01
 element create $form_name data_scad_pagamento \
     -label   "Data scadenza pagamento" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $data_scad_pagamento_readonly {} class form_element" \
+    -html    "size 10 maxlength 10 $data_scad_pagamento_readonly {} class form_element $jq_date" \
     -optional
 
 
@@ -1798,12 +1860,12 @@ if {$id_ruolo ==  "manutentore"} {
 } else {
     set data_scadenza_autocert_readonly $readonly_fld
 }
-
+#but01
 element create $form_name data_scadenza_autocert \
     -label   "Data scad. autocert." \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $data_scadenza_autocert_readonly {} class form_element" \
+    -html    "size 10 maxlength 10 $data_scadenza_autocert_readonly {} class form_element $jq_date" \
     -optional
 
 element create $form_name num_autocert \
@@ -1812,12 +1874,12 @@ element create $form_name num_autocert \
     -datatype text \
     -html    "size 10 maxlength 20 $readonly_fld {} class form_element" \
     -optional
-
+#but01
 element create $form_name data_arrivo_ente \
     -label   "Data di arrivo all'ente" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 
@@ -1859,12 +1921,12 @@ while {$conta < 5} {
                                                                                                    or flag_modello is null)
                                                                                          and (data_fine_valid > current_date
                                                                                           or data_fine_valid is null)"]
-
+#but01
     element create $form_name data_ut_int.$conta \
 	-label    "data utile intervento" \
 	-widget   text \
 	-datatype text \
-	-html     "size 10 maxlength 10 $readonly_fld {} class form_element" \
+	-html     "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
 	-optional 
 }
 
@@ -2923,6 +2985,11 @@ if {[form is_valid $form_name]} {
 	set riferimento_pag ""
     }
 
+    if {$coimtgen(regione) eq "BASILICATA" &&
+	[string equal [iter_check_uten_manu $id_utente] ""]} {#rom08 Aggiunta if e suo contenuto
+	set flag_gest_targa "f"
+    }
+
     if {$flag_gest_targa eq "T"} {#sim13: aggiunta if e suo contenuto
 	
 	if {![db_0or1row query "
@@ -3929,6 +3996,8 @@ if {[form is_valid $form_name]} {
    
 	}
 
+	set tipo_comb [db_string q "select tipo from coimcomb where cod_combustibile = :combustibile" -default ""];#rom08
+
     	if {![string equal $data_scad_pagamento ""]} {
 	    set data_scad_pagamento [iter_check_date $data_scad_pagamento]
 	    if {$data_scad_pagamento == 0} {
@@ -4072,7 +4141,58 @@ if {[form is_valid $form_name]} {
 		    incr error_num
 		}
 	    }
-	    
+	} elseif {$coimtgen(ente) eq "PPA"} {#rom09 Aggiunta elseif e il suo contenuto
+	    if {$sw_data_controllo_ok == "t"} {
+		
+		if {$tipo_comb in [list "S" "L"]} {
+		    
+		    # Generatori alimentati a combustibile liquido o solido:
+		    # Se la potenza utile nominale e' tra 10 e 100 la scadenza e' di 2 anni.
+		    # Se la potenza utile nominale e' maggiore di 100 la scadenza e' di un anno.
+		    # Se la potenza utile nominale e' minore di 10 non e' un impianto termico (Sandro dixit).
+		    
+		    if {$potenza_impianto >= 10.00 && $potenza_impianto <= 100.00} {
+			
+			set data_scadenza_autocert [db_string query "select :data_controllo::date + interval '2 year'" -default ""]
+			
+		    } elseif {$potenza_impianto > 100.00} {
+
+			set data_scadenza_autocert [db_string query "select :data_controllo::date + interval '1 year'" -default ""]
+			
+		    } else {
+			# Se la potenza utile nominale e' minore di 10 non e' un impianto termico (Sandro dixit).
+		    }
+		} elseif {$tipo_comb in [list "G"]} {
+
+		    # Generatori alimentati a gas, metano o GPL:
+		    # Se la potenza utile nominale e' tra 10 e 100 la scadenza e' di 4 anni.
+		    # Se la potenza utile nominale e' maggiore di 100 la scadenza e' di 2 anni.
+		    # Se la potenza utile nominale e' minore di 10 non e' un impianto termico (Sandro dixit).
+
+		    if {$potenza_impianto >= 10.00 && $potenza_impianto <= 100.00} {
+
+			set data_scadenza_autocert [db_string query "select :data_controllo::date + interval '4 year'" -default ""]
+
+		    } elseif {$potenza_impianto > 100.00} {
+
+			set data_scadenza_autocert [db_string query "select :data_controllo::date + interval '2 year'" -default ""]
+			
+		    } else {
+			# Se la potenza utile nominale e' minore di 10 non e' un impianto termico (Sandro dixit).
+		    }
+		    
+		} else {
+		    
+		}
+
+	    } else {
+                set data_scadenza_autocert [iter_check_date $data_scadenza_autocert]
+                if {$data_scadenza_autocert == 0} {
+                    element::set_error $form_name data_scadenza_autocert "Inserire correttamente"
+                    incr error_num
+                }
+            }
+   
 	} else {
 	    # Caso standard
 	    
@@ -4164,50 +4284,50 @@ if {[form is_valid $form_name]} {
 		set importo_pag $costo
 	    }
 	}
-
-	set conta 0
+#gia01
+#	set conta 0
 	# controllo sui dati delle anomalie
-	while {$conta < 5} {
-	    incr conta
-	    if {![string equal $data_ut_int($conta) ""]} {
-		set data_ut_int($conta) [iter_check_date $data_ut_int($conta)]
-		if {$data_ut_int($conta) == 0} {
-		    element::set_error $form_name data_ut_int.$conta "Data non corretta"
-		    incr error_num
-		} else {
-		    if {$data_controllo > $data_ut_int($conta)} {
-			element::set_error $form_name data_ut_int.$conta "Data precedente al controllo"
-			incr error_num
-		    }
-		}
-		if {[string equal $cod_anom($conta) ""]} {
-		    element::set_error $form_name cod_anom.$conta "Inserire anche anomalia oltre alla data utile intervento"
-		    incr error_num
-		}
-	    }
+#	while {$conta < 5} {
+#	    incr conta
+#	    if {![string equal $data_ut_int($conta) ""]} {
+#		set data_ut_int($conta) [iter_check_date $data_ut_int($conta)]
+#		if {$data_ut_int($conta) == 0} {
+#		    element::set_error $form_name data_ut_int.$conta "Data non corretta"
+#		    incr error_num
+#		} else {
+#		    if {$data_controllo > $data_ut_int($conta)} {
+#			element::set_error $form_name data_ut_int.$conta "Data precedente al controllo"
+#			incr error_num
+#		    }
+#		}
+#		if {[string equal $cod_anom($conta) ""]} {
+#		    element::set_error $form_name cod_anom.$conta "Inserire anche anomalia oltre alla data utile intervento"
+#		    incr error_num
+#		}
+#	    }
 	    
-	    if {![string equal $cod_anom($conta) ""]} {
-		set sw_dup "f"
-		set conta2 $conta
-		while {$conta2 > 1 && $sw_dup == "f"} {
-		    incr conta2 -1
-		    if {$cod_anom($conta) == $cod_anom($conta2)} {
-			element::set_error $form_name cod_anom.$conta "Anomalia gi&agrave; presente"
-			incr error_num
-			set sw_dup "t"
-		    }
-		}
+#	    if {![string equal $cod_anom($conta) ""]} {
+#		set sw_dup "f"
+#		set conta2 $conta
+#		while {$conta2 > 1 && $sw_dup == "f"} {
+#		    incr conta2 -1
+#		    if {$cod_anom($conta) == $cod_anom($conta2)} {
+#			element::set_error $form_name cod_anom.$conta "Anomalia gi&agrave; presente"
+#			incr error_num
+#			set sw_dup "t"
+#		    }
+#		}
 
-		set cod_anom_db  $cod_anom($conta)
-		set prog_anom_db $prog_anom($conta)
-		if {$sw_dup == "f"
-		    &&  [db_string sel_anom_count ""] >= 1
-		} {
-		    element::set_error $form_name cod_anom.$conta "Anomalia gi&agrave; presente"
-		    incr error_num
-		}
-	    }
-	}
+#		set cod_anom_db  $cod_anom($conta)
+#		set prog_anom_db $prog_anom($conta)
+#		if {$sw_dup == "f"
+#		    &&  [db_string sel_anom_count ""] >= 1
+#		} {
+#		    element::set_error $form_name cod_anom.$conta "Anomalia gi&agrave; presente"
+#		    incr error_num
+#		}
+#	    }
+#	}
 	
 	db_1row sel_tgen_canne "select flag_obbligo_canne from coimtgen"
 	if {$flag_obbligo_canne == "S"} {

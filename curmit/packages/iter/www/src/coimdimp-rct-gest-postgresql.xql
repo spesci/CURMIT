@@ -2,6 +2,22 @@
 <!--
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    mat01 28/11/2025 Aggiunto sel_aimp_old_marche
+
+    ric02 03/10/2025 Punto 4 MEV Marche: aggiunto lettura data per gestione storico ditta manutenzione.
+
+    ric01 29/09/2025 Aggiunto nuovi campi per ditta e operatori delegati (Punto 40 MEV regione Marche).
+
+    rom09 31/03/2025 Modifiche sui campi n_prot e data_prot in base al parametro protocollo_automatico_ente.
+
+    rom08 18/01/2023 Salerno ha richiesto che la tariffa sia calcolata non in base alla data in cui ci si trova ma
+    rom08            in base alla data dell'rcee (come gia' fatto per Ucit). Sandro ha detto che questo va bene per tutti
+    rom08            gli altri enti tranne che Regione Marche.
+
+    rom07 01/08/2022 Aggiunta query sel_tari_ucit per passaggio enti di ucit da vecchio a nuovo cvs.
+
+    rom06 26/11/2021 Gestito nuovo campo cod_combustibile per tabella coimdimp.
+
     rom05 22/12/2020 Su richiesta di Regione Marche e' stata data la possibilita' agli Installatori 
     rom05            di poter inserire gli RCEE se viene scelto come motivo di compilazione: 
     rom05            Prima messa in servizio, Sostituzione del generatore e Ristrutturazione dell'impianto.
@@ -261,6 +277,9 @@
 		     , cod_strumento_01            --gac04
 		     , cod_strumento_02            --gac04
 		     , flag_pagato                 --gac08
+		     , cod_combustibile            --rom06
+		     , cod_manu_dele               --ric01
+		     , cod_opma_dele               --ric01
 		     )		     
                 values 
                      (:cod_dimp
@@ -321,7 +340,7 @@
                      ,:prescrizioni
                      ,:data_utile_inter
                      ,:n_prot
-                     ,current_date
+                     ,:data_prot --rom09 current_date
                      ,:delega_resp
                      ,:delega_manut
                      ,:id_utente
@@ -399,6 +418,9 @@
                      ,:cod_strumento_01            --gac04
                      ,:cod_strumento_02            --gac04
 		     ,:flag_pagato                 --gac08
+		     ,:combustibile_dimp           --rom06
+		     , :cod_manu_dele               --ric01
+		     , :cod_opma_dele               --ric01
                      )
        </querytext>
     </partialquery>
@@ -534,6 +556,9 @@
                      , cod_strumento_01        = :cod_strumento_01            --gac04
                      , cod_strumento_02        = :cod_strumento_02            --gac04
 		     , flag_pagato             = :flag_pagato                 --gac08
+		     , cod_combustibile        = :combustibile_dimp           --rom06
+		     , cod_manu_dele           = :cod_manu_dele               --ric01
+		     , cod_opma_dele           = :cod_opma_dele               --ric01
 		 where cod_dimp           = :cod_dimp
        </querytext>
     </partialquery>
@@ -724,14 +749,24 @@
 		  , a.cod_strumento_01   --gac04
 		  , a.cod_strumento_02   --gac04
 		  , a.flag_pagato as flag_pagato_dimp --gac08
+		  , a.cod_combustibile as combustibile_dimp --rom06
+		  , comb.um as unita_misura_consumi         --rom06
+		  , a.cod_manu_dele  --ric01
+		  , coalesce(man.cognome,'')||' '||coalesce(man.nome,'') as rag_sociale_delegato   --ric01
+		  , a.cod_opma_dele  --ric01
+		  , coalesce(opm.cognome,'')||' '||coalesce(opm.nome,'') as nome_opma_delegato     --ric01
+		  , data_controllo as data_controllo_st   --ric02
                from coimdimp$stn a
                left outer join coimmanu b on b.cod_manutentore  = a.cod_manutentore
-               left outer join coimcitt c on c.cod_cittadino    = a.cod_responsabile
+	       left outer join coimcitt c on c.cod_cittadino    = a.cod_responsabile
 	       left outer join coimcitt d on d.cod_cittadino    = a.cod_proprietario
                left outer join coimcitt e on e.cod_cittadino    = a.cod_occupante
                left outer join coimopma i on i.cod_opma         = a.cod_opmanu_new
                     inner join coimaimp g on g.cod_impianto     = a.cod_impianto
                left outer join coimcitt h on h.cod_cittadino    = g.cod_intestatario
+               left outer join coimcomb comb on comb.cod_combustibile = a.cod_combustibile --rom06
+	       left outer join coimmanu man on man.cod_manutentore  = a.cod_manu_dele --ric01
+	       left outer join coimopma opm on opm.cod_opma         = a.cod_opma_dele --ric01
               where a.cod_dimp = :cod_dimp
        </querytext>
     </fullquery>
@@ -913,6 +948,8 @@
 		  , a.cod_strumento_01  --gac04
 		  , a.cod_strumento_02  --gac04
 		  , a.flag_pagato as flag_pagato_dimp --gac08
+		  , a.cod_combustibile as combustibile_dimp    --rom06
+		  , comb.um            as unita_misura_consumi --rom06
 	       from coimdimp$stn a
                left outer join coimmanu b on b.cod_manutentore  = a.cod_manutentore
                left outer join coimcitt c on c.cod_cittadino    = a.cod_responsabile
@@ -921,6 +958,7 @@
                left outer join coimopma i on i.cod_opma         = a.cod_opmanu_new
                     inner join coimaimp g on g.cod_impianto     = a.cod_impianto
                left outer join coimcitt h on h.cod_cittadino    = g.cod_intestatario
+               left outer join coimcomb comb on comb.cod_combustibile = a.cod_combustibile --rom06
               where a.cod_dimp = :cod_dimp
        </querytext>
     </fullquery>
@@ -961,6 +999,47 @@
        </querytext>
     </fullquery>
 
+    <fullquery name="sel_aimp_old_marche"> 
+       <querytext>
+       select b.cod_manutentore    as cod_manutentore_old --rom05
+    --rom05 , a.cod_manutentore    as cod_manutentore_old
+            , a.cod_responsabile   as cod_responsabile_old
+            , a.cod_occupante      as cod_occupante_old
+            , a.cod_proprietario   as cod_proprietario_old
+            , a.cod_intestatario   as cod_int_contr_old
+            , a.cod_intestatario   as cod_intestatario_old
+            , a.cod_amministratore as cod_amministratore_old
+	    , a.flag_resp          as flag_resp_old
+	    , a.cod_potenza        as cod_potenza_old
+            , a.$nome_col_aimp_potenza  as potenza_old
+            , a.flag_dichiarato
+            , a.data_installaz
+            , a.note               as note_aimp
+            , b.cognome            as cognome_manu_old
+            , b.nome               as nome_manu_old
+            , c.cognome            as cognome_resp_old
+            , c.nome               as nome_resp_old
+            , d.cognome            as cognome_occu_old
+            , d.nome               as nome_occu_old
+            , e.cognome            as cognome_prop_old
+            , e.nome               as nome_prop_old
+            , f.cognome            as cognome_contr_old
+            , f.nome               as nome_contr_old
+            , c.cod_fiscale        as cod_fiscale_resp_old
+            , a.data_prima_dich    as dt_prima_dich
+            from coimaimp a
+	    left join coimmanu b on b.cod_manutentore = case when :cod_manu is null then a.cod_manutentore
+	                                                     else :cod_manu end
+	 left outer join coimcitt c on c.cod_cittadino   = a.cod_responsabile
+	 left outer join coimcitt d on d.cod_cittadino   = a.cod_occupante
+	 left outer join coimcitt e on e.cod_cittadino   = a.cod_proprietario
+	 left outer join coimcitt f on f.cod_cittadino   = a.cod_intestatario
+         where a.cod_impianto = :cod_impianto
+	 limit 1
+       </querytext>
+    </fullquery>
+
+    
     <fullquery name="sel_aimp_old">
        <querytext>
        select b.cod_manutentore    as cod_manutentore_old --rom05
@@ -1001,7 +1080,7 @@
 	 limit 1
        </querytext>
     </fullquery>
-
+    
     <fullquery name="sel_dimp_check_data_controllo">
        <querytext>
        select '1' 
@@ -1276,9 +1355,29 @@
                                  where d.cod_potenza = :cod_potenza_old
                                    and d.cod_listino  = :cod_listino
                                    and d.tipo_costo  = '1'
-                                   and d.data_inizio <= current_date)
+                                   and d.data_inizio <= :data_controllo_tariffa)
        </querytext>
     </fullquery>
+
+    <fullquery name="sel_tari_ucit">
+        <querytext>
+        select iter_edit_num(a.importo,2) as tariffa
+             , a.flag_tariffa_impianti_vecchi                                        
+             , a.anni_fine_tariffa_base                                              
+             , iter_edit_num(a.tariffa_impianti_vecchi,2) as tariffa_impianti_vecchi 
+          from coimtari a
+         where a.cod_potenza = :cod_potenza_old
+           and a.tipo_costo  = '1'
+           and a.cod_listino = :cod_listino
+           and a.data_inizio = (select max(d.data_inizio)
+                                  from coimtari d
+                                 where d.cod_potenza = :cod_potenza_old
+                                   and d.cod_listino  = :cod_listino
+                                   and d.tipo_costo  = '1'
+                                   and d.data_inizio <= :data_controllo_tariffa_ucit)
+        </querytext>
+    </fullquery>
+
 
     <fullquery name="sel_tari_contributo">
         <querytext>

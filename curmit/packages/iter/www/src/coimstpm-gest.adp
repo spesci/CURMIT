@@ -154,6 +154,33 @@
         </formerror>
     </td>
 </tr>
+<tr><td valign=top align=right class=form_title>Margine alto(cm)</td>
+    <td valign=top><formwidget id="margine_alto">
+        <formerror  id="margine_alto"><br>
+        <span class="errori">@formerror.margine_alto;noquote@</span>
+        </formerror>
+    </td>
+    <td valign=top align=right class=form_title>Margine basso(cm)</td>
+    <td valign=top><formwidget id="margine_basso">
+        <formerror  id="margine_basso"><br>
+        <span class="errori">@formerror.margine_basso;noquote@</span>
+        </formerror>
+    </td>
+</tr>
+    <td valign=top align=right class=form_title>Margine sinistro(cm)</td>
+    <td valign=top><formwidget id="margine_sinistro">
+        <formerror  id="margine_sinistro"><br>
+        <span class="errori">@formerror.margine_sinistro;noquote@</span>
+        </formerror>
+    </td>
+    <td valign=top align=right class=form_title>Margine destro(cm)</td>
+    <td valign=top><formwidget id="margine_destro">
+        <formerror  id="margine_destro"><br>
+        <span class="errori">@formerror.margine_destro;noquote@</span>
+        </formerror>
+    </td>
+<tr>
+</tr>
 <tr><td valign=top align=right class=form_title>Testo</td>
     <td valign=top colspan=3><formwidget id="testo">
         <formerror  id="testo"><br>

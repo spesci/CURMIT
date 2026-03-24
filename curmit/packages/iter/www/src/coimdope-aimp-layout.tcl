@@ -4,6 +4,12 @@ ad_page_contract {
     
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================================================
+    mat02 17/03/2026 Aggiunta la gestione delle deleghe e aggiunto il tecnico.
+
+    mat01 15/12/2025 Corretta la gestione del salvataggio dei file nella cartella permanenti
+
+    ric01 03/10/2025 Punto 4 MEV 2025 Marche, aggiunto union per lettura storico ditta di manutenzione a seconda della data della dichiarazione.
+
     rom03 21/12/2020 Corretta gestione delle img_unchecked e img_checked.
 
     rom02 17/01/2019 Fatte modifiche per il freddo richieste dalla Regione Marche
@@ -138,6 +144,9 @@ if {![db_0or1row query "
       altri_doc,
       data_dich as data_dich_db,
       iter_edit_data(data_dich) as data_dich
+     , cod_opma      --mat02
+     , cod_opma_dele --mat02
+     , cod_manu_dele --mat02
     from coimdope_aimp d
   where cod_dope_aimp = :cod_dope_aimp
 "]} {
@@ -204,6 +213,8 @@ db_1row query "
 
 # Altri dati del manutentore/dichiarante
 db_1row query "
+select * 
+from (
     select nome    as nome_manu,
            cognome as cognome_manu,
            cod_piva,
@@ -221,11 +232,79 @@ db_1row query "
            flag_d,
            flag_e,
            flag_f,
-           flag_g
+           flag_g,
+           current_date as data_validita  --ric01
         from coimmanu
-    where cod_manutentore = :cod_manutentore"
+    where cod_manutentore = :cod_manutentore
 
+    union --ric01 aggiunta union
+  
+    select nome    as nome_manu,
+           cognome as cognome_manu,
+           cod_piva,
+           localita_reg,
+           reg_imprese,
+           indirizzo as indirizzo_manu,
+           telefono,
+           fax,
+           email,
+           comune    as comune_manu,
+           provincia as provincia_manu,
+           flag_a,
+           flag_b,
+           flag_c,
+           flag_d,
+           flag_e,
+           flag_f,
+           flag_g,
+           st_data_validita as data_validita  
+        from coimmanu_st
+    where cod_manutentore = :cod_manutentore
+) as st
+where st.data_validita >= :data_dich_db
+order by st.data_validita 
+limit 1
+"
+set nome_manu_dele "";#mat02
+set cognome_manu_dele "";#mat02
 
+db_0or1row query "
+    select * 
+      from (
+    select nome    as nome_manu_dele
+         , cognome as cognome_manu_dele
+         , current_date as data_validita
+        from coimmanu
+    where cod_manutentore = :cod_manu_dele
+    union
+    select nome    as nome_manu_dele
+         , cognome as cognome_manu_dele
+         , st_data_validita as data_validita
+        from coimmanu_st
+    where cod_manutentore = :cod_manu_dele
+    ) as st
+
+where st.data_validita >= :data_dich_db
+order by st.data_validita 
+limit 1
+";#mat02
+
+set nome_op "";#mat02
+set cognome_op "";#mat02
+set nome_op_dele "";#mat02
+set cognome_op_dele "";#mat02
+
+db_0or1row q "
+                select nome    as nome_op
+	             , cognome as cognome_op
+		  from coimopma
+		 where cod_opma        = :cod_opma";#mat02
+db_0or1row q "
+	        select nome    as nome_op_dele
+		     , cognome as cognome_op_dele
+ 		  from coimopma
+		 where cod_opma        = :cod_opma_dele";#mat02
+           
 #rom01db_1row sel_desc "
 #  select nome_ente, 
 #         indirizzo    as indirizzo_ente, 
@@ -361,6 +440,8 @@ eval $create_page_cmd
 set spool_dir     [iter_set_spool_dir]
 set spool_dir_url [iter_set_spool_dir_url]
 
+set permanenti_dir_url [iter_set_permanenti_dir_url] ;#mat01
+
 # save rml in a temporary file
 set filename "coimdope-aimp-${id_utente}"
 set filename [iter_temp_file_name $filename]
@@ -442,16 +523,44 @@ if {$flag_ins eq "S"} {
                  where cod_documento = :cod_documento"
 	    }
         }
-        
-        # Ed infine salvo il nuovo pdf nella tabella
-        set tipo_contenuto [ns_guesstype $file_pdf]
-        db_dml query "
+
+	if {$coimtgen(regione) eq "MARCHE" || $coimtgen(ente) eq "PPA"} {	    
+
+	    set tipo_contenuto [ns_guesstype $file_pdf];#mat01
+
+	    set filename_perm [string range $filename [expr {[string first "/" $filename] + 1}] end];#mat01
+
+	    set filename_perm "$filename_perm.pdf";#mat01
+	    
+	    set path_file [iter_permanenti_file_salva $file_pdf $filename_perm];#mat01 cambiato da filename a filename_perm
+
+	    db_dml q "update coimdocu
+                         set tipo_contenuto = :tipo_contenuto
+                           , path_file      = :path_file
+                       where cod_documento  = :cod_documento"
+
+	    set spool_dir_url $permanenti_dir_url ;#mat01
+	    set current_date [clock format [clock seconds] -f "%Y-%m-%d"];#mat01
+	    set current_time [clock format [clock seconds] -f "%H-%M-%S"];#mat01
+	    set nome_file_perm  "$current_date/$current_date-$current_time-$filename_perm";#mat01
+	    set spool_dir_perm [iter_set_permanenti_dir];#mat01
+	    set spool_dir_url $permanenti_dir_url ;#mat01
+	    set filename $nome_file_perm ;#mat01
+	    set filename [string range $filename 0 end-4];#mat01
+	    
+	} else {
+	  
+	    # Ed infine salvo il nuovo pdf nella tabella
+	    set tipo_contenuto [ns_guesstype $file_pdf]
+	    db_dml query "
         update coimdocu
            set tipo_contenuto = :tipo_contenuto
              , contenuto      = lo_import(:file_pdf)
          where cod_documento  = :cod_documento"
+	}
     }
 }
+
 
 ad_returnredirect "$spool_dir_url/$filename.pdf"
 ad_script_abort

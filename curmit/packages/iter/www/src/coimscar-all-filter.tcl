@@ -1,5 +1,10 @@
 ad_page_contract {
     @ 
+
+    USER  DATA       MODIFICHE
+    ===== ========== =======================================================================
+    ric01 14/02/2025 Aggiunta lettura data creazione dei file per mostrarlo all'utente.
+
 } {
     {funzione         "V"}
     {caller       "index"}
@@ -56,6 +61,10 @@ set impiantiD "$spool_dir_url/$nome_dir/impiantiD.csv"
 set verificheD "$spool_dir_url/$nome_dir/rapportiD.csv"
 set autocertificazioniD  "$spool_dir_url/$nome_dir/autocertificazioniD.csv"
 
+#ric01 ricavo la data di creazione del file per mostrarla all'utente
+set complete_path "$spool_dir/$nome_dir/impiantiA.csv"
+set last_update [exec stat -c %y $complete_path]
+db_1row q "select to_char(:last_update::date, 'DD/MM/YYYY') as last_update_pretty"
 
 
 form create $form_name \

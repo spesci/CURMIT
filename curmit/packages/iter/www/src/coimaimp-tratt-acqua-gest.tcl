@@ -17,6 +17,9 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== ===========================================================================================
+    rom02 01/12/2021 Manutenzione evolutiva CURMIT-2021-11: Integrate le voci del campo tratt_acqua_calda_sanit_tipo
+    rom02            indicando le stesse voci del campo tratt_acqua_clima_tipo. Sandro ha detto che va bene per tutti.
+
     rom01 07/11/2018 Inserito controllo su tratt_acqua_raff_assente.
     rom01            Aggiunti i campi: tratt_acqua_raff_filtraz_note_altro, tratt_acqua_raff_tratt_note_altro,
     rom01            tratt_acqua_raff_cond_note_altro.
@@ -110,7 +113,7 @@ element create $form_name tratt_acqua_durezza \
 element create $form_name tratt_acqua_clima_tipo \
     -label   "Climatizzazione" \
     -widget   select \
-    -options  {{{} {}} {NonRichiesto R} {Assente A} {Filtrazione F}  {Addolcimento D} {Cond.Chimico C} {Filtr.+Addolc. K} {Filtr.+Cond.Ch. J} {Cond.Ch.+Addolc. W} {Filt.+Cond.Ch.+Addolc. T} {{} {}}} \
+    -options  {{{} {}} {NonRichiesto R} {Assente A} {Filtrazione F}  {Addolcimento D} {Cond.Chimico C} {Filtr.+Addolc. K} {Filtr.+Cond.Ch. J} {Cond.Ch.+Addolc. W} {Filt.+Cond.Ch.+Addolc. T}} \
     -datatype text \
     -html    "$disabled_fld {} class form_element" \
     -optional
@@ -158,10 +161,11 @@ element create $form_name tratt_acqua_clima_prot_gelo_pro \
     -html    "size 9 maxlength 11 $readonly_fld {} class form_element"  \
     -optional
 
+#rom02 modificate le options  {{{} {}} {Assente A} {Filtrazione F}  {Addolcimento D} {{Condizionamento chimico} C} {{} {}}} 
 element create $form_name tratt_acqua_calda_sanit_tipo \
     -label   "Acqua calda sanitaria" \
     -widget   select \
-    -options  {{{} {}} {Assente A} {Filtrazione F}  {Addolcimento D} {{Condizionamento chimico} C} {{} {}}} \
+    -options  {{{} {}} {NonRichiesto R} {Assente A} {Filtrazione F}  {Addolcimento D} {Cond.Chimico C} {Filtr.+Addolc. K} {Filtr.+Cond.Ch. J} {Cond.Ch.+Addolc. W} {Filt.+Cond.Ch.+Addolc. T}} \
     -datatype text \
     -html    "$disabled_fld {} class form_element" \
     -optional

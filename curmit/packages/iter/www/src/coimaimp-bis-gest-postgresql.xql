@@ -2,7 +2,24 @@
 <!--
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    rom05 31/03/2022 Su richiesta di Giuliodori con mail "MEV rilasciata in produzione." del 28/03/2022
+    rom05            vado a modificare/implementare l intervento di rom04 per la MEV Stato impianto "Rottamato".
+
+    rom04 18/03/2022 Manutenzione evolutiva richiesta da regione Marche.
+    rom04            25.  Stato impianto "Rottamato" in scheda 1.bis:
+    rom04            Aggiunte query dis_gen e att_gen.
+
+    rom03 17/03/2022 MEV Regione Marche punto 4. Allineamento responsabile su impianti con la stessa targa
+    rom03            Leggo il campo targa che mi serve per andare a vedere gli impianti collegati
+    rom03            da andare ad aggiornare.
+    
     gac01 18/12/2018 Aggiunto campi data_installaz e anno_costruzione
+
+    rom02 17/12/2018 Aggiunti in sola visualizzazione i campi cognome_inst e nome_inst
+    rom02            dell'installatore.
+    rom02            Aggiunti i campi data_rottamaz, data_attivaz e stato su richiesta della Regione
+
+    rom01 01/12/2018 Aggiunti i campi pres_certificazione e certificazione.
 -->
 
 <queryset>
@@ -45,9 +62,38 @@
        </querytext>
     </partialquery>
 
+    <partialquery name="dis_gen">
+       <querytext>
+                update coimgend
+		   set flag_attivo           = 'N'
+		     , motivazione_disattivo = 'A'
+		     , data_rottamaz         = :data_rottamaz_gen --rom05 ora uso la variabile al posto di current_date
+		     , data_mod              = current_date
+                 where cod_impianto                    = :cod_impianto
+		   and flag_attivo                     = 'S'
+		   and coalesce(flag_sostituito, 'N') != 'S'
+       </querytext>
+    </partialquery>
+
+    <partialquery name="att_gen">
+       <querytext>
+                update coimgend
+		   set flag_attivo           = 'S'
+		     , motivazione_disattivo = null
+		     , data_rottamaz         = null
+		     , data_mod              = current_date
+                 where cod_impianto                    = :cod_impianto
+		   and flag_attivo                     = 'N'
+		   and coalesce(flag_sostituito, 'N') != 'S'
+       </querytext>
+    </partialquery>
+
+
+    
     <fullquery name="sel_aimp">
        <querytext>
           select a.cod_impianto
+	       , a.targa              --rom03
                , a.cod_tpim
                , a.pdr
                , a.pod
@@ -67,6 +113,7 @@
 	       , iter_edit_data(a.data_attivaz)   as data_attivaz
 	       , iter_edit_data(a.data_ins)       as data_ins
 	       , a.stato
+	       , a.stato as stato_db --rom05
             from coimaimp a   
           left join coimpote b on b.cod_potenza  = a.cod_potenza
           left join coimcomu c on c.cod_comune   = a.cod_comune

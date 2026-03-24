@@ -21,6 +21,8 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== ============================================================================================
+    but01 01/10/2024 Aggiunto il campo email_operator nella lista.
+    
     sim01 11/10/2019 Tolto la possibilità di aggiungere gli operatori perchè deve essere fatto dal portale
 
 } { 
@@ -105,12 +107,15 @@ if {$caller == "index"} {
 }
 
 # imposto la struttura della tabella
+#but01 aggiunto il campo email_operator nella lista.
+
 set table_def [list \
         [list actions    "Azioni"    no_sort $actions] \
     	[list cod_opma   "Cod."      no_sort      {r}] \
 	[list cognome    "Cognome"   no_sort      {l}] \
 	[list nome       "Nome"      no_sort      {l}] \
 	[list matricola  "Matricola" no_sort      {l}] \
+	[list email_operator  "Email" no_sort     {l}] \
 	[list desc_stato "Stato"     no_sort      {l}] \
 ]
 

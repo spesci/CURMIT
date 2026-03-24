@@ -32,6 +32,7 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    but01 21/06/2023 Aggiunto la classe ah-jquery-date ai campi:data_controllo, data_scad_pagamento. 
     rom01 11/06/2021 Aggiunto link_prnt e link_prn2.
 
     sim01 18/11/2016 Gestito la potenza in base al flag_tipo_impianto
@@ -189,6 +190,10 @@ switch $funzione {
         set disabled_fld \{\}
     }
 }
+set jq_date "";#but01
+if {$funzione in "M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
 
 set disabled_opve $disabled_fld
 if {$flag_cod_tecn == "t"} {
@@ -216,12 +221,12 @@ element create $form_name cod_inco \
     -datatype text \
     -html    "size 8 maxlength 8 $readonly_inco {} class form_element" \
     -optional
-
+#but01 Aggiunto la classe ah-jquery-date ai campi:data_controllo, 
 element create $form_name data_controllo \
     -label   "Data controllo" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name verb_n \
@@ -301,12 +306,12 @@ element create $form_name flag_pagato \
     -datatype text \
     -html    "$disabled_fld {} class form_element" \
     -optional
-
+#but01 Aggiunto la classe ah-jquery-date ai campi:data_scad_pagamento
 element create $form_name data_scad_pagamento \
     -label   "Data scadenza pagamento" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name riferimento_pag \

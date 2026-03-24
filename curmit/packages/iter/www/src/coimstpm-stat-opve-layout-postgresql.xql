@@ -24,6 +24,7 @@ select distinct coalesce(c.cognome,'')|| ' '|| coalesce(c.nome,' ') as nome_opve
 ,count(distinct(a.cod_cimp)) as n_verifiche
 ,case when a.esito_verifica = 'P' then count(distinct(a.cod_cimp)) end as n_verifiche_pos 
 ,case when a.esito_verifica = 'N' then count(distinct(a.cod_cimp)) end as n_verifiche_neg
+,a.flag_tracciato as tipo_verbale  --mic01
 from coimcimp a
 ,coimaimp b 
 ,coimcomu d
@@ -56,6 +57,7 @@ group by c.cognome
 ,a.cod_cimp
 ,a.esito_verifica
 ,g.ragione_01
+,a.flag_tracciato --mic01
 </querytext>
 </fullquery>
 
@@ -145,6 +147,7 @@ select coalesce(c.cognome,'')|| ' '||coalesce(c.nome,' ') as nome_opve
 ,d.denominazione as comune
 ,coalesce(p.cod_tanom,'')|| ' - '||coalesce(s.descr_tano,'') as descr_anomalia
 ,count(*) as count_anomalie
+,a.flag_tracciato as tipo_verbale  --mic01
 from coimanom p
 ,coimaimp b 
 ,coimcomu d
@@ -179,6 +182,7 @@ group by p.cod_tanom
 ,f.descr_potenza
 ,e.descr_comb
 ,g.ragione_01
+,a.flag_tracciato  --mic01
 </querytext>
 </fullquery>
 
@@ -196,6 +200,7 @@ select coalesce(c.cognome,'')|| ' '||coalesce(c.nome,' ') as nome_opve
         else ''
        end as criticita
      , count(*) as count_anomalie
+     , a.flag_tracciato as tipo_verbale  --mic01
  from coimanom p
      ,coimaimp b 
      ,coimcomu d
@@ -222,7 +227,7 @@ where b.cod_impianto  = a.cod_impianto
   $where_comune
   $where_combustibile
 $where_tipo_imp
-group by s.flag_tipo_ispezione, c.cognome, c.nome, d.denominazione, f.descr_potenza, e.descr_comb, g.ragione_01
+group by s.flag_tipo_ispezione, c.cognome, c.nome, d.denominazione, f.descr_potenza, e.descr_comb, g.ragione_01, a.flag_tracciato
 </querytext>
 </fullquery>
 

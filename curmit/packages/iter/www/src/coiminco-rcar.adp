@@ -38,13 +38,13 @@
     <tr><td valign=top class=form_title align=right width="50%">Caricati Appuntamenti:</td>
         <td valign=top class=form_title align=right  width="5%">@ctr_out;noquote@</td>
         <td width="5%">&nbsp;</td>
-        <td valign=top class=form_title width="40%"><a target="Valori caricati" href="@file_out_url;noquote@">Scarica il file csv degli appuntamenti caricati</a></td>
+        <td valign=top class=form_title width="40%"><a target="Valori caricati" href="@file_out_url;noquote@">Scarica CSV degli appuntamenti caricati</a></td>
     </tr>
 
     <tr><td valign=top class=form_title align=right>Scartati Appuntamenti:</td>
         <td valign=top class=form_title align=right>@ctr_err;noquote@</td>
         <td>&nbsp;</td>
-        <td valign=top class=form_title><a target="Valori scartati" href="@file_err_url;noquote@">Scarica il file csv degli appuntamenti scartati</a></td>
+        <td valign=top class=form_title><a target="Valori scartati" href="@file_err_url;noquote@">Scarica CSV degli appuntamenti scartati</a></td>
     </tr>
 
     <multiple name=multiple_scarti>

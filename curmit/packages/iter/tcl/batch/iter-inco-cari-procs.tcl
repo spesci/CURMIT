@@ -13,6 +13,13 @@ ad_proc iter_inco_cari {
     @cvs-id          iter_inco_cari
 
     se swc_solo_aimp vale "S" allora non si creano i controlli
+
+    USER  DATA       MODIFICHE
+    ===== ========== ====================================================================================================
+    rom02 13/10/2023 Riportate modifiche su codifica cod_impianto con il formato progressivo/IstatComune fatte per Napoli.
+
+    rom01 14/03/2023 Modifiche sulla codifica del cod_impianto, messa la stessa procedura usata in coimaimp-isrt-manu.
+
 } {
     # aggiorno stato di coimbatc
     iter_batch_upd_flg_sta -iniz $cod_batc
@@ -23,6 +30,11 @@ ad_proc iter_inco_cari {
 
 	    # reperisco le colonne della tabella parametri
 	    iter_get_coimtgen
+            set flag_cod_aimp_auto  $coimtgen(flag_cod_aimp_auto) ;#rom01
+            set flag_ente           $coimtgen(flag_ente)          ;#rom01
+            set sigla_prov          $coimtgen(sigla_prov)         ;#rom01
+            set flag_codifica_reg   $coimtgen(flag_codifica_reg)  ;#rom01
+            set lun_num_cod_imp_est $coimtgen(lun_num_cod_imp_est);#rom01
 
 	    # valorizzo la data_corrente (serve per l'inserimento)
 	    set data_corrente  [iter_set_sysdate]
@@ -412,15 +424,107 @@ ad_proc iter_inco_cari {
 		    # se cod_impianto_est viene valorizzato automaticamente
 		    # uso la sequence come coimaimp-isrt
 		    # altrimenti calcolo il max + 1 come in copia impianto.
-		    if {$coimtgen(flag_cod_aimp_auto) == "T"} {
-			set cod_impianto_est  [db_string sel_dual_cod_impianto_est ""]
-		    } else {
-			incr max_cod_impianto_est
+		    #rom01if {$coimtgen(flag_cod_aimp_auto) == "T"} {
+			#set cod_impianto_est  [db_string sel_dual_cod_impianto_est ""]
+		    #} else {
+			#incr max_cod_impianto_est
 			# valorizzo cod_impianto_est con gli 0 di sinistra
 			# esattamente come fa il programma di copia imp.
-			set cod_impianto_est  [format %010d $max_cod_impianto_est]
-		    }
+			#set cod_impianto_est  [format %010d $max_cod_impianto_est]
+		    #rom01}
 
+		    #rom01 inizio
+                    if {$flag_codifica_reg == "T"} {
+                        if {$coimtgen(regione) eq "MARCHE"} {
+                            if {$coimtgen(ente) eq "CPESARO"} {
+                                set sigla_est "CMPS"
+                            } elseif {$coimtgen(ente) eq "CFANO"} {
+                                set sigla_est "CMFA"
+                            } elseif {$coimtgen(ente) eq "CANCONA"} {
+                                set sigla_est "CMAN"
+                            } elseif {$coimtgen(ente) eq "PAN"} {
+                                set sigla_est "PRAN"
+                            } elseif {$coimtgen(ente) eq "CJESI"} {
+                                set sigla_est "CMJE"
+                            } elseif {$coimtgen(ente) eq "CSENIGALLIA"} {
+                                set sigla_est "CMSE"
+                            } elseif {$coimtgen(ente) eq "PPU"} {
+                                set sigla_est "PRPU"
+                            } elseif {$coimtgen(ente) eq "PMC"} {
+                                set sigla_est "PRMC"
+                            } elseif {$coimtgen(ente) eq "CMACERATA"} {
+                                set sigla_est "CMMC"
+                            } elseif {$coimtgen(ente) eq "CCIVITANOVA MARCHE"} {
+                                set sigla_est "CMCM"
+                            } elseif {$coimtgen(ente) eq "CASCOLI PICENO"} {
+                                set sigla_est "CMAP"
+                            } elseif {$coimtgen(ente) eq "CSAN BENEDETTO DEL TRONTO"} {
+                                set sigla_est "CMSB"
+                            } elseif {$coimtgen(ente) eq "PAP"} {
+                                set sigla_est "PRAP"
+                            } elseif {$coimtgen(ente) eq "PFM"} {
+                                set sigla_est "PRFM"
+                            } else {
+                                set sigla_est ""
+                            }
+
+                            set progressivo_est [db_string sel "select nextval('coimaimp_est_s')"]
+
+                            # devo fare l'lpad con una seconda query altrimenti mi va in errore
+                            # set progressivo_est [db_string sel "select lpad(:progressivo_est,6,'0')"]
+                            set progressivo_est [db_string sel "select lpad(:progressivo_est,:lun_num_cod_imp_est,'0')"]			    
+			    set cod_impianto_est "$sigla_est$progressivo_est"
+                        } else {
+                            if {$coimtgen(ente) eq "PGO"} {
+                                set lun_progressivo 7
+                            } else {
+                                set lun_progressivo 6
+                            }
+
+                            db_1row sel_dt_comu "
+                 select cod_istat
+                      , coalesce(progressivo,0) + 1 as progressivo
+                   from coimcomu
+                  where cod_comune = :cod_comune"
+
+                            if {$coimtgen(ente) eq "PMS"} {
+                                set progressivo [db_string query "select lpad(:progressivo, 5, '0')"]
+                                set cod_istat  "[string range $cod_istat 5 6]/"
+                            } elseif {$coimtgen(ente) eq "PTA"} {
+                                set progressivo [db_string query "select lpad(:progressivo, 7, '0')"]
+                                set fine_istat  [string length $cod_istat]
+                                set iniz_ist    [expr $fine_istat -3]
+                                set cod_istat  "[string range $cod_istat $iniz_ist $fine_istat]"
+			    } elseif {$coimtgen(ente) eq "PNA"} {#rom02 Aggiunta elseif e il suo contenuto
+				
+				set progressivo [db_string query "select lpad(:progressivo, $lun_progressivo, '0')"]
+				set fine_istat  [string length $cod_istat]
+				set iniz_ist    [expr $fine_istat -3]
+				set cod_istat  "[string range $cod_istat $iniz_ist $fine_istat]"
+				
+                            } else {
+                                # caso standard
+                                set progressivo [db_string query "select lpad(:progressivo, $lun_progressivo, '0')"]
+                            }
+
+			    if {$coimtgen(ente) eq "PNA"} {#rom02 Aggiunta if e il suo contenuto
+				set cod_impianto_est "$progressivo/$cod_istat"
+			    } else {#rom02 Aggiunta else ma non il suo contenuto
+				set cod_impianto_est "$cod_istat$progressivo"
+			    };#rom02
+                        }
+
+                        db_dml upd_prog_comu "
+                   update coimcomu
+                      set progressivo = :progressivo
+                    where cod_comune  = :cod_comune"
+
+                    } else {
+                        db_1row get_cod_impianto_est "select nextval('coimaimp_est_s') as cod_impianto_est"
+                    }
+
+		    #rom01 fine
+		    
 		    set cod_impianto_prov  ""
 		    set descrizione        ""
 		    set provenienza_dati   0;# Archivio esterno

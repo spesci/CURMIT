@@ -8,6 +8,11 @@ ad_page_contract {
     @param nome_funz identifica l'entrata di menu, serve per le autorizzazioni
                      serve se lista e' uno zoom che permetti aggiungi.
     @cvs-id          coiminco-filter.tcl
+
+    USER  DATA       MODIFICHE
+    ===== ========== =======================================================================
+    but01 20/06/2023 Aggiunto la classe ah-jquery-date ai campi 
+
 } {
     
    {funzione            "V"}
@@ -101,37 +106,40 @@ if {[string equal $cod_manutentore ""]} {
     set readonly_fld2 "readonly"
     set cerca_manu    ""
 }
-
+set jq_date "";#but01
+if {$funzione in "M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
 
 form create $form_name \
 -html    $onsubmit_cmd
-
+#but01 Aggiunto la classe ah-jquery-date ai campi:f_da_dat_prot, f_a_dat_prot, f_da_dat_prot2, f_a_dat_prot2,f_a_data_stp, f_da_data_stp.
 element create $form_name f_da_dat_prot \
 -label   "Da Data protocollo" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+-html    "size 10 maxlength 10 $readonly_fld {} class form_element tabindex 12 $jq_date" \
 -optional
 
 element create $form_name f_a_dat_prot \
 -label   "a Data protocollo" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+-html    "size 10 maxlength 10 $readonly_fld {} class form_element tabindex 12 $jq_date" \
 -optional
 
 element create $form_name f_da_dat_prot2 \
 -label   "Da Data protocollo" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+-html    "size 10 maxlength 10 $readonly_fld {} class form_element tabindex 12 $jq_date" \
 -optional
 
 element create $form_name f_a_dat_prot2 \
 -label   "a Data protocollo" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+-html    "size 10 maxlength 10 $readonly_fld {} class form_element tabindex 12 $jq_date" \
 -optional
 
 
@@ -146,14 +154,14 @@ element create $form_name f_da_data_stp \
 -label   "Da data stampa" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+-html    "size 10 maxlength 10 $readonly_fld {} class form_element tabindex 12 $jq_date" \
 -optional
 
 element create $form_name f_a_data_stp \
 -label   "A data stampa" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+-html    "size 10 maxlength 10 $readonly_fld {} class form_element tabindex 12 $jq_date" \
 -optional
 
 element create $form_name f_da_num_prot \

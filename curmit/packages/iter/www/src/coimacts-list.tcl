@@ -18,6 +18,9 @@ ad_page_contract {
                              separati da '|' ed impostarli come segue:
 
     @cvs-id coimacts-list.tcl 
+    USER  DATA       MODIFICHE
+    ===== ========== =======================================================================
+    but01 19/07/2023 Aggiunta class"link-button-2" nel actions"Selez"
 } { 
    {search_word       ""}
    {rows_per_page     ""}
@@ -77,7 +80,7 @@ set link_righe      [iter_rows_per_page     $rows_per_page]
 #if {$caller == "index"} {
     set link    "\[export_url_vars cod_acts last_cod_acts nome_funz nome_funz_caller extra_par\]"
     set actions "
-    <td nowrap><a href=\"$gest_prog?funzione=V&$link\">Selez.</a></td>"
+    <td nowrap><a href=\"$gest_prog?funzione=V&$link\"  class=\" link-button-2\">Selez.</a></td>"
     set js_function ""
 #} else { 
 #    set actions [iter_select [list column_name .... ]]

@@ -2,6 +2,8 @@
 <!--
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    rom01 02/03/2022 Aggiunta query sel_gend_bruc.
+
     sim04 03/08/2017 Aggiunto controllo per verificare che esista la fascia di potenza
 
     sim01 18/11/2016 Gestito la potenza in base al flag_tipo_impianto
@@ -295,5 +297,63 @@
        </querytext>
     </fullquery>
 
+<fullquery name="sel_gend_bruc">
+  <querytext>
+     select coalesce(a.numero_bruc,'1')                      as numero_bruc
+          , case a.flag_sostituito_bruc
+            when 't' then 'S&igrave;'
+            when 'f' then 'No'
+            else ''
+             end                                             as flag_sostituito_bruc_edit
+          , a.flag_sostituito_bruc                           as flag_sostituito_bruc
+          , iter_edit_data(a.data_installaz_bruc)            as data_installaz_bruc_edit
+          , iter_edit_data(a.data_rottamaz_bruc )            as data_rottamaz_bruc_edit
+          , a.data_installaz_bruc                            as data_installazione_bruc
+          , a.data_rottamaz_bruc                             as data_rottamazione_bruc
+          , a.modello_bruc                                   as modello_bruc
+          , a.matricola_bruc                                 as matricola_bruc
+          , iter_edit_num(a.campo_funzion_max, 2)            as campo_funzion_max_edit
+          , iter_edit_num(a.campo_funzion_min, 2)            as campo_funzion_min_edit
+          , b.descr_cost                                     as fabbricante_bruc
+	  , case a.tipo_bruciatore
+	    when 'A' then 'Atmosferico'
+	    when 'P' then 'Pressurizzato'
+	    when 'M' then 'Premiscelato'
+	    else ''
+	     end                                             as tipo_bruciatore
+       from coimgend a
+       left join coimcost b on b.cod_cost = a.cod_cost_bruc
+      where a.cod_impianto = :cod_impianto
+        and a.gen_prog     = :gen_prog
+      union all
+     select  a.numero_bruc                                    as numero_bruc
+          , case a.flag_sostituito_bruc
+            when 't' then 'S&igrave;'
+            when 'f' then 'No'
+            else ''
+             end                                             as flag_sostituito_bruc_edit
+          , a.flag_sostituito_bruc                           as flag_sostituito_bruc
+          , iter_edit_data(a.data_installaz_bruc)            as data_installaz_bruc_edit
+          , iter_edit_data(a.data_rottamaz_bruc )            as data_rottamaz_bruc_edit
+          , a.data_installaz_bruc                            as data_installazione_bruc
+          , a.data_rottamaz_bruc                             as data_rottamazione_bruc
+          , a.modello_bruc                                   as modello_bruc
+          , a.matricola_bruc                                 as matricola_bruc
+          , iter_edit_num(a.campo_funzion_max, 2)            as campo_funzion_max_edit
+          , iter_edit_num(a.campo_funzion_min, 2)            as campo_funzion_min_edit
+          , b.descr_cost                                     as fabbricante_bruc
+	  , case a.tipo_bruciatore
+	    when 'A' then 'Atmosferico'
+	    when 'P' then 'Pressurizzato'
+	    when 'M' then 'Premiscelato'
+	    else ''
+	     end                                             as tipo_bruciatore
+       from coimgend_bruc a
+       left join coimcost b on b.cod_cost = a.cod_cost_bruc
+      where a.cod_impianto = :cod_impianto
+        and a.gen_prog     = :gen_prog
+      order by numero_bruc
+  </querytext>
+</fullquery>
 
 </queryset>

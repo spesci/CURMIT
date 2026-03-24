@@ -16,6 +16,8 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    rom01 16/01/2023 Riportate modifiche gia' fatte per coimestr-list.tcl
+
     sim01 05/05/2020 La query non deve tenere contro delle DAM ma solo dei rapporti di ispezione
 
 } { 
@@ -76,7 +78,42 @@ if {[string is space $nome_funz_caller]} {
 iter_get_coimtgen
 set flag_viario $coimtgen(flag_viario)
 
+#rom01 Gestita la potenza con il relativo parametro come in coimaimp-list.tcl
+if {$coimtgen(flag_potenza) eq "pot_utile_nom"} {#rom01 Aggiunte if, else e il loro contenuto.
+    set colonna_potenza "a.potenza_utile"
+} else {
+    set colonna_potenza "a.potenza"
+}
+
+
 ##########################inizio condizioni per query
+#rom01 non bisogna estrarre gli impianti < 35 kW gia' controllati negli ultimi
+#rom01 2 anni e gli impianti > 35 kW gia' controllati nell'ultimo anno
+if {$tipo_estrazione == "3" || $tipo_estrazione == "12" } {#rom01 Aggiunta if, else e il loro contenuto
+    set mesi_sub 24
+} else {
+    set mesi_sub 60
+    
+    if {$coimtgen(regione) ne "MARCHE" && $tipo_estrazione == "4"} {
+	#Per gli impianti > di 100 Kw senza RCEE devo considerare gli ultimi 2 anni.
+	set mesi_sub 24
+    }
+
+}
+
+if {($coimtgen(ente) eq "CANCONA" || $coimtgen(ente) eq "PAN") && $tipo_estrazione != "9"} {#rom01 if e suo contenuto
+    set mesi_sub 0
+}
+
+if {$tipo_estrazione == "9"} {#rom01 if e contenuto
+    set mesi_sub 2
+}
+
+#rom01 calcola la data entro cui considerare l'esistenza dei rapporti di verifica
+#rom01 come la data odierna - il numero di mesi sopra indicati.
+db_1row sel_dual_data_calc ""
+set data_controllo $data_calc
+
 set data_odierna [iter_set_sysdate]
 set current_date [iter_set_sysdate]
 set sel_desc_estr ""
@@ -137,13 +174,13 @@ switch $tipo_estrazione {
 	set tipo_estrazione_edit "Impianti > 1 0 e < 100 Kw dichiarati"
 	
 	set where_stato " and a.stato = 'A'"
-	
-	if {$coimtgen(ente) eq "CANCONA" || $coimtgen(ente) eq "PAN"} {
+
+#rom01	if {$coimtgen(ente) eq "CANCONA" || $coimtgen(ente) eq "PAN"} {
 	    #06/08/2018 Sandro ha detto che per ora mettiamo 100 solo Ancona ma che in futuro andrà su tutti
 	    set where_pote " and a.potenza < 100"
-	} else {
-	    set where_pote " and a.potenza < 35"
-	}
+#rom01	} else {
+#rom01	     set where_pote " and a.potenza < 35"
+#rom01	}
 	#set order_by " order by [db_map col_random]"
 	set order_by " order by  d.descrizione,a.numero, b.cognome"
 	set where_dich " and a.flag_dichiarato = 'S'"
@@ -1093,10 +1130,20 @@ switch $tipo_estrazione {
     "4" {
 	set tipo_estrazione_edit "Impianti senza REE"
 	set where_stato " and a.stato = 'A'"
-	set where_pote ""
+
+	if {$coimtgen(regione) ne "MARCHE"} {#rom01 Aggiunta if e il suo contenuto
+	    set where_pote "and $colonna_potenza > 100"
+	} else {#rom01 Aggiunta else ma non il suo contenuto
+	    set where_pote ""
+	};#rom01
+
 	#set order_by   " order by [db_map col_random]"
 	set order_by   " order by  d.descrizione, b.cognome"
-	set where_dich " and a.flag_dichiarato <> 'S'"
+	#rom01set where_dich " and a.flag_dichiarato <> 'S'"
+	set where_dich " and ( not exists (select '1'
+                                           from coimdimp dimp
+                                          where dimp.cod_impianto = a.cod_impianto)
+                          or a.flag_dichiarato <> 'S' )";#rom01
 	#inizio dpr74
 	set where_tipo_imp ""
       	if {![string equal $flag_tipo_impianto ""]} {
@@ -1710,6 +1757,29 @@ set sel_matricola "
 	    append where_tipo_imp " and a.flag_tipo_impianto = :flag_tipo_impianto"
 	}
 
+    }
+    "20" {
+	set tipo_estrazione_edit "Impianti > 10 o > 12 Kw senza RCEE"
+	set where_stato " and a.stato = 'A'"
+	if {[string equal $flag_tipo_impianto "F"]} {
+	    set where_pote " and a.potenza > 12"
+	} else {
+	    set where_pote " and a.potenza > 10"
+	}
+	
+	set order_by   " order by  d.descrizione, b.cognome"
+	#rom01set where_dich " and a.flag_dichiarato <> 'S'"
+	set where_dich " and ( not exists (select '1'
+                                           from coimdimp dimp
+                                          where dimp.cod_impianto = a.cod_impianto)
+                          or a.flag_dichiarato <> 'S' )";#rom01
+	
+	#inizio dpr74
+	set where_tipo_imp ""
+      	if {![string equal $flag_tipo_impianto ""]} {
+	    append where_tipo_imp " and a.flag_tipo_impianto = :flag_tipo_impianto"
+	}
+	#fine dpr74
     }
 }
 

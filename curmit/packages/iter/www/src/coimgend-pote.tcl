@@ -203,10 +203,9 @@ if {[form is_valid $form_name]} {
 	}   
 	
 	if {$error_num == 0} {
-	    set potenza_utile_focolare_prfumi_tot    [expr $potenza_utile_focolare_prfumi_tot + $potenza_utile_focolare_prfumi($conta_prfumi)] 
-	    set potenza_nominale_focolare_prfumi_tot [expr $potenza_nominale_focolare_prfumi_tot + $potenza_nominale_focolare_prfumi($conta_prfumi)]
+	    set potenza_utile_focolare_prfumi_tot    [ah::round [expr $potenza_utile_focolare_prfumi_tot + $potenza_utile_focolare_prfumi($conta_prfumi)] 2]
+	    set potenza_nominale_focolare_prfumi_tot [ah::round [expr $potenza_nominale_focolare_prfumi_tot + $potenza_nominale_focolare_prfumi($conta_prfumi)] 2]
 	    
-
 	}
     };#fine while    
 

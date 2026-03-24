@@ -2,6 +2,8 @@
 <!--
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    rom01 28/02/2023 Aggiunto campo targa
+
     san01 12/08/2016 Aggiunto campo data_ultim_dich
 -->
 <queryset>
@@ -19,6 +21,7 @@ select coalesce(iter_edit_data(a.data_verifica),'&nbsp;') as data_verifica
      , coalesce(b.cognome,'')||' '||coalesce(b.nome,'') as nome_opve
      , c.ragione_01
      , d.cod_impianto_est
+     , d.targa --rom01
      , d.flag_tipo_impianto
      , e.cognome||' '||coalesce(e.nome,'') as nome_resp
      , coalesce(e.telefono,'&nbsp;')  ||' '|| coalesce(e.cellulare,'') as telefono
@@ -27,7 +30,7 @@ select coalesce(iter_edit_data(a.data_verifica),'&nbsp;') as data_verifica
      , coalesce(f.cap,'&nbsp;') as cap
      , coalesce(f.cod_qua,'&nbsp;') as cod_qua
      , coalesce(g.denominazione,'&nbsp;') ||' '||coalesce(d.localita,'') as denom_comune
-     , coalesce(a.note,'&nbsp;') || 'Man.' || coalesce(zz.cognome,'-') || ' ' || coalesce(zz.nome,'-') as note
+     , coalesce(a.note,'&nbsp;') || 'Man.' || coalesce(zz.cognome,'-') || ' ' || coalesce(zz.nome,'-') || ' N.Gen '|| coalesce(d.n_generatori,'0') as note
      , h.descr_inst as stato_inco
      , a.stato
      , a.cod_noin
@@ -42,7 +45,7 @@ select coalesce(iter_edit_data(a.data_verifica),'&nbsp;') as data_verifica
        end                          as desc_esito_csv
      , coalesce(a.ora_verifica, '') as ora_verifica_csv
      , coalesce(g.denominazione,'') ||' '||coalesce(d.localita,'') as denom_comune_csv
-     , coalesce(a.note,'') || 'Man.' || coalesce(zz.cognome,'-') || ' ' || coalesce(zz.nome,'-')      as note_csv
+     , coalesce(a.note,'') || 'Man.' || coalesce(zz.cognome,'-') || ' ' || coalesce(zz.nome,'-') || 'N.Gen '|| coalesce(d.n_generatori,'0')     as note_csv
      , coalesce(f.cap, '')          as cap_csv
      , coalesce(f.cod_qua, '')      as cod_qua_csv
      , coalesce(e.telefono,'') ||' '|| coalesce(e.cellulare,'')  as telefono_csv
@@ -102,6 +105,7 @@ select coalesce(iter_edit_data(a.data_verifica),'&nbsp;') as data_verifica
      , coalesce(b.cognome,'')||' '||coalesce(b.nome,'') as nome_opve
      , c.ragione_01
      , d.cod_impianto_est
+     , d.targa --rom01
      , d.flag_tipo_impianto
      , e.cognome||' '||coalesce(e.nome,'') as nome_resp
      , coalesce(e.telefono,'&nbsp;') as telefono

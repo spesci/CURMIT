@@ -14,7 +14,8 @@ select a.cod_dimp
           when a.flag_status = 'N' then 'Negativo'
           else ''
        end as flag_status
-     , b.cognome||' '||coalesce(b.nome,'') as desc_manutentore
+       , iter_history_desc_manutentore(a.cod_manutentore,a.data_controllo) as desc_manutentore --ric01
+    --ric01       , b.cognome||' '||coalesce(b.nome,'') as desc_manutentore
      , c.cognome||' '||coalesce(c.nome,'') as desc_responsabile
      , a.flag_tracciato
      , case a.flag_tracciato
@@ -28,6 +29,8 @@ select a.cod_dimp
           when 'R3' then 'RCEE Tipo 3'
 	  when 'R4' then 'RCEE Tipo 4'
 	  when 'DA' then 'Avven. Man.'
+	  when 'O1' then 'RCEE Tipo 1 Rv.Op.'
+	  when 'O2' then 'RCEE Tipo 2 Rv.Op.'
           else ''
        end as flag_tracciato_edit,
        case a.stato_dich
@@ -86,13 +89,15 @@ order by data_controllo desc, cod_dimp desc
        <querytext>
            select a.cod_dope_aimp
                 , iter_edit_data(a.data_dich)         as data_dich
-                , b.cognome||' '||coalesce(b.nome,'') as desc_manu
+		, iter_history_desc_manutentore(a.cod_manutentore,a.data_dich) as desc_manu --ric01
+		-- ric01, b.cognome||' '||coalesce(b.nome,'') as desc_manu
                 , case
                   when a.flag_tipo_impianto = 'R' then
-                       'Riscaldamento'
-                  else
-                       'Raffreddamento'
-                  end                                 as tipo_dich
+                  'Riscaldamento'
+		   when a.flag_tipo_impianto = 'T' then 'Teleriscaldamento'  --but01
+                   when a.flag_tipo_impianto = 'F' then 'Raffreddamento'     --but01
+                   when a.flag_tipo_impianto = 'C' then 'Cogenerazione'      --but01
+                    end     as tipo_dich
              from coimdope_aimp a
   left outer join coimmanu      b on b.cod_manutentore = a.cod_manutentore
             where a.cod_impianto = :cod_impianto

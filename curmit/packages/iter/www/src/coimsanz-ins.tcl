@@ -16,6 +16,11 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    but01 21/06/2023 Aggiunto la classe ah-jquery-date ai campi:data_scad, data_pag, data_compet
+    but01            , data_rich_audiz, data_ric_ulter, data_ruolo, data_accertamento. 
+    rom01 13/02/2023 Aggiunti i campi data_Accertamento e numero_accertamento su richiesta di Palermo.
+    rom01            Sandro ha detto che va bene per tutti.
+
     san01 23/03/2020 Rimosso controllo su data pagamento che può essere successivo alla data scadenza
 
     sim01 19/07/2019 Corretto errore nel caso in cui tipo_soggetto fosse stato nullo
@@ -106,6 +111,10 @@ switch $funzione {
     "D" {set readonly_fld_canc \{\}
     }
 }
+set jq_date "";#but01
+if {$funzione in "M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
 
 form create $form_name \
     -html    $onsubmit_cmd
@@ -127,12 +136,12 @@ element create $form_name id_caus \
     -html    "$disabled_fld {} class form_element" \
     -optional \
     -options $l_of_l_caus
-
+#but01 Aggiunto la classe ah-jquery-date ai campi:data_scad, data_pag, data_compet, data_rich_audiz
 element create $form_name data_scad \
     -label   "Data scadenza" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name importo \
@@ -153,7 +162,7 @@ element create $form_name data_pag \
     -label   "Data pagamento" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld_canc {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld_canc {} class form_element $jq_date" \
     -optional
 
 set l_of_l [db_list_of_lists sel_lol "select descrizione, cod_tipo_pag from coimtp_pag order by ordinamento"]
@@ -178,7 +187,7 @@ element create $form_name data_compet \
     -label   "Data competenza" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name tipo_soggetto \
@@ -230,7 +239,7 @@ element create $form_name data_rich_audiz \
     -label   "Data" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name note_rich_audiz \
@@ -244,7 +253,7 @@ element create $form_name data_pres_deduz \
     -label   "Data" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name note_pres_deduz \
@@ -258,7 +267,7 @@ element create $form_name data_ric_giudice \
     -label   "Data" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date " \
     -optional
 
 element create $form_name note_ric_giudice \
@@ -272,7 +281,7 @@ element create $form_name data_ric_tar \
     -label   "Data" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name note_ric_tar \
@@ -281,12 +290,12 @@ element create $form_name note_ric_tar \
     -datatype text \
     -html    "cols 30 rows 1 $readonly_fld {} class form_element" \
     -optional
-
+#but01 Aggiunto la classe ah-jquery-date ai campi:data_ric_ulter, data_ruolo, data_accertamento
 element create $form_name data_ric_ulter \
     -label   "Data" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name note_ric_ulter \
@@ -300,7 +309,7 @@ element create $form_name data_ruolo \
     -label   "Data" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name note_ruolo \
@@ -308,6 +317,21 @@ element create $form_name note_ruolo \
     -widget   textarea \
     -datatype text \
     -html    "cols 30 rows 1 $readonly_fld {} class form_element" \
+    -optional
+
+#rom01
+element create $form_name data_accertamento \
+    -label   "Data accertamento" \
+    -widget   text \
+    -datatype text \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
+    -optional
+#rom01
+element create $form_name numero_accertamento \
+    -label   "Numero accertamento" \
+    -widget   text \
+    -datatype text \
+    -html    "size 20 maxlength 20 $readonly_fld {} class form_element" \
     -optional
 
 
@@ -382,6 +406,8 @@ if {[form is_request $form_name]} {
         element set_properties $form_name note_ric_ulter    -value $note_ric_ulter
         element set_properties $form_name data_ruolo        -value $data_ruolo
         element set_properties $form_name note_ruolo        -value $note_ruolo
+        element set_properties $form_name data_accertamento   -value $data_accertamento;#rom01
+        element set_properties $form_name numero_accertamento -value $numero_accertamento;#rom01
     }
 }
 
@@ -412,6 +438,8 @@ if {[form is_valid $form_name]} {
     set note_ric_ulter    [element::get_value $form_name note_ric_ulter]
     set data_ruolo        [element::get_value $form_name data_ruolo]
     set note_ruolo        [element::get_value $form_name note_ruolo]
+    set data_accertamento   [element::get_value $form_name data_accertamento];#rom01
+    set numero_accertamento [element::get_value $form_name numero_accertamento];#rom01
 
     # controlli standard su numeri e date, per Ins ed Upd
     set error_num 0
@@ -612,6 +640,15 @@ if {[form is_valid $form_name]} {
 	} 
     }
 
+    if {![string equal $data_accertamento ""]} {#rom01 Aggiunta if e il suo contenuto
+	set data_accertamento [iter_check_date $data_accertamento]
+	if {$data_accertamento == 0} {
+	    element::set_error $form_name data_accertamento "Data non corretta"
+	    incr error_num
+	} 
+    }
+
+    
     if {$error_num > 0} {
         ad_return_template
         return

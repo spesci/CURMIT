@@ -4,7 +4,7 @@
 
 
 <center>
-<formtemplate id="@form_name;noquote@">
+<formtemplate id="@form_name@">
 <formwidget   id="funzione">
 <formwidget   id="caller">
 <formwidget   id="nome_funz">
@@ -61,7 +61,7 @@
 </tr>
 
 <tr>
-    <td valign=top align=right class=form_title>a data occorrenza</td>
+    <td valign=top align=right class=form_title>A data occorrenza</td>
     <td valign=top><formwidget id="f_data_evas_a">
         <formerror id="f_data_evas_a"><br>
         <span class="errori">@formerror.f_data_evas_a;noquote@</span>
@@ -77,7 +77,7 @@
     </td>
 </tr>
 <tr>
-    <td valign=top align=right class=form_title>a data controllo</td>
+    <td valign=top align=right class=form_title>A data controllo</td>
     <td valign=top><formwidget id="f_data_controllo_a">
         <formerror id="f_data_controllo_a"><br>
         <span class="errori">@formerror.f_data_controllo_a;noquote@</span>
@@ -85,7 +85,7 @@
     </td>
 </tr>
 <tr>
-    <td valign=top align=right class=form_title>Da Potenza (kW)</td>
+    <td valign=top align=right class=form_title>Da potenza (kW)</td>
     <td valign=top><formwidget id="f_potenza_da">
         <formerror id="f_potenza_da"><br>
         <span class="errori">@formerror.f_potenza_da;noquote@</span>
@@ -94,7 +94,7 @@
 </tr>
 
 <tr>
-    <td valign=top align=right class=form_title>a Potenza (kW)</td>
+    <td valign=top align=right class=form_title>A potenza (kW)</td>
     <td valign=top><formwidget id="f_potenza_a">
         <formerror id="f_potenza_a"><br>
         <span class="errori">@formerror.f_potenza_a;noquote@</span>
@@ -122,9 +122,9 @@
 
 <tr>
     <td valign=top align=right class=form_title>Ente verificatore</td>
-    <td valign=top><formwidget id="f_rgen">
-        <formerror id="f_rgen"><br>
-        <span class="errori">@formerror.f_rgen;noquote@</span>
+    <td valign=top><formwidget id="f_enve">
+        <formerror id="f_enve"><br>
+        <span class="errori">@formerror.f_enve;noquote@</span>
         </formerror>
     </td>
 </tr>

@@ -18,6 +18,10 @@ ad_page_contract {
                              separati da '|' ed impostarli come segue:
 
     @cvs-id coimaces-list.tcl 
+    USER  DATA       MODIFICHE
+    ===== ========== =======================================================================
+    but01 19/07/2023 Aggiunta class"link-button-2" nel actions"Selez"
+
 } { 
    {search_word        ""}
    {rows_per_page      ""}
@@ -82,7 +86,8 @@ set link_righe      [iter_rows_per_page     $rows_per_page]
 set url_list_aimp   [list [ad_conn url]?[export_ns_set_vars url]]
 set flag_call      "uten"
 set link           "\[export_url_vars cod_aces last_cod_aces nome_funz nome_funz_caller url_coimaces_list flag_call stato_01\]"
-set actions        "<td nowrap><a href=\"coimaimp-aces-list?$link\">Selez.</a></td>"
+#but01
+set actions        "<td nowrap><a href=\"coimaimp-aces-list?$link\" class=\" link-button-2\">Selez.</a></td>"
 set js_function     ""
 
 # imposto la struttura della tabella

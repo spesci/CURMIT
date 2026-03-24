@@ -35,6 +35,8 @@ set link_prn2 [export_url_vars cod_dimp nome_funz nome_funz_caller caller]
 
 set link         [export_ns_set_vars "url"];#sim01
 
+set link [export_url_vars cod_dimp last_cod_dimp nome_funz nome_funz_caller extra_par caller cod_impianto url_list_aimp url_aimp url_gage flag_no_link cod_opma data_ins]
+
 #ns_log notice "prova dob1 $pack_dir"
 
 #append pack_dir "spool/allegati"
@@ -161,9 +163,9 @@ if {[form is_valid $form_name]} {
 
 #sim01    ns_return 200 text/html "Inserito allegato con nome file: $tabella$cod_dimp nella cartella $dir"
 
-    set return_url coimdimp-list?$link;#sim01
-    ad_returnredirect -message $return_url;#sim01
-
+    set return_url "coimdimp-list?$link";#sim01
+    ad_returnredirect -message "Allegato inserito correttamente" $return_url;#sim01
+    ad_script_abort
 }
 
 ad_return_template

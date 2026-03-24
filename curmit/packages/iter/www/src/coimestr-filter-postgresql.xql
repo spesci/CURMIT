@@ -46,4 +46,13 @@
        </querytext>
     </fullquery>
 
+    <fullquery name="sel_manu">
+       <querytext>
+             select cod_manutentore as cod_manu_db
+               from coimmanu
+              where upper(trim(cognome))   $eq_cognome
+                and upper(trim(nome))      $eq_nome
+       </querytext>
+    </fullquery>
+
 </queryset>

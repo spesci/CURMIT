@@ -37,6 +37,7 @@ set master_logo_dx_titolo_sotto [parameter::get_from_package_key -package_key it
 set master_ind_email            [parameter::get_from_package_key -package_key iter -parameter master_ind_email];#nic02
 set master_sito_web             [parameter::get_from_package_key -package_key iter -parameter master_sito_web];#nic02
 
+iter_get_coimtgen
 
 set url_chiamante [ns_conn url]
 if {$url_chiamante eq "/iter/"
@@ -77,7 +78,7 @@ if {$flag_single_sign_on eq "t"} {#rom01 aggiunta if, else e loro contenuto
     set url_portale [parameter::get_from_package_key -package_key iter -parameter url_portale -default ""]
     append url_portale "/register";#Sandro ha detto che tutti gli utenti vanno indirizzati alla pagina di log-in del portale
     
-    set url_ss "<a href=$url_portale><b><big>Torna al Portale</big></b></a>"
+    set url_ss "<a href=$url_portale class=\"link-header\"><b><big>Torna al Portale</big></b></a>"
 } else {
     set url_ss ""
 };#rom01

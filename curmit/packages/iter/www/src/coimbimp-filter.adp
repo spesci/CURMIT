@@ -3,7 +3,7 @@
 <property name="context_bar">@context_bar;noquote@</property>
 
 <center>
-<formtemplate id="@form_name;noquote@">
+<formtemplate id="@form_name@">
 <formwidget   id="funzione">
 <formwidget   id="caller">
 <formwidget   id="nome_funz">
@@ -37,7 +37,7 @@
       </if>
       <tr>
          <td valign=top colspan=2 align=left class=form_title>
-             <b>Ricerca per Responsabile</b>
+             <b>Ricerca per responsabile</b>
          </td>
       </tr>
 
@@ -61,7 +61,7 @@
 
       <tr>
          <td valign=top colspan=2 nowrap align=left class=form_title>
-             <b>Ricerca per Indirizzo</b>
+             <b>Ricerca per indirizzo</b>
          </td>
       </tr>
 
@@ -89,7 +89,7 @@
 
       <tr>
          <td valign=top colspan=2 nowrap align=left class=form_title>
-             <b>Ricerca per Manutentore</b>
+             <b>Ricerca per manutentore</b>
          </td>
       </tr>
 

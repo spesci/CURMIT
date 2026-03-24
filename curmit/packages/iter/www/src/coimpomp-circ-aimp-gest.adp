@@ -1,6 +1,8 @@
 <!--
     USER  DATA       MODIFICHE
     ====  ========== =========================================================================
+    rom04 09/08/2024 Aggiunto messaggio per PO dismessa.
+
     rom03 21/12/2018 Aggiunto campo num_po_sostituente
 
     rom02 08/11/2018 Cambiate diciture label; gestito il ritorno a coimaimp-sist-distribuz-gest
@@ -56,7 +58,7 @@
 
 <table>
 <tr><td valign=top align=right class=form_title>PO n.</td><!--rom02 Modificata dicitura da "Numero" a "PO n."-->
-    <td valign=top><formwidget id="num_po">
+    <td valign=top><formwidget id="num_po"> &nbsp; @msg_pomp_dism;noquote@<!-- rom04 -->
         <formerror  id="num_po"><br>
         <span class="errori">@formerror.num_po;noquote@</span>
         </formerror>

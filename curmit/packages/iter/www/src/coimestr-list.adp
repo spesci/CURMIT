@@ -11,10 +11,10 @@
 
 <script language=JavaScript>
 function checkall() {
-    for (var i=0; i < document.@form_name;noquote@.elements.length;i++) {
-         var e=document.@form_name;noquote@.elements[i];
+    for (var i=0; i < document.@form_name@.elements.length;i++) {
+         var e=document.@form_name@.elements[i];
          if (e.name == 'conferma') {
-             e.checked = document.@form_name;noquote@.checkall_input.checked;
+             e.checked = document.@form_name@.checkall_input.checked;
          }
     }
 }
@@ -43,7 +43,7 @@ function checkall() {
 <table width=100% border=0 cellpadding=0 cellspacing=0>
   <tr>
     <td align=center>
-      <form name=@form_name;noquote@ method=post action="coimestr-gest">
+      <form name=@form_name@ method=post action="coimestr-gest">
         <input type=hidden name=caller           value="@value_caller;noquote@">
         <input type=hidden name=nome_funz        value="@value_nome_funz;noquote@">
         <input type=hidden name=nome_funz_caller value="@value_nome_funz_caller;noquote@">

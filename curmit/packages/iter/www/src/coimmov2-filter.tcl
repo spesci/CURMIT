@@ -11,6 +11,10 @@ ad_page_contract {
 
     USER   DATA       MODIFICHE
     ====== ========== =======================================================================
+    but01 19/06/2023  Aggiunto la classe ah-jquery-date ai campi: f_data_pag_da, f_data_pag_a,
+    but01             f_data_compet_da, f_data_compet_a, f_data_incasso_da, f_data_incasso_a,
+    but01             f_data_scad_a, f_data_scad_da.
+
     rom02  21/10/2020 Su segnalazione di Salerno modificato page_title per renderlo
     rom02             uguale al nome del menu', Sandro ha detto che va bene per tutti.
 
@@ -77,33 +81,33 @@ element create $form_name f_id_caus \
 #rom01     -datatype text \
 #rom01     -html    "size 15 maxlength 15 class form_element" \
 #rom01     -optional
-
+#but01 Aggiunto la classe ah-jquery-date ai campi: f_data_pag_da, f_data_pag_a, f_data_compet_da, f_data_compet_a, f_data_incasso_da, f_data_incasso_a, f_data_scad_a, f_data_scad_da.
 element create $form_name f_data_pag_da \
     -label   "Data pagamento da" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 class form_element" \
+    -html    "size 10 maxlength 10 class form_element class ah-jquery-date" \
     -optional
 
 element create $form_name f_data_pag_a \
     -label   "Data pagamento a" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 class form_element" \
+    -html    "size 10 maxlength 10 class form_element class ah-jquery-date" \
     -optional
 
 element create $form_name f_data_compet_da \
     -label   "Data competenza da" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 class form_element" \
+    -html    "size 10 maxlength 10 class form_element class ah-jquery-date" \
     -optional
 
 element create $form_name f_data_compet_a \
     -label   "Data pagamento a" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 class form_element" \
+    -html    "size 10 maxlength 10 class form_element class ah-jquery-date" \
     -optional
 
 #san01 aggiunto f_data_incasso_da e f_data_incasso_a
@@ -111,14 +115,14 @@ element create $form_name f_data_incasso_da \
     -label   "Data incasso da" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 class form_element" \
+    -html    "size 10 maxlength 10 class form_element class ah-jquery-date" \
     -optional
 
 element create $form_name f_data_incasso_a \
     -label   "Data incasso a" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 class form_element" \
+    -html    "size 10 maxlength 10 class form_element class ah-jquery-date" \
     -optional
 
 
@@ -126,14 +130,14 @@ element create $form_name f_data_scad_da \
     -label   "Data scadenza da" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 class form_element" \
+    -html    "size 10 maxlength 10 class form_element class ah-jquery-date" \
     -optional
 
 element create $form_name f_data_scad_a \
     -label   "Data scadenza a" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 class form_element" \
+    -html    "size 10 maxlength 10 class form_element class ah-jquery-date" \
     -optional
 
 element create $form_name f_importo_da \

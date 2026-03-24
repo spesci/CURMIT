@@ -17,6 +17,8 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    rom02 21/04/2023 Regione Friuli aggiunta opzione Manut/Inst solo Clim.Estiva/Biomassa Legnosa nel campo Ruolo
+
     rom01 05/05/2019 Aggiunto link link_tpin per la gestione delle tipologie d'Impianto su
     rom01            cui l'Impresa e' abilitata a lavorare.
 
@@ -317,13 +319,23 @@ element create $form_name prot_convenzione_dt \
 -html    "size 14 maxlength 14 $readonly_fld {} class form_element" \
 -optional
 
+if {$coimtgen(regione) eq "FRIULI-VENEZIA GIULIA"} {#rom02 Aggiunta if, else e il loro contenuto
+
+    set options_flag_ruolo [list {{} {}} {Manutentore M} {Installatore I} {Manutentore/Installatore T} {"Manut/Inst solo Clim.Estiva" E} {"Manut/Inst solo Biomassa Legnosa" L} {"Manut/Inst solo Clim.Estiva/Biomassa Legnosa" B}]
+
+} else {
+
+    set options_flag_ruolo [list {{} {}} {Manutentore M} {Installatore I} {Manutentore/Installatore T} {"Manut/Inst solo Clim.Estiva" E} {"Manut/Inst solo Biomassa Legnosa" L}]
+
+}
+
 element create $form_name flag_ruolo \
 -label   "flag ruolo" \
 -widget   select \
 -datatype text \
 -html    "$disabled_fld {} class form_element" \
 -optional \
--options {{{} {}} {Manutentore M} {Installatore I} {Manutentore/Installatore T} {"Manut/Inst solo Clim.Estiva" E} {"Manut/Inst solo Biomassa Legnosa" L}}
+-options $options_flag_ruolo
 
 element create $form_name data_inizio \
 -label   "Data inizio attivita" \

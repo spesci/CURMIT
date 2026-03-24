@@ -1,6 +1,10 @@
 <!--
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    rom08 22/07/2024 Palermo deve vedere le potenze del riscaldamento e raffrescamento.
+
+    rom07 22/03/2023 UCIT deve vedere le potenze del riscaldamento e raffrescamento.
+
     rom06 25/02/2019 Messi asterischi sui campi obbligatori su richiesta della Regione Marche
 
     rom05 11/02/2019 Modificate le potenze per la Regione Marche.
@@ -161,7 +165,7 @@
   </else><!--rom03-->
       </tr>
       <tr>
-	<if @coimtgen.regione@ ne "MARCHE"><!--rom100 oscuro il campo per le marche-->
+	<if @coimtgen.regione@ ne "MARCHE"><!--rom07 oscuro il campo per le marche-->
           <td valign="top" align="right" class="form_title">Tipologia</td>
           <td valign="top">
 	    <formwidget id="cod_tpim">
@@ -561,7 +565,7 @@
 		<span class="errori">@formerror.potenza_utile;noquote@</span>
 	      </formerror>
           </td>
-	  
+	  <if @coimtgen.regione@ ne "FRIULI-VENEZIA GIULIA"><!-- rom07 Aggiunta if e il suo contenuto -->	  
 	  <td valign="top" align="right" nowrap class="form_title">Potenza frigorifera utile(kW)</td><!--sim04-->
 	  <td valign="top"><!--sim04-->
 	    <formwidget id="potenza_utile_freddo"><!--sim04-->
@@ -570,9 +574,45 @@
 		<span class="errori">@formerror.potenza_utile_freddo;noquote@</span><!--sim04-->
 	      </formerror><!--sim04-->
           </td><!--sim04-->
-	  
+	  </if><!-- rom07 -->
 	</tr>
       </if><!--rom05-->
+      <if @coimtgen.regione@ eq "FRIULI-VENEZIA GIULIA"><!-- rom07 Aggiunta if e il suo contenuto -->
+      <tr>
+        <td valign="top" align="right" nowrap class="form_title">Potenza termica nominale(KW)<font color=red>*</font></td>
+        <td valign="top">
+          <formwidget id="potenza_termica_nominale">
+            <formerror  id="potenza_termica_nominale"><br>
+              <span class="errori">@formerror.potenza_termica_nominale@</span>
+	    </formerror>
+	</td>
+	<td valign="top" align="right" nowrap class="form_title">Potenza assorbita nominale(KW)<font color=red>*</font></td>
+	<td valign="top">
+	  <formwidget id="potenza_termica_assorbita_nominale">
+	    <formerror  id="potenza_termica_assorbita_nominale"><br>
+	      <span class="errori">@formerror.potenza_termica_assorbita_nominale@</span>
+	    </formerror>
+	</td>
+      </tr>
+      </if>
+      <if @coimtgen.ente@ eq "PPA"><!-- rom08 Aggiunta if e il suo contenuto -->
+      <tr>
+        <td valign="top" align="right" nowrap class="form_title">Potenza termica nominale(KW)</td>
+        <td valign="top">
+          <formwidget id="potenza_termica_nominale">
+            <formerror  id="potenza_termica_nominale"><br>
+              <span class="errori">@formerror.potenza_termica_nominale@</span>
+	    </formerror>
+	</td>
+	<td valign="top" align="right" nowrap class="form_title">Potenza assorbita nominale(KW)</td>
+	<td valign="top">
+	  <formwidget id="potenza_termica_assorbita_nominale">
+	    <formerror  id="potenza_termica_assorbita_nominale"><br>
+	      <span class="errori">@formerror.potenza_termica_assorbita_nominale@</span>
+	    </formerror>
+	</td>
+      </tr>
+      </if>
       <if @coimtgen.regione@ eq "MARCHE"><!--rom05 aggiunta if e suo contenuto-->
 	<tr>
           <td valign="top" align="right" nowrap class="form_title">Potenza frigorifera nominale(kW)<font color=red>*</font></td>

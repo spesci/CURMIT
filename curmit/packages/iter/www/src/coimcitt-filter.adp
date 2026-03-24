@@ -1,3 +1,9 @@
+<!--
+    USER  DATA       MODIFICHE
+    ===== ========== =============================================================================
+    rom01 12/09/2022 Aggiunto filtro per p_iva.
+
+-->
 <master   src="../master">
 <property name="title">@page_title;noquote@</property>
 <property name="context_bar">@context_bar;noquote@</property>
@@ -26,12 +32,21 @@
 </tr>
 
 <tr>
-    <td valign=top align=right class=form_title>Cod.Fisc. / P.Iva</td>
+    <td valign=top align=right class=form_title>Cod.Fisc.</td>
     <td valign=top nowrap><formwidget id="f_cod_fiscale">
         <formerror  id="f_cod_fiscale"><br>
         <span class="errori">@formerror.f_cod_fiscale;noquote@</span>
         </formerror>
     </td>
+</tr>
+
+<tr><!--rom01 Aggiunta riga con campo f_cod_piva -->
+  <td valign=top align=right class=form_title>P.Iva</td>
+  <td valign=top nowrap><formwidget id="f_cod_piva">
+      <formerror  id="f_cod_piva"><br>
+	<span class="errori">@formerror.f_cod_piva;noquote@</span>
+      </formerror>
+  </td>
 </tr>
 
 <tr>

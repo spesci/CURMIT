@@ -14,6 +14,7 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    but01 10/07/2023  Aggiunto la classe ah-jquery-date al campo data_scad
     rom03 30/07/2018 Su richiesta di Sandro faccio puntare il programma di lista al nuovo 
     rom03            programma coimestr-mail-list.
 
@@ -104,6 +105,10 @@ set onsubmit_cmd ""
 set readonly_key \{\}
 set readonly_fld \{\}
 set disabled_fld \{\}
+set jq_date "";#but01
+if {$funzione in "V M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
 
 form create $form_name \
 -html    $onsubmit_cmd
@@ -135,12 +140,12 @@ element create $form_name flag_scaduto \
 -html    "class form_element" \
 -optional \
 -options { {{} {}} {S&igrave; S} {No N}}
-
+#but01
 element create $form_name data_scad \
 -label   "Data Scadenza" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 class form_element" \
+-html    "size 10 maxlength 10 class form_element $jq_date" \
 -optional
 
 

@@ -244,6 +244,15 @@
                          , flag_gest_rcee_legna        -- 20/02/2017
 			 , flag_verifica_impianti      -- 30/06/2017
                          , flag_obbligo_dati_catastali -- sim07
+			 , flag_controllo_abilitazioni -- 30/11/2020 LUCAR.
+                         , login_spid_p                -- 19/03/2021 LUCAR.
+			 , flag_firma_manu_stampa_rcee --rom14 23/11/2022
+			 , flag_firma_resp_stampa_rcee --rom14 23/11/2022
+			 , flag_firma_ispe_stampa_cimp --rom15 12/04/2023
+			 , flag_firma_resp_stampa_cimp --rom15 12/04/2023
+			 , flag_asse_data              --rom18 18/09/2023
+			 , flag_cind                   --rom20 23/05/2024
+			 , protocollo_automatico_ente  --rom21 21/03/2025
                       from coimtgen
                      where cod_tgen = '1'
        </querytext>

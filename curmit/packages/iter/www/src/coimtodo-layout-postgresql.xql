@@ -70,6 +70,7 @@
          left outer join coimcomu e on e.cod_comune    = b.cod_comune 
          left outer join coimanom g on g.cod_cimp_dimp = a.cod_cimp_dimp
          left outer join coimcimp m on m.cod_cimp      = a.cod_cimp_dimp
+	 left outer join coimopve p on p.cod_opve      = m.cod_opve  --rom01
         where 1 = 1          
         $where_comune
         $where_tipologia
@@ -80,7 +81,8 @@
         $where_comb
         $where_tpim	
         $where_tipo_imp
-	$where_rgen
+	--rom01 $where_rgen
+	$where_enve --rom01
         group by b.flag_tipo_impianto
                , b.cod_impianto_est
                , a.note
@@ -109,7 +111,8 @@
          left outer join coimcomu e on e.cod_comune    = b.cod_comune 
          left outer join coimanom g on g.cod_cimp_dimp = a.cod_cimp_dimp
          left outer join coimcimp m on m.cod_cimp      = a.cod_cimp_dimp    
-        where 1 = 1  
+	 left outer join coimopve p on p.cod_opve      = m.cod_opve --rom01
+         where 1 = 1  
         $where_comune
         $where_tipologia
         $where_evasione
@@ -118,8 +121,8 @@
         $where_potenza
         $where_comb
         $where_tpim	
-	$where_rgen
-        
+	--rom01 $where_rgen
+        $where_enve --rom01
        </querytext>
     </fullquery>
 
@@ -150,7 +153,8 @@
          left outer join coimcomu e on e.cod_comune    = b.cod_comune 
          left outer join coimanom g on g.cod_cimp_dimp = a.cod_cimp_dimp
          left outer join coimcimp m on m.cod_cimp      = a.cod_cimp_dimp    
-        where 1 = 1  
+	 left outer join coimopve p on p.cod_opve      = m.cod_opve --rom01
+         where 1 = 1  
        
         $where_comune
         $where_tipologia
@@ -160,7 +164,8 @@
         $where_comb
         $where_tpim	
         $where_tipo_imp
-	$where_rgen
+	--rom01 $where_rgen
+	$where_enve --rom01
         group by b.flag_tipo_impianto
                , b.cod_impianto_est
                , a.note

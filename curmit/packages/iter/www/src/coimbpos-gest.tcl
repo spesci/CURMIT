@@ -16,6 +16,11 @@ ad_page_contract {
     @param extra_par Variabili extra da restituire alla lista
 
     @cvs-id          coimbpos-gest.tcl
+    
+    USER  DATA       MODIFICHE
+    ===== ========== =======================================================================
+    but01 10/07/2023  Aggiunto la classe ah-jquery-date al campo data_scad
+
 } {
     {cod_bpos         ""}
     {last_cod_bpos    ""}
@@ -87,7 +92,10 @@ if {$funzione eq "M"} {
 #    set readonly_fld \{\}
 #    set disabled_fld \{\}
 }
-
+set jq_date "";#but01
+if {$funzione in "M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
 # Possono essere modificati solo data pagamento, importo pagato e stato
 form create $form_name \
     -html    $onsubmit_cmd
@@ -96,7 +104,7 @@ element create $form_name data_emissione \
     -label   "Data estrazione file" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_key {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_key {} class form_element $jq_date" \
     -optional
 
 element create $form_name quinto_campo \
@@ -124,7 +132,7 @@ element create $form_name data_verifica \
     -label   "Data appuntamento" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 readonly {} class form_element" \
+    -html    "size 10 maxlength 10 readonly {} class form_element $jq_date" \
     -optional
 
 element create $form_name importo_emesso \
@@ -152,7 +160,7 @@ element create $form_name data_scarico \
     -label   "Data scarico" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name stato \
@@ -282,7 +290,6 @@ if {[form is_valid $form_name]} {
 #   } elseif {$funzione eq "D"} {
 #	set dml_sql [db_map del_bpos]
     }
-
     # Lancio la query di manipolazione dati contenute in dml_sql
     
     if {[info exists dml_sql]} {

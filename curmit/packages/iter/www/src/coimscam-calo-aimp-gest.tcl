@@ -20,6 +20,9 @@ ad_page_contract {
     
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    but01 22/06/2023 Aggiunto la classe ah-jquery-date ai campi:data_installaz, data_dismissione.
+    rom03 03/08/2022 Corretto errore di battitura su variabile num_sc_sostituente.
+
     rom02 21/12/2018 Aggiunto campo num_sc_sostituente
 
     rom01 03/09/2018 Aggiunto campo flag_sostituito
@@ -99,6 +102,11 @@ switch $funzione {
         set disabled_fld \{\}
     }
 }
+set jq_date "";#but01
+if {$funzione in "M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
+
 
 form create $form_name \
     -html    $onsubmit_cmd
@@ -109,19 +117,19 @@ element create $form_name num_sc \
     -datatype text \
     -html    "size 8 maxlength 8 readonly {} class form_element" \
     -optional
-
+#but01
 element create $form_name data_installaz \
     -label   "Data installazione" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name data_dismissione \
     -label   "Data dismissione" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional 
 
 #rom01
@@ -221,7 +229,8 @@ if {[form is_request $form_name]} {
         element set_properties $form_name flag_sostituito     -value $flag_sostituito ;#rom01
 	element set_properties $form_name cod_cost            -value $cod_cost
 	element set_properties $form_name modello             -value $modello
-	element set_properties $form_name num_sc_sostituente  -value $nnum_sc_sostituente;#rom02
+	#rom03element set_properties $form_name num_sc_sostituente  -value $nnum_sc_sostituente;#rom02
+	element set_properties $form_name num_sc_sostituente  -value $num_sc_sostituente;#rom03
     }
 }
 

@@ -17,6 +17,22 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    rom10 16/04/2024 Sandro ha chiesto di rendere modificabile per i manutentori il campo cap.
+
+    but01 19/06/2023 Aggiunto la classe ah-jquery-date ai campo data.
+
+    rom09 07/03/2023 Anche Regione Marche ha chiesto di togliere i controlli di congruenza tra
+    rom09            natura giuridica, cod_fiscale e cod_piva come Ucit.
+
+    rom08 24/01/2023 Per ucit tolti controlli su congruenza tra natura giuridica e cod_fiscale
+    rom08            e cod_piva perche' quando inseriscono le associazioni hanno natura giuridica
+    rom08            ma solo codice fiscale.
+
+    ric01 06/12/2022 Solo per Palermo, aggiunto controllo bloccante in caso PIVA o codice
+    ric01            fiscale siano già esistenti ed associati ad altre persone.
+    ric01            Per tutti gli enti aggiunto controllo su congruenza tra natura giuridica e
+    ric01            cod_fiscale e cod_piva.
+    
     rom07 25/11/2020 Sandro ha detto che cod_fisc e cod_piva possono essere lasciati vuoti
     rom07            dagli utenti con ruolo admin e utente.
 
@@ -191,6 +207,10 @@ switch $funzione {
     }
 }
     
+set jq_date "";#but01
+if {$funzione in "M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
 
 
 form create $form_name \
@@ -241,11 +261,12 @@ element create $form_name numero \
 -html    "size 8 maxlength 8 $readonly_man {} class form_element" \
 -optional
 
+#rom10 Messo readonly_fld al posto di readonly_man
 element create $form_name cap \
 -label   "C.A.P." \
 -widget   text \
 -datatype text \
--html    "size 5 maxlength 5 $readonly_man {} class form_element" \
+-html    "size 5 maxlength 5 $readonly_fld {} class form_element" \
 -optional
 
 element create $form_name localita \
@@ -318,12 +339,12 @@ element create $form_name email \
 -datatype text \
 -html    "size 30 maxlength 100 $readonly_fld {} class form_element" \
 -optional
-
+#but01 Aggiunto la classe ah-jquery-date ai campo data.
 element create $form_name data_nas \
 -label   "Data di nascita" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+-html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
 -optional
 
 element create $form_name comune_nas \
@@ -670,6 +691,21 @@ if {[form is_valid $form_name]} {
 	    incr error_num
 	}
 
+	#rom09 Modificata if per aggiungere regione Marche
+	if {!($coimtgen(regione) in [list "FRIULI-VENEZIA GIULIA" "MARCHE"])} {#rom08 Aggiunta if ma non il suo contenuto
+
+	    if {[string equal $natura_giuridica "F"] && ![string equal $cod_piva ""]} {#ric01 Aggiunta if e contenuto
+		element::set_error $form_name cod_piva "Per le persone fisiche non va indicata la P.IVA"
+		incr error_num
+	    }
+	    
+	    if {[string equal $natura_giuridica "G"] && ![string equal $cod_fiscale ""]} {#ric01 Aggiunta if e contenuto
+		element::set_error $form_name cod_fiscale "Per le persone giuridiche non va indicato il Cod.Fisc."
+		incr error_num
+	    }
+	    
+	};#rom08
+	
 	if {$error_num       == 0
 	&&  $cod_fiscale     ne ""
 	&&  $flag_confermato eq "f"
@@ -683,6 +719,14 @@ if {[form is_valid $form_name]} {
 		set inserimento_o_modifica "la modifica"
 	    }
 	    
+	    if {$coimtgen(ente) eq "PPA"} {#ric01 aggiunti if, else e loro contenuto
+		set cod_fisc_error_msg "Attenzione, esiste un altro soggetto con lo stesso codice fiscale."
+		set cod_fisc_conf_value "f"
+	    } else {
+		set cod_fisc_error_msg "Attenzione, esiste un altro soggetto con lo stesso codice fiscale.<br>Confermi $inserimento_o_modifica?"
+		set cod_fisc_conf_value "t"	
+	    };#ric01
+	    
 	    if {[db_0or1row query "
                 select 1
                   from coimcitt
@@ -691,13 +735,12 @@ if {[form is_valid $form_name]} {
                   $and_cod_cittadino
                  limit 1"]
 	    } {
-		element::set_error $form_name cod_fiscale "
-                Attenzione, esiste un altro soggetto con lo stesso codice fiscale. 
-            <br>Confermi $inserimento_o_modifica?"
-
+		#ric01 element::set_error $form_name cod_fiscale "Attenzione, esiste un altro soggetto con lo stesso codice fiscale.<br>Confermi $inserimento_o_modifica?"
+		element::set_error $form_name cod_fiscale $cod_fisc_error_msg;#ric01
 		incr error_num
 		
-		element set_properties $form_name flag_confermato -value "t"
+		#ric01 element set_properties $form_name flag_confermato -value "t"
+		element set_properties $form_name flag_confermato -value $cod_fisc_conf_value;#ric01
 	    }
 	}
 	if {$error_num       == 0   &&
@@ -712,6 +755,14 @@ if {[form is_valid $form_name]} {
                 set and_cod_cittadino           "and cod_cittadino <> :cod_cittadino"
                 set inserimento_o_modifica "la modifica"
             }
+
+	    if {$coimtgen(ente) eq "PPA"} {#ric01 aggiunti if, else e loro contenuto
+		set cod_piva_error_msg "Attenzione, esiste un altro soggetto con la stessa Partita IVA."
+		set cod_piva_conf_value "f"
+	    } else {
+		set cod_piva_error_msg "Attenzione, esiste un altro soggetto con la stessa Partita IVA.<br>Confermi $inserimento_o_modifica?"
+		set cod_piva_conf_value "t"
+	    };#ric01
 	    
             if {[db_0or1row query "
                 select 1
@@ -721,11 +772,12 @@ if {[form is_valid $form_name]} {
                   $and_cod_cittadino
                  limit 1"]
             } {
-                element::set_error $form_name cod_piva "
-                Attenzione, esiste un altro soggetto con la stessa Partita IVA.
-            <br>Confermi $inserimento_o_modifica?"
+                #ric01 element::set_error $form_name cod_piva "Attenzione, esiste un altro soggetto con la stessa Partita IVA.<br>Confermi $inserimento_o_modifica?"
+		element::set_error $form_name cod_piva $cod_piva_error_msg;#ric01		
                 incr error_num
-                element set_properties $form_name flag_confermato -value "t"
+
+		#ric01 element set_properties $form_name flag_confermato -value "t"
+		element set_properties $form_name flag_confermato -value $cod_piva_conf_value;#ric01
             }
         }
     }

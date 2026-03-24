@@ -4,7 +4,7 @@
 <property name="riga_vuota">f</property>
 
 <center>
-<formtemplate id="@form_name;noquote@">
+<formtemplate id="@form_name@">
 <formwidget   id="funzione">
 <formwidget   id="caller">
 <formwidget   id="nome_funz">
@@ -62,7 +62,7 @@
     </tr>
 
     <tr>
-        <td valign=top align=right class=form_title>Fornitore di Energia Termica </td>
+        <td valign=top align=right class=form_title>Fornitore di energia termica </td>
         <td valign=top ><formwidget id="cod_distributore">
             <formerror  id="cod_distributore"><br>
             <span class="errori">@formerror.cod_distributore;noquote@</span>
@@ -89,7 +89,7 @@
     </tr>
 </if>
     <tr>
-        <td valign=top align=right class=form_title>Fornitore di Energia Elettrica </td>
+        <td valign=top align=right class=form_title>Fornitore di energia elettrica </td>
         <td valign=top ><formwidget id="cod_distributore_el">
             <formerror  id="cod_distributore_el"><br>
             <span class="errori">@formerror.cod_distributore_el;noquote@</span>

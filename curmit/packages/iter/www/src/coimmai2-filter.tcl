@@ -11,6 +11,24 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== ===========================================================================
+    ric02 09/09/2025 Aggiunto campo f_cod_fiscale solo per regione Marche (punto 28 MEV).
+
+    but01 26/11/2024  Modifica MEV aggiunto la lettera di civico campo "f_esponente".
+    
+    rom08 18/05/2023 Corretto intervento di ric01, settato vuoto il default della variabile where_targa
+    rom08            per gli enti che non hanno la gestione delle targhe.
+
+    rom07 16/05/2023 Basilicata deve avere il num_min_parametri impostato a 3.
+
+    ric01 17/03/2023 Aggiunto campo f_targa, mostrato solo se l'ente gestisce le targhe, possibilità 
+    ric01            di effettuare la ricerca/acquisizione esclusivamente tramite il numero di targa.
+    ric01            Se si effettua tale ricerca il controllo sul numero minimo di campi non viene eseguito.
+
+    rom06 24/01/2023 Ucit ha chiesto che il num_min_parametri per Regione Fiuli sia impostato a 3.
+
+    rom05 27/07/2022 Riportata modifica fatta per il vecchio cvs per allinemanto di UCIT, i controlli
+    rom05            delle abilitazioni vanno fatti in base al parametro flag_controllo_abilitazioni.
+
     rom04 17/12/2020 Messo un controllo sulle abilitazioni per gli impianti del freddo che era
     rom04            gia' presente in fase di inserimento di un nuovo impianto.
 
@@ -54,10 +72,12 @@ ad_page_contract {
    {f_costruttore        ""}
    {f_pdr                ""}
    {f_numero_bollino     ""}
-
-   {f_stato_aimp         "A"}
+   {f_targa              ""}
+   {f_esponente          ""}
+   {f_stato_aimp        "A"}
    {cod_cittadino        ""}
    {flag_risultato       "f"}
+   {f_cod_fiscale        ""}
 } -properties {
     page_title:onevalue
     context_bar:onevalue
@@ -90,13 +110,21 @@ set flag_ente    $coimtgen(flag_ente)
 set flag_viario  $coimtgen(flag_viario)
 set cod_comune   $coimtgen(cod_comu)
 set sigla_prov   $coimtgen(sigla_prov)
+set flag_gest_targa  $coimtgen(flag_gest_targa);#ric01
 set context_bar  [iter_context_bar -nome_funz $nome_funz_caller] 
 
-
 set num_min_parametri 4
-
-if {$coimtgen(ente) eq "PUD" || $coimtgen(ente) eq "PGO" || $coimtgen(ente) eq "CANCONA" || $coimtgen(ente) eq "PAN"} {
+#rom06 Tolte condizioni $coimtgen(ente) eq "PUD" || $coimtgen(ente) eq "PGO"
+if {$coimtgen(ente) eq "CANCONA" || $coimtgen(ente) eq "PAN"} {
     set num_min_parametri 4
+}
+
+if {$coimtgen(regione) eq "FRIULI-VENEZIA GIULIA"} {#rom06 Aggiunta if e il suo contenuto
+    set num_min_parametri 3
+}
+
+if {$coimtgen(regione) eq "BASILICATA"} {#rom07 Aggiunta if e il suo contenuto
+    set num_min_parametri 3
 }
 
 if {$coimtgen(ente) eq "CRIMINI"} {
@@ -140,6 +168,17 @@ element create $form_name f_resp_nome \
 -datatype text \
 -html    "size 20 maxlength 100 $readonly_fld {} class form_element" \
 -optional
+
+if {$coimtgen(regione) eq "MARCHE"} {#ric02 aggiunta if e contenuto
+    element create $form_name f_cod_fiscale \
+	-label   "Cod.Fisc." \
+	-widget   text \
+	-datatype text \
+	-html    "size 16 maxlength 16 $readonly_fld {} class form_element" \
+	-help_text {Inserisci il codice fiscale in alternativa a <b>Nome</b> e <b>Cognome</b>.} \
+	-optional 
+	
+}
 
 if {$flag_ente == "P"} {
     element create $form_name f_comune \
@@ -210,6 +249,15 @@ element create $form_name f_civico \
 -datatype text \
 -html    "size 4 maxlength 4 $readonly_fld {} class form_element" \
 -optional
+
+#but01 aggiunto la lettera di civico
+element create $form_name f_esponente \
+    -label   "esopnente" \
+    -widget   text \
+    -datatype text \
+    -html    "size 2 maxlength 3 $readonly_fld {} class form_element" \
+    -optional
+
 #rom01M
 element create $form_name f_numero_bollino \
     -laber  "Numero Bollino" \
@@ -217,6 +265,16 @@ element create $form_name f_numero_bollino \
     -datatype text \
     -html    "size 20 maxlength 35 $readonly_fld {} class form_element" \
     -optional
+
+#ric01 aggiunto f_targa solo se gestita
+if {$flag_gest_targa} {#ric01 aggiunta if e suo contenuto
+    element create $form_name f_targa \
+	-laber  "Numero di Targa" \
+	-widget   text \
+	-datatype text \
+	-html    "size 20 maxlength 35 $readonly_fld {} class form_element" \
+	-optional
+}
 
 element create $form_name f_cod_via   -widget hidden -datatype text -optional
 #element create $form_name f_cod_manu  -widget hidden -datatype text -optional
@@ -241,6 +299,10 @@ if {[form is_request $form_name]} {
     element set_properties $form_name f_resp_cogn        -value $f_resp_cogn
     element set_properties $form_name f_resp_nome        -value $f_resp_nome
 
+    if {$coimtgen(regione) eq "MARCHE"} {#ric02 aggiunta if e contenuto
+	element set_properties $form_name f_cod_fiscale      -value $f_cod_fiscale
+    }
+    
     if {$flag_ente == "P"} {
 	element set_properties $form_name f_comune       -value $f_comune
     } else {
@@ -256,6 +318,10 @@ if {[form is_request $form_name]} {
     element set_properties $form_name f_costruttore      -value $f_costruttore
     element set_properties $form_name f_pdr              -value $f_pdr
     element set_properties $form_name f_numero_bollino   -value $f_numero_bollino;#rom01M
+    element set_properties $form_name f_esponente        -value $f_esponente;#but01
+    if {$flag_gest_targa} {#ric01 aggiunta if e suo contenuto
+	element set_properties $form_name f_targa            -value $f_targa;#ric01
+    }
 }
 
 if {[form is_valid $form_name]} {
@@ -266,6 +332,10 @@ if {[form is_valid $form_name]} {
     set f_resp_cogn        [element::get_value $form_name f_resp_cogn]
     set f_resp_nome        [element::get_value $form_name f_resp_nome]
 
+    if {$coimtgen(regione) eq "MARCHE"} {#ric02 aggiunta if e contenuto
+	set f_cod_fiscale   [string trim [element::get_value $form_name f_cod_fiscale]]
+    }
+    
     set f_comune           [element::get_value $form_name f_comune]
     set f_cod_via          [element::get_value $form_name f_cod_via]
     set f_desc_topo        [element::get_value $form_name f_desc_topo]
@@ -277,6 +347,13 @@ if {[form is_valid $form_name]} {
     set f_costruttore      [element::get_value $form_name f_costruttore]
     set f_pdr              [element::get_value $form_name f_pdr]
     set f_numero_bollino   [element::get_value $form_name f_numero_bollino];#rom01M
+    set f_esponente          [element::get_value $form_name f_esponente];#but01
+    
+    if {$flag_gest_targa} {#ric01 aggiunta if else e loro contenuto
+	set f_targa            [element::get_value $form_name f_targa];#ric01
+    } else {
+	set f_targa ""
+    }
 
     set error_num 0
 
@@ -314,6 +391,13 @@ if {[form is_valid $form_name]} {
 	incr error_num
     }
 
+    if {$coimtgen(regione) eq "MARCHE"} {#ric02 aggiunta if e contenuto    
+	if {(![string equal $f_resp_nome ""] || ![string equal $f_resp_cogn ""]) && ![string equal $f_cod_fiscale ""]} {
+	    element::set_error $form_name f_cod_fiscale "Indicare il codice fiscale in alternativa al responsabile."
+	    incr error_num
+	}
+    }
+    
   # si controlla la via solo se il primo test e' andato bene.
   # in questo modo si e' sicuri che f_comune e' stato valorizzato.
 
@@ -370,8 +454,9 @@ if {[form is_valid $form_name]} {
     if {(    [string equal $f_desc_topo ""]
          &&  [string equal $f_desc_via  ""]
          &&  [string equal $f_cod_via   ""])
-         && ![string equal $f_civico    ""]
-    } {
+	 && ![string equal $f_civico    ""]
+	&& ![string equal $f_esponente ""]
+    } {#but01 aggiunto la modifica sul f_esponente
 	element::set_error $form_name f_desc_via "La selezione per numero civico viene effettuata solo insieme alla selezione per via"
 	incr error_num
     }
@@ -389,6 +474,9 @@ if {[form is_valid $form_name]} {
 	incr conta_parametri
 	#set where_civico "and to_number(a.numero,'99999999') = :f_civico"
  	set where_civico "and a.numero = :f_civico"
+	if {![string equal $f_esponente ""]} {#but01 Aggiunta if e contenuto
+	    append where_civico " and a.esponente = :f_esponente"
+	}
     } else {
 	set where_civico ""
     }
@@ -427,6 +515,15 @@ if {[form is_valid $form_name]} {
 	}
     }
 
+    if {$coimtgen(regione) eq "MARCHE"} {##ric02 aggiunta if e contenuto
+	if {![string equal $f_cod_fiscale ""] } {
+	    incr conta_parametri
+	    set where_cod_fiscale " and upper(b.cod_fiscale) = upper(:f_cod_fiscale)"
+	} else {
+	    set where_cod_fiscale ""
+	}
+    }
+
     if {![string equal $f_matricola ""] } {
 	incr conta_parametri
 	set where_matricola "and c.matricola = :f_matricola"
@@ -460,9 +557,28 @@ if {[form is_valid $form_name]} {
     } else {
 	set where_bollino ""
     };#rom01M
+    
+    if {$flag_gest_targa} {#ric01 aggiunta if e suo contenuto
+	if {![string equal $f_targa ""]} {#ric01 aggiunta if else e loro contenuto
+	    set conta_parametri 100
+	    set where_targa "and a.targa = :f_targa"
+	} else {
+	    set where_targa ""
+	}
+    } else {#rom08 aggiunta else e contenuto
+	set where_targa ""
+    }
 
+    set error_cod_fiscale "responsabile";#ric02
+    set br_cod_fiscale "";#ric02
+    if {$coimtgen(regione) eq "MARCHE"} {##ric02 aggiunta if e contenuto
+	set error_cod_fiscale "cognome e nome o codice fiscale"
+	set br_cod_fiscale "<br>"
+    }
+    
     if {$conta_parametri < $num_min_parametri} {
-	element::set_error $form_name f_civico "Inserire almeno $num_min_parametri parametri tra civico,<br>responsabile, matricola, modello , costruttore e numero bollino"
+	#ric02 element::set_error $form_name f_civico "Inserire almeno $num_min_parametri parametri tra civico,<br>responsabile, matricola, modello , costruttore e numero bollino"
+	element::set_error $form_name f_civico "Inserire almeno $num_min_parametri parametri tra civico,<br> $error_cod_fiscale, matricola,$br_cod_fiscale modello , costruttore e numero bollino";#ric02
 	incr error_num
     }
     
@@ -576,10 +692,11 @@ if {[form is_valid $form_name]} {
 		                from coimaimp a
                                    , coimgend b
 	                       where a.cod_impianto = :cod_impianto 
-                                 and a.cod_impianto = b.cod_impianto" {
-				     
-                                     #rom01 if e suo contenuto
-                                     if {$flag_tipo_impianto ne "" && $cod_combustibile ne "" && $cod_manutentore ne ""} {
+                                 and a.cod_impianto = b.cod_impianto
+                             " {
+	 	    
+				 if {$coimtgen(flag_controllo_abilitazioni)} {#rom05 Aggiunta if ma non il contenuto			
+                                     if {$flag_tipo_impianto ne "" && $cod_combustibile ne "" && $cod_manutentore ne ""} {#rom01 if e suo contenuto
 					 set cod_coimtpin ""
 					 set descrizione_tpin ""
 					 set tipo_comb [db_string q "select tipo
@@ -632,17 +749,20 @@ if {[form is_valid $form_name]} {
 					 }
 				     };#fine rom04
 				     };#fine rom01
-				 };#fine foreach
+				 };#rom05
+			     };#fine foreach
 		
                 if {$error_num > 0} {#rom01 aggiunta if e suo contenuto
 		    ad_return_template
 		    return
 		}
 		if {$coimtgen(regione) eq "MARCHE"} {#rom02 aggiunta if e contenuto. Aggiunta else ma non contenuto
-		    set link_gest "[export_url_vars cod_impianto nome_funz_caller f_resp_cogn f_resp_nome f_comune f_cod_via f_desc_via f_desc_topo f_civico f_matricola f_modello f_costruttore f_numero_bollino]&nome_funz=impianti&flag_assegnazione=t&caller=acquisizione"
+		    #ric02 set link_gest "[export_url_vars cod_impianto nome_funz_caller f_resp_cogn f_resp_nome f_comune f_cod_via f_desc_via f_desc_topo f_civico f_esponente f_matricola f_modello f_costruttore f_numero_bollino]&nome_funz=impianti&flag_assegnazione=t&caller=acquisizione"
+		    #ric02 aggiunto f_cod_fiscale
+		    set link_gest "[export_url_vars cod_impianto nome_funz_caller f_resp_cogn f_resp_nome f_cod_fiscale f_comune f_cod_via f_desc_via f_desc_topo f_civico f_esponente f_matricola f_modello f_costruttore f_numero_bollino]&nome_funz=impianti&flag_assegnazione=t&caller=acquisizione"
                 set return_url "coimaimp-gest-messaggio-intermedio?funzione=A&$link_gest"
-		} else {
-		    set link_gest "[export_url_vars cod_impianto nome_funz_caller f_resp_cogn f_resp_nome f_comune f_cod_via f_desc_via f_desc_topo f_civico f_matricola f_modello f_costruttore f_numero_bollino]&nome_funz=impianti&flag_assegnazione=t"
+		} else {#ric01 aggiunto f_targa a link_gest
+		    set link_gest "[export_url_vars cod_impianto nome_funz_caller f_resp_cogn f_resp_nome f_comune f_cod_via f_desc_via f_desc_topo f_civico f_esponente f_matricola f_modello f_costruttore f_numero_bollino f_targa]&nome_funz=impianti&flag_assegnazione=t"
 		    set return_url "coimaimp-tecn?funzione=A&$link_gest"   
 		}
 		ad_returnredirect $return_url

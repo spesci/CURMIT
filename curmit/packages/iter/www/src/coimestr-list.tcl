@@ -19,6 +19,23 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    ric01 29/09/2025 Aggiunto filtro ditta di manutenzione presente/assente (puinto 33 MEV regione Marche 2025).
+    
+    rom07 23/11/2022 Tutti gli enti tranne Regione Marche hanno cambiato il tipo estrazione 4:
+    rom07            devono tenere in considerazione solo gli impianti con potenza maggiore di 100 Kw.
+
+    rom06 05/04/2022 Su indicazione di Regione Marche e Giuliodori aggiunta colonna per indicare
+    rom06            se l'impianto e' ibrido.
+
+    rom05 09/03/2022 L'estrazione degli impianti > 10 o > 12 Kw non dichiarati andava ad estrarre
+    rom05            semplicemente gli impianti con flag_dichiarato <>'S'. In realta' ci sono casi
+    rom05            sporchi in cui vengono estratti impianti con rcee ma col flag_dichiarato <>'S'.
+    rom05            Per risolvere ho fatto in modo che non vengano estratti anche gli impianti che
+    rom05            non hanno dimp.
+
+    rom04 17/01/2022 Aggiunto il tipo estrazione per impianti > 10 o > 12 Kw non dichiarati
+    rom04            su richiesta di Regione Marche.
+
     sim02 16/03/2021 Il tipo estrazione 1 deve sempre considerate la potenza <100 e non <35.
 
     sim01 05/05/2020 La query non deve tenere contro delle DAM ma solo dei rapporti di ispezione
@@ -93,6 +110,7 @@ ad_page_contract {
     {tipo_generatore ""}
     {sistema_areazione ""}
     {tipo_locale ""}
+    {f_manu_present_p   ""}
 }  -properties {
     page_title:onevalue
     context_bar:onevalue
@@ -123,6 +141,14 @@ set flag_viario $coimtgen(flag_viario)
 set valid_mod_h $coimtgen(valid_mod_h)
 set flag_ente $coimtgen(flag_ente)
 set sigla_prov $coimtgen(sigla_prov)
+
+#rom07 Gestita la potenza con il relativo parametro come in coimaimp-list.tcl
+if {$coimtgen(flag_potenza) eq "pot_utile_nom"} {#rom07 Aggiunte if, else e il loro contenuto.
+    set colonna_potenza "a.potenza_utile"
+} else {
+    set colonna_potenza "a.potenza"
+}
+
 
 if {[db_0or1row sel_cinc ""] == 0} {
     iter_return_complaint "Campagna non trovata"
@@ -218,6 +244,7 @@ set stato_imp {
 
 # imposto la struttura della tabella
 if {$tipo_estrazione eq "1" || $tipo_estrazione eq "3" || $tipo_estrazione eq "9" || $tipo_estrazione eq "13" || $tipo_estrazione eq "14" || $tipo_estrazione eq "11" || $tipo_estrazione eq "12" || $tipo_estrazione eq "15" || $tipo_estrazione eq "16" || $tipo_estrazione eq "17" || $tipo_estrazione eq "18" } {
+    if {$coimtgen(regione) ne "MARCHE"} {#rom06 Aggiunta if ma non il suo contenuto 
     set table_def [list \
 		       [list action           "Conf."        no_sort {<td align=center><input type=checkbox name=conferma value="$cod_impianto"></td>}] \
 		       [list cod_impianto_est "Codice"       no_sort      {l}] \
@@ -230,7 +257,24 @@ if {$tipo_estrazione eq "1" || $tipo_estrazione eq "3" || $tipo_estrazione eq "9
                        [list data_ri          "Ultimo R.I"     no_sort      {l}] \
 		       [list flag_tipo_impianto  "TI"               no_sort  $stato_imp] \
 		      ]
+    } else {
+	set table_def [list \
+			   [list action           "Conf."        no_sort {<td align=center><input type=checkbox name=conferma value="$cod_impianto"></td>}] \
+			   [list cod_impianto_est "Codice"       no_sort      {l}] \
+			   [list nome_resp        "Responsabile" no_sort      {l}] \
+			   [list comune           "Comune"       no_sort      {l}] \
+			   [list via              "Indirizzo"    no_sort      {l}] \
+			   [list date_controllo   "Date controllo" no_sort      {l}] \
+			   [list num_matri        "N./Matricola"   no_sort      {l}]\
+			   [list num_ri           "N.RI"           no_sort      {l}] \
+			   [list data_ri          "Ultimo R.I"     no_sort      {l}] \
+			   [list flag_ibrido      "Ibrido/Policomb./Gen.misti" no_sort {l}] \
+			   [list flag_tipo_impianto  "TI"               no_sort  $stato_imp] \
+			  ]
+    }
+	
 } else {
+    if {$coimtgen(regione) ne "MARCHE"} {#rom06 Aggiunta if ma non il suo contenuto 
     set table_def [list \
 		       [list action           "Conf."          no_sort {<td align=center><input type=checkbox name=conferma value="$cod_impianto"></td>}] \
 		       [list cod_impianto_est "Codice"         no_sort      {l}] \
@@ -240,6 +284,19 @@ if {$tipo_estrazione eq "1" || $tipo_estrazione eq "3" || $tipo_estrazione eq "9
 		       [list flag_tipo_impianto  "TI"          no_sort  $stato_imp] \
 		       
 		  ]
+    } else {#rom06 Aggiunta else e il suo contenuto
+	set table_def [list \
+			   [list action           "Conf."          no_sort {<td align=center><input type=checkbox name=conferma value="$cod_impianto"></td>}] \
+			   [list cod_impianto_est "Codice"         no_sort      {l}] \
+			   [list nome_resp        "Responsabile"   no_sort      {l}] \
+			   [list comune           "Comune"         no_sort      {l}] \
+			   [list via              "Indirizzo"      no_sort      {l}] \
+			   [list flag_ibrido      "Ibrido/Policomb./Gen.misti" no_sort {l}] \
+			   [list flag_tipo_impianto  "TI"          no_sort  $stato_imp] \
+
+		      ]
+	
+    }
 }
 
 # imposto la query SQL
@@ -256,6 +313,12 @@ if {$tipo_estrazione == "3" || $tipo_estrazione == "12" } {
     set mesi_sub 24
 } else {
     set mesi_sub 60
+    
+    if {$coimtgen(regione) ne "MARCHE" && $tipo_estrazione == "4"} {#rom07 Aggiunta if e il suo contenuto
+	#Per gli impianti > di 100 Kw senza RCEE devo considerare gli ultimi 2 anni.
+	set mesi_sub 24
+    }
+
 }
 
 if {($coimtgen(ente) eq "CANCONA" || $coimtgen(ente) eq "PAN") && $tipo_estrazione != "9"} {#san03 if e suo contenuto
@@ -265,7 +328,6 @@ if {($coimtgen(ente) eq "CANCONA" || $coimtgen(ente) eq "PAN") && $tipo_estrazio
 if {$tipo_estrazione == "9"} {
     set mesi_sub 2
 }
-
 
 # calcola la data entro cui considerare l'esistenza dei rapporti di verifica
 # come la data odierna - il numero di mesi sopra indicati.
@@ -299,6 +361,15 @@ set where_gen15 ""
 set where_tipo_imp ""
 #dpr74
 
+if {$coimtgen(regione) eq "MARCHE"} {#rom06 Aggiunta if, else e il loro contenuto
+        set sel_ibrido ", case a.flag_ibrido
+                      when 'S' then 'Ibrido'
+                      when 'M' then 'Generatore misto'
+                      when 'P' then 'Unico generatore policombustibile'
+                      else ' ' end as flag_ibrido"
+} else {
+    set sel_ibrido ", null as flag_ibrido"
+}
 
 # sf 11112013 comune utente
 
@@ -1283,10 +1354,20 @@ switch $tipo_estrazione {
     }
     "4" {
 	set where_stato " and a.stato = 'A'"
-	set where_pote ""
+
+	if {$coimtgen(regione) ne "MARCHE"} {#rom07 Aggiunta if e il suo contenuto
+	    set where_pote "and $colonna_potenza > 100"
+	} else {#rom07 Aggiunta else ma non il suo contenuto
+	    set where_pote ""
+	};#rom07
+
 	#set order_by   " order by [db_map col_random]"
 	set order_by   " order by  d.descrizione, b.cognome"
-	set where_dich " and a.flag_dichiarato <> 'S'"
+	#rom07set where_dich " and a.flag_dichiarato <> 'S'"
+	set where_dich " and ( not exists (select '1'
+                                           from coimdimp dimp
+                                          where dimp.cod_impianto = a.cod_impianto)
+                          or a.flag_dichiarato <> 'S' )";#rom07
 	#inizio dpr74
 	set where_tipo_imp ""
       	if {![string equal $flag_tipo_impianto ""]} {
@@ -1891,6 +1972,28 @@ set sel_matricola "
 	}
 
     }
+    "20" {
+	set where_stato " and a.stato = 'A'"
+	if {[string equal $flag_tipo_impianto "F"]} {
+	    set where_pote " and a.potenza > 12"
+	} else {
+	    set where_pote " and a.potenza > 10"
+	}
+	
+	set order_by   " order by  d.descrizione, b.cognome"
+	#rom05set where_dich " and a.flag_dichiarato <> 'S'"
+	set where_dich " and ( not exists (select '1'
+                                           from coimdimp dimp
+                                          where dimp.cod_impianto = a.cod_impianto)
+                          or a.flag_dichiarato <> 'S' )";#rom05
+	
+	#inizio dpr74
+	set where_tipo_imp ""
+      	if {![string equal $flag_tipo_impianto ""]} {
+	    append where_tipo_imp " and a.flag_tipo_impianto = :flag_tipo_impianto"
+	}
+	#fine dpr74
+    }
 }
 
 set where_gend "";#rom03
@@ -1917,6 +2020,13 @@ if {$and_tipo_locale ne "" || $and_sistema_areazione ne "" || $and_tipo_generato
                                              ) "
 }
 
+if {$f_manu_present_p eq "t"} {#ric01 aggiunta if, elseif ed else e contenuto
+    set and_manu_present " and a.cod_manutentore is not null"
+} elseif {$f_manu_present_p eq "f"} {
+    set and_manu_present " and a.cod_manutentore is null"
+} else {
+    set and_manu_present ""
+}
 
 # inizio sa 070115
 if {![string equal $data_scad_chk ""]} {

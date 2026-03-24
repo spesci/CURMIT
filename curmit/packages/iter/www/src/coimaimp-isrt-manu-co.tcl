@@ -17,6 +17,37 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== ==========================================================================
+    rom19 12/03/2024 Gestita la codifica del cod_impianto_est per Provincia di Caserta con il
+    rom19            formato annorif-id_belfiore-progressivo.
+    rom19            Tolto controllo su obbligatorieta' Proprietario
+    
+    rom18 19/12/2023 Rieti ha chiesto di togliere l'obbligatorieta' su POD e PDR.
+
+    rom17 27/11/2023 Napoli ha chiesto di togleire l'obbligatorieta' su POD e PDR.
+
+    rom16 20/11/2023 Napoli ha chiesto di togliere l'obbligatorieta' sul Proprietario.
+
+    rom15 11/10/2023 Gestisco il codice impianto_est su Napoli con il formato progressivo/IstatComune
+    rom15            Aggiunta classe ah-jquery per campi data 
+
+    rom14 19/05/2023 Gestito con if il mittente della mail per la Provincia di Fermo.
+
+    rom13 24/01/2023 Regione Friuli non ha mai pod e pdr obbligatori.
+
+    rom12 13/12/2022 Palermo non ha mai pod e pdr obbligatori.
+
+    mic01 01/07/2022 Aggiunto attributo HTML ai campi modello e matricola
+
+    rom11 27/04/2022 Giuliodori ha richiesto che il messaggio di errore fatto da rom10 fosse
+    rom11            leggeremente diverso da come pattuito in origine, richiesta fatta per mail
+    rom11            "R2: Rilascio in produzione modifiche su MEV." del 21/04/2022.
+
+    rom10 20/04/2022 MEV "Allineamento responsabile su impianti con la stessa targa": Su richiesta
+    rom10            aggiuntiva di Giuliodori per le Marche non deve essere possibile modificare
+    rom10            il soggetto responsabile dato di default se da coimaimp-isrt-manu-chose
+    rom10            viene passata una targa. Va anche visualizzato un messaggio dove si dice che il
+    rom10            responsabile va modificato dalla schermata 1.6.
+
     rom09 03/02/2021 Aggiunto controllo su PDR per il Comune di Salerno: deve iniziare per 1534.
 
     rom08 12/01/2021 Le particolarita' della Provincia di Salerno da ora vengono messe sotto la
@@ -123,10 +154,10 @@ ad_page_contract {
     {cod_as_resp          ""}
     {flag_tipo_impianto       "C"}
     {pdr                 ""}
-    {modello             ""}
+    {modello:html             ""}
     pod
     {cod_combustibile ""}
-    {matricola     ""}
+    {matricola:html     ""}
     {cod_cost      ""}
     {targa ""}
 } -properties {
@@ -807,7 +838,9 @@ element create $form_name changed_field        -widget hidden -datatype text -op
 element create $form_name flag_conferma_pdr     -widget hidden -datatype text -optional;#rom01M
 #rom07 Aggiunta condizione per Salerno
 #rom08if {$coimtgen(regione) eq "MARCHE" || $coimtgen(ente) eq "PSA"} {}#rom06 aggiunte if, else e loro contenuto
-if {$coimtgen(regione) in [list "MARCHE" "CAMPANIA"]} {#rom08 aggiunta if ma non il suo contenuto
+#rom16 Aggiunta condizione su $coimtgen(ente) ne "PNA"
+#rom19 Aggiunta condizione su PCE modificando rom16
+ if {$coimtgen(regione) in [list "MARCHE" "CAMPANIA"] && $coimtgen(ente) ni [list "PNA" "PCE"]} {#rom08 aggiunta if ma non il suo contenuto
     set ast_prop "<font color=red>*</font>"
 } else {
     set ast_prop ""
@@ -1024,18 +1057,35 @@ if {[form is_request $form_name]} {
 	    if {$flag_responsabile_ereditato ne ""} {
 		element set_properties $form_name flag_responsabile -value $flag_responsabile_ereditato
 
+		element set_properties $form_name flag_responsabile -html "disabled {} class form_element";#rom10
+		#rom11 Aggiunto solo successvamente su indicazione di Giuliodori.
+		element::set_error $form_name flag_responsabile "Il responsabile pu&ograve; essere modificato solo successivamente, agendo sulla Scheda 1.6: Soggetti che operano sull'impianto";#rom10
+
 		switch $flag_responsabile_ereditato {
 		    "O" {
 			db_1row q "select cognome as cognome_occ, nome as nome_occ from coimcitt where cod_cittadino = :cod_occupante"
 			element set_properties $form_name cod_citt_occ -value $cod_occupante
 			element set_properties $form_name cognome_occ -value $cognome_occ
 			element set_properties $form_name nome_occ -value $nome_occ
+
+			if {$coimtgen(regione) in [list "MARCHE"]} {#rom10 Aggiunta if e il suo contenuto
+			    set cerca_occ     ""
+			    set link_ins_occu ""
+			    element set_properties $form_name cognome_occ -html "size 18 maxlength 100 readonly {} class form_element"
+			    element set_properties $form_name nome_occ    -html "size 12 maxlength 100 readonly {} class form_element"
+			}
 		    }
 		    "A" {
 			db_1row q "select cognome as cognome_amm, nome as nome_amm from coimcitt where cod_cittadino = :cod_amministratore"
 			element set_properties $form_name cod_citt_amm -value $cod_amministratore
 			element set_properties $form_name cognome_amm -value $cognome_amm
 			element set_properties $form_name nome_amm -value $nome_amm
+			
+			if {$coimtgen(regione) in [list "MARCHE"]} {#rom10 Aggiunta if e il suo contenuto
+			    set cerca_amm    ""
+			    element set_properties $form_name cognome_amm -html "size 18 maxlength 100 readonly {} class form_element"
+			    element set_properties $form_name nome_amm    -html "size 12 maxlength 100 readonly {} class form_element"
+			}			
 		    }
 		    "P" {
 			db_1row q "select cognome as cognome_prop, nome as nome_prop from coimcitt where cod_cittadino = :cod_proprietario"
@@ -1043,6 +1093,12 @@ if {[form is_request $form_name]} {
 			element set_properties $form_name cognome_prop -value $cognome_prop
 			element set_properties $form_name nome_prop -value $nome_prop
 			
+			if {$coimtgen(regione) in [list "MARCHE"]} {#rom10 Aggiunta if e il suo contenuto
+			    set cerca_prop    ""
+			    set link_ins_prop ""
+			    element set_properties $form_name cognome_prop -html "size 18 maxlength 100 readonly {} class form_element"
+			    element set_properties $form_name nome_prop    -html "size 12 maxlength 100 readonly {} class form_element"
+			}
 		    }
 		}
 
@@ -1077,6 +1133,70 @@ if {[form is_valid $form_name]} {
     if {[string equal $coimtgen(flag_ente) "C"]} {
         set descr_comu    [string trim [element::get_value $form_name descr_comu]]
     }
+
+    set targa             [string trim [element::get_value $form_name targa]];#rom10
+    
+    if {$targa ne ""} {#rom10 Aggiunta if e il suo contenuto
+	
+	set flag_responsabile_ereditato ""
+	db_0or1row q "select flag_resp as flag_responsabile_ereditato
+                           , cod_proprietario
+                           , cod_occupante
+                           , cod_amministratore
+                        from coimaimp 
+                       where targa = :targa
+                        and flag_resp != 'T' limit 1"
+	if {$flag_responsabile_ereditato ne ""} {
+
+	    element set_properties $form_name flag_responsabile \
+		-value $flag_responsabile_ereditato \
+		-html "disabled {} class form_element"
+	    
+	    element::set_error $form_name flag_responsabile "Il responsabile pu&ograve; essere modificato agendo sulla Scheda 1.6: Soggetti che operano sull'impianto"
+
+	    switch $flag_responsabile_ereditato {
+		"O" {
+		    db_1row q "select cognome as cognome_occ, nome as nome_occ from coimcitt where cod_cittadino = :cod_occupante"
+		    element set_properties $form_name cod_citt_occ -value $cod_occupante
+		    element set_properties $form_name cognome_occ -value $cognome_occ 
+		    element set_properties $form_name nome_occ -value $nome_occ
+		    
+		    if {$coimtgen(regione) in [list "MARCHE"]} {
+			set cerca_occ     ""
+			set link_ins_occu ""
+			element set_properties $form_name cognome_occ -html "size 18 maxlength 100 readonly {} class form_element"
+			element set_properties $form_name nome_occ    -html "size 12 maxlength 100 readonly {} class form_element"
+		    }
+		}
+		"A" {
+		    db_1row q "select cognome as cognome_amm, nome as nome_amm from coimcitt where cod_cittadino = :cod_amministratore"
+		    element set_properties $form_name cod_citt_amm -value $cod_amministratore
+		    element set_properties $form_name cognome_amm -value $cognome_amm
+		    element set_properties $form_name nome_amm -value $nome_amm
+		    
+		    if {$coimtgen(regione) in [list "MARCHE"]} {
+			set cerca_amm    ""
+			element set_properties $form_name cognome_amm -html "size 18 maxlength 100 readonly {} class form_element"
+			element set_properties $form_name nome_amm    -html "size 12 maxlength 100 readonly {} class form_element"
+		    }		    
+		}
+		"P" {
+		    db_1row q "select cognome as cognome_prop, nome as nome_prop from coimcitt where cod_cittadino = :cod_proprietario"
+		    element set_properties $form_name cod_citt_prop -value $cod_proprietario
+		    element set_properties $form_name cognome_prop -value $cognome_prop
+		    element set_properties $form_name nome_prop -value $nome_prop
+
+		    if {$coimtgen(regione) in [list "MARCHE"]} {
+			set cerca_prop    ""
+			set link_ins_prop ""
+			element set_properties $form_name cognome_prop -html "size 18 maxlength 100 readonly {} class form_element"
+			element set_properties $form_name nome_prop    -html "size 12 maxlength 100 readonly {} class form_element"
+		    }
+		}
+	    }
+	}
+    }
+    
     set cod_comune        [string trim [element::get_value $form_name cod_comune]]
     set provincia         [string trim [element::get_value $form_name provincia]]
     set cap               [string trim [element::get_value $form_name cap]]
@@ -1146,7 +1266,8 @@ if {[form is_valid $form_name]} {
     set flag_conferma_pdr [element::get_value $form_name flag_conferma_pdr];#rom01M
     set pdr               [element::get_value $form_name pdr             ] ;#rom01M
     set pod               [element::get_value $form_name pod             ] ;#rom01M
-    set targa             [string trim [element::get_value $form_name targa]];#rom02
+    #rom10 Spostata piu' in alto per comodita'
+    #rom10set targa             [string trim [element::get_value $form_name targa]];#rom02
 
 
     #Imposto ora le options di cod_mode perchè solo adesso ho a disposizione la var. cod_cost
@@ -1644,7 +1765,9 @@ if {[form is_valid $form_name]} {
 	}
 	#rom07 aggiunta condizione per Salerno
 	#rom08if {$coimtgen(regione) eq "MARCHE" || $coimtgen(ente) eq "PSA"} {}#rom06 aggiunta if e suo contenuto
-	if {$coimtgen(regione) in [list "MARCHE" "CAMPANIA"]} {#rom08 aggiunta if ma non contenuto
+	#rom16 Aggiunta condizione su $coimtgen(ente) ne "PNA"
+	#rom19 Aggiunta condizione su PCE modificando rom16
+	if {$coimtgen(regione) in [list "MARCHE" "CAMPANIA"] && $coimtgen(ente) ni [list "PNA" "PCE"]} {#rom08 aggiunta if ma non contenuto
 	    if {[string equal $cognome_prop ""] && [string equal $nome_prop ""]} {
 		element::set_error $form_name cognome_prop "inserire proprietario"
 		incr error_num
@@ -1929,7 +2052,11 @@ if {[form is_valid $form_name]} {
 
 	#sim05 aggiunto condizione su PSA
 	#rom08 Sostituita condizione su PSA con Regione CAMPANIA
-	if {[string equal $pdr ""] && !($coimtgen(regione) eq "CAMPANIA" && [string equal $cod_manutentore ""])} {
+	#rom12 Aggiunta condizione su PPA
+	#rom13 Aggiunta condizione su FRIULI-VENEZIA GIULIA
+	#rom17 Aggiunta condizione su PNA modificando rom12
+	#rom18 Aggiunta condizione su PRI
+	if {[string equal $pdr ""] && (!($coimtgen(regione) eq "CAMPANIA" && [string equal $cod_manutentore ""]) && $coimtgen(ente) ni [list "PPA" "PNA" "PRI"] && $coimtgen(regione) ne "FRIULI-VENEZIA GIULIA")} {
 	    if {[string equal $cod_combustibile "5"]} {
 		element::set_error $form_name pdr "Inserire PDR"
 		incr error_num
@@ -1952,7 +2079,11 @@ if {[form is_valid $form_name]} {
 	}
 	#sim05 aggiunto condizione su PSA
 	#rom08 Sostituita condizione su PSA con Regione CAMPANIA
-	if {[string equal $pod ""] && !($coimtgen(regione) eq "CAMPANIA" && [string equal $cod_manutentore ""])} {
+	#rom12 Aggiunta condizione su PPA
+        #rom13 Aggiunta condizione su FRIULI-VENEZIA GIULIA
+        #rom17 Aggiunta condizione su PNA modificando rom12
+	#rom18 Aggiunta condizione su PRI
+	if {[string equal $pod ""] && (!($coimtgen(regione) eq "CAMPANIA" && [string equal $cod_manutentore ""]) && $coimtgen(ente) ni [list "PPA" "PNA" "PRI"] && $coimtgen(regione) ne "FRIULI-VENEZIA GIULIA")} {
 	    element::set_error $form_name pod "Inserire POD"
 	    incr error_num
 	}
@@ -2051,6 +2182,13 @@ if {[form is_valid $form_name]} {
 			set fine_istat  [string length $cod_istat]
 			set iniz_ist    [expr $fine_istat -3]
 			set cod_istat  "[string range $cod_istat $iniz_ist $fine_istat]"
+		    } elseif {$coimtgen(ente) eq "PNA"} {#rom15 Aggiunta elseif e il suo contenuto
+			
+                        set progressivo [db_string query "select lpad(:progressivo, $lun_progressivo, '0')"]
+                        set fine_istat  [string length $cod_istat]
+                        set iniz_ist    [expr $fine_istat -3]
+                        set cod_istat  "[string range $cod_istat $iniz_ist $fine_istat]"
+
 		    } else {#nic03
                         # caso standard
 			#sim01: la sel_dati_comu andava in errore sul lpad di progressivo.Quindi faccio lpad dopo la query
@@ -2068,7 +2206,17 @@ if {[form is_valid $form_name]} {
 			} else {
 			    set tipologia "CT"
 			}
-			set cod_impianto_est "$cod_istat$progressivo"
+                        if {$coimtgen(ente) eq "PNA"} {#rom15 Aggiunta if e il suo contenuto
+                            set cod_impianto_est "$progressivo/$cod_istat"
+
+                        } elseif {$coimtgen(ente) eq "PCE"} {#rom19 Aggiunta elseif e il cuo contenuto
+                            set annorif  [db_string query_aa "select (substr(current_date,3,2))"]
+                            set cod_impianto_est "$annorif$id_belfiore$progressivo"
+                            #set cod_impianto_est "$cod_istat$tipologia$progressivo"
+
+                        } else {#rom15 Aggiunta else ma non il suo contenuto
+                            set cod_impianto_est "$cod_istat$progressivo"
+                        };#rom15
 			set dml_comu [db_map upd_prog_comu]
 		    } else {
 			if {![string equal $cod_potenza "0"]
@@ -2080,11 +2228,30 @@ if {[form is_valid $form_name]} {
 				"MA" {set tipologia "CT"}
 				"MB" {set tipologia "CT"}
 			    }
-			    
-			    set cod_impianto_est "$cod_istat$progressivo"
+			    if {$coimtgen(ente) eq "PNA"} {#rom15 Aggiunta if e il suo contenuto
+                                set cod_impianto_est "$progressivo/$cod_istat"
+
+			    } elseif {$coimtgen(ente) eq "PCE"} {#rom19 Aggiunta elseif e il cuo contenuto
+				set annorif  [db_string query_aa "select (substr(current_date,3,2))"]
+				set cod_impianto_est "$annorif$id_belfiore$progressivo"
+				#set cod_impianto_est "$cod_istat$tipologia$progressivo"
+
+                            } else {#rom15 Aggiunta else ma non il suo contenuto
+                                set cod_impianto_est "$cod_istat$progressivo"
+                            };#rom15
 			    set dml_comu [db_map upd_prog_comu]
 			} else {
-                            set cod_impianto_est "$cod_istat$progressivo"
+			    if {$coimtgen(ente) eq "PNA"} {#rom15 Aggiunta if e il suo contenuto
+                                set cod_impianto_est "$progressivo/$cod_istat"
+
+			    } elseif {$coimtgen(ente) eq "PCE"} {#rom19 Aggiunta elseif e il cuo contenuto
+				set annorif  [db_string query_aa "select (substr(current_date,3,2))"]
+				set cod_impianto_est "$annorif$id_belfiore$progressivo"
+				#set cod_impianto_est "$cod_istat$tipologia$progressivo"
+				
+                            } else {#rom15 Aggiunta else ma non il suo contenuto
+                                set cod_impianto_est "$cod_istat$progressivo"
+                            };#rom15
                             set dml_comu         [db_map upd_prog_comu]
 			}
 		    }
@@ -2146,7 +2313,14 @@ if {[form is_valid $form_name]} {
                      from coimmanu m
                     where m.cod_manutentore = :cod_manutentore"
 	set testo_mail "ATTENZIONE: il Manutentore $cognome_manutentore $nome_manutentore con codice $cod_manutentore ha inserito l'impianto $cod_impianto senza un Installatore."
-	acs_mail_lite::send -send_immediately -to_addr "$coimdesc(email)" -from_addr "$coimdesc(email)" -subject "Inserimento Impianto senza Installatore" -body $testo_mail
+	
+	if {$coimtgen(ente) eq "PFM"} {#rom14 Aggiunte if, else e loro contenuto
+	    set mail_ente "impiantitermici@regione.marche.it"
+	} else {
+	    set mail_ente $coimdesc(email)
+	}
+
+	acs_mail_lite::send -send_immediately -to_addr "$coimdesc(email)" -from_addr "$mail_ente" -subject "Inserimento Impianto senza Installatore" -body $testo_mail
     };#rom05
 
     set cod_impianto_old $cod_impianto

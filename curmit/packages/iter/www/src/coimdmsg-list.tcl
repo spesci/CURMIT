@@ -16,6 +16,10 @@ ad_page_contract {
     @                        dallo script di zoom, separati da '|' ed impostarli come segue:
 
     @cvs-id coimdmsg-list.tcl 
+    USER  DATA       MODIFICHE
+    ===== ========== =======================================================================
+    but01 13/07/2023 Aggiunta class"link-button-2" nel actions"Selez"
+
 } { 
    {search_word       ""}
    {rows_per_page     ""}
@@ -73,9 +77,9 @@ set js_function     ""
 
 set actions {
     [if {$flag_letto eq "No"} {
-        return "<td nowrap><a href=\"$gest_prog?funzione=V&[subst $link]\"><b>Selez.</b></a></td>"
+        return "<td nowrap><a href=\"$gest_prog?funzione=V&[subst $link]\" class=\"link-button-2\"><b>Selez.</b></a></td>"
     } else {
-        return "<td nowrap><a href=\"$gest_prog?funzione=V&[subst $link]\">Selez.</a></td>"
+        return "<td nowrap><a href=\"$gest_prog?funzione=V&[subst $link]\" class=\"link-button-2\">Selez.</a></td>"
     }]
 }
 

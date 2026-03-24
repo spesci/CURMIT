@@ -12,6 +12,12 @@ ad_page_contract {
                      navigazione con navigation bar
     @param extra_par Variabili extra da restituire alla lista
     @cvs-id          coim_d_anom-gest.tcl
+
+    USER  DATA       MODIFICHE
+    ===== ========== =======================================================================
+    but01 21/06/2023 Aggiunto la classe ah-jquery-date al campo dat_utile_inter.
+
+
 } {
     {cod_cimp_dimp    ""}
     {flag_origine     ""}
@@ -116,7 +122,10 @@ switch $funzione {
         set disabled_fld \{\}
        }
 }
-
+set jq_date "";#but01
+if {$funzione in "M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
 form create $form_name \
 -html    $onsubmit_cmd
 
@@ -149,12 +158,13 @@ if {$funzione == "I"} {
     -datatype text \
     -html     "size 80  readonly {} class form_element" \
     -optional
-} 
+}
+#but01 Aggiunto la classe ah-jquery-date al campo dat_utile_inter
 element create $form_name dat_utile_inter \
 -label   "Data utile inter." \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+-html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
 -optional
 
 element create $form_name extra_par_inco -widget hidden -datatype text -optional

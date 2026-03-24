@@ -11,7 +11,7 @@
      </td>
      </if>
    <td width="25%" nowrap class=func-menu>
-       <a href=ec?format=csv&@link_scar;noquote@  class=func-menu>Scarica</a>
+       <a href=ec?format=csv&@link_scar;noquote@  class=func-menu>Scarica CSV</a>
    </td>
    <td width="75%" class=func-menu>&nbsp;</td>
 </tr>

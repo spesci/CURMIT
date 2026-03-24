@@ -33,7 +33,7 @@ setTimeout('sel()',0);
        <a href=coimmanu-filter?@link_filter;noquote@  class=func-menu>Ritorna</a>
    </td>
    <td width="25%" nowrap class=func-menu>
-       <a href=coimmanu-list-csv?@link_scar;noquote@  class=func-menu>Scarica</a>
+       <a href=coimmanu-list-csv?@link_scar;noquote@  class=func-menu>Scarica CSV</a>
    </td>
    <td width="75%" class=func-menu>&nbsp;</td>
 </tr>

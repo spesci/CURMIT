@@ -1,5 +1,8 @@
 ad_page_contract {
 
+    USER  DATA       MODIFICHE
+    ===== ========== =======================================================================
+    but01 31/10/2024 Aggiunto class=table_s nella tabella.
 
 } {
     {funzione        "V"}
@@ -72,7 +75,6 @@ set testata "
       <tr>
          <td align=center>&nbsp;</td>
       </tr>
-</table>
 <p align=center><big>Elenco modelli controllo orario non congruo</big>
 "
 
@@ -169,17 +171,17 @@ append stampa " -$desc_tipo_impianto -"
 append stampa "
 </td></tr>
 </table>
-<table align=center border=1 cellspacing=0 celpadding=0>"
+<table align=center border=1 cellspacing=0 celpadding=0 class=table_s>";#but01
 append stampa "
        <tr>
-          <td><b>Data controllo</b></td>
-          <td><b>Manutentore   </b></td>
-          <td><b>Impianto      </b></td>
-          <td><b>Responsabile  </b></td>
-          <td><b>Ubicazione    </b></td>
-	  <td><b>Comune        </b></td>
-          <td><b>Da Ora        </b></td>
-          <td><b>A Ora         </b></td>
+          <th><b>Data controllo</b></th>
+          <th><b>Manutentore   </b></th>
+          <th><b>Impianto      </b></th>
+          <th><b>Responsabile  </b></th>
+          <th><b>Ubicazione    </b></th>
+	  <th><b>Comune        </b></th>
+          <th><b>Da Ora        </b></th>
+          <th><b>A Ora         </b></th>
           </tr>"
 
 db_foreach sel_dimp "select coalesce(iter_edit_data(a.data_controllo),'&nbsp;') as data_controllo

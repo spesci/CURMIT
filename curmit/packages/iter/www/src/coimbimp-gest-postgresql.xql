@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
 <!-- 
+     ric01 08/09/2025 Aggiunta update upd_aimp_destinazione per punto 16 MEV regione marche.
+
      gab01 31/10/2016 Aggiunta bonifica dei dati delle sezioni: 4.3, 4.7, 4.8, 6, 7, 8.1, 9.1, 9.2, 9.3, 9.4, 9.5, 9.6, 10.1
      gab01            del libretto.
  
@@ -108,6 +110,14 @@
        </querytext>
     </partialquery>
 
+    <partialquery name="upd_aimp_destinazione">
+      <querytext>
+        update coimaimp
+	   set note  = :note_destinazione 
+         where cod_impianto = :destinazione
+      </querytext>
+    </partialquery>
+    
     <fullquery name="sel_cimp_cod_new">
         <querytext>
 	  select nextval('coimcimp_s') as cod_cimp_new

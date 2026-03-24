@@ -2,6 +2,8 @@
 <!--
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    rom03 19/01/2023 Riportate modifiche gia' fatte per coimestr-list.tcl
+
     rom02 19/03/2019 Aggiunta condizione where_gend 
 
     rom01 12/07/2018 Aggiunta condizione where_manu.
@@ -59,6 +61,12 @@
                 $where_cout
                 $where_gen15
                 $and_cinc
+                   and not exists (select '1'
+                                     from coimcimp e
+                                    where e.cod_impianto    = a.cod_impianto
+                                      and e.data_controllo >=  :data_controllo
+                                      and flag_tracciato <> 'MA'
+                                  ) --rom03
                 and vv.cod_impianto = a.cod_impianto
                 and vv.flag_attivo  = 'S'                -- 31/07/2013
 	        $and_gend_gen_prog_uguale_a_dimp_gen_prog -- 31/07/2013
@@ -112,6 +120,12 @@
                 $where_cout
                 $where_gen15
                 $and_cinc
+                   and not exists (select '1'
+                                     from coimcimp e
+                                    where e.cod_impianto    = a.cod_impianto
+                                      and e.data_controllo >=  :data_controllo
+                                      and flag_tracciato <> 'MA'
+                                  ) --rom03
                 and vv.cod_impianto = a.cod_impianto
                 and vv.flag_attivo  = 'S'                -- 31/07/2013
 	        $and_gend_gen_prog_uguale_a_dimp_gen_prog -- 31/07/2013

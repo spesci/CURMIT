@@ -2,6 +2,14 @@
 <!--
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    mat01 28/11/2025 Aggiunto sel_aimp_old_marche
+
+    ric01 01/10/2025 Aggiunto nuovi campi per ditta e operatori delegati (Punto 40 MEV regione Marche).
+
+    rom02 18/01/2023 Salerno ha richiesto che la tariffa sia calcolata non in base alla data in cui ci si trova ma
+    rom02            in base alla data dell'rcee (come gia' fatto per Ucit). Sandro ha detto che questo va bene per tutti
+    rom02            gli altri enti tranne che Regione Marche.
+
     rom01 23/12/2020 Su richiesta di Regione Marche e' stata data la possibilita' agli Installatori 
     rom01            di poter inserire gli RCEE se viene scelto come motivo di compilazione: 
     rom01            Prima messa in servizio, Sostituzione del generatore e Ristrutturazione dell'impianto.
@@ -273,6 +281,8 @@
                      , scorta_o_lett_iniz2         --gac05
 		     , scorta_o_lett_fin           --gac05
                      , scorta_o_lett_fin2          --gac05
+		     , cod_manu_dele               --ric01
+		     , cod_opma_dele               --ric01
 
                      )
                 values 
@@ -424,6 +434,8 @@
                      ,:scorta_o_lett_iniz2         --gac05
 		     ,:scorta_o_lett_fin           --gac05
                      ,:scorta_o_lett_fin2          --gac05
+		     , :cod_manu_dele               --ric01
+		     , :cod_opma_dele               --ric01
                     )
        </querytext>
     </partialquery>
@@ -571,6 +583,8 @@
                      , elet_lettura_iniziale_2   = :elet_lettura_iniziale_2     --gac05
                      , elet_lettura_finale_2     = :elet_lettura_finale_2       --gac05
                      , elet_consumo_totale_2     = :elet_consumo_totale_2       --gac05
+		     , cod_manu_dele           = :cod_manu_dele               --ric01
+		     , cod_opma_dele           = :cod_opma_dele               --ric01
 
                  where cod_dimp           = :cod_dimp
        </querytext>
@@ -773,6 +787,11 @@
                   , iter_edit_num(a.elet_lettura_iniziale_2, 2) as elet_lettura_iniziale_2  --gac05
                   , iter_edit_num(a.elet_lettura_finale_2, 2)   as elet_lettura_finale_2    --gac05
                   , iter_edit_num(a.elet_consumo_totale_2, 2)   as elet_consumo_totale_2    --gac05
+		  , a.cod_manu_dele  --ric01
+		  , coalesce(man.cognome,'')||' '||coalesce(man.nome,'') as rag_sociale_delegato   --ric01
+		  , a.cod_opma_dele  --ric01
+		  , coalesce(opm.cognome,'')||' '||coalesce(opm.nome,'') as nome_opma_delegato     --ric01
+		  , a.data_controllo as data_controllo_st  --ric02
                from coimdimp$stn a
                left outer join coimmanu b on b.cod_manutentore  = a.cod_manutentore
                left outer join coimcitt c on c.cod_cittadino    = a.cod_responsabile
@@ -780,7 +799,9 @@
                left outer join coimcitt e on e.cod_cittadino    = a.cod_occupante
                left outer join coimopma i on i.cod_opma         = a.cod_opmanu_new
                     inner join coimaimp g on g.cod_impianto     = a.cod_impianto
-               left outer join coimcitt h on h.cod_cittadino    = g.cod_intestatario
+		    left outer join coimcitt h on h.cod_cittadino    = g.cod_intestatario
+		    left outer join coimmanu man on man.cod_manutentore  = a.cod_manu_dele --ric01
+		    left outer join coimopma opm on opm.cod_opma         = a.cod_opma_dele --ric01
               where a.cod_dimp = :cod_dimp
        </querytext>
     </fullquery>
@@ -817,6 +838,46 @@
                from coimcitt
               where cognome   $eq_cognome
                 and nome      $eq_nome
+       </querytext>
+    </fullquery>
+
+    <fullquery name="sel_aimp_old_marche"> 
+       <querytext>
+       select b.cod_manutentore    as cod_manutentore_old --rom05
+    --rom05 , a.cod_manutentore    as cod_manutentore_old
+            , a.cod_responsabile   as cod_responsabile_old
+            , a.cod_occupante      as cod_occupante_old
+            , a.cod_proprietario   as cod_proprietario_old
+            , a.cod_intestatario   as cod_int_contr_old
+            , a.cod_intestatario   as cod_intestatario_old
+            , a.cod_amministratore as cod_amministratore_old
+	    , a.flag_resp          as flag_resp_old
+	    , a.cod_potenza        as cod_potenza_old
+            , a.$nome_col_aimp_potenza  as potenza_old
+            , a.flag_dichiarato
+            , a.data_installaz
+            , a.note               as note_aimp
+            , b.cognome            as cognome_manu_old
+            , b.nome               as nome_manu_old
+            , c.cognome            as cognome_resp_old
+            , c.nome               as nome_resp_old
+            , d.cognome            as cognome_occu_old
+            , d.nome               as nome_occu_old
+            , e.cognome            as cognome_prop_old
+            , e.nome               as nome_prop_old
+            , f.cognome            as cognome_contr_old
+            , f.nome               as nome_contr_old
+            , c.cod_fiscale        as cod_fiscale_resp_old
+            , a.data_prima_dich    as dt_prima_dich
+            from coimaimp a
+	    left join coimmanu b on b.cod_manutentore = case when :cod_manu is null then a.cod_manutentore
+	                                                     else :cod_manu end
+	 left outer join coimcitt c on c.cod_cittadino   = a.cod_responsabile
+	 left outer join coimcitt d on d.cod_cittadino   = a.cod_occupante
+	 left outer join coimcitt e on e.cod_cittadino   = a.cod_proprietario
+	 left outer join coimcitt f on f.cod_cittadino   = a.cod_intestatario
+         where a.cod_impianto = :cod_impianto
+	 limit 1
        </querytext>
     </fullquery>
 
@@ -1129,7 +1190,7 @@
                                    and d.cod_listino  = :cod_listino
                            --sim05 and d.tipo_costo  = '1'
         			   and d.tipo_costo  = '8' -- sim05
-                                   and d.data_inizio <= current_date)
+                                   and d.data_inizio <= :data_controllo_tariffa)
        </querytext>
     </fullquery>
 

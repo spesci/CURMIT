@@ -145,6 +145,11 @@
                   , allegato
                   , tipo_foglio
                   , orientamento
+		  , (margine_alto||'cm') as margine_alto             --but01
+                  , (margine_basso||'cm') as margine_basso           --but01
+                  , (margine_destro||'cm') as margine_destro         --but01
+                  , (margine_sinistro||'cm') as margine_sinistro     --but01
+
                from coimstpm
               where id_stampa = :id_stampa
        </querytext>
@@ -602,7 +607,7 @@
        <querytext>
             select a.cod_cimp                                            as cod_cimp
                  , a.gen_prog                                            as gen_prog
-                 , a.cod_inco                                            as cod_inco
+                 , a.cod_inco                                            as cod_inco_rv
                  , iter_edit_data(a.data_controllo)                      as data_controllo_rv
                  , a.verb_n                                              as verb_n
                  , iter_edit_data(a.data_verb)                           as data_verb

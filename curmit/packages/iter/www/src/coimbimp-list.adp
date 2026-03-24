@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <script type="text/javascript" src="../javascript/wz_tooltip.js"></script>
 <master   src="../master">
 <property name="title">@page_title;noquote@</property>
@@ -20,7 +21,7 @@
 <center>
 @mex_error;noquote@
 </center>
-<formtemplate id="@form_name;noquote@">
+<formtemplate id="@form_name@">
 
 <formwidget   id="caller">
 <formwidget   id="extra_par">
@@ -35,6 +36,8 @@
        <formwidget id="submit">
     </td>
 </tr>
+</table><br>
+<table class="table_s">
 <tr bgcolor=#f8f8f8 class=table-header>
    <th>Azioni</th>
    <th>seleziona<br>da bonificare</th>
@@ -52,9 +55,9 @@
 <tr>
     <td valign=top align=left>@impianti.link;noquote@</td>
     <td valign=top align=center>
-       <formgroup id="compatta.@impianti.cod_impianto;noquote@">@formgroup.widget;noquote@</formgroup>
-       <formerror  id="compatta.@impianti.cod_impianto;noquote@"><br>
-       <span class="errori"><%= $formerror(compatta.@impianti.cod_impianto;noquote@) %></span>
+       <formgroup id="compatta.@impianti.cod_impianto@">@formgroup.widget;noquote@</formgroup>
+       <formerror  id="compatta.@impianti.cod_impianto@"><br>
+       <span class="errori"><%= $formerror(compatta.@impianti.cod_impianto@) %></span>
        </formerror>
     </td>
     <td valign=top align=left>@impianti.cod_impianto_est;noquote@</td>
@@ -65,14 +68,16 @@
     <td valign=top align=center>@impianti.destinaz;noquote@</td>
 </tr>    
 </multiple>
-
-<tr><td colspan=7>&nbsp;</td></tr>
+</table><br>
+<table>
+<!--<tr><td colspan=7>&nbsp;</td></tr>-->
 
 <tr>
     <td colspan=7 align=center>
        <formwidget id="submit">
     </td>
 </tr>
+</table>
 </formtemplate>
 
 </center>

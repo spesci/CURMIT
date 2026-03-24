@@ -7,7 +7,38 @@ ad_page_contract {
     @cvs-id coimdimp-layout.tcl
 
     USER  DATA       MODIFICHE
-    ===== ========== =========================================================================
+    ===== ========== ========================================================================
+    rom13 25/11/2024 Sandro ha chiesto di riportare la modifica di rom09 fatta per Caserta anche per
+    rom13            Frosinone: il codice bollino sara' valorizzato con il valore dell'id cod_dimp.
+
+    rom12 23/05/2024 Se è attivo l'apposito parametro riporto la campagna di riferimento.
+
+    rom11 11/04/2024 Sandro ha chiesto di riportare la modifica di rom10 fatta per Rieti anche per Caserta:
+    rom11            il codice bollino sara' valorizzato con il valore dell'id cod_dimp.
+
+    rom10 04/12/2023 Sandro ha chiesto di riportare la modifica di rom09 per Napoli anche per Rieti:
+    rom10            il codice bollino sara' valorizzato con il valore dell'id cod_dimp.
+
+    rom09 13/11/2023 Sandro ha chiesto di riportare la modifica di rom07 fatta per Palermo anche per Napoli:
+    rom09            il codice bollino sara' valorizzato con il valore dell'id cod_dimp.
+
+    rom08 28/11/2022 Aggiunta possibilita' di stampare gli rcee con la firma grafometrica in base
+    rom08            ai parametri flag_firma_manu_stampa_rcee e flag_firma_resp_stampa_rcee.
+
+    rom07 07/12/2022 Implementazione per Palermo richiesta con mail "Implementazioni" di Sandro del 01/12/2022, riporto testo:
+    rom07            Inserimento di un codice bollino nell'apposito campo del Rapporto di controllo. Tale codice sarà uguale a
+    rom07            quello del  campo  progressivo inserimento. Per gli impianti con piu' generatori il codice bollino sarà
+    rom07            rilasciato solo sul primo generatore dove è presente il contributo.
+    rom07            Tale implementazionzione riguarda tutte le tipologie di RCEE e le stampe. Il numero di bollino potrà essere
+    rom07            rilasciato solo al momento dell'inserimento. L'implementazione sara' visibile solo per Palermo.
+
+    rom06 02/11/2022 Palermo salva gli allegati su sile system.
+
+    rom05 23/03/2022 Su richiesta di Giuliodori rivisti alcune modifiche di rom04.
+
+    rom04 16/03/2022 MEV Regione Marche punto 6. Stampa RCEE precompilato senza dati del
+    rom04            Controllo del rendimento di combustione.
+
     rom03 12/04/2021 Corretta sezione C. per Regione Marche:
     rom03            Tolta parte Trattamento in ACS perche' in realta' non e' presente.
 
@@ -51,6 +82,7 @@ ad_page_contract {
     {cognome_resp_old     ""}
     {nome_resp_old        ""}
     {flag_ins             ""}
+    {is_only_print_p     "f"}
 } -properties {
     page_title:onevalue
     context_bar:onevalue
@@ -100,21 +132,54 @@ if {[db_0or1row sel_cod_gend ""] == 0} {
 }
 iter_get_coimtgen
 set flag_viario $coimtgen(flag_viario)
+set flag_cind   $coimtgen(flag_cind);#rom12
 
+if {$is_only_print_p} {#rom04 Aggiunta if e sil suo contenuto
+
+    set sel_dimp "sel_gend_only_print"
+
+    set sel_aimp "sel_aimp_only_print"
+
+    set tr_da_agg "<tr><td><small><small>&nbsp;</small></small></td></tr>";#rom05
+    
+} else {#rom04 Aggiunta else ma non il suo contenuto
+    
 if {$flag_viario == "T"} {
     set sel_dimp "sel_dimp_si_vie"
 } else {
     set sel_dimp "sel_dimp_no_vie"
 }
+set sel_aimp "sel_aimp";#rom04
+    set tr_da_agg "";#rom05
+};#rom04
 
-if {[db_0or1row $sel_dimp ""] == 0} {
+#rom04if {[db_0or1row $sel_dimp ""] == 0} {
     # codice non trovato
-    iter_return_complaint  "Dati Impianto non trovati</li>"
-    return
+#rom04    iter_return_complaint  "Dati Impianto non trovati</li>"
+#rom04    return
+#rom04}
+
+set img_firma_manuten $spool_dir/$cod_dimp-M-immagine.png;#rom08
+set img_firma_respons $spool_dir/$cod_dimp-C-immagine.png;#rom08
+
+if {[file exists $img_firma_manuten] == 0} {#rom08 Aggiunta if e il suo contenuto
+    set img_firma_manuten ""
 }
 
+if {[file exists $img_firma_respons] == 0} {#rom08 Aggiunta if e il suo contenuto
+    set img_firma_respons ""
+}
+
+
+
+set n_page 0;#rom04
+
+db_foreach $sel_dimp "" {#rom04 Aggiunta foreach ma non il suo contenuto
+
+    set stampa "";#rom04
+
 # dati impianto
-if {[db_0or1row sel_aimp ""] == 0} {
+if {[db_0or1row $sel_aimp ""] == 0} {
     # codice non trovato
     #   iter_return_complaint  "Impianto non trovato"
     #   return
@@ -128,6 +193,14 @@ if {$coimtgen(regione) eq "MARCHE"} {#gac01 if e suo contenuto
     set height "height=10"
 } else {
     set height ""
+}
+
+incr n_page;#rom04
+
+if {$n_page > 1} {#rom04 Aggiunta if e suo contenuto
+    set testata2 "<!-- PAGE BREAK -->"
+} else {
+    set testata2 ""
 }
 
 switch $flag_resp {
@@ -180,7 +253,10 @@ switch $tiraggio {
     default {set des_tiraggio "&nbsp;"}
 }
 
-set stampa "<table width=100%>"
+#rom04set stampa "<table width=100%>"
+
+append stampa "<table width=100% border=0>";#rom04
+
 set root [ns_info pageroot]
 # Titolo della stampa
 iter_get_coimdesc
@@ -222,7 +298,7 @@ if {[db_0or1row sel_opma ""] == 1} {
     set operatore "$nome_op $cognome_op"
 } else {
     # codice non trovato
-    set operatore "" 
+    set operatore "_______________________________________";#rom05
 }
 
 if {$coimtgen(regione) ne "MARCHE"} {#gac01 if else e contenuto
@@ -237,6 +313,15 @@ if {$coimtgen(regione) ne "MARCHE"} {#gac01 if else e contenuto
     } else {
 	set costo_bollino ""
     }
+
+    #rom09 Aggiunta condizione per PNA
+    #rom10 Aggiunta condizione per PRI
+    #rom11 Aggiunta condizione per PCE
+    #rom13 Aggiunta condizione per PFR
+    if {$coimtgen(ente) in [list "PPA" "PNA" "PRI" "PCE" "PFR"] && $riferimento_pag ne ""} {#rom07 Aggiunta if e il suo contenuto
+        append costo_bollino "    Codice bollino: $riferimento_pag"
+    }
+    
 } else {#gac01
     if {$tipologia_costo eq "BO"} {
 	set bollino_applicato "Bollino applicato: $riferimento_pag"
@@ -289,8 +374,7 @@ if {$stampe_logo_in_tutte_le_stampe eq "1" && $stampe_logo_nome ne ""} {#sim01: 
     set logo ""
 }
 
-set testata2 "
-<small><small><!-- HEADER RIGHT  \"Pagina \$PAGE(1) di \$PAGES(1)\" --></small></small><!--gac01-->
+append testata2 "
 <table width=100%>
   <tr>
     <td width=100% align=center>"
@@ -304,14 +388,20 @@ if {$stampe_logo_in_tutte_le_stampe eq "1" && $stampe_logo_nome ne ""} {#sim01: 
 }
 
 if {$coimtgen(regione)  ne "MARCHE"} {#gac01 if else e contenuto (parte standard)
+#rom08append testata2 "
+#            <table>
+#              <tr><td align=center><b><small>$ente</small></b></td></tr>
+#              <tr><td align=center><b><small>$ufficio</small></b></td></tr>
+#              <tr><td align=center><small>$assessorato</small></td></tr>
+#              <tr><td align=center><small>$indirizzo_ufficio</small></td></tr>
+#              <tr><td align=center><small>$telefono_ufficio</small></td></tr>
+#rom08       </table>"
     append testata2 "
             <table>
               <tr><td align=center><b><small>$ente</small></b></td></tr>
               <tr><td align=center><b><small>$ufficio</small></b></td></tr>
-              <tr><td align=center><small>$assessorato</small></td></tr>
-              <tr><td align=center><small>$indirizzo_ufficio</small></td></tr>
-              <tr><td align=center><small>$telefono_ufficio</small></td></tr>
-            </table>"
+              <tr><td align=center><small>$assessorato $indirizzo_ufficio $telefono_ufficio </small></td></tr>
+       </table>";#rom08
 } else {#parte per regione marche
         append testata2 "
             <table>
@@ -398,6 +488,18 @@ if {$coimtgen(regione)  ne "MARCHE"} {#gac01 if e suo contenuto
                </tr>"
 }
 
+if {$flag_cind eq "S"} {#rom12 Aggiunta if e il suo contenuto
+
+    db_1row q "select c.descrizione as descr_cind
+                 from coimcind c
+                    , coimdimp d
+                where c.cod_cind     = d.cod_cind
+                  and d.cod_impianto = :cod_impianto
+                  and d.cod_dimp     = :cod_dimp"
+    
+    append stampa "<tr><td colspan=3 align=left><small>Campagna: $descr_cind</small></td></tr>"
+}
+
 if {$coimtgen(regione)  ne "MARCHE"} {#gac01 if else e contenuto (parte standard)
     append stampa "
                <tr>
@@ -411,7 +513,7 @@ if {$coimtgen(regione)  ne "MARCHE"} {#gac01 if else e contenuto (parte standard
                </tr>
                </table>
 
-<tr><td>&nbsp;</td></tr>
+<!--rom08 <tr><td>&nbsp;</td></tr> -->
 <tr><td><table width=100% border=0>
     <tr>
         <td><b><small>Impresa di Manutenzione :</small></b></td>
@@ -1029,59 +1131,59 @@ if {$coimtgen(regione) ne "MARCHE"} {#gac01 if e suo contenuto
 </tr>
 
 </table>
-              <table>
-              <tr><td colspan=2 size=2><small><small><b>E. CONTROLLO E VERIFICA ENERGETICA DEL GRUPPO TERMICO</b></small></small></td>
-                 <tr>
-        <td valign=top align=left class=form_title><small>Costruttore: $descr_cost</small></td>
-        <td valign=top align=left class=form_title><small>Modello: $modello</small></td>
-        <td valign=top align=left class=form_title><small>Matricola: $matricola</small></td>
-    </tr>
-    <tr>
-        <td valign=top align=left class=form_title><small>Pot. term. nom. in raffrescamento $potenza</small></td>
-        <td valign=top align=left class=form_title><small>Pot. term. nom in riscaldamento $pot_focolare_lib</small></td>
-        <td valign=top align=left class=form_title><small>Anno di costruzione: $data_costruz_gen</small></td>
-    </tr>
-    <tr>
-         <td valign=top align=left class=form_title><small>Marcatura efficienza energetica:(DPR 660/96): $marc_effic_energ</small></td>
-         <td valign=top align=left class=form_title><small>Uso: $destinazione</small></td>
-        <td valign=top align=left class=form_title><small>Data installazione: $data_installaz</small></td>       
-    </tr>
-
-   <tr>
-        <td valign=top align=left class=form_title><small>Consumi ultima stagione di riscaldamento (m<sup><small>3</small></sup>/kg): $consumo_annuo</small></td>
-    </tr>        
-
-             
-              <tr><td><small><small>Ad assorbimento per recupero calore</small></small></td>
-                  <td><small><small>[iter_edit_flag_mh $fr_assorb_recupero]</small></small></td>
-                  <td><small><small>Ad assorbimento a fiamma diretta con combustibile</small></small></td>
-                  <td><small><small>[iter_edit_flag_mh $fr_assorb_fiamma]</small></small></td>
-              </tr>
-              <tr><td><small><small>A ciclo di compressione con motore elettrico o endotermico</small></small></td>
-                  <td><small><small>[iter_edit_flag_mh $fr_ciclo_compressione]</small></small></td>
-              </tr>
-              <tr>
-                  <td><small><small>Assenza perdite di gas refrigente</small></small></td>
-                  <td><small><small>[iter_edit_flag_mh $fr_assenza_perdita_ref]</small></small></td>
-                  <td><small><small>Presenza apparecchiature automatica rilevazione diretta fughe refrigerante</small></small></td>
-                  <td><small><small>[iter_edit_flag_mh $fr_leak_detector]</small></small></td>
-              </tr>
-              <tr><td><small><small>Presenza apparecchiature automatica rilevazione indiretta fughe refrigerante</small></small></td>
-                  <td><small><small>[iter_edit_flag_mh $fr_pres_ril_fughe]</small></small></td>
-                  <td><small><small>Scambiatori di calore puliti e liberi da incrostazioni</small></small></td>
-                  <td><small><small>[iter_edit_flag_mh $fr_scambiatore_puliti]</small></small></td>
-              </tr>
-               </tr>
-               <tr><td><small><small>Prova eseguita in modalità (R)affreddamento/Ris(C)aldamento :</small></small></td>
-                  <td><small><small><b> $fr_prova_modalita</b></small></small></td>
-              </tr>
-              <tr></tr>
-              </table>
+<table>
+  <tr><td colspan=3 size=2><small><small><b>E. CONTROLLO E VERIFICA ENERGETICA DEL GRUPPO TERMICO</b></small></small></td></tr>
+  <tr>
+    <td valign=top align=left class=form_title><small>Costruttore: $descr_cost</small></td>
+    <td valign=top align=left class=form_title><small>Modello: $modello</small></td>
+    <td valign=top align=left class=form_title><small>Matricola: $matricola</small></td>
+  </tr>
+  <tr>
+    <td valign=top align=left class=form_title><small>Pot. term. nom. in raffrescamento $potenza</small></td>
+    <td valign=top align=left class=form_title><small>Pot. term. nom in riscaldamento $pot_focolare_lib</small></td>
+    <td valign=top align=left class=form_title><small>Anno di costruzione: $data_costruz_gen</small></td>
+  </tr>
+  <tr>
+    <td valign=top align=left class=form_title><small>Marcatura efficienza energetica:(DPR 660/96): $marc_effic_energ</small></td>
+    <td valign=top align=left class=form_title><small>Uso: $destinazione</small></td>
+    <td valign=top align=left class=form_title><small>Data installazione: $data_installaz</small></td>
+  </tr>
+  <tr>
+    <td valign=top align=left class=form_title><small>Consumi ultima stagione di riscaldamento (m<sup><small>3</small></sup>/kg): $consumo_annuo</small></td>
+  </tr>
+  <tr>
+    <td nowrap><small><small>Ad assorbimento per recupero calore</small></small></td>
+    <td nowrap><small><small>[iter_edit_flag_mh $fr_assorb_recupero]</small></small></td>
+    <td nowrap><small><small>Ad assorbimento a fiamma diretta con combustibile</small></small></td>
+    <td nowrap><small><small>[iter_edit_flag_mh $fr_assorb_fiamma]</small></small></td>
+  </tr>
+  <tr>
+    <td nowrap><small><small>A ciclo di compressione con motore elettrico o endotermico</small></small></td>
+    <td nowrap><small><small>[iter_edit_flag_mh $fr_ciclo_compressione]</small></small></td>
+  </tr>
+  <tr>
+    <td nowrap><small><small>Assenza perdite di gas refrigente</small></small></td>
+    <td nowrap><small><small>[iter_edit_flag_mh $fr_assenza_perdita_ref]</small></small></td>
+    <td nowrap><small><small>Presenza apparecchiature automatica rilevazione diretta fughe refrigerante</small></small></td>
+    <td nowrap><small><small>[iter_edit_flag_mh $fr_leak_detector]</small></small></td>
+  </tr>
+  <tr>
+    <td nowrap><small><small>Presenza apparecchiature automatica rilevazione indiretta fughe refrigerante</small></small></td>
+    <td nowrap><small><small>[iter_edit_flag_mh $fr_pres_ril_fughe]</small></small></td>
+    <td nowrap><small><small>Scambiatori di calore puliti e liberi da incrostazioni</small></small></td>
+    <td nowrap><small><small>[iter_edit_flag_mh $fr_scambiatore_puliti]</small></small></td>
+  </tr>
+  <tr>
+    <td nowrap><small><small>Prova eseguita in modalità (R)affreddamento/Ris(C)aldamento :</small></small></td>
+    <td nowrap><small><small><b> $fr_prova_modalita</b></small></small></td>
+  </tr>
+  <tr></tr>
+</table>
 "}
 
 if {$coimtgen(regione) ne "MARCHE"} {#gac01 if e suo contenuto (parte standard)
     append stampa "
-                 <table align=center width=100% border=1 cellpadding=3 cellspacing=\"0\">
+                 <table align=center width=100% border=1 cellpadding=1 cellspacing=\"0\">
               <tr>
                   <td><small>Num modulo</small></td><!--sim04-->
                   <td><small>Surriscald.(&deg;C)</small></td>
@@ -1137,6 +1239,47 @@ db_foreach q "select progressivo_prova_fumi
 
 	       }
 } else {#gac01 parte per regione marche
+
+    if {$is_only_print_p} {#rom04 Aggiunta if e il suo contenuto
+
+	    append stampa "
+                 <table align=center width=100% border=1 cellpadding=2 cellspacing=\"0\">
+              <tr>
+                  <td><small><small>Num modulo</small></small></td><!--sim04-->
+                  <td><small><small>Surriscald.(&deg;C)</small></small></td>
+                  <td><small><small>Sottoraffed.(&deg;C)</small></small></td>
+                  <td><small><small>T.condens.<sub><small>2</small></sub>(%)</small></small></td>
+                  <td><small><small>T.eavapor<sub><small>2</small></sub>(%)</small></small></td>
+                  <td><small><small>T ing.lato est</small></small></td>
+                  <td><small><small>T usc.lato est</small></small></td>
+                  <td><small><small>T ing.lato ute</small></small></td>
+                  <td><small><small>T usc.lato ute</small></small></td>
+                  <td><small><small>N.Circuito</small></small></td>
+              </tr>"
+
+	set num_circuiti_printed 0
+
+	for {set num_circuiti_printed 0} {$num_circuiti_printed < $num_circuiti} {incr num_circuiti_printed} {
+	    append stampa "
+              <tr>
+                  <td align=right>&nbsp;</td>
+                  <td align=right>&nbsp;</td>
+                  <td align=right>&nbsp;</td>
+                  <td align=right>&nbsp;</td>
+                  <td align=right>&nbsp;</td>
+                  <td align=right>&nbsp;</td>
+                  <td align=right>&nbsp;</td>
+                  <td align=right>&nbsp;</td>
+                  <td align=right>&nbsp;</td>
+                  <td align=right>&nbsp;</td>
+              </tr>"
+
+
+	}
+	    append stampa "</table>"
+
+    } else {#rom05 Aggiunta else ma  non il suo contenuto
+    
     append stampa "
                  <table align=center width=100% border=1 cellpadding=2 cellspacing=\"0\">
               <tr>
@@ -1191,8 +1334,9 @@ db_foreach q "select progressivo_prova_fumi
                   <td align=right><small><small>$fr_nr_circuito_prfumi</small></small></td>
               </tr>"
 
-
+	          
 	       }
+};#rom05
 };#gac01
 if {$coimtgen(regione) ne "MARCHE"} {#gac01 parte standard
 append stampa  "</table>
@@ -1215,7 +1359,9 @@ append stampa  "</table>
                 </td>
               </tr>
               <tr>
-                <td><small><b>PRESCRIZIONI</b> (in attesa di questi interventi l'impianto non pu&ograve; essere messo in funzione): $prescrizioni"
+                <td><small><b>PRESCRIZIONI</b> (in attesa di questi interventi l'impianto non pu&ograve; essere messo in funzione): $prescrizioni</small>
+              </tr>
+              </table>"
 } else {#gac01 parte per regione marche
 
     if {$rct_check_list_1 eq "S"} {
@@ -1240,26 +1386,36 @@ append stampa  "</table>
     }
     
     append stampa "
-              <table>
-                   <tr><td colspan=2 size=2><small><small><b>F. CHECK LIST</b></small></small></td> </tr>
-                   <tr><td  valign=top align=left class=form_title><small><small>Elenco di possibili interventi, dei quali va valuta la convenienza economica, che qualora applicabili all'impianto, potrebbero comportare un miglioramento della prestazione energetica:</small></small></td></tr>
-                   <tr><td><small><small>$img_list_1 La sostituzione di generatori a regolazione on/off, con altri di pari potenza a più gradini o a regolazione continua.</small></small></td></tr>
-                   <tr><td><small><small>$img_list_2 La sostituzione dei sistemi di regolazione on/off con sistemi programmabili su più livelli di temperatura.</small></small></td></tr>
-                   <tr><td><small><small>$img_list_3 L'isolamento della rete di distribuzione acqua refrigerata/calda nei locali non climatizzati.</small></small></td></tr>
-                   <tr><td><small><small>$img_list_4 L'isolamento dei canali di distribuzione aria fredda/calda nei locali non climatizzati.</small></small></td></tr>
+             <table>
+             <tr><td colspan=2 size=2 nowrap><small><small><b>F. CHECK LIST</b> Elenco di possibili interventi, dei quali va valuta la convenienza economica, che qualora applicabili all'impianto, potrebbero comportare un miglioramento della prestazione energetica:</small></small></td>
+             </tr>
+             <tr>
+               <td><small><small>$img_list_1 La sostituzione di generatori a regolazione on/off, con altri di pari potenza a più gradini o a regolazione continua.</small></small></td>
+               <td><small><small>$img_list_3 L'isolamento della rete di distribuzione acqua refrigerata/calda nei locali non climatizzati.</small></small></td>
+             </tr>
+             <tr>
+               <td><small><small>$img_list_2 La sostituzione dei sistemi di regolazione on/off con sistemi programmabili su più livelli di temperatura.</small></small></td>
+               <td><small><small>$img_list_4 L'isolamento dei canali di distribuzione aria fredda/calda nei locali non climatizzati.</small></small></td>
+              </tr>
               </table>
 
-              <table width=100% border=0 cellpadding=0 cellspacing=0>
+              <table width=100% border=0 cellpadding=0 cellspacing=1>
+              $tr_da_agg
               <tr>
-                <td><small><small><b>OSSERVAZIONI</b>: $osservazioni</small></small>
-                </td>
+                <td width=10%><small><small><b>OSSERVAZIONI</b>:<small><small></td>
+                <td width=90%><small><small>$osservazioni</small></small></td>
               </tr>
+              $tr_da_agg
               <tr>
-                <td><small><small><b>RACCOMANDAZIONI</b>: $raccomandazioni</small></small>
-                </td>
+                <td width=10%><small><small><b>RACCOMANDAZIONI</b>:<small><small></td>
+                <td width=90%><small><small>$raccomandazioni</small></small></td>
               </tr>
+              $tr_da_agg
               <tr>
-                <td><small><small><b>PRESCRIZIONI</b>: $prescrizioni</small></small>"
+                <td width=10%><small><small><b>PRESCRIZIONI</b>:<small><small></td>
+                <td width=90%><small><small>$prescrizioni</small></small></td>
+              </tr>
+              </table>"
 }
 
 set lista_anom ""
@@ -1268,17 +1424,23 @@ db_foreach sel_anom "" {
 }
 
 if {![string equal $lista_anom ""]} {
-    append stampa " anomalie presenti:"
+    append stampa "<table width=100% border=0 cellpadding=0 cellspacing=0>
+                     <tr>
+                       <td width=10%><small><small>Anomalie presenti:</small></small></td>
+                       <td align=left><small><small>"
     foreach anom $lista_anom {
 	append stampa " $anom "
     }
+    append stampa "    </small></small></td>
+                     </tr>
+                   </table>"
 }
 
 
-append stampa "</b></small>
-               </td>
-               </tr>
-               </table>"
+#append stampa "</b></small>
+#               </td>
+#               </tr>
+#               </table>"
 
 if {[string is space $firma_manut]} {
     set firma_manut $manuten
@@ -1286,6 +1448,13 @@ if {[string is space $firma_manut]} {
 
 if {[string is space $firma_resp]} {
     set firma_resp "$cognome_resp $nome_resp"
+}
+
+if {$coimtgen(flag_firma_manu_stampa_rcee) eq "t"} {#rom08 Aggiunta if e il suo contenuto
+    set firma_manut "<img src=$img_firma_manuten height=50>"
+}
+if {$coimtgen(flag_firma_resp_stampa_rcee) eq "t"} {#rom08 Aggiunta if e il suo contenuto
+    set firma_resp "<img src=$img_firma_respons height=50>"
 }
 
 if {$coimtgen(regione)  ne "MARCHE"} {#gac01 if else e contenuto (parte standard)
@@ -1323,63 +1492,86 @@ append stampa "</table></td></tr>
                   <td colspan=2><small>$costo_bollino<small></td><!-- rom02 -->
                </tr>
                <tr>
-                  <td width=50%><small>Firma manutentore</small></td>
-                  <td width=50%><small>Firma responsabile</small></td>
+                  <td width=50%><small>Firma manutentore <br> $firma_manut</small></td>
+                  <td width=50%><small>Firma responsabile <br> $firma_resp</small></td>
                </tr>
-               <tr>
+    <!-- rom08 <tr>
                   <td><small>$firma_manut</small></td>
                   <td><small>$firma_resp</small></td>
-               </tr>
+               </tr> -->
              </table>"
 } else {#gac01 parte per regione marche
     if {$flag_status eq "P"} {
-	set img_funz $img_checked
+	#rom05set img_funz $img_checked
+        set img_funz_si $img_checked;#rom05
+	set img_funz_no $img_unchecked;#rom05
+    } elseif {$flag_status eq "O_P"} {#rom05 Aggiunta elseif e suo contenuto
+	#Se sto stampando la dichiarazione precompilata non devo avere nessuna casella checkata
+	set img_funz_no $img_unchecked
+	set img_funz_si $img_unchecked	
     } else {
-	set img_funz $img_unchecked
+	#rom05set img_funz $img_unchecked
+	set img_funz_no $img_checked;#rom05
+	set img_funz_si $img_unchecked;#rom05
     }
     append stampa "</table></td></tr>
           <tr>
             <td align=center>
-              <table width=100% border=0><tr>
+              <table width=100% border=0>
                 <tr>
-                  <td  valign=top align=left class=form_title><small><small><b>Il tecnico dichiara, in riferimento ai punti A,B,C,D,E (sopra menzionati)  che l'apparecchio pu&ograve; essere messo in servizio ed usato normalmente ai fini dell'efficenza energetica senza compromettere la sicurezza delle persone, degli animali e dei beni.</b></small></small></td>
+                  <td valign=top align=left class=form_title><small><small><b>Il tecnico dichiara, in riferimento ai punti A,B,C,D,E (sopra menzionati)  che l'apparecchio pu&ograve; essere messo in servizio ed usato normalmente ai fini dell'efficenza energetica senza compromettere la sicurezza delle persone, degli animali e dei beni.</b></small></small></td>
                 </tr>
                 <tr>
-                  <td  valign=top align=left class=form_title><small><small><b>L'impianto pu&ograve; funzionare $img_checked Sì $img_unchecked No</b></small></small></td>
+                  <td valign=top align=left class=form_title><small><small><b>L'impianto pu&ograve; funzionare $img_funz_si Sì $img_funz_no No</b></small></small></td>
                 </tr>
               </table>
             </td>
           </tr>
-          <tr><td align=center><table width=100%><tr>
-            <td  valign=top align=left class=form_title><small><small>Il tecnico declina altresi ogni responsabilit&agrave; per sinistri a persone, animali o cose derivanti da manomissione dell'impianto o dell'apparecchio da parte di terzi, ovvero da carenze di manutenzione successiva. In presenza di carenza riscontrate e non eliminate, il responsabile dell'impianto si impegna, entro breve tempo, a provvedere alla loro risoluzione dandone notizia all'operatore incaricato. Si raccomanda un intervento manutentivo entro il $data_prox_manut</small></small></td>
+          <tr>
+            <td align=center>
+            <table width=100%>
+              <tr>
+                <td valign=top align=left class=form_title><small><small>Il tecnico declina altresi ogni responsabilit&agrave; per sinistri a persone, animali o cose derivanti da manomissione dell'impianto o dell'apparecchio da parte di terzi, ovvero da carenze di manutenzione successiva. In presenza di carenza riscontrate e non eliminate, il responsabile dell'impianto si impegna, entro breve tempo, a provvedere alla loro risoluzione dandone notizia all'operatore incaricato.</small></small></td>
+              </tr>
+              <tr>
+                <td valign=top align=left class=form_title><small><small>Si raccomanda un intervento manutentivo entro il $data_prox_manut</small></small></td>
+              </tr>
+            </table>
+          </td>
           </tr>
-          </table>
-        </td>
-      </tr>
-             <table width=100% border=0 cellpadding=0 cellspacing=0>
+          <tr>
+            <td align=center>
+             <table width=100% border=0 cellpadding=1 cellspacing=1>
                <tr>               
-                  <td width=33%><small><small>Data del presente controllo $data_controllo</small></small></td>
-                  <td><small><small>Orario di arrivo/partenza presso l'impianto $ora_inizio / $ora_fine</small></small></td>
+                 <td width=33%><small><small>Data del presente controllo $data_controllo</small></small></td>
+                 <td><small><small>Orario di arrivo/partenza presso l'impianto $ora_inizio / $ora_fine</small></small></td>
                </tr>
                <tr>
-                    <td colspan=2><small><small>Tecnico che ha effettato il controllo: Nome e cognome: $operatore </small></small></td>
+                 <td colspan=2><small><small>Tecnico che ha effettato il controllo: Nome e cognome: $operatore </small></small></td>
                </tr>
                <tr>
-                  <td width=50%><small><small>Firma leggibile del tecnico</small></small></td>
-                  <td width=50%><small><small>Firma leggibile, per presa visione, del responsabile dell'impianto</small></small></td>
+                 <td width=50%><small><small>Firma leggibile del tecnico</small></small></td>
+                 <td width=50%><small><small>Firma leggibile, per presa visione, del responsabile dell'impianto</small></small></td>
                </tr>
                <tr>
-                  <td><small>$firma_manut</small></td>
-                  <td><small>$firma_resp</small></td>
+                 <td><small>$firma_manut</small></td>
+                 <td><small>$firma_resp</small></td>
                </tr>
-             </table>"
+             </table>
+            </td>
+          </tr>
+        </table>"
 }
 
 # creo file temporaneo html
 set stampa1 $testata
 append stampa1 $stampa
-set stampa2 $testata2
+append stampa2 $testata2
 append stampa2 $stampa
+
+};#rom04
+
+set stampa2 "<!-- HEADER RIGHT  \"Pagina \$PAGE(1) di \$PAGES(1)\" -->$stampa2";#rom04
 
 
 # imposto il nome dei file
@@ -1433,7 +1625,8 @@ if {$flag_ins == "S"} {
 		    }
 		}
 		
-		if {$coimtgen(regione) eq "MARCHE"} {#sim03 if e suo contenuto	    
+		#rom06 Aggiunta condizione su Palermo
+		if {$coimtgen(regione) eq "MARCHE" || $coimtgen(ente) eq "PPA"} {#sim03 if e suo contenuto	    
 		    
 		    set path_file [iter_permanenti_file_salva $contenuto_tmpfile $nome_file_originale]
 		    
@@ -1462,7 +1655,17 @@ if {$flag_ins == "S"} {
 }
 ns_unlink $file_html
 
-if {$coimtgen(regione) eq "MARCHE"} {#sim03 if e suo contenuto	    
+if {$img_firma_manuten ne ""} {#rom08 Aggiunta if e il suo contenuto
+    ns_unlink $img_firma_manuten
+}
+
+if {$img_firma_respons ne ""} {#rom08 Aggiunta if e il suo contenuto
+    ns_unlink $img_firma_respons
+}
+
+
+#rom06 Aggiunta condizione su Palermo
+if {$coimtgen(regione) eq "MARCHE" || $coimtgen(ente) eq "PPA"} {#sim03 if e suo contenuto	    
     ns_returnfile 200 $tipo_contenuto $path_file
     return
 } else {#sim03    

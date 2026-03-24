@@ -15,6 +15,15 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== ==========================================================================
+    but01 25/07/2023 Aggiunto la classe ah-jquery-date a tutti campi DATA.
+    ric01 15/03/2023 Solo per regione Marche mostro i flag_art_11 e flag_art_11_comma_3, per gli 
+    ric01            altri enti non sono più necessari perchè abrogati, modificato anche adp.
+    ric01            Aggiunto controllo su obbligatorietà flag_art_3.
+
+    sim01 01/02/2023 Corretto errore dovuto a gac01. Se indicavo un cittadino i default dei campi
+    sim01            non erano settati correttamente.
+    sim01            Corretto messaggio di errore di data_dichiarazione che andava su un altro campo
+
     gac02 22/11/2019 Per poter aggiungere o modificare una dichiarazione bisogna aver inserito
     gac02            tutti i dati obbligatori
 
@@ -57,6 +66,11 @@ switch $funzione {
     "M" {set lvl 3}
     "D" {set lvl 4}
 }
+set jq_date "";#but01
+if {$funzione in "M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
+
 set id_utente [lindex [iter_check_login $lvl $nome_funz] 1]
 
 set link_gest [export_url_vars cod_impianto cod_noveb nome_funz nome_funz_caller url_list_aimp url_aimp extra_par caller]
@@ -349,7 +363,7 @@ element create $form_name data_consegna \
     -label   "data_consegna" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name luogo_consegna \
@@ -479,7 +493,7 @@ element create $form_name data_dich_conform \
     -label   "data_dich_conform" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name regolamenti_locali \
@@ -509,7 +523,7 @@ element create $form_name data_verif_emiss \
     -label   "data_verif_emiss" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name risultato_mg_nmc_h \
@@ -539,7 +553,7 @@ element create $form_name data_alleg_libretto \
     -label   "data_alleg_libretto" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name firma_dichiarante \
@@ -560,14 +574,14 @@ element create $form_name firma_responsabile \
     -label   "firma_responsabile" \
     -widget   text \
     -datatype text \
-    -html    "size 40 maxlength 100 $readonly_fld {} class form_element" \
+    -html    "size 40 maxlength 100 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name data_ricevuta \
     -label   "data_ricevuta" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name flag_consegnato \
@@ -696,7 +710,7 @@ element create $form_name dat_prot \
     -label   "Data protocollo" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 
@@ -821,12 +835,28 @@ if {[form is_request $form_name]} {
        # element set_properties $form_name manu_stra_1       -value "Ogni qual volta si renda necessario per sostituire parti guaste o adeguare l'impianto alle norme vigenti. Si rammenta che tali opere devono essere eseguite da Ditte qualificate ai sensi di quanto previsto dal D.M. 37/08."
 
     } else {
+
+	#sim01 spostato qui i defaul per evitare errori
+	set reg_imprese "";#gac01
+	set localita_reg "";#gac01
+	set flag_a "";#gac01
+	set flag_c "";#gac01
+	set flag_e "";#gac01
+	set cod_legale_rapp "";#gac01
+	set indirizzo_manu "";#gac01
+	set comune_manu "";#gac01
+	set piva "";#gac01
+	set telefono "";#gac01
+	set fax "";#gac01
+	set email "";#gac01 
+	
+
         # leggo riga
 	if {$funzione ne "I"} {
 	    if {[db_0or1row sel_noveb {}] == 0} {
 		iter_return_complaint "Record non trovato"
 	    }
-	    
+
 	    if {![string equal $cod_manutentore ""]} {
 		if {[string range $cod_manutentore 0 1] == "MA"} {
 		    db_0or1row sel_dati_manu ""
@@ -836,18 +866,6 @@ if {[form is_request $form_name]} {
 	    } else {
 		set cognome_manu ""
 		set nome_manu ""
-		set reg_imprese "";#gac01
-		set localita_reg "";#gac01
-		set flag_a "";#gac01
-		set flag_c "";#gac01
-		set flag_e "";#gac01
-		set cod_legale_rapp "";#gac01
-		set indirizzo_manu "";#gac01
-		set comune_manu "";#gac01
-		set piva "";#gac01
-		set telefono "";#gac01
-		set fax "";#gac01
-		set email "";#ac01 
 	    }	
 	}
 		    
@@ -1079,7 +1097,7 @@ if {[form is_valid $form_name]} {
             element::set_error $form_name data_consegna "Campo obbligatorio"
             incr error_num
         }
-
+	
         if {![string equal $data_dich_conform ""]} {
             set data_dich_conform [iter_check_date $data_dich_conform]
             if {$data_dich_conform == 0} {
@@ -1092,7 +1110,7 @@ if {[form is_valid $form_name]} {
                 }
             }
         }
-
+	
         if {![string equal $data_verif_emiss ""]} {
             set data_verif_emiss [iter_check_date $data_verif_emiss]
             if {$data_verif_emiss == 0} {
@@ -1105,7 +1123,7 @@ if {[form is_valid $form_name]} {
                 }
             }
         }
-
+	
         if {![string equal $data_alleg_libretto ""]} {
             set data_alleg_libretto [iter_check_date $data_alleg_libretto]
             if {$data_alleg_libretto == 0} {
@@ -1121,8 +1139,9 @@ if {[form is_valid $form_name]} {
         if {![string equal $data_dichiarazione ""]} {
             set data_dichiarazione [iter_check_date $data_dichiarazione]
             if {$data_dichiarazione == 0} {
-                element::set_error $form_name data_verif_emiss "Data dichiarazione deve essere una data"
-                incr error_num
+                #sim01 element::set_error $form_name data_verif_emiss "Data dichiarazione deve essere una data"
+                element::set_error $form_name data_dichiarazione "Data dichiarazione deve essere una data";#sim01
+		incr error_num
             } else {
                 if {$data_dichiarazione > $current_date} {
                     element::set_error $form_name data_dichiarazione "Data deve essere anteriore alla data odierna"
@@ -1130,7 +1149,7 @@ if {[form is_valid $form_name]} {
                 }
             }
         }
-
+	
         if {![string equal $data_ricevuta ""]} {
             set data_ricevuta [iter_check_date $data_ricevuta]
             if {$data_ricevuta == 0} {
@@ -1143,7 +1162,7 @@ if {[form is_valid $form_name]} {
                 }
             }
         }
-
+	
         if {![string equal $pot_term_tot_mw ""]} {
             set pot_term_tot_mw [iter_check_num $pot_term_tot_mw 4]
             if {$pot_term_tot_mw == "Error"} {
@@ -1170,7 +1189,7 @@ if {[form is_valid $form_name]} {
                 incr error_num
             }
         }
-
+	
         if {![string equal $dich_conformita_nr ""]} {
             set dich_conformita_nr [iter_check_num $dich_conformita_nr 0]
             if {$dich_conformita_nr == "Error"} {
@@ -1178,19 +1197,19 @@ if {[form is_valid $form_name]} {
                 incr error_num
             }
         }
-
+	
         if {$verif_emis_286_si == "t"} {
             set flag_verif_emis_286 "S"
         } else {
             set flag_verif_emis_286 "N"
         }
         
-     if {$verif_emis_286_no == "t"} {
+	if {$verif_emis_286_no == "t"} {
             set flag_verif_emis_286 "N"
         } else {
             set flag_verif_emis_286 "S"
         }
-
+	
         if {![string equal $risultato_mg_nmc_h ""]} {
             set risultato_mg_nmc_h [iter_check_num $risultato_mg_nmc_h 0]
             if {$risultato_mg_nmc_h == "Error"} {
@@ -1198,7 +1217,7 @@ if {[form is_valid $form_name]} {
                 incr error_num
             }
         }
-
+	
         if {$risultato_conforme_si == "t"} {
             set flag_risult_conforme "S"
         } else {
@@ -1211,12 +1230,12 @@ if {[form is_valid $form_name]} {
         } else {
             if {$funzione == "I"} {
                 #if {[db_0or1row sel_cod_check ""] == 1} {
-                 #   element::set_error $form_name cod_noveb "Codice gi&agrave; esistente"
-                  #  incr error_num
+		#   element::set_error $form_name cod_noveb "Codice gi&agrave; esistente"
+		#  incr error_num
                 #}
             }
         }
-
+	
         #routine generica per controllo codice manutentore
         set check_cod_manu {
             set chk_out_rc       0
@@ -1251,7 +1270,7 @@ if {[form is_valid $form_name]} {
                 }
             }
         }
-
+	
         set check_cod_citt {
             set chk_out_rc       0
             set chk_out_msg      ""
@@ -1285,7 +1304,7 @@ if {[form is_valid $form_name]} {
                 }
             }
         }
-
+	
         if {[string equal $cognome_manu ""] && [string equal $nome_manu ""]} {
 	    if {$coimtgen(regione) eq "MARCHE"} {
 		element::set_error $form_name cognome_manu "Inserire installatore/manutentore"
@@ -1321,18 +1340,31 @@ if {[form is_valid $form_name]} {
                 }
             }
         }
-
+	
         set errore_1 ""
         set errore_2 ""
         set errore_3 ""
-        if {$flag_art_3 eq "" && $flag_art_11 eq ""} {
-            set errore_1 "Indicare una delle due possibilita'"
-            incr error_num
-        }
-        if {$flag_patente_abil eq "" && $flag_art_11_comma_3 eq ""} {
-            set errore_2 "Indicare una delle due possibilita'"
-            incr error_num
-        }
+	
+	if {$coimtgen(regione) eq "MARCHE"} {#ric01 aggiunta if ma non suo contenuto
+	    
+	    if {$flag_art_3 eq "" && $flag_art_11 eq ""} {
+		set errore_1 "Indicare una delle due possibilita'"
+		incr error_num
+	    }
+	    if {$flag_patente_abil eq "" && $flag_art_11_comma_3 eq ""} {
+		set errore_2 "Indicare una delle due possibilita'"
+		incr error_num
+	    }
+	    
+	} else {#ric01 aggiunta else e suo contenuto
+	
+	    if {$flag_art_3 eq ""} {
+		set errore_1 "Selezionare requisito"
+                incr error_num
+	    }
+	    
+	};#ric01
+	
 	if {$coimtgen(regione) ne "MARCHE"} {
 	    if {$flag_installatore eq "" && $flag_responsabile eq "" && $flag_manutentore eq ""} {
 		set errore_3 "Indicare una delle 3 possibilita'"
@@ -1356,20 +1388,20 @@ if {[form is_valid $form_name]} {
         ad_return_template
         return
     }
- if {$funzione == "I"} {
-   db_1row sel_next_noveb ""
-}
- if {$funzione == "I"} {
-                if {[db_0or1row sel_cod_check ""] == 1} {
-                    element::set_error $form_name cod_noveb "Codice gi&agrave; esistente"
-                    incr error_num
-                }
-}
-  if {$error_num > 0} {
+    if {$funzione == "I"} {
+	db_1row sel_next_noveb ""
+    }
+    if {$funzione == "I"} {
+	if {[db_0or1row sel_cod_check ""] == 1} {
+	    element::set_error $form_name cod_noveb "Codice gi&agrave; esistente"
+	    incr error_num
+	}
+    }
+    if {$error_num > 0} {
         ad_return_template
         return
     }
-
+    
     # Lancio la query di manipolazione dati contenuta in dml_sql
     with_catch error_msg {
         db_transaction {

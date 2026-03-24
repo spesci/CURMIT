@@ -15,6 +15,11 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== ============================================================================================
+    rom03 13/04/2024 Dalla data odierna Mobilità&Parcheggi ha cambiato nome in Ancona Servizi S.p.A., ho gestito il
+    rom03            cambio del logo per Comune e Provincia di Ancona.
+
+    rom02 23/05/2023 Resa standard una modifica fatta sul Comune di Salerno per il logo.
+
     rom01 18/09/2018 Cambiata l'impaginazione della fattura per far coincidere il nome e l'indirizzo dell'utente 
     rom01            con la finestrella trasparente delle buste postali.
 
@@ -80,11 +85,18 @@ if {![string equal $f_da_num_fatt ""]
 	
 	ns_log notice "prova mar2 $num_fatt"
 	
+	if {$flag_ente eq "CSALERNO"} {#rom02 Aggiunte if, else e il loro contenuto
+	    set logo_stmp "$logo_dir/LogoSinergia.jpg"
+	} else {
+	    #rom03set logo_stmp "$logo_dir/mp.jpg"
+	    set logo_stmp "$logo_dir/AnconaServizi_Logo.jpg";#rom03
+	}
+
 	set testata "
                <table width=100% > 
                 <tr> <td>&nbsp;</td></tr>
                 <tr> <td>&nbsp;</td></tr>
-                <tr> <td align=left> <img height=100 src=$logo_dir/mp.jpg></td>
+                <tr> <td align=left> <img height=100 src=$logo_stmp></td>
               </table>"
 	
 	puts $file_id $testata

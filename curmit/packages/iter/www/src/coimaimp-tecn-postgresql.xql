@@ -2,6 +2,9 @@
 <!--
     USER  DATA       MODIFICHE
     ===== ========== ========================================================================================
+    rom02 10/03/2023 Riportato vecchio controllo fatto sul vecchio cvs su query sel_ruolo_manu e sel_ruolo_inst:
+    rom02            il flag_ruolo era gestito erronemante.
+
     rom01 11/12/2020 Per Regione Marche non vado a fare l'update su pod e pdr perche' sono stati spostati
     rom01            nella scheda 1-bis.
 -->
@@ -131,7 +134,8 @@
            select '1'
              from coimmanu
             where (cognome = upper(:cognome_manu) $eq_nome_manu)
-              and (flag_ruolo = 'M' or flag_ruolo = 'T' or flag_ruolo is null or flag_ruolo = 'E') 
+    --rom02   and (flag_ruolo = 'M' or flag_ruolo = 'T' or flag_ruolo is null or flag_ruolo = 'E') 
+              and (flag_ruolo is null or flag_ruolo != 'I') --rom02
              limit 1
        </querytext>
     </fullquery>
@@ -141,7 +145,8 @@
            select '1'
              from coimmanu
             where (cognome = upper(:cognome_inst) $eq_nome_inst)
-              and (flag_ruolo = 'I' or flag_ruolo = 'T' or flag_ruolo is null or flag_ruolo = 'E') 
+    --rom02   and (flag_ruolo = 'I' or flag_ruolo = 'T' or flag_ruolo is null or flag_ruolo = 'E')
+              and (flag_ruolo is null or flag_ruolo != 'M') --rom02
              limit 1
        </querytext>
     </fullquery>

@@ -12,6 +12,10 @@ ad_page_contract {
                      navigazione con navigation bar
     @param extra_par Variabili extra da restituire alla lista
     @cvs-id          coimacts-gest.tcl
+    USER  DATA       MODIFICHE
+    ===== ========== =======================================================================
+    but01 25/07/2023 Aggiunto la classe ah-jquery-date al campo "Data caricamento".
+
 } {
     
    {cod_acts         ""}
@@ -90,6 +94,10 @@ switch $funzione {
         set disabled_fld \{\}
        }
 }
+set jq_date "";#but01
+if {$funzione in "M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
 
 form create $form_name \
 -html    $onsubmit_cmd
@@ -113,7 +121,7 @@ element create $form_name data_caric \
 -label   "Data caricamento" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 $readonly_key {} class form_element" \
+-html    "size 10 maxlength 10 $readonly_key {} class form_element $jq_date" \
 -optional
 
 element create $form_name cod_documento \

@@ -19,6 +19,13 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    rom03 25/10/2024 Le tipologie Manut/Inst Clim.Estiva e Manut/Inst Biomassa Legnosa
+    rom03            nei manutentori devono essere filtrate anche come fossero Installatori I.
+
+    but01 13/07/2023 Aggiunta class"link-button-2" nel actions"Selez"
+
+    rom02 21/04/2023 Per Regione Friuli modificate le condizioni where_ruolo su manutentore e installatore.
+
     rom01 19/01/2021 Per la Regione Marche se il caller e' coimdimp devo far refreshare la
     rom01            pagina chiamante dopo che ho selezionato il manutentore per poter
     rom01            leggere attivare il __refreshing_p che va a popolare le combo degli strumenti
@@ -131,12 +138,12 @@ if {$conta_flag != "t"} {
 }
 
 regsub -all "'" $cognome "!" cognome
-
+#but01 Aggiunta class"link-button-2" nel actions"Selez"
 if {$caller == "index"} {
     set link_aggiungi   "<a href=\"$gest_prog?funzione=I&[export_url_vars last_cognome caller nome_funz nome_funz_caller extra_par]\">Aggiungi</a>"
     set link    "\[export_url_vars cod_manutentore last_cognome nome_funz extra_par\]"
     set actions "
-    <td nowrap><a href=\"$gest_prog?funzione=V&$link\">Selez.</a></td>"
+    <td nowrap><a href=\"$gest_prog?funzione=V&$link\"class=\"link-button-2\">Selez.</a></td>"
 
     set js_function ""
 } else {
@@ -157,7 +164,7 @@ if {$caller == "index"} {
 	if {[string equal $flag_valor_cod ""]
 	} {
 	    set link    "\[export_url_vars cod_manutentore cognome nome nome_funz extra_par\]"
-	    set actions "<td nowrap><a href=\"coimmanu-list?flag_valor_cod=t&$link&caller=$caller\">Selez.</a></td>"
+	    set actions "<td nowrap><a href=\"coimmanu-list?flag_valor_cod=t&$link&caller=$caller\"class=\"link-button-2\">Selez.</a></td>"
 	    set js_function ""
 	} else {
 	    set actions ""
@@ -246,16 +253,31 @@ if {[string equal $flag_valor_cod ""]
     if {[string equal $f_ruolo ""]} {
 	set where_ruolo ""
     } else {
+	if {$coimtgen(regione) eq "FRIULI-VENEZIA GIULIA"} {#rom02 Aggoimta if e il contenuto
+	    if {$f_ruolo == "M"} {
+		set where_ruolo " and (a.flag_ruolo != 'I' or a.flag_ruolo is null)";#rom03
+	    }
+	    if {$f_ruolo == "I"} {
+		set where_ruolo " and (a.flag_ruolo != 'M' or a.flag_ruolo is null)";#rom03
+	    }
+	    if {$f_ruolo == "T"} {
+		set where_ruolo " and (a.flag_ruolo = 'T' or a.flag_ruolo is null)"
+	    }
+
+	} else {#rom02 Aggiunta else ma non il suo contenuto
+
 	if {$f_ruolo == "M"} {
 	    #sim02 set where_ruolo " and (a.flag_ruolo in ('M','T') or a.flag_ruolo is null)"
 	    set where_ruolo " and (a.flag_ruolo in ('M','T','E','L') or a.flag_ruolo is null)";#sim02
 	}
 	if {$f_ruolo == "I"} {
-	    set where_ruolo " and (a.flag_ruolo in ('I','T') or a.flag_ruolo is null)"
+	    #rom03set where_ruolo " and (a.flag_ruolo in ('I','T') or a.flag_ruolo is null)"
+	    set where_ruolo " and (a.flag_ruolo in ('I','T','E','L') or a.flag_ruolo is null)";#rom03
 	}
 	if {$f_ruolo == "T"} {
 	    set where_ruolo " and (a.flag_ruolo = 'T' or a.flag_ruolo is null)"
 	}
+	};#rom02
     }
     
     if {$flag_filter == "S"} {

@@ -11,6 +11,11 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== =========================================================================
+    rom02 13/03/2024 Su richiesta di Sandro aggiunto filtro f_con_data_app per poter estrarre
+    rom02            solo gli appuntamenti che hanno o che non hanno una data appuntamento valorizzata.
+    
+    but01 19/06/2023 Aggiunto la classe ah-jquery-date ai campi Da Data e A Data.
+
     rom01 21/10/2020 Su segnalazione di Salerno modificato page_title per renderlo
     rom01            uguale al nome del menu', Sandro ha detto che va bene per tutti.
 
@@ -49,6 +54,7 @@ ad_page_contract {
     {f_civico_a        ""}
     {f_cod_noin        ""}
     {flag_tipo_impianto   ""}
+    {f_con_data_app    ""}
 } -properties {
     page_title:onevalue
     context_bar:onevalue
@@ -135,7 +141,10 @@ if {$flag_cod_tecn == "t"} {
 } else {
     set readonly_tecn  \{\}
 }
-
+set jq_date "";#but01
+if {$funzione in "V M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
 
 form create $form_name \
     -html    $onsubmit_cmd
@@ -157,19 +166,19 @@ element create $form_name f_tipo_data \
     -datatype text \
     -html    "class form_element" \
     -optional
-
+#but01 19/06/2023 Aggiunto la classe ah-jquery-date ai campi Da Data e A Data.
 element create $form_name f_da_data \
     -label   "Da Data " \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 class form_element" \
+    -html    "size 10 maxlength 10 class form_element $jq_date" \
     -optional
 
 element create $form_name f_a_data \
     -label   "A Data " \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 class form_element" \
+    -html    "size 10 maxlength 10 class form_element $jq_date" \
     -optional
 
 element create $form_name f_cod_impianto \
@@ -345,6 +354,16 @@ if {$flag_ente == "P"} {
 	-options [iter_selbox_from_table_wherec coimarea cod_area descrizione "" "where tipo_01 = 'C'"]
 }
 
+#rom02
+element create $form_name f_con_data_app \
+    -label   "Con data appuntamento" \
+    -widget   select \
+    -datatype text \
+    -html    "class form_element" \
+    -optional \
+    -options {{{} {}} {Si S} {No N}}
+
+
 if {$flag_viario == "T"} {
     set cerca_viae [iter_search $form_name [ad_conn package_url]/tabgen/coimviae-filter [list dummy f_cod_via dummy f_descr_via dummy f_descr_topo cod_comune f_cod_comune dummy dummy dummy dummy]]
 } else {
@@ -443,6 +462,8 @@ if {[form is_request $form_name]} {
     if {$flag_ente  == "P" && $sigla_prov == "LI"} {
 	element set_properties $form_name f_tipo_lettera   -value $f_tipo_lettera
     }
+
+    element set_properties $form_name f_con_data_app -value $f_con_data_app;#rom02
 }
 
 if {[form is_valid $form_name]} {
@@ -483,6 +504,8 @@ if {[form is_valid $form_name]} {
 	set f_tipo_lettera    [element::get_value $form_name f_tipo_lettera]
     }
 
+    set f_con_data_app   [string trim [element::get_value $form_name f_con_data_app]];#rom02
+    
     set error_num 0
     if {$flag_cod_enve == "t"} {
 	set f_cod_enve [iter_check_uten_enve $id_utente]
@@ -707,8 +730,9 @@ if {[form is_valid $form_name]} {
 	return
     }
 #dpr74
-    set flag_scar "N" 
-    set link_list [export_url_vars caller funzione nome_funz nome_funz_caller f_campagna f_tipo_data f_da_data f_a_data f_cod_impianto f_tipo_estrazione f_anno_inst_da f_anno_inst_a f_cod_comb f_cod_enve f_cod_tecn f_cod_comune f_cod_via f_resp_cogn f_resp_nome f_civico_da f_civico_a f_cod_noin f_descr_topo f_descr_via f_stato f_cod_area f_tipo_lettera flag_scar cod_cinc flag_tipo_impianto]
+    set flag_scar "N"
+    #rom02 Aggiunto f_con_data_app
+    set link_list [export_url_vars caller funzione nome_funz nome_funz_caller f_campagna f_tipo_data f_da_data f_a_data f_cod_impianto f_tipo_estrazione f_anno_inst_da f_anno_inst_a f_cod_comb f_cod_enve f_cod_tecn f_cod_comune f_cod_via f_resp_cogn f_resp_nome f_civico_da f_civico_a f_cod_noin f_descr_topo f_descr_via f_stato f_cod_area f_tipo_lettera flag_scar cod_cinc flag_tipo_impianto f_con_data_app]
     set return_url "coiminco-list?$link_list"
 
     ad_returnredirect $return_url

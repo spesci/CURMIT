@@ -12,6 +12,13 @@ ad_page_contract {
                      navigazione con navigation bar
     @param extra_par Variabili extra da restituire alla lista
     @cvs-id          coimrelg-gest.tcl
+    
+    USER  DATA       MODIFICHE
+    ===== ========== =================================================================
+    but01 10/07/2023 Aggiunto la classe ah-jquery-date ai campi: valid_dataf, rifer_dataf
+    but01            , rifer_datai, conv_ass_categ, data_rel
+
+
 } {
     
    {cod_relg         ""}
@@ -87,7 +94,10 @@ switch $funzione {
         set disabled_fld \{\}
        }
 }
-
+set jq_date "";#but01
+if {$funzione in "M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
 form create $form_name \
 -html    $onsubmit_cmd
 
@@ -95,7 +105,7 @@ element create $form_name data_rel \
 -label   "Data inizio relazione" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 $readonly_key {} class form_element" \
+-html    "size 10 maxlength 10 $readonly_key {} class form_element $jq_date" \
 -optional
 
 if {$funzione == "P"} {
@@ -218,7 +228,7 @@ element create $form_name conv_ass_categ \
 -label   "Data sottoscrizione" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+-html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
 -optional
 
 element create $form_name conf_dgr7_7568 \
@@ -262,21 +272,21 @@ element create $form_name rifer_dataf \
 -label   "Data fine periodo di riferimento" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+-html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
 -optional
 
 element create $form_name valid_datai \
 -label   "Data inizio periodo di validit&agrave;" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+-html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
 -optional
 
 element create $form_name valid_dataf \
 -label   "Data fine periodo di validit&agrave;" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+-html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
 -optional
 
 element create $form_name ntot_autodic_perv \
@@ -717,7 +727,7 @@ if {[form is_valid $form_name]} {
         }
 
         if {![string equal $npiva_ader_conv ""]} {
-            set npiva_ader_conv [iter_check_num $npiva_ader_conv 0]
+            set npiva_ader_conv [iter_check_num $npiva_ader_conv 0] 
             if {$npiva_ader_conv == "Error"} {
                 element::set_error $form_name npiva_ader_conv "Deve essere un numero intero"
                 incr error_num

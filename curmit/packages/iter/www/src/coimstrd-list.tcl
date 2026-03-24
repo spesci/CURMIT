@@ -16,6 +16,11 @@ ad_page_contract {
                              separati da '|' ed impostarli come segue:
 
     @cvs-id coimstav-list.tcl
+
+    USER  DATA       MODIFICHE
+    ===== ========== =======================================================================
+    but01 13/07/2023 Aggiunta class"link-button-2" nel actions"Mod sogg."
+
 } { 
     {cod_inco          ""}
     {funzione         "V"}
@@ -127,10 +132,10 @@ set js_function ""
 set url_vars        [export_ns_set_vars "url" "flag_sel"]
 
 # imposto la struttura della tabella
-
+#but01 Aggiunta class"link-button-2" nel actions"Mod sogg."
 set link    "\[export_url_vars cod_cittadino\]"
 set actions "
-    <td nowrap><a target=citt href=\"coimcitt-gest?funzione=M&flag_mod=t&nome_funz_caller=$nome_funz_caller&nome_funz=$nome_funz_coimcitt&$link\">Mod sogg.</a></td>"
+    <td nowrap><a target=citt href=\"coimcitt-gest?funzione=M&flag_mod=t&nome_funz_caller=$nome_funz_caller&nome_funz=$nome_funz_coimcitt&$link\"class=\"link-button-2\">Mod sogg.</a></td>"
 
 set table_def [list \
 	[list actions          "Azioni"           no_sort $actions] \

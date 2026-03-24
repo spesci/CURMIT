@@ -9,6 +9,11 @@ ad_page_contract {
     @param nome_funz identifica l'entrata di menu, serve per le autorizzazioni
                      serve se lista e' uno zoom che permetti aggiungi.
     @cvs-id          coimdimp-scar-filter.tcl
+
+    USER  DATA       MODIFICHE
+    ===== ========== =======================================================================
+    but01 23/06/2023 Aggiunto la classe ah-jquery-date ai campi:f_data_ins_iniz, f_data_ins_fine, f_data_controllo_iniz, f_data_controllo_fine.   
+
 } {
    {cod_batc         ""}    
    {funzione         "I"}
@@ -115,33 +120,33 @@ element create $form_name f_manu_nome \
 -datatype text \
 -html    "size 40 maxlength 40 $readonly_fld2 {} class form_element"\
 -optional
-
+#but01
 element create $form_name f_data_ins_iniz \
 -label   "Da data inserimento" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+-html    "size 10 maxlength 10 $readonly_fld {} class form_element class ah-jquery-date" \
 -optional
-
+#but01
 element create $form_name f_data_ins_fine \
 -label   "A data inserimento" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+-html    "size 10 maxlength 10 $readonly_fld {} class form_element class ah-jquery-date" \
 -optional
-
+#but01
 element create $form_name f_data_controllo_iniz \
 -label   "Da data controllo" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+-html    "size 10 maxlength 10 $readonly_fld {} class form_element class ah-jquery-date" \
 -optional
-
+#but01
 element create $form_name f_data_controllo_fine \
 -label   "A data controllo" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+-html    "size 10 maxlength 10 $readonly_fld {} class form_element class ah-jquery-date" \
 -optional
 
 element create $form_name funzione          -widget hidden -datatype text -optional

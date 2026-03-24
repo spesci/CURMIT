@@ -44,10 +44,18 @@ select to_char(a.data_controllo, 'dd/mm/yyyy') as data_controllo_edit
                when '4' then 'Confermato' 
                when '2' then 'Assegnato'
            else ''
-         end  as stato_inco 
+         end  as stato_inco
+, iter_edit_num(coalesce(m.importo, '0'), 2) as importo_mov --rom01
+, case m.flag_pagato
+  when 'S' then 'Si'
+  when 'N' then 'No'
+  when 'R' then 'Rimborsato'
+  else ''  end as flag_pagato_mov            --rom01
+, iter_edit_data(m.data_pag) as data_pag_mov --rom01
 from coimcimp a
 left outer join coiminco g on g.cod_inco = a.cod_inco
 left outer join coimnoin f on f.cod_noin = a.cod_noin
+left outer join coimmovi m on m.riferimento = a.cod_cimp and m.data_compet = a.data_controllo --rom01
 ,coimaimp b
 ,coimviae d
 ,coimcomu c

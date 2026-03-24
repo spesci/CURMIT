@@ -1,6 +1,9 @@
 <!--
     USER  DATA       MODIFICHE
     ===== ========== ==========================================================================
+    ric01 15/03/2023 Aggiunta if per regione Marche, per tutti gli altri enti non saranno piÃ¹ 
+    ric01            visibili i flag relativi all'art. 11 perchÃ¨ abrogati.
+
     gac01 21/11/2018 Modificata struttura e alcuni campi per regione marche
 
   -->
@@ -93,14 +96,14 @@
 <if @coimtgen.regione@ eq "MARCHE">
     <tr><td align=center colspan=4>DICHIARAZIONE PER IMPIANTI TERMICI CIVILI DI POTENZA TERMICA NOMINALE AL FOCOLARE > 35 kW</td></tr>
       <tr><td align=center colspan=4>(D.Lgs. 152/06 art. 284)</td></tr>
-      <tr><td align=center colspan=4><i>Da allegare alla Dichiarazione di conformità' per nuova installazione o modifica (art.248 c.1); e da allegare al Libretto d'impianto per gli impianti in esercizio (art.284 c.2);</i></td></tr>
+      <tr><td align=center colspan=4><i>Da allegare alla Dichiarazione di conformità' per nuova installazione o modifica (art.284 c.1); e da allegare al Libretto d'impianto per gli impianti in esercizio (art.284 c.2);</i></td></tr>
     </if>
     <else>
       <tr><td align=center colspan=2>ATTO DI DICHIARAZIONE PER IMPIANTI TERMICI CIVILI DI POTENZA TERMICA NOMINALE > 0,035 MW</td></tr>
       <tr><td colspan=2>&nbsp;</td></tr>
       <tr><td align=center colspan=2>(D.Lgs. 152/06 art. 284 come modificato dal D.Lgs. 128/10 art. 3 comma 7)</td></tr>
-      <tr><td align=center colspan=2>Da allegare alla Dichiarazione di conformità' per nuova installazione o modifica (art.248 c.1);</td></tr>
-      <tr><td align=center colspan=2>e per gli impianti in esercizio da inserire nel Libretto di Centrale (art.248 c.2);</td></tr>
+      <tr><td align=center colspan=2>Da allegare alla Dichiarazione di conformità' per nuova installazione o modifica (art.284 c.1);</td></tr>
+      <tr><td align=center colspan=2>e per gli impianti in esercizio da inserire nel Libretto di Centrale (art.284 c.2);</td></tr>
     </else>
     <tr><td colspan=2>&nbsp;</td></tr>
 <if @coimtgen.regione@ eq "MARCHE">
@@ -281,7 +284,7 @@
     <tr><td colspan=3><font color=red>@errore_1;noquote@</font></td></tr>
 
     <tr><td colspan=3>&nbsp;</td></tr>
-    <tr><td align=left colspan=3>Ed in possesso dei seguenti ulteriori requisiti:</td></tr>
+    <tr><td align=left colspan=3>Ed in possesso degli eventuali ulteriori requisiti:</td></tr>
     <tr><td colspan=3>&nbsp;</td></tr>
     <tr><td align=left><formgroup id="flag_patente_abil">@formgroup.widget;noquote@</formgroup> patentino di abilitazione per la conduzione di impianti termici (obbligatorio per Portata Termica Nominale > 0,232 MW)</td>
     </tr>
@@ -306,24 +309,31 @@
     <tr><td colspan=2>&nbsp;</td></tr>
     <tr><td align=left colspan=2>in possesso dei requisiti di cui</td></tr>
     <tr><td colspan=2>&nbsp;</td></tr>
+
     <tr><td align=left><formgroup id="flag_art_3">@formgroup.widget;noquote@</formgroup></td>
         <td align=left>al D.M. 22/01/2008 n. 37 art. 3</td>
     </tr>
-    <tr><td align=left><formgroup id="flag_art_11">@formgroup.widget;noquote@</formgroup></td>
-        <td align=left> al DPR 412/93 art. 11</td>
-    </tr>
-    <tr><td colspan=2><font color=red>@errore_1;noquote@</font></td></tr>
 
+<if @coimtgen.regione@ eq "MARCHE"><!-- ric01 aggiunta if ma non suo contenuto contenuto -->		
+    	 <tr><td align=left><formgroup id="flag_art_11">@formgroup.widget;noquote@</formgroup></td>
+             <td align=left> al DPR 412/93 art. 11</td>
+         </tr>
+</if>
+
+    <tr><td colspan=2><font color=red>@errore_1;noquote@</font></td></tr>
     <tr><td colspan=2>&nbsp;</td></tr>
-    <tr><td align=left colspan=2>Ed in possesso dei seguenti ulteriori requisiti:</td></tr>
+    <tr><td align=left colspan=2>Ed in possesso degli eventuali ulteriori requisiti:</td></tr>
     <tr><td colspan=2>&nbsp;</td></tr>
     <tr><td align=left><formgroup id="flag_patente_abil">@formgroup.widget;noquote@</formgroup></td>
-        <td align=left>patentino di abilitazione per la conduzione di impianti termici (obbliogatorio per Portata Termica Nominale > 0,232 MW)</td>
+        <td align=left>patentino di abilitazione per la conduzione di impianti termici (obbligatorio per Portata Termica Nominale > 0,232 MW)</td>
     </tr>
+
+<if @coimtgen.regione@ eq "MARCHE"><!-- ric01 aggiunta if ma non suo contenuto -->
     <tr><td align=left><formgroup id="flag_art_11_comma_3">@formgroup.widget;noquote@</formgroup></td>
         <td align=left> requisiti di cui al DPR 412/93 art. 11 comma 3</td>
     </tr>
     <tr><td colspan=2><font color=red>@errore_2;noquote@</font></td></tr>
+</if>
 
     <tr><td colspan=2>&nbsp;</td></tr>
     <tr><td align=left colspan=3>Nella sua qualita' di</td></tr>
@@ -331,7 +341,7 @@
     <tr><td align=left><formgroup id="flag_installatore">@formgroup.widget;noquote@</formgroup></td>
         <td align=left>installatore</td></tr>
     <tr><td align=left><formgroup id="flag_responsabile">@formgroup.widget;noquote@</formgroup></td>
-        <td align=left>responsabile</td></tr>
+        <td align=left>terzo responsabile</td></tr>
     <tr><td align=left><formgroup id="flag_manutentore">@formgroup.widget;noquote@</formgroup></td>
         <td align=left>manutentore</td></tr>
 
@@ -568,6 +578,10 @@
         </td>
     </tr>
    
+    <tr>
+        <td align=left colspan=2><b>(N.B. Il limite massimo di polveri totali Ã¨ pari a 50  mg/Nmc)</b></td>
+    </tr>
+
     <tr><td colspan=2>&nbsp;</td></tr>
     <tr><td colspan=2>&nbsp;</td></tr>
     <tr><td colspan=2>&nbsp;</td></tr>

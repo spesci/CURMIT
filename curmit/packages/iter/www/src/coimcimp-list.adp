@@ -40,9 +40,9 @@
 <if @flag_vis@ eq S>
 <table align="center" width="35%" border="0" cellpadding="0" cellspacing="0">
 <tr>
-   <td width="34%" align="center"><a href="coimcimp-list-csv?@link_scar_csv;noquote@">Scarica file csv</a></td>
+   <td width="34%" align="center"><a href="coimcimp-list-csv?@link_scar_csv;noquote@">Scarica CSV</a></td>
    <td width="33%" align="center">Numero <b>@conta;noquote@</b></td>
-   <td width="34%" align="center"><a href="coimcimp-list-pdf?@link_scar_csv;noquote@" target="_blank">Stampa file pdf</a></td> 
+   <td width="34%" align="center"><a href="coimcimp-list-pdf?@link_scar_csv;noquote@" target="_blank">Stampa PDF</a></td> 
 </tr>
 </table>
 </if>

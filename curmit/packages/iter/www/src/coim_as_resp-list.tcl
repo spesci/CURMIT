@@ -21,6 +21,8 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    but01 14/07/2023 Aggiunta class"link-button-2" nel actions"Selez"
+
     gac02 10/12/2018 Aggiunto link_gest
     
     rom04 15/10/2018 Modificato il page_title su richiesta della Regione Marche.
@@ -133,8 +135,8 @@ if {[string equal $cod_manutentore ""]} {
     #rom01 sostituito Allegato L con As. resp. amministratore
     append link_add_h_i "<br> o aggiungi un <a href=\"$gest_prog?funzione=I&[export_url_vars cod_as_resp cod_impianto url_list_aimp url_aimp last_cod_as_resp nome_funz nome_funz_caller extra_par]&flag_tracciato=LMANU\">As. resp. amministratore</a>"
 }
-
-set actions 		"<td nowrap><a href=\"$gest_prog?funzione=V&$link\">Selez.</a></td>"
+#but01
+set actions 		"<td nowrap><a href=\"$gest_prog?funzione=V&$link\" class=\" link-button-2\">Selez.</a></td>"
 set js_function 	""
 
 # imposto la struttura della tabella

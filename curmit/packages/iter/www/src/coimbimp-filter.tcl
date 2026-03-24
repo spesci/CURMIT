@@ -58,7 +58,7 @@ if {![string equal $cod_impianto_old ""]} {
 # Personalizzo la pagina
 set titolo       "Bonifica impianti - Ricerca Impianti"
 set button_label "Ricerca" 
-set page_title   "Bonifica impianti - Ricerca Impianti"
+set page_title   "Bonifica impianti - ricerca impianti"
 
 iter_get_coimtgen
 set flag_ente    $coimtgen(flag_ente)

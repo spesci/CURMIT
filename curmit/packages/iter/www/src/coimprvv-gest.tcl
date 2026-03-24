@@ -12,6 +12,10 @@ ad_page_contract {
     navigazione con navigation bar
     @param extra_par Variabili extra da restituire alla lista
     @cvs-id          coimprvv-gest.tcl
+
+    USER  DATA       MODIFICHE
+    ===== ========== ========================================================================================
+    but01 21/06/2023 Aggiunto la classe ah-jquery-date ai campi:data_provv, data_scad.
 } {
     {cod_prvv         ""}
     {last_cod_prvv    ""}
@@ -92,6 +96,10 @@ switch $funzione {
         set disabled_fld \{\}
     }
 }
+set jq_date "";#but01
+if {$funzione in "M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
 
 form create $form_name \
     -html    $onsubmit_cmd
@@ -109,13 +117,14 @@ element create $form_name causale \
     -datatype text \
     -html    "$disabled_fld {} class form_element" \
     -optional \
-    -options {{{} {}} {"Mancato pagamento" MC} {"Sanzione per inadempienze sull'impianto" SN} {"Generico" GE}}
+    -options {{{} {}} {"Mancato pagamento" MC} {"Sanzione per inadempienze sull'impianto" SN} {"Generico" GE} {"Sollecito Messa a Norma dal Comune" CE}}
 
+#but01 Aggiunto la classe ah-jquery-date ai campi:data_provv, data_scad.
 element create $form_name data_provv \
     -label   "Data provvedimento" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name cod_documento \
@@ -154,7 +163,7 @@ element create $form_name data_scad \
     -label   "Data limite pagamento" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name funzione      -widget hidden -datatype text -optional

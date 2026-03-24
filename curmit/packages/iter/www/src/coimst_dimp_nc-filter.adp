@@ -12,7 +12,7 @@
 <%=[iter_form_iniz]%>
 
 <!-- dpr74 -->
-<tr><td valign=top align=right class=form_title>Tipoologia impianti</td>
+<tr><td valign=top align=right class=form_title>Tipologia impianti</td>
     <td valign=top colspan=2 nowrap><formwidget id="flag_tipo_impianto">
         <formerror id="flag_tipo_impianto"><br>
         <span class="errori">@formerror.flag_tipo_impianto;noquote@</span>

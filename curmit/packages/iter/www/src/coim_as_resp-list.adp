@@ -33,7 +33,9 @@
     <td width="75%">&nbsp;</td>
   </tr>
 </if><!--rom01-->
+<tr><td colspan=3>&nbsp;</td></tr>
   <tr><td colspan=3 class=func-menu-yellow2><b>Scheda 3: Nomina Terzo Responsabile</b></td></tr>
+<tr><td colspan=3>&nbsp;</td></tr>
 </table><!-- barra con il cerca, link di aggiungi e righe per pagina -->
 @list_head;noquote@
 

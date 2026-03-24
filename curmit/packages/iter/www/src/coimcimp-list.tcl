@@ -21,9 +21,28 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    but03 03/12/2024  Modificato label di Data verbale con Data Compilazione<br> RCEE
+
+    but02 14/07/2023 Aggiunta class"link-button-2" nel actions"Selez"
+
+    but01 31/03/2023   Modificata label di num_fat e data_fatt per regione Friuli.
+
+    mic01 20/01/2023 Aggiunti link per inserire i rapporti di accertamento e aggiunta colonna
+    mic01            tipo verbale (flag_tracciato) alla lista dei rapporti.
+
+    rom04 13/12/2022 Le colonne num_fatt e data_fatt_edit vanno visualizzate su tutta la Regione Fiuli
+    rom04            e non solo le Province di Udine e Gorizia.
+
+    rom03 08/04/2022 Corretto errore di rom02: se si inseriva un rapporto di ispezione dalla
+    rom03            gestione del singolo appuntamento non si teneva conto degli impianti
+    rom03            del freddo che hanno un rapporto diverso da quelli del caldo.
+
+    rom02 07/02/2022 Regione Marche ha richiesto che per gli impianti del freddo venga inserito
+    rom02            un rapporto di ispezione diverso che per gli impianti del caldo.
+
     gac01 13/07/2018 Aggiunta link_scheda11.
 
-    rom01 07/06/2018 modificato link Aggiungi rapporto di ispezione per le marche.
+    rom01 07/06/2018 Modificato link Aggiungi rapporto di ispezione per le marche.
 
     sim03 16/02/2017 Livorno ha il coimcimp-gest personalizzato quindi solo per lui faccio
     sim03            puntare direttamente al coimcimp-re-gest
@@ -205,9 +224,21 @@ if {[string equal $cod_impianto ""]} {
 	    set link_aggiungi_re ""
 	}
 
+        if {[db_0or1row q "select 1
+                             from coimaimp
+                            where cod_impianto = :cod_impianto
+                              and flag_tipo_impianto = 'F'"]} {#rom03 Aggiunte if, else e loro contenuto
+	    set flg_trc "FR"
+	} else {
+	    set flg_trc "RI"
+	}	
+
 	#san01: aggiunto $link_aggiungi_re
+	#rom03 Sostituito flag_tracciato RI con nuova variabile $flg_trc
+	#mic01 Aggiunto link per Rapporto di accertamento con tracciato AC
 	set link_aggiungi   "$link_aggiungi_re
-    Aggiungi un <a href=\"$gest_prog?funzione=I&flag_tracciato=RI&[export_url_vars last_cod_cimp caller url_list_aimp url_aimp cod_impianto nome_funz extra_par nome_funz_caller flag_cimp extra_par_inco cod_inco flag_inco]\">Rapporto di ispezione conforme $dicitura_link_reg</a>
+    Aggiungi un <a href=\"$gest_prog?funzione=I&flag_tracciato=$flg_trc&[export_url_vars last_cod_cimp caller url_list_aimp url_aimp cod_impianto nome_funz extra_par nome_funz_caller flag_cimp extra_par_inco cod_inco flag_inco]\">Rapporto di ispezione conforme $dicitura_link_reg</a>
+<br>Aggiungi un <a href=\"$gest_prog?funzione=I&flag_tracciato=AC&[export_url_vars last_cod_cimp caller url_list_aimp url_aimp cod_impianto nome_funz extra_par nome_funz_caller flag_cimp extra_par_inco cod_inco flag_inco]\">Rapporto di accertamento</a>
 $link_vecchio_formato
 <br> o aggiungi una <a href=\"$gest_prog?funzione=I&flag_tracciato=MA&[export_url_vars last_cod_cimp caller url_list_aimp url_aimp cod_impianto nome_funz extra_par nome_funz_caller flag_cimp extra_par_inco cod_inco flag_inco]\">mancata ispezione</a>";#sim01
 
@@ -215,16 +246,31 @@ $link_vecchio_formato
     } else {
 	#sim02 cambiato if. prima c'era $coimtgen(ente) eq "PFI"
 	if {$coimtgen(regione) eq "TOSCANA"} {#san01: aggiunta if e suo contenuto
+	    #mic01 Aggiunto link per Rapporto di accertamento con tracciato AC
 	    set link_aggiungi_re "Aggiungi un <a href=\"$gest_prog_re?funzione=I&flag_tracciato=RE&[export_url_vars last_cod_cimp caller url_list_aimp url_aimp cod_impianto nome_funz extra_par nome_funz_caller flag_cimp]\">Rapporto di ispezione conforme alla DGR reg.</a>
-<br>"
+<br>
+Aggiungi un <a href=\"$gest_prog_re?funzione=I&flag_tracciato=AC&[export_url_vars last_cod_cimp caller url_list_aimp url_aimp cod_impianto nome_funz extra_\
+par nome_funz_caller flag_cimp]\">Rapporto di accertamento</a>"
 	} else {
 	    set link_aggiungi_re ""
 	}
 
 
+	if {[db_0or1row q "select 1
+                             from coimaimp
+                            where cod_impianto = :cod_impianto
+                              and flag_tipo_impianto = 'F'"]} {#rom02 Aggiunte if, else e loro contenuto
+	    set flg_trc "FR"
+	} else {
+	    set flg_trc "RI"
+	}
+	    
 	#san01: aggiunto $link_aggiungi_re
+	#rom02 Sostituito flag_tracciato RI con nuova variabile $flg_trc
+	#mic01 Aggiunto link per Rapporto di accertamento con tracciato AC
 	set link_aggiungi  "$link_aggiungi_re
-    Aggiungi un <a href=\"$gest_prog?funzione=I&flag_tracciato=RI&[export_url_vars last_cod_cimp caller url_list_aimp url_aimp cod_impianto nome_funz extra_par nome_funz_caller flag_cimp]\">Rapporto di ispezione conforme $dicitura_link_reg</a>
+    Aggiungi un <a href=\"$gest_prog?funzione=I&flag_tracciato=$flg_trc&[export_url_vars last_cod_cimp caller url_list_aimp url_aimp cod_impianto nome_funz extra_par nome_funz_caller flag_cimp]\">Rapporto di ispezione conforme $dicitura_link_reg</a>
+<br> Aggiungi un <a href=\"$gest_prog?funzione=I&flag_tracciato=AC&[export_url_vars last_cod_cimp caller url_list_aimp url_aimp cod_impianto nome_funz extra_par nome_funz_caller flag_cimp]\">Rapporto di accertamento</a>
 $link_vecchio_formato
 <br> o aggiungi una <a href=\"$gest_prog?funzione=I&flag_tracciato=MA&[export_url_vars last_cod_cimp caller url_list_aimp url_aimp cod_impianto nome_funz extra_par nome_funz_caller flag_cimp]\">Mancata ispezione</a>"
 	#sim01 set link_aggiungi  "   Aggiungi un <a href=\"$gest_prog?funzione=I&[export_url_vars last_cod_cimp caller url_list_aimp url_aimp cod_impianto nome_funz extra_par nome_funz_caller flag_cimp]\">Rapporto di ispezione</a>                       <br> o aggiungi una <a href=\"$gest_prog?funzione=I&flag_tracciato=MA&[export_url_vars last_cod_cimp caller url_list_aimp url_aimp cod_impianto nome_funz extra_par nome_funz_caller flag_cimp]\">Mancata ispezione</a>"
@@ -237,8 +283,9 @@ set rows_per_page   [iter_set_rows_per_page $rows_per_page $id_utente]
 set link_righe      [iter_rows_per_page     $rows_per_page]
 
 set link        "\[export_url_vars last_cod_cimp caller url_list_aimp url_aimp cod_impianto cod_cimp nome_funz extra_par nome_funz_caller gen_prog flag_cimp flag_inco cod_inco extra_par_inco\]"
+#but02
 set actions "
- <td nowrap><a href=\"$gest_prog?funzione=V&$link\">Selez.</a></td>"
+ <td nowrap><a href=\"$gest_prog?funzione=V&$link\" class=\"link-button-2\">Selez.</a></td>"
 
 set js_function ""
 
@@ -302,18 +349,23 @@ set stato_imp {
 if {$flag_cimp == "S"
 ||  $flag_inco == "S"
 } {
+    #mic01 Aggiunta colonna flag_tracciato
+    #but03  Modificato label di Data verbale con Data Compilazione<br> RCEE
     set table_def [list \
         [list actions             "Azioni"                no_sort $actions] \
     	[list cod_cimp            "Cod."                  no_sort      {l}] \
 	[list gen_prog_est        "Gen."                  no_sort      {r}] \
 	[list data_controllo_edit "Data controllo"        no_sort      {c}] \
 	[list verb_n              "N.verbale"             no_sort      {l}] \
-	[list data_verb_edit      "Data verbale"          no_sort      {c}] \
+	[list data_verb_edit      "Data Compilazione<br> RCEE"          no_sort      {c}] \
 	[list costo_verifica_edit "Costo ispezione"       no_sort      {r}] \
 	[list desc_esito          "Esito"                 no_sort $td_esito] \
-        [list flag_tipo_impianto  "TI"                    no_sort $stato_imp] \
+	[list flag_tipo_impianto  "TI"                    no_sort $stato_imp]\
+	[list flag_tracciato      "Tipo verbale"          no_sort      {c}      ]
 	          ]
 } else {
+    #mic01 Aggiunta colonna flag_tracciato
+    #but03 Modificato label di Data verbale con Data Compilazione<br> RCEE
     set table_def [list \
         [list actions             "Azioni"                no_sort $actions] \
     	[list cod_cimp            "Cod."                  no_sort      {l}] \
@@ -324,15 +376,17 @@ if {$flag_cimp == "S"
 	[list resp                "Responsabile"          no_sort      {l}] \
 	[list data_controllo_edit "Data controllo"        no_sort      {c}] \
 	[list verb_n              "N.verbale"             no_sort      {l}] \
-	[list data_verb_edit      "Data verbale"          no_sort      {c}] \
+	[list data_verb_edit      "Data Compilazione<br> RCEE"          no_sort      {c}] \
 	[list desc_esito          "Esito"                 no_sort $td_esito] \
         [list flag_tipo_impianto  "TI"                    no_sort $stato_imp] \
-                  ]
+	[list flag_tracciato      "Tipo verbale"          no_sort      {c}      ]
+		  ]
 }
 
-if {$coimtgen(ente) eq "PUD" || $coimtgen(ente) eq "PGO"} {
-    lappend table_def [list num_fatt       "N.Fattura"    no_sort      {l}]
-    lappend table_def [list data_fatt_edit "Data Fattura" no_sort      {c}]
+#rom04if {$coimtgen(ente) eq "PUD" || $coimtgen(ente) eq "PGO"} {}
+if {$coimtgen(regione) eq "FRIULI-VENEZIA GIULIA"} {#rom04 Aggiunta if ma non il suo contenuto. #but01 modifica di label di num_fat e data_fatt
+    lappend table_def [list num_fatt       "N.IDP"    no_sort      {l}]
+    lappend table_def [list data_fatt_edit "IDP" no_sort      {c}]
 
     if {[string range $id_utente 0 1] eq "VE"} {
 	set link_mod "<td>&nbsp;</td>"

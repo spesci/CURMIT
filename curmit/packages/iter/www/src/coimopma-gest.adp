@@ -31,6 +31,7 @@
 <!-- Sandro in data 08/03/2017 ha chiesto che venisse disabilitata la cancellazione
          <a href="coimopma-gest?funzione=D&@link_gest;noquote@" class=@func_d;noquote@>Cancella</a>
 -->
+	@riga_reset_password;noquote@ <!-- rom01 11/04/2025 -->
       </td>
    </tr>
    </else>
@@ -38,7 +39,7 @@
 </table>
 
 <center>
-<formtemplate id="@form_name;noquote@">
+<formtemplate id="@form_name@">
 <formwidget   id="funzione">
 <formwidget   id="caller">
 <formwidget   id="nome_funz">
@@ -98,6 +99,14 @@
         <span class="errori">@formerror.recapito;noquote@</span>
         </formerror>
     </td>
+    <!--but01 aggiunto il campo email_operator -->
+    <td valign=top align=right class=form_title>Email</td>
+        <td valign=top><formwidget id="email_operator">
+	  <formerror  id="email_operator"><br>
+	  <span class="errori">@formerror.email_operator;noquote@</span>
+	  </formerror>
+    </td>
+				    
 </tr>
 
 <tr><td valign=top align=right class=form_title>Stato</td>

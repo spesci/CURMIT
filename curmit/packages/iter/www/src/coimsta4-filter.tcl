@@ -8,6 +8,10 @@ ad_page_contract {
     @param nome_funz identifica l'entrata di menu, server per le autorizzazioni
                      serve se lista e' uno zoom che permetti aggiungi.
     @cvs-id          coiminco-filter.tcl
+    USER  DATA       MODIFICHE
+    ===== ========== =========================================================================
+    but01 19/06/2023 Aggiunto la classe ah-jquery-date ai campi Data controllo DA e Data controllo A.
+
 } {  
    {f_data1           ""}
    {f_data2           ""}
@@ -46,26 +50,32 @@ set form_name    "coimsta4"
 set readonly_key "readonly"
 set readonly_fld "readonly"
 set disabled_fld "disabled"
+
 set onsubmit_cmd ""
+set jq_date "";#but01
+if {$funzione in "V M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
 
 set readonly_fld \{\}
 set disabled_fld \{\}
 form create $form_name \
 -html    $onsubmit_cmd
 
+#but01 Aggiunto la classe ah-jquery-date ai campi data inizio e data fine".
 
 element create $form_name f_data1 \
 -label   "data inizio" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+-html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
 -optional \
 
 element create $form_name f_data2 \
 -label   "data fine" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+-html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
 -optional \
 
 element create $form_name funzione    -widget hidden -datatype text -optional

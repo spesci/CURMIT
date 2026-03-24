@@ -5,6 +5,8 @@ ad_page_contract {
     @cvs-id          iter_cari_anom_rcee
      USER  DATA       MODIFICHE
     ===== ========== ===========================================================================
+    but01 20/06/2023 Aggiunto la classe ah-jquery-date al campo data_ini_elab.
+
     rom03 19/08/2020 Fatto in modo che il caricamento tenga conto anche dei dimp con flag_tracciato='NW'.
 
     rom02 09/11/2017 Tolta anomalia "M14".
@@ -40,15 +42,18 @@ db_1row sel_esit "select coalesce(to_char(max(data_elaborazione),'dd/mm/yyyy'),'
                                  or flag_tracciato = 'NW') --rom03"
 
 
-
+set jq_date "";#but01
+if {$funzione in "M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
 form create $form_name \
     -html    ""
-
+#but01 Aggiunto la classe ah-jquery-date al campo data_ini_elab.
 element create $form_name data_ini_elab \
     -label   "Data inizio controlli " \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 readonly {} class form_element" \
+    -html    "size 10 maxlength 10 readonly {} class form_element $jq_date" \
     -optional
 
 element create $form_name msg \

@@ -8,6 +8,10 @@ ad_page_contract {
     @param nome_funz identifica l'entrata di menu, server per le autorizzazioni
                      serve se lista e' uno zoom che permetti aggiungi.
     @cvs-id          coimstav-filter.tcl
+    USER  DATA       MODIFICHE
+    ===== ========== =============================================================================
+    but01 19/06/2023 Aggiunto la classe ah-jquery-date ai campo Data.
+
 } {
     
    {funzione         "V"}
@@ -107,6 +111,10 @@ if {$flag_cod_tecn == "t"} {
 } else {
     set readonly_tecn  \{\}
 }
+set jq_date "";#but01
+if {$funzione in "V M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
 
 form create $form_name \
 -html    $onsubmit_cmd
@@ -128,12 +136,12 @@ element create $form_name f_tipo_data \
 -datatype text \
 -html    "class form_element" \
 -optional
-
+#but01 Aggiunto la classe ah-jquery-date ai campo Data".
 element create $form_name f_data \
 -label   "Data " \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 class form_element" \
+-html    "size 10 maxlength 10 class form_element $jq_date" \
 -optional
 
 element create $form_name f_cod_impianto \

@@ -19,6 +19,7 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    but01 13/07/2023 Aggiunta class"link-button-2" nel actions"Selez"
     rom01 21/10/2020 Su segnalazione di Salerno modificato page_title per renderlo
     rom01            uguale al nome del menu', Sandro ha detto che va bene per tutti.
 
@@ -70,7 +71,7 @@ set link_righe      [iter_rows_per_page     $rows_per_page]
 
 set link    "\[export_url_vars cod_cinc last_cod_cinc nome_funz extra_par\]"
 set actions "
-<td nowrap><a href=\"$gest_prog?funzione=V&$link\">Selez.</a></td>"
+<td nowrap><a href=\"$gest_prog?funzione=V&$link\"class=\"link-button-2\">Selez.</a></td>"
 set js_function ""
 
 # imposto la struttura della tabella

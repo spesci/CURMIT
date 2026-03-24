@@ -1,14 +1,18 @@
 BODY {
     margin-top: 0px; 
     margin-bottom: 0px; 
-    background-color: #FFFFF0 
+    background-color: #FFFFF0;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+   font-size: 17px;
+			  
 }
 
 TABLE {
-   font-family: verdana, arial;
-   font-size: 12px;
+    /* font-family: verdana, arial; */
+    font-size: 15px; /*12px;*/
 }
 
+/*
 A {
    text-decoration: none;
    color: blue;
@@ -20,7 +24,42 @@ A:visited {
 
 a.main {
    text-decoration: none;
-   color: blue;
+   color: #06c;/*blue;
+}
+*/
+
+
+
+
+a {
+color: #003c82;
+  text-decoration: none;
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+a:visited {
+    color: #003c82; /* Mantiene il colore di base anche dopo la visita */
+}
+
+a:hover {
+    color: #0056b3;
+    text-shadow: 0 0 8px rgba(0, 86, 179, 0.3); /* Leggero bagliore blu per l'hover */
+    text-decoration: underline;
+}
+
+a:active {
+     color: #002a5c; /* Un blu più scuro per lo stato active */
+}
+
+a.main {
+    font-weight: bold; /* Rende i link principali in grassetto */
+    text-decoration: none; /* Rimuove la sottolineatura per i link principali */
+    color: #0056b3; /* Stesso colore blu scuro per i link principali */
+}
+
+a.main:hover {
+    color: #003d80; /* Colore blu scuro al passaggio del mouse per i link principali */
+    text-decoration:underline;
 }
 
 .cage {
@@ -32,6 +71,7 @@ a.main {
 }
 .doppiobordo {
     border-bottom: #999999 3px double;
+    font-size: 16px;
 }
 .bordi-l {
     border-top: #cccccc 1px solid; 
@@ -57,19 +97,19 @@ a.main {
     background-color: #f48420; 
 }
 .sottotitoli {  
-    font-size: 10px; 
+    font-size: 14px;/*10px; */
     color: #000000; 
     text-decoration: none
 }
 .context {
-    font-size: 12px; 
+    font-size: 16px;/*12px; */
     font-weight: normal; 
     color: #000000;  
     text-decoration: none;
     background-color: #f48420;
 }
 .footer1 {
-    font-size: 12px;
+    font-size: 16px;/*12px;*/
     color: #000000; 
     background-color: #f48420;
 }
@@ -79,8 +119,8 @@ a.main {
     background-color: #f48420;
 }
 a.footer_link {
-    font-size: 12px;
-    color: blue;
+    font-size: 16px;/*12px;*/
+    color: 000000;/*blue;*/
     background-color: #f48420;
 }
 
@@ -89,27 +129,90 @@ a.footer_link {
 }
 .form_element {
    font-family: verdana, arial;
-   font-size: 12px;
+   font-size: 14px;/*12px;*/
+   border: 1px solid #ccc;
+   border-radius: 4px;
+   padding: 2px;
 }
+.form_element:focus {
+    border-color: #007BFF;
+}
+/*
 .form_submit {
    font-family: verdana, arial;
-   font-size: 12px;
+   font-size: 15px;
+   font-weight: bold;
+   background-color: #fffacd;
+   padding: 2px 6px 2px 6px;
+   border-top: 1px solid #8f8f9d;
+   border-right: 1px solid #8f8f9d;
+   border-bottom: 1px solid #8f8f9d;
+   border-left: 1px solid #8f8f9d;
+   border-radius: 5px;
+   cursor: pointer;
 }
+.form_submit:hover {
+    background-color: #f48420;
+}
+*/
 .errori {
    color: red;
    font-weight: bold;
    vertical-align: bottom;
 }
 
+.form_submit {
+    font-size: 1em;
+    font-weight: bold;
+    color: #333333; /* Colore del testo per contrasto */
+    background-color: #fffacd; /* Giallo chiaro principale */
+    border: 2px solid #e6953b; /* Arancione leggermente più scuro per il bordo */
+    border-radius: 8px;
+    padding: 7px 15px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Ombra per profondità */
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form_submit:hover {
+    background-color: #e6953b; /* Arancione leggermente più scuro per hover */
+    transform: translateY(-2px); /* Effetto sollevamento */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Ombra più intensa */
+}
+
+.form_submit:active {
+    background-color: #cc7a2f; /* Arancione ancora più scuro al clic */
+    transform: translateY(0); /* Ritorna alla posizione iniziale */
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1); /* Ombra ridotta */
+}
+
 .ric_table {
 }
 .ric_element {
    font-family: verdana, arial;
-   font-size: 12px;
+   font-size: 15px;/*12px;*/
+   border: 1px solid #ccc;
+   border-radius: 4px;
+   padding: 2px;
 }
+.ric_element:focus {
+    border-color: #007BFF;
+}
+
 .ric_submit {
-   font-family: verdana, arial;
-   font-size: 12px;
+    font-family: verdana, arial;
+    font-size: 15px;/*12px;*/
+    background-color: #fffacd;
+    padding: 2px 6px 2px 6px;
+    border-top: 1px solid #8f8f9d;
+    border-right: 1px solid #8f8f9d;
+    border-bottom: 1px solid #8f8f9d;
+    border-left: 1px solid #8f8f9d;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.ric_submit:hover {
+    background-color: #f48420;
 }
 
 .table_display {
@@ -148,7 +251,7 @@ a.footer_link {
  */
 
 .func-menu-yellow {
-    font-size: 12px;
+    font-size: 15px; /*12px;*/
     font-weight: normal;
     text-decoration: none;
     text-align: center;
@@ -165,7 +268,7 @@ a.footer_link {
 }
 
 .func-menu-yellow2 {
-    font-size: 12px;
+    font-size: 15px;/*12px;*/
     font-weight: normal;
     text-decoration: none;
     text-align: center;
@@ -185,7 +288,7 @@ a.footer_link {
 }
 
 a.func-menu-link-yellow {
-    font-size: 12px;
+    font-size: 15px;/*12px;*/
     font-weight: normal;
     text-decoration: none;
 /*    color: blue; */
@@ -200,9 +303,9 @@ a.func-menu-link-yellow {
 }
 
 .func-menu-link-yellow-minus {
-    font-size: 12px;
+    font-size: 15px; /* 12px;*/
     font-weight: normal;
-    text-decoration: none;
+    text-decoration: none !important;
 /*    color: blue; */
     color: #120A8F;
     border: 1px;
@@ -211,8 +314,8 @@ a.func-menu-link-yellow {
 }
 
 .func-sel-yellow {
-    font-size: 12px;
-    font-weight: normal;
+    font-size: 15px; /*12px;*/
+    font-weight: bold ;/*normal;*/
     text-decoration: none;
     text-align: center;
     border: #000000 1px solid;
@@ -224,11 +327,12 @@ a.func-menu-link-yellow {
     border-bottom-left-radius: 6px;
     border-bottom-right-radius: 6px;
     background-color: #f48420;
+    color: #000000;
 }
 
 a.func-sel-yellow {
-    font-size: 12px;
-    font-weight: normal;
+    font-size: 15px;/*12px;*/
+    font-weight: bold;/*normal;*/
     text-decoration: none;
     color: #000000;
     border: none;
@@ -237,37 +341,39 @@ a.func-sel-yellow {
 
 
 .func-menu {
-    font-size: 12px;
+    font-size: 15px;/*12px;*/
     font-weight: normal;
     text-decoration: none;
     text-align: center;
     border: #000000 1px solid;
     background-color: #ffffff; 
-/*sim    background-color: #f48420; */
+    /*sim    background-color: #f48420; */
+    margin-bottom: 22px;
 }
 
 
 
 a.func-menu {
-    font-size: 12px;
+    font-size: 15px;/*12px;*/
     font-weight: normal;
-    text-decoration: none;
+    text-decoration: bold;/*none;*/
     color: blue; 
     border: none;
 }
 
 .func-menu2 {
-    font-size: 11px;
+    font-size: 15px;/*11px;*/
     font-weight: normal;
     text-decoration: none;
     text-align: left;
     border: none;
     background-color: #ffffff;
+    margin: 10px 0px;
 }
 
 .func-sel {
-    font-size: 12px;
-    font-weight: normal;
+    font-size: 15px;/*12px;*/
+    font-weight: bold;/*normal;*/
     text-decoration: none;
     text-align: center;
     border: #000000 1px solid;
@@ -275,10 +381,519 @@ a.func-menu {
 }
 
 a.func-sel {
-    font-size: 12px;
-    font-weight: normal;
+    font-size: 15px;/*12px;*/
+    font-weight: bold/*normal;*/
     text-decoration: none;
     color: #000000;
     border: none;
 }
 
+
+/* ROM 10/07/2023 Inizio modifiche per rivisitazione grafica delle liste. */
+table.ad-table-display {
+    border-collapse: collapse;
+    /*border: 1px solid #ccc;*/
+    border: 1px solid #ececec; /* #000000 #A0BDEB*/
+}
+
+table.list-tiny {
+    font-size: x-small;
+    border-collapse: collapse;
+}
+
+.ad-table-display tr.list-header {
+    background-color: #ffffff;
+    color: inherit;
+}
+
+th.ad-table-display, th.ad-table-display-narrow, .ad-table-display th {
+    padding: 8px 16px;
+    border-bottom: 3px solid #000000; /* #A0BDEB*/
+    background: #fffacd;/*#ff7906 white */
+    position: sticky;
+    top: 0px;
+    border-bottom: none !important;
+    box-shadow: inset 0 -3px 0 #f48420 ; /* #000000 #A0BDEB*/
+    vertical-align: top;
+    background-clip: padding-box;
+    text-align:center;
+    font-size: 16px;
+}
+
+.ad-table-display tr.even, .list-tiny tr.even {
+    background-color: #fffff0; /*#ffffff*/
+    color: inherit;
+}
+
+.ad-table-display tr.odd, .list-tiny tr.odd {
+    background-color: #ececec ; /* #ffffff #f0eff0*/
+    color: inherit;
+}
+
+td.ad-table-display, td.ad-table-display-narrow, .ad-table-display td {
+    padding: 8px 16px;
+    /*border-bottom: 1px solid #A0BDEB;  */
+    /*border-bottom: 1px solid #f48420; */
+}
+
+td.ad-table-display-narrow, th.ad-table-display-narrow {
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+tr.ad-table-header {
+    /* background-color:#ff7906; */
+    border-radius: 6px;
+    
+} 
+
+.link-button {
+    font-family: verdana, arial;
+    font-size: 12px;
+    text-decoration: none;
+    /*background-color: #EEEEEE; */
+    background-color: #eef8ff !important;
+    color: #333333 !important;
+    padding: 2px 6px 2px 6px;
+    border-top: 1px solid #CCCCCC;
+    border-right: 1px solid #333333;
+    border-bottom: 1px solid #333333;
+    border-left: 1px solid #CCCCCC;
+}
+
+.link-button:hover {
+    background-color: #cce0ff !important;
+}
+
+.link-button:visited {
+    color: black !important;
+}
+
+
+.link-button-2 {
+    font-family: verdana, arial;
+    font-size: 15px;/*12px;*/
+    text-decoration: none !important;
+    /*background-color: #EEEEEE; 
+    background-color: #eef8ff; */
+    background-color: #fffacd;
+    /*color: #333333;
+    color: blue !important; */
+    color: #000000 !important;
+    padding: 2px 6px 2px 6px;
+    border-top: 1px solid #8f8f9d;
+    border-right: 1px solid #8f8f9d;
+    border-bottom: 1px solid #8f8f9d;
+    border-left: 1px solid #8f8f9d;
+    border-radius: 5px;
+    white-space: nowrap;
+}
+
+.link-button-2:hover {
+    /* background-color: #cce0ff; */
+    background-color: #f48420;
+}
+
+.link-button-2:visited {
+    /* color: black !important;
+    color: blue !important; */
+    color: #000000 !important;
+}
+
+
+/* ROM 10/07/2023 Fine modifiche per rivisitazione grafica delle liste. */
+
+/* ROM 15/11/2023 Inizio modifiche per messaggio di alert. */
+#alert-message {
+  background-color: #ccff99; 
+  padding: 4px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+ /* font-size: 85%;*/
+  font-size: larger;
+}
+
+#alert-message .alert {
+  margin-left: 0;
+  padding-left: 2px;
+  border: none;
+}
+/* ROM 15/11/2023 Fine   modifiche per messaggio di alert.. */
+
+/* ROM 21/11/2023 Inizio modifiche per messaggio su scansioni mancanti degli rcee. */
+.warning_scansione_mancante {
+    min-width: 30%;
+    width: fit-content;
+    margin: 20px auto;
+    padding: 30px;
+    position: relative;
+    border-radius: 5px;
+    box-shadow: 0 0 15px 5px #ccc;
+    background-color: #fbeae5;
+}
+/* ROM 21/11/2023 Fine modifiche per messaggio su scansioni mancanti degli rcee. */
+
+/* ROM 26/03/2024 Inizio modifiche per cruscotto pagina home. */
+.jumbotron {
+    padding:          35px 0;
+    padding-right:    60px;
+    padding-left:     60px;
+    margin-bottom:    30px;
+    color:            inherit;
+    background-color: #f1f1f1;/*#eee;*/
+    border-radius:    6px;
+    width:            95%;
+    margin:           25px;
+}
+.jumbotron .h1,.jumbotron h1 {
+    /*color: inherit;*/
+    color: #333;
+}
+
+.jumbotron p {
+    margin-bottom: 15px;
+    font-size: 18px;
+    font-weight: 200;
+    color: #333;
+}
+
+.jumbotron>hr {
+    border-top-color: #d5d5d5
+}
+
+
+.jumbotron .container {
+    max-width: 100%
+}
+
+
+div.widget-home {
+    min-width: 17%;
+    max-width: 20%
+    color: #434A54;
+    float: left;
+    list-style: none;
+    text-decoration: none;
+    -webkit-box-sizing: border-box;
+    box-shadow: 1px 2px 1px 2px rgba(0, 0, 0, 0.4);
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    padding: 15px 10px;
+    margin-bottom: 20px;
+    margin-top: 20px;
+    margin-left: 0px;
+    margin-right: 10px;
+    min-height: 110px;
+    position: relative;
+    background: linear-gradient(to bottom, #fff281 0%, #fffacd 100%);
+    font-size: 16px;/*15px;*/
+}
+
+div.widget-home:hover {
+    background: linear-gradient(to bottom,#ff7906 0%,#ffae69 100%);
+    transition: 0.7s;
+}
+
+.standard-error {
+    min-width: 30%;
+    width: fit-content;
+    margin:20px auto;
+    padding:30px;
+    position:relative;
+    border-radius:5px;
+    box-shadow:0 0 15px 5px #ccc;
+    background-color: #fbeae5;
+    font-size: 16px;
+
+}
+
+.standard-error li {
+    padding-left: 15px;
+}
+
+.standard-error ul {
+    list-style-type: none;
+}
+
+
+.g-input {
+  position: relative;
+  margin-bottom: 15px;
+  box-sizing: border-box;
+  display: inline-block;
+  max-width: 240px;
+}
+
+.g-input label {
+  background: white;
+  padding: 2px 5px;
+  font-size: 18px;
+  font-family: Arial, sans-serif;
+  transition: transform 0.2s ease, font-size 0.2s ease, color 0.2s ease;
+  transform-origin: bottom left;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1;
+  color: #555555; /* Colore testo più scuro */
+  cursor: text;
+}
+
+.g-input input, .g-input textarea {
+  border: 1px solid #ccc;
+  padding: 12px;
+  border-radius: 4px;
+  width: 100%;
+  font-size: 16px;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.g-input input:focus, .g-input textarea:focus {
+  outline: 0;
+  border: 2px solid #1a73e8;
+  box-shadow: 0 4px 8px rgba(26, 115, 232, 0.2);
+}
+
+.g-input input:focus+label, .g-input input:not(:placeholder-shown)+label,
+.g-input textarea:focus+label, .g-input textarea:not(:placeholder-shown)+label {
+  transform: translateX(-5px) translateY(-24px);
+  font-size: 14px;
+  color: #1a73e8;
+}
+
+
+/* FINE 2 */
+.form-signin-heading {
+    margin-top: 20px;
+    /*margin-left:3%;*/
+    color:#cf8a00;
+    font-size:36px;
+    font-weight: 500;
+}
+
+blockquote {
+  padding: 10px 20px;
+  margin: 0 0 20px;
+  font-size: 17.5px;
+  border-left: 0;
+}
+
+.submit-login {
+    font-size: 1em;
+    font-weight: bold;
+    color: #333333; /* Colore del testo per contrasto */
+    background-color: #fffacd; /* Giallo chiaro principale */
+    border: 2px solid #e6953b; /* Arancione leggermente più scuro per il bordo */
+    border-radius: 8px;
+    padding: 7px 15px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Ombra per profondità */
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.submit-login:hover {
+    background-color: #e6953b; /* Arancione leggermente più scuro per hover */
+    transform: translateY(-2px); /* Effetto sollevamento */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Ombra più intensa */
+}
+
+.submit-login:active {
+    background-color: #cc7a2f; /* Arancione ancora più scuro al clic */
+    transform: translateY(0); /* Ritorna alla posizione iniziale */
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1); /* Ombra ridotta */
+}
+
+/*
+.submit-login {
+  font: 14px/1.22 arial,helvetica,clean,sans-serif;
+  /*background-color: #337ab7;
+  text-align: center;
+  padding: 6px 12px;
+/*! padding: 1.5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  color: white; 
+  border: solid 1px #204d74 ;
+  border: solid 1px #8f8f9d;
+  text-decoration: none;
+  white-space: nowrap;
+  
+  cursor: pointer;
+  border-radius: 3px;
+}
+*/
+
+/* ROM 26/03/2024 Fine modifiche per form di login, cruscotto pagina home e standard error. */
+
+.table_s {
+    width: 95%;
+    border-collapse: collapse;
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+}
+
+.table_s th,
+.table_s td {
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+.table_s .td_int {
+    background-color: #cbd7d7;
+}
+
+.table_s th {
+    background-color: #e6953b;
+    color: #333333;/*white;*/
+    text-align: center;
+    font-weight: bold !important;
+    font-size: 1em;
+}
+
+.table_s td {
+    color: #333;
+    text-align: left;
+}
+
+.table_s tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.table_s tr:hover {
+    background-color: #e2e8e8;
+    /*cursor: pointer;*/
+}
+
+.styled-table {
+  width: 50%;
+  margin: 5px auto;
+  border-collapse: collapse;
+  background-color: #f3f4f6;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.styled-table td {
+  padding: 15px;
+  text-align: left;
+  /*color: #333;*/
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.styled-table a {
+/*  color: #007acc;
+  text-decoration: none; */
+  font-weight: bold;
+}
+
+.styled-table a:hover {
+/*  text-decoration: underline;*/
+}
+
+.styled-table td a b {
+  font-weight: normal;
+}
+
+
+/* Pulsanti */
+input[type="submit"],
+.button {
+    font-size: 1em;
+    font-weight: bold;
+    color: #333333; /* Colore del testo per contrasto */
+    background-color: #fffacd; /* Giallo chiaro principale */
+    border: 2px solid #e6953b; /* Arancione leggermente più scuro per il bordo */
+    border-radius: 8px;
+    padding: 7px 15px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Ombra per profondità */
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+input[type="submit"]:hover,
+.button:hover {
+    background-color: #e6953b; /* Arancione leggermente più scuro per hover */
+    transform: translateY(-2px); /* Effetto sollevamento */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Ombra più intensa */
+}
+
+input[type="submit"]:active,
+.button:active {
+    background-color: #cc7a2f; /* Arancione ancora più scuro al clic */
+    transform: translateY(0); /* Ritorna alla posizione iniziale */
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1); /* Ombra ridotta */
+}
+
+fieldset {
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: 2px solid #e6953b;/*#007BFF;*/
+    margin: 15px;
+}
+
+legend {
+    font-size: 1.2em; /* Dimensione font leggermente più grande */
+    font-weight: bold;
+    color: black;/*#007BFF; Stesso colore del bordo */
+    padding: 0 10px; /* Spazio attorno al testo del legend */
+}
+
+fieldset p {
+    margin: 10px 0; /* Spazio tra i paragrafi */
+    color: #333333; /* Colore del testo */
+}
+
+.form-widget label {
+    display: block; /* Assicura che ogni label occupi una nuova riga */
+}
+
+input[type="radio" i] {
+    appearance: none; /* Rimuove lo stile predefinito del browser */
+    width: 20px; /* Larghezza del radio button */
+    height: 20px; /* Altezza del radio button */
+    border: 2px solid #e6953b; /* Bordo principale */
+    border-radius: 50%; /* Trasforma in cerchio */
+    outline: none; /* Rimuove l'outline standard */
+    background-color: #fff; /* Sfondo bianco */
+    cursor: pointer; /* Cambia il cursore per indicare che è cliccabile */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Effetti di transizione */
+}
+
+input[type="radio" i]:checked {
+    background-color: #e6953b; /* Sfondo colorato quando selezionato */
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.3); /* Leggera ombra decorativa */
+    position: relative; /* Per posizionare l'indicatore interno */
+}
+
+input[type="radio" i]:checked::after {
+    content: ""; /* Indicatore interno */
+    display: block;
+    width: 10px; /* Dimensione interna */
+    height: 10px; /* Dimensione interna */
+    border-radius: 50%; /* Cerchio */
+    background-color: #fff; /* Colore del segno interno */
+    position: absolute; /* Posizionamento centrale */
+    top: 50%; /* Centra verticalmente */
+    left: 50%; /* Centra orizzontalmente */
+    transform: translate(-50%, -50%); /* Centra effettivamente l'indicatore */
+}
+
+input[type="radio" i]:hover {
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.2); /* Ombra più visibile al passaggio del mouse */
+    background-color: #fbe3c0; /* Leggero effetto colore */
+}
+
+input[type="radio" i]:disabled {
+    cursor: not-allowed; /* Cambia il cursore per i campi disabilitati */
+    opacity: 0.6; /* Riduce l'opacità */
+    background-color: #ddd; /* Sfondo disabilitato */
+    border-color: #bbb; /* Bordo disabilitato */
+}
+#form_login .form-button {
+    display: flex; /* Utilizza il layout flessibile */
+    justify-content: center; /* Centra il contenuto orizzontalmente */
+    margin-top: 20px; /* Aggiunge spazio sopra il pulsante (opzionale) */
+}

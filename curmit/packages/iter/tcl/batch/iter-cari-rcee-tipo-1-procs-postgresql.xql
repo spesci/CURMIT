@@ -2,6 +2,11 @@
 <!--
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    rom02 14/06/2023 Su indicazione di Sandro e Belluzzo si e' deciso di valorizzare data_prox_manut
+    rom02            con quanto indicato in data_utile_inter del file csv del caricamento.
+
+    rom01 19/12/2022 Aggiunto campo idoneita_locale nell'inserimento dell'rcee.
+
     sim01 27/06/2016 Se flag_tariffa_impianti_vecchi eq "t" e il combustibile e' Gas o Metano
     sim01            devo verificare se l'impianto e' vecchio e quindi usare un'altra tariffa.
 -->
@@ -53,6 +58,7 @@
          from coimdimp
         where cod_impianto   = :cod_impianto_catasto
           and data_controllo = :data_controllo
+          and gen_prog       = :gen_prog
          limit 1
        </querytext>
     </fullquery>
@@ -351,6 +357,7 @@
                      , raccomandazioni
                      , prescrizioni
                      , data_utile_inter
+		     , data_prox_manut --rom02
                      , n_prot
                      , data_prot
                      , delega_resp
@@ -380,6 +387,7 @@
                      , rct_check_list_2
                      , rct_gruppo_termico
                      , rct_idonea_tenuta
+		     , idoneita_locale --rom01
                      , rct_install_interna
                      , rct_lib_uso_man_comp
                      , rct_modulo_termico
@@ -425,6 +433,7 @@
                      ,:raccomandazioni
                      ,:prescrizioni
                      ,:data_utile_inter
+		     ,:data_utile_inter --rom02
                      ,:n_prot
                      ,:data_prot
                      ,:delega_resp
@@ -454,6 +463,7 @@
                      ,:rct_check_list_2
                      ,:rct_gruppo_termico
                      ,:rct_idonea_tenuta
+		     ,:idoneita_locale --rom01
                      ,:rct_install_interna
                      ,:rct_lib_uso_man_comp
                      ,:rct_modulo_termico

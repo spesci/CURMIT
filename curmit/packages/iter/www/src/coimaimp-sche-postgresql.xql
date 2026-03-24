@@ -2,6 +2,62 @@
 <!--
     USER  DATA       MODIFICHE
     ===== ========== =========================================================================
+    mat01 12/03/2026 Punto 3 MEV 2026. Ordine 00084/2026. Aggiunto installatore alle schede 4.1bis,4.4 bis,4.5bis,
+    mat01            4.6 bis.
+
+    but06 26/11/2024 MEV per regione Marche ordine 63/2022 punto 36: Tolti i dati di recapito del Terzo responsabile
+    but06            nella scheda 1Bis e mostrati quelli della ditta.
+
+    rom32 14/03/2024 Su segnalazione di Regione Marche e Sandro ora per gli impianti del caldo
+    rom32            tengo in considerazione solo i generatori con potenza >= di 10 kW.
+    rom32            Per gli impianti del freddo tengo in considerazione solo i generatori che
+    rom32            hanno la maggiore tra potenza in riscaldamento e raffrescamento >= di 12 Kw.
+
+    but04 04/03/2024 Ho modificato la descrizione e il contenuto del campo Fluido frigorigeno.
+
+    rom31 06/07/2023 Modificato case per il campo rif_uni_10389 del teleriscaldamento.
+
+    rom30 27/06/2023 MEV REGIONE MARCHE "B. Impianti in stato Respinto": esclusi dalle query gli impianti
+    rom30            in stato Respinto e Da Validare.
+
+    rom29 03/04/2023 Aggiunte query sel_bruc_u_no_marche e sel_bruc_u_sost_comp_no_marche.
+    rom29            Modificati i join delle query sugli impianti padre/figli per gli enti senza targa.
+
+    rom28 13/03/2023 Leggo correttamente il campo per il fluido frigorigeno sui generatori del freddo.
+
+    rom27 03/01/2023 Aggiunto campo data_libretto_pretty.
+
+    rom26 10/08/2022 Corretta query sel_bruc_u_sost_comp.
+
+    mic01 07/07/2022 Su segnalazione di Regione Marche e Sandro modificate query sel_gend_fr_bis e 
+    mic01            sel_tot_gend_fr per fare in modo che vengano presi in considerazione solo i generatori
+    mic01            che hanno la maggiore tra potenza in riscaldamento e raffrescamento maggiore di 12 Kw.
+    mic01            Nelle stesse query modificati alcuni case per i campi tipo_climatizzazione e tot_tipo_climatizzazione
+    mic01            mettendo '&nbsp;' al posto di '' perche il programma poteva andare in errore.
+
+    rom25 31/05/2022 Modificate query sel_pomp_circ e sel_pomp_circ_sost_comp.
+
+    rom24 06/04/2022 MEV Ibrido per Regione Marche.
+
+    rom23 04/03/2022 Modificata la Scheda 4.2: Ora anche per i bruciatori viene gestita la parte della sostituzione
+    rom23            dei componenti, per questa modifica serve la versione di I.Ter. 2.5.73.
+    rom23bis         Corretto refuso su query sel_bruc_u.
+    
+    rom22 21/02/2022 Su segnalazione di Giuliodori di Regione Marche coretta anomalia su visualizzazione campo
+    rom22            CO scheda 11.1. Corretta visualizzazione scheda 12. Corretta visualizzazione scheda 2.
+    rom22            Corretta visualizzazione POD e PDR per regione Marche.
+
+    rom21 24/01/2022 Modificate query sel_condu e sel_as_resp per fare in modo che nella stampa siano presenti
+    rom21            i dati relativi a tutti gli impianti colegati tra loro (sia che si usino le targhe,
+    rom21            sia che si usi il codice impianto principale.)
+
+    rom20 27/12/2021 Regione Marche ha richiesto anche che i generatori vengano stampati anche se l'impianto e'
+    rom20            non attivo. Sandro ha detto che per le Marche i generatori e sezione 1bis vanno stampati a
+    rom20            prescindere dallo stato dell'impianto, per gli altri invece stampo solo se l'impianto è attivo.
+
+    rom19 05/11/2021 Per regione Marche estraggo il combustile sui dimp in modo da esporlo nella scheda 11.1
+    rom19            perche' potrebbe essere diverso dal combustibile del generatore.
+
     rom18 05/08/2021 Modificate le query delle sezioni 6.3, 6.4, 7 e 9.5 per fare in modo che vengano presi
     rom18            in considerazione i dati di tutti gli impianti associati in base la flag_gest_targa.
 
@@ -167,6 +223,7 @@
          , a.tipologia_generatore           --gac03
 	 , a.integrazione_per               --gac03
 	 , coalesce(a.tipologia_intervento, '') as tipologia_intervento   --rom05
+	 , iter_edit_data(a.data_libretto) as data_libretto_pretty --rom27
 	 , a.integrazione                   --gac05
 	 , iter_edit_num(a.superficie_integrazione, 2) as superficie_integrazione --gac05
          , a.nota_altra_integrazione        --gac05
@@ -415,8 +472,9 @@
 		, coalesce(tratt_acqua_raff_filtraz_note_altro, '') as tratt_acqua_raff_filtraz_note_altro --LucaR. 07/11/2018
                 , coalesce(tratt_acqua_raff_tratt_note_altro, '') as tratt_acqua_raff_tratt_note_altro --LucaR. 07/11/2018
                 , coalesce(tratt_acqua_raff_cond_note_altro, '') as tratt_acqua_raff_cond_note_altro --LucaR. 07/11/2018
+		, cod_impianto_est as cod_impianto_est_tratt_acqua --rom22
           from coimaimp
-         where cod_impianto = :cod_impianto
+         where cod_impianto in ('[join $lista_cod_impianti ',']')
        </querytext>
     </fullquery>
 
@@ -461,8 +519,9 @@
            , cod_impianto_est as cod_impianto_est_rego
 	   , cod_impianto as cod_impianto_reg
            from coimaimp
-	  where cod_impianto = :cod_impianto
+	  where -- rom24 cod_impianto = :cod_impianto
 	  $or_aimp_rego
+	  order by cod_impianto --rom24
         
        </querytext>
     </fullquery>
@@ -499,6 +558,12 @@
          , coalesce(b.comune,'') as nome_comu_m
          , coalesce(b.provincia,'') as sigla_m
          , coalesce(b.cap,'') as cap_m
+
+	 , coalesce(b.telefono,'') as tel_m   --but06
+	 , coalesce(b.fax,'')      as fax_m   --but06
+	 , coalesce(b.email,'')    as email_m --but06
+	 , coalesce(b.pec,'')      as pec_m   --but06
+	 
          , coalesce(c.cognome,'')||' '||coalesce(c.nome,'') as nome_inst
          , c.reg_imprese as reg_inst
          , coalesce(c.indirizzo,'') as indir_i
@@ -575,6 +640,7 @@
            left outer join coimutgi g on g.cod_utgi         = a.cod_utgi
            left outer join coimaimp f on f.cod_impianto		= a.cod_impianto
      where a.cod_impianto = :cod_impianto
+       and f.stato not in ('E','F') --rom30 E Respinto F da Validare
 -- 2014-06-10 (Standardizzata personalizzazione di Gorizia)      and a.flag_attivo    = 'S'
     order by a.gen_prog_est
        </querytext>
@@ -675,10 +741,13 @@ order by a.num_cs
         , coalesce(a.tipologia,'&nbsp;') as tipologia
         , coalesce(iter_edit_num(a.potenza_utile, 2),'&nbsp;') as potenza_utile
         , coalesce(b.descr_cost,'&nbsp;') as descr_cost
-     from coimaltr_gend_aimp a
+	, c.cod_impianto_est as cod_impianto_est_altr_gend  --rom22
+	from coimaltr_gend_aimp a
 left join coimcost b
        on b.cod_cost = a.cod_cost
-    where a.cod_impianto = :cod_impianto 
+left join coimaimp c
+       on c.cod_impianto = a.cod_impianto  --rom22
+    where a.cod_impianto in ('[join $lista_cod_impianti ',']')
       and a.flag_sostituito ='f' --rom06
  order by a.num_ag
       </querytext>
@@ -696,10 +765,13 @@ left join coimcost b
         , coalesce(a.tipologia,'&nbsp;') as tipologia_sost_comp
         , coalesce(iter_edit_num(a.potenza_utile, 2),'&nbsp;') as potenza_utile_sost_comp
         , coalesce(b.descr_cost,'&nbsp;') as descr_cost_sost_comp
+	, c.cod_impianto_est as cod_impianto_est_altr_gend_sost_comp  --rom22
      from coimaltr_gend_aimp a
 left join coimcost b
        on b.cod_cost = a.cod_cost
-    where a.cod_impianto = :cod_impianto
+left join coimaimp c
+       on c.cod_impianto = a.cod_impianto --rom22
+    where a.cod_impianto in ('[join $lista_cod_impianti ',']')
       and a.flag_sostituito ='t'
  order by a.num_ag
       </querytext>
@@ -744,7 +816,8 @@ left join coimcost b
 left join coimaimp  c
        on c.cod_impianto = a.cod_impianto --rom18
     where --rom18a.cod_impianto = :cod_impianto 
-          a.cod_impianto in ('[join $lista_cod_impianti ',']') --rom18
+ --rom25 a.cod_impianto in ('[join $lista_cod_impianti ',']') --rom18
+          a.cod_impianto in ('[join $ls_aimp_pomp_circ ',']')   --rom25 
       and a.flag_sostituito ='f' --rom06
  order by a.cod_impianto,a.num_po
        </querytext>
@@ -773,7 +846,8 @@ left join coimcost b
 left join coimaimp  c
        on c.cod_impianto = a.cod_impianto --rom18
     where  --rom18a.cod_impianto = :cod_impianto 
-          a.cod_impianto in ('[join $lista_cod_impianti ',']') --rom18
+ --rom25 a.cod_impianto in ('[join $lista_cod_impianti ',']') --rom18
+          a.cod_impianto in ('[join $ls_aimp_pomp_circ ',']')   --rom25 
       and a.flag_sostituito ='t' 
  order by a.cod_impianto,a.num_po
        </querytext>
@@ -808,12 +882,16 @@ left join coimaimp  c
         , a.coibentazione --rom08
 
         , coalesce(b.descr_cost,'&nbsp;')                 as descr_cost
+	, c.cod_impianto_est                              as cod_impianto_est_accu --rom24
      from coimaccu_aimp a
 left join coimcost      b
        on b.cod_cost     = a.cod_cost
-    where a.cod_impianto = :cod_impianto 
+left join coimaimp      c
+       on c.cod_impianto = a.cod_impianto --rom24
+    where --rom24 a.cod_impianto = :cod_impianto
+          $where_accu --rom24
       and a.flag_sostituito ='f' --rom06
- order by a.num_ac
+ order by c.cod_impianto, a.num_ac
        </querytext>
     </fullquery>
 
@@ -845,12 +923,16 @@ left join coimcost      b
         , a.coibentazione as coibentazione_sost_comp --rom08
 
         , coalesce(b.descr_cost,'&nbsp;')                 as descr_cost_sost_comp
+        , c.cod_impianto_est                              as cod_impianto_est_accu --rom24
      from coimaccu_aimp a
 left join coimcost      b
        on b.cod_cost     = a.cod_cost
-    where a.cod_impianto = :cod_impianto 
+left join coimaimp      c
+       on c.cod_impianto = a.cod_impianto --rom24
+    where -- rom24 a.cod_impianto = :cod_impianto
+          $where_accu --rom24
       and a.flag_sostituito = 't'
- order by a.num_ac
+ order by c.cod_impianto, a.num_ac
        </querytext>
     </fullquery>
 
@@ -870,7 +952,7 @@ left join coimcost      b
      from coimtorr_evap_aimp a
 left join coimcost           b
        on b.cod_cost     = a.cod_cost
-    where a.cod_impianto = :cod_impianto 
+    where a.cod_impianto in ('[join $lista_cod_impianti ',']') --rom30 a.cod_impianto = :cod_impianto 
       and a.flag_sostituito ='f' --rom06
  order by a.num_te
        </querytext>
@@ -892,7 +974,7 @@ left join coimcost           b
      from coimtorr_evap_aimp a
 left join coimcost           b
        on b.cod_cost     = a.cod_cost
-    where a.cod_impianto = :cod_impianto 
+    where a.cod_impianto in ('[join $lista_cod_impianti ',']') --rom30 a.cod_impianto = :cod_impianto 
       and a.flag_sostituito ='t'
  order by a.num_te
        </querytext>
@@ -913,7 +995,7 @@ left join coimcost           b
      from coimraff_aimp a
 left join coimcost      b
        on b.cod_cost     = a.cod_cost
-    where a.cod_impianto = :cod_impianto 
+    where a.cod_impianto in ('[join $lista_cod_impianti ',']') --rom30 a.cod_impianto = :cod_impianto 
       and a.flag_sostituito ='f' --rom06
  order by a.num_rv
        </querytext>
@@ -934,7 +1016,7 @@ left join coimcost      b
      from coimraff_aimp a
 left join coimcost      b
        on b.cod_cost     = a.cod_cost
-    where a.cod_impianto = :cod_impianto 
+    where a.cod_impianto in ('[join $lista_cod_impianti ',']') --rom30 a.cod_impianto = :cod_impianto 
       and a.flag_sostituito ='t'
  order by a.num_rv
        </querytext>
@@ -948,29 +1030,37 @@ left join coimcost      b
         , coalesce(iter_edit_data(a.data_dismissione),'&nbsp;') as data_dismissione
         , coalesce(a.cod_cost,'&nbsp;')                         as cod_cost
         , coalesce(a.modello,'&nbsp;')                          as modello
+	, c.cod_impianto_est                                    as cod_impianto_est_scam_calo  --rom24
      from coimscam_calo_aimp a
 left join coimcost           b
        on b.cod_cost     = a.cod_cost
-    where a.cod_impianto = :cod_impianto 
-      and a.flag_sostituito ='f' --rom06
- order by a.num_sc
+left join coimaimp           c
+       on c.cod_impianto = a.cod_impianto --rom24       
+    where -- rom24 a.cod_impianto = :cod_impianto
+          $where_scam_calo --rom24
+	  and a.flag_sostituito ='f' --rom06
+ order by c.cod_impianto, a.num_sc
        </querytext>
     </fullquery>
 
 <fullquery name="sel_scam_calo_aimp_sost_comp"><!--rom06-->
        <querytext>
-   select a.cod_scam_calo_aimp ascod_scam_calo_aimp_sost_comp
-        , a.num_sc             as num_sc_sost_comp
+   select a.cod_scam_calo_aimp                                  as cod_scam_calo_aimp_sost_comp
+        , a.num_sc                                              as num_sc_sost_comp
         , coalesce(iter_edit_data(a.data_installaz),'&nbsp;')   as data_installaz_sost_comp
         , coalesce(iter_edit_data(a.data_dismissione),'&nbsp;') as data_dismissione_sost_comp
         , coalesce(a.cod_cost,'&nbsp;')                         as cod_cost_sost_comp
         , coalesce(a.modello,'&nbsp;')                          as modello_sost_comp
+	, c.cod_impianto_est                                    as cod_impianto_est_scam_calo  --rom24
      from coimscam_calo_aimp a
 left join coimcost           b
        on b.cod_cost     = a.cod_cost
-    where a.cod_impianto = :cod_impianto 
+left join coimaimp           c
+       on c.cod_impianto = a.cod_impianto --rom24
+    where --rom24 a.cod_impianto = :cod_impianto
+          $where_scam_calo --rom24
       and a.flag_sostituito ='t'
- order by a.num_sc
+ order by c.cod_impianto, a.num_sc
        </querytext>
     </fullquery>
 
@@ -1064,9 +1154,9 @@ left join coimaimp c on c.cod_impianto = a.cod_impianto --rom18
        <querytext>
    select a.cod_recu_calo_aimp
         , a.num_rc
-        , coalesce(iter_edit_data(a.data_installaz),'&nbsp;') as data_installaz
+        , coalesce(iter_edit_data(a.data_installaz),'&nbsp;')   as data_installaz
         , coalesce(iter_edit_data(a.data_dismissione),'&nbsp;') as data_dismissione
-        , coalesce(a.tipologia,'&nbsp;') as tipologia
+        , coalesce(a.tipologia,'&nbsp;')                        as tipologia
 --rom08 , case
 --rom08	  when installato_uta_vmc = 'U' then 'UTA'
 --rom08   when installato_uta_vmc = 'V' then 'VMC'
@@ -1078,46 +1168,51 @@ left join coimaimp c on c.cod_impianto = a.cod_impianto --rom18
           when indipendente = 'S' then 'Si'
           when indipendente = 'N' then 'No'
           else                     '&nbsp;'
-          end                                             as indipendente
+          end                                                    as indipendente
 
         , coalesce(iter_edit_num(a.portata_mandata, 2),'&nbsp;') as portata_mandata
         , coalesce(iter_edit_num(a.potenza_mandata, 2),'&nbsp;') as potenza_mandata
         , coalesce(iter_edit_num(a.portata_ripresa, 2),'&nbsp;') as portata_ripresa
         , coalesce(iter_edit_num(a.potenza_ripresa, 2),'&nbsp;') as potenza_ripresa
+	, c.cod_impianto_est                                     as cod_impianto_est_recu_calo --rom24
      from coimrecu_calo_aimp a
-    where a.cod_impianto = :cod_impianto 
+     left join coimaimp      c on c.cod_impianto = a.cod_impianto --rom18     
+    where --rom24 a.cod_impianto = :cod_impianto
+          $where_recu_calo --rom24
       and a.flag_sostituito = 'f' --rom06
- order by a.num_rc
+ order by c.cod_impianto, a.num_rc
        </querytext>
     </fullquery>
 
  <fullquery name="sel_recu_calo_sost_comp"><!--rom06-->
        <querytext>
-   select a.cod_recu_calo_aimp as cod_recu_calo_aimp_sost_comp
-        , a.num_rc             as num_rc_sost_comp 
-        , coalesce(iter_edit_data(a.data_installaz),'&nbsp;') as data_installaz_sost_comp
+   select a.cod_recu_calo_aimp                                  as cod_recu_calo_aimp_sost_comp
+        , a.num_rc                                              as num_rc_sost_comp 
+        , coalesce(iter_edit_data(a.data_installaz),'&nbsp;')   as data_installaz_sost_comp
         , coalesce(iter_edit_data(a.data_dismissione),'&nbsp;') as data_dismissione_sost_comp
-        , coalesce(a.tipologia,'&nbsp;') as tipologia_sost_comp
+        , coalesce(a.tipologia,'&nbsp;')                        as tipologia_sost_comp
 --rom08 , case
 --rom08	  when installato_uta_vmc = 'U' then 'UTA'
 --rom08   when installato_uta_vmc = 'V' then 'VMC'
 --rom08   else                     '&nbsp;'
 --rom08   end                                             as installato_uta_vmc_sost_comp
-        , a.installato_uta_vmc as installato_uta_vmc_sost_comp --rom08
+        , a.installato_uta_vmc                                   as installato_uta_vmc_sost_comp --rom08
          , case
           when indipendente = 'S' then 'Si'
           when indipendente = 'N' then 'No'
           else                     '&nbsp;'
-          end                                             as indipendente_sost_comp
-
+          end                                                    as indipendente_sost_comp
         , coalesce(iter_edit_num(a.portata_mandata, 2),'&nbsp;') as portata_mandata_sost_comp
         , coalesce(iter_edit_num(a.potenza_mandata, 2),'&nbsp;') as potenza_mandata_sost_comp
         , coalesce(iter_edit_num(a.portata_ripresa, 2),'&nbsp;') as portata_ripresa_sost_comp
         , coalesce(iter_edit_num(a.potenza_ripresa, 2),'&nbsp;') as potenza_ripresa_sost_comp
-     from coimrecu_calo_aimp a
-    where a.cod_impianto = :cod_impianto 
-      and a.flag_sostituito = 't'
- order by a.num_rc
+        , c.cod_impianto_est                                     as cod_impianto_est_recu_calo --rom24
+	from coimrecu_calo_aimp a
+     left join coimaimp      c on c.cod_impianto = a.cod_impianto --rom18
+    where --rom24 a.cod_impianto = :cod_impianto
+          $where_recu_calo --rom24
+	  and a.flag_sostituito = 't'
+ order by c.cod_impianto, a.num_rc
        </querytext>
     </fullquery>
 
@@ -1144,7 +1239,7 @@ left join coimaimp c on c.cod_impianto = a.cod_impianto --rom18
      from coimvent_aimp a
 left join coimcost b
        on b.cod_cost = a.cod_cost
-    where a.cod_impianto = :cod_impianto 
+    where a.cod_impianto in ('[join $lista_cod_impianti ',']') --rom30 a.cod_impianto = :cod_impianto 
       and a.flag_sostituito ='f' --rom06
  order by a.num_vm
        </querytext>
@@ -1173,9 +1268,236 @@ left join coimcost b
      from coimvent_aimp a
 left join coimcost b
        on b.cod_cost = a.cod_cost
-    where a.cod_impianto = :cod_impianto 
+    where a.cod_impianto in ('[join $lista_cod_impianti ',']') --rom30 a.cod_impianto = :cod_impianto 
       and a.flag_sostituito ='t'
  order by a.num_vm
+       </querytext>
+    </fullquery>
+
+    <fullquery name="sel_bruc_u"><!--rom23-->
+       <querytext>
+	 select coalesce(a.numero_bruc,'1')                               as numero_bruc
+	      , a.cod_impianto                                            as cod_impianto_bruc
+	      , i.cod_impianto_est                                        as cod_impianto_est_bruc
+	      , a.gen_prog                                                as gen_prog_bruc
+	      , a.gen_prog_est                                            as gen_prog_est_bruc
+   	      , case a.flag_sostituito_bruc
+	        when 't' then 'S&igrave;'
+		when 'f' then 'No'
+		else '&nbsp;'
+		 end                                                      as flag_sostituito_bruc_edit
+	      , a.flag_sostituito_bruc                                    as flag_sostituito_bruc
+	      , coalesce(iter_edit_data(a.data_installaz_bruc),'&nbsp;')  as data_installaz_bruc_edit
+	      , coalesce(iter_edit_data(a.data_rottamaz_bruc),'&nbsp;')   as data_rottamaz_bruc_edit
+	      , a.data_installaz_bruc                                     as data_installazione_bruc
+	      , a.data_rottamaz_bruc                                      as data_rottamazione_bruc
+	      , coalesce(a.modello_bruc,'&nbsp;')                         as modello_bruc
+	      , coalesce(a.matricola_bruc,'&nbsp;')                       as matricola_bruc
+	      , coalesce(iter_edit_num(a.campo_funzion_max, 2),'&nbsp;')  as campo_funzion_max_edit
+	      , coalesce(iter_edit_num(a.campo_funzion_min, 2),'&nbsp;')  as campo_funzion_min_edit
+	      , coalesce(b.descr_cost,'&nbsp;')                           as fabbricante_bruc
+	      , case a.tipo_bruciatore
+	        when 'A' then 'Atmosferico'
+		when 'P' then 'Pressurizzato'
+		when 'M' then 'Premiscelato'
+		else '&nbsp;'
+		end                                                      as tipo_bruciatore
+	   from coimgend a
+	   left join coimaimp i on i.cod_impianto = a.cod_impianto
+	   left join coimcost b on b.cod_cost = a.cod_cost_bruc
+ 	  where a.cod_impianto                in ('[join $lista_cod_impianti ',']')
+ --rom23bis and a.numero_bruc                 is not null
+            and i.flag_tipo_impianto='R' --rom23bis
+          order by a.cod_impianto, a.gen_prog, a.numero_bruc
+       </querytext>
+    </fullquery>
+
+        <fullquery name="sel_bruc_u_no_marche"><!-- rom29 -->
+       <querytext>
+	 select coalesce(a.numero_bruc,'1')                               as numero_bruc
+	      , a.cod_impianto                                            as cod_impianto_bruc
+	      , i.cod_impianto_est                                        as cod_impianto_est_bruc
+	      , a.gen_prog                                                as gen_prog_bruc
+	      , a.gen_prog_est                                            as gen_prog_est_bruc
+   	      , case a.flag_sostituito_bruc
+	        when 't' then 'S&igrave;'
+		when 'f' then 'No'
+		else '&nbsp;'
+		 end                                                      as flag_sostituito_bruc_edit
+	      , a.flag_sostituito_bruc                                    as flag_sostituito_bruc
+	      , coalesce(iter_edit_data(a.data_installaz_bruc),'&nbsp;')  as data_installaz_bruc_edit
+	      , coalesce(iter_edit_data(a.data_rottamaz_bruc),'&nbsp;')   as data_rottamaz_bruc_edit
+	      , a.data_installaz_bruc                                     as data_installazione_bruc
+	      , a.data_rottamaz_bruc                                      as data_rottamazione_bruc
+	      , coalesce(a.modello_bruc,'&nbsp;')                         as modello_bruc
+	      , coalesce(a.matricola_bruc,'&nbsp;')                       as matricola_bruc
+	      , coalesce(iter_edit_num(a.campo_funzion_max, 2),'&nbsp;')  as campo_funzion_max_edit
+	      , coalesce(iter_edit_num(a.campo_funzion_min, 2),'&nbsp;')  as campo_funzion_min_edit
+	      , coalesce(b.descr_cost,'&nbsp;')                           as fabbricante_bruc
+	      , case a.tipo_bruciatore
+	        when 'A' then 'Atmosferico'
+		when 'P' then 'Pressurizzato'
+		when 'M' then 'Premiscelato'
+		else '&nbsp;'
+		end                                                      as tipo_bruciatore
+	   from coimgend a
+	   left join coimaimp i on i.cod_impianto = a.cod_impianto
+	   left join coimcost b on b.cod_cost = a.cod_cost_bruc
+ 	  where a.cod_impianto                in ('[join $lista_cod_impianti ',']')       
+            and i.flag_tipo_impianto='R' --rom23bis
+            and coalesce(a.flag_sostituito,'') !='S'
+
+	    union all
+
+	 select a.numero_bruc                                             as numero_bruc
+	      , a.cod_impianto                                            as cod_impianto_bruc
+	      , i.cod_impianto_est                                        as cod_impianto_est_bruc
+	      , a.gen_prog                                                as gen_prog_bruc
+	      , g.gen_prog_est                                            as gen_prog_est_bruc
+	      , case a.flag_sostituito_bruc
+	        when 't' then 'S&igrave;'
+		when 'f' then 'No'
+		else ''
+		end                                                       as flag_sostituito_bruc_edit
+	      , a.flag_sostituito_bruc                                    as flag_sostituito_bruc
+	      , coalesce(iter_edit_data(a.data_installaz_bruc),'&nbsp;')  as data_installaz_bruc_edit
+	      , coalesce(iter_edit_data(a.data_rottamaz_bruc ),'&nbsp;')  as data_rottamaz_bruc_edit
+	      , a.data_installaz_bruc                                     as data_installazione_bruc
+	      , a.data_rottamaz_bruc                                      as data_rottamazione_bruc
+	      , coalesce(a.modello_bruc,'&nbsp;')                         as modello_bruc
+	      , coalesce(a.matricola_bruc,'&nbsp;')                       as matricola_bruc
+	      , coalesce(iter_edit_num(a.campo_funzion_max, 2),'&nbsp;')  as campo_funzion_max_edit
+	      , coalesce(iter_edit_num(a.campo_funzion_min, 2),'&nbsp;')  as campo_funzion_min_edit
+	      , coalesce(b.descr_cost,'&nbsp;')                           as fabbricante_bruc
+	      , case a.tipo_bruciatore
+	        when 'A' then 'Atmosferico'
+		when 'P' then 'Pressurizzato'
+		when 'M' then 'Premiscelato'
+		else '&nbsp;'
+ 		 end                                                     as tipo_bruciatore
+           from coimgend_bruc a
+	   left join coimaimp i on i.cod_impianto = a.cod_impianto
+	   left join coimgend g on g.cod_impianto = a.cod_impianto
+	                       and g.gen_prog     = a.gen_prog
+   	   left join coimcost b on b.cod_cost = a.cod_cost_bruc
+	  where a.cod_impianto                in ('[join $lista_cod_impianti ',']')
+	  and coalesce(g.flag_sostituito,'') !='S'
+	  --    and (a.flag_sostituito_bruc = 't' or g.flag_sostituito_bruc ='t')
+	  order by cod_impianto_bruc, gen_prog_bruc, numero_bruc
+       </querytext>
+    </fullquery>
+
+    <fullquery name="sel_bruc_u_sost_comp"><!--rom23-->
+       <querytext>
+	 select a.numero_bruc                                             as numero_bruc_sost_comp
+	      , a.cod_impianto                                            as cod_impianto_bruc_sost_comp
+	      , i.cod_impianto_est                                        as cod_impianto_est_bruc_sost_comp
+	      , a.gen_prog                                                as gen_prog_bruc_sost_comp
+	      , g.gen_prog_est                                            as gen_prog_est_bruc_sost_comp
+	      , case a.flag_sostituito_bruc
+	        when 't' then 'S&igrave;'
+		when 'f' then 'No'
+		else ''
+		end                                                       as flag_sostituito_bruc_edit_sost_comp
+	      , a.flag_sostituito_bruc                                    as flag_sostituito_bruc_sost_comp
+	      , coalesce(iter_edit_data(a.data_installaz_bruc),'&nbsp;')  as data_installaz_bruc_edit_sost_comp
+	      , coalesce(iter_edit_data(a.data_rottamaz_bruc ),'&nbsp;')  as data_rottamaz_bruc_edit_sost_comp
+	      , a.data_installaz_bruc                                     as data_installazione_bruc_sost_comp
+	      , a.data_rottamaz_bruc                                      as data_rottamazione_bruc_sost_comp
+	      , coalesce(a.modello_bruc,'&nbsp;')                         as modello_bruc_sost_comp
+	      , coalesce(a.matricola_bruc,'&nbsp;')                       as matricola_bruc_sost_comp
+	      , coalesce(iter_edit_num(a.campo_funzion_max, 2),'&nbsp;')  as campo_funzion_max_edit_sost_comp
+	      , coalesce(iter_edit_num(a.campo_funzion_min, 2),'&nbsp;')  as campo_funzion_min_edit_sost_comp
+	      , coalesce(b.descr_cost,'&nbsp;')                           as fabbricante_bruc_sost_comp
+	      , case a.tipo_bruciatore
+	        when 'A' then 'Atmosferico'
+		when 'P' then 'Pressurizzato'
+		when 'M' then 'Premiscelato'
+		else '&nbsp;'
+ 		 end                                                     as tipo_bruciatore_sost_comp
+           from coimgend_bruc a
+	   left join coimaimp i on i.cod_impianto = a.cod_impianto
+	   left join coimgend g on g.cod_impianto = a.cod_impianto
+	                       and g.gen_prog     = a.gen_prog
+   	   left join coimcost b on b.cod_cost = a.cod_cost_bruc
+	  where a.cod_impianto                in ('[join $lista_cod_impianti ',']')
+           and (a.flag_sostituito_bruc = 't' or g.flag_sostituito_bruc ='t') --rom26
+	  order by a.cod_impianto, a.gen_prog, a.numero_bruc
+       </querytext>
+    </fullquery>
+  
+        <fullquery name="sel_bruc_u_sost_comp_no_marche"><!-- rom29 -->
+       <querytext>
+	 select coalesce(a.numero_bruc,'1')                               as numero_bruc_sost_comp
+	      , a.cod_impianto                                            as cod_impianto_bruc_sost_comp
+	      , i.cod_impianto_est                                        as cod_impianto_est_bruc_sost_comp
+	      , a.gen_prog                                                as gen_prog_bruc_sost_comp
+	      , a.gen_prog_est                                            as gen_prog_est_bruc_sost_comp
+   	      , case a.flag_sostituito_bruc
+	        when 't' then 'S&igrave;'
+		when 'f' then 'No'
+		else '&nbsp;'
+		 end                                                      as flag_sostituito_bruc_edit_sost_comp
+	      , a.flag_sostituito_bruc                                    as flag_sostituito_bruc_sost_comp
+	      , coalesce(iter_edit_data(a.data_installaz_bruc),'&nbsp;')  as data_installaz_bruc_edit_sost_comp
+	      , coalesce(iter_edit_data(a.data_rottamaz_bruc),'&nbsp;')   as data_rottamaz_bruc_edit_sost_comp
+	      , a.data_installaz_bruc                                     as data_installazione_bruc_sost_comp
+	      , a.data_rottamaz_bruc                                      as data_rottamazione_bruc_sost_comp
+	      , coalesce(a.modello_bruc,'&nbsp;')                         as modello_bruc_sost_comp
+	      , coalesce(a.matricola_bruc,'&nbsp;')                       as matricola_bruc_sost_comp
+	      , coalesce(iter_edit_num(a.campo_funzion_max, 2),'&nbsp;')  as campo_funzion_max_edit_sost_comp
+	      , coalesce(iter_edit_num(a.campo_funzion_min, 2),'&nbsp;')  as campo_funzion_min_edit_sost_comp
+	      , coalesce(b.descr_cost,'&nbsp;')                           as fabbricante_bruc_sost_comp
+	      , case a.tipo_bruciatore
+	        when 'A' then 'Atmosferico'
+		when 'P' then 'Pressurizzato'
+		when 'M' then 'Premiscelato'
+		else '&nbsp;'
+		end                                                      as tipo_bruciatore_sost_comp
+	   from coimgend a
+	   left join coimaimp i on i.cod_impianto = a.cod_impianto
+	   left join coimcost b on b.cod_cost = a.cod_cost_bruc
+ 	  where a.cod_impianto                in ('[join $lista_cod_impianti ',']')       
+            and i.flag_tipo_impianto='R' --rom23bis
+            and coalesce(a.flag_sostituito,'') ='S'
+
+	    union all
+
+	 select a.numero_bruc                                             as numero_bruc_sost_comp
+	      , a.cod_impianto                                            as cod_impianto_bruc_sost_comp
+	      , i.cod_impianto_est                                        as cod_impianto_est_bruc_sost_comp
+	      , a.gen_prog                                                as gen_prog_bruc_sost_comp
+	      , g.gen_prog_est                                            as gen_prog_est_bruc_sost_comp
+	      , case a.flag_sostituito_bruc
+	        when 't' then 'S&igrave;'
+		when 'f' then 'No'
+		else ''
+		end                                                       as flag_sostituito_bruc_edit_sost_comp
+	      , a.flag_sostituito_bruc                                    as flag_sostituito_bruc_sost_comp
+	      , coalesce(iter_edit_data(a.data_installaz_bruc),'&nbsp;')  as data_installaz_bruc_edit_sost_comp
+	      , coalesce(iter_edit_data(a.data_rottamaz_bruc ),'&nbsp;')  as data_rottamaz_bruc_edit_sost_comp
+	      , a.data_installaz_bruc                                     as data_installazione_bruc_sost_comp
+	      , a.data_rottamaz_bruc                                      as data_rottamazione_bruc_sost_comp
+	      , coalesce(a.modello_bruc,'&nbsp;')                         as modello_bruc_sost_comp
+	      , coalesce(a.matricola_bruc,'&nbsp;')                       as matricola_bruc_sost_comp
+	      , coalesce(iter_edit_num(a.campo_funzion_max, 2),'&nbsp;')  as campo_funzion_max_edit_sost_comp
+	      , coalesce(iter_edit_num(a.campo_funzion_min, 2),'&nbsp;')  as campo_funzion_min_edit_sost_comp
+	      , coalesce(b.descr_cost,'&nbsp;')                           as fabbricante_bruc_sost_comp_sost_comp
+	      , case a.tipo_bruciatore
+	        when 'A' then 'Atmosferico'
+		when 'P' then 'Pressurizzato'
+		when 'M' then 'Premiscelato'
+		else '&nbsp;'
+ 		 end                                                     as tipo_bruciatore_sost_comp
+           from coimgend_bruc a
+	   left join coimaimp i on i.cod_impianto = a.cod_impianto
+	   left join coimgend g on g.cod_impianto = a.cod_impianto
+	                       and g.gen_prog     = a.gen_prog
+   	   left join coimcost b on b.cod_cost = a.cod_cost_bruc
+	  where a.cod_impianto                in ('[join $lista_cod_impianti ',']')
+	  and coalesce(g.flag_sostituito,'') ='S'
+	  --    and (a.flag_sostituito_bruc = 't' or g.flag_sostituito_bruc ='t')
+	  order by cod_impianto_bruc_sost_comp, gen_prog_bruc_sost_comp, numero_bruc_sost_comp
        </querytext>
     </fullquery>
 
@@ -1233,9 +1555,10 @@ left join coimcost b
          left outer join coimcomb b on b.cod_combustibile = a.cod_combustibile
          left outer join coimcost c on c.cod_cost         = a.cod_cost_bruc
          left outer join coimaimp f on f.cod_impianto         = a.cod_impianto 
-         inner join coimaimp h on f.cod_impianto = h.cod_impianto_princ
-         and f.cod_impianto != h.cod_impianto
-         where h.cod_impianto = :cod_impianto
+         -- rom29 inner join coimaimp h on f.cod_impianto = h.cod_impianto_princ
+         -- rom29 and f.cod_impianto != h.cod_impianto
+       where f.cod_impianto in ('[join $lista_cod_impianti ',']') -- rom29
+         and f.cod_impianto != :cod_impianto
          and f.flag_tipo_impianto = 'R'
 	 and (a.matricola_bruc is not null or modello_bruc is not null or c.cod_cost is not null)
 	 and f.stato='A'
@@ -1316,9 +1639,11 @@ left join coimcost b
            left outer join coimaimp f on f.cod_impianto		= a.cod_impianto -- sim01 and f.flag_tipo_impianto = 'R'
            left outer join coimfuge fl on fl.cod_fuge        = a.mod_funz
      where a.cod_impianto = :cod_impianto
+       and f.stato not in ('E','F') --rom30 E Respinto F da Validare
 -- 2014-06-10 (Standardizzata personalizzazione di Gorizia)      and a.flag_attivo    = 'S'
      and f.flag_tipo_impianto = 'C' --sim01
-and f.stato='A'
+--rom20and f.stato='A'
+       $and_st_imp --rom20
 --     and coalesce(a.flag_sostituito,'') !='S' --rom11 
 $where_gend_sost
 order by a.gen_prog_est
@@ -1364,10 +1689,12 @@ order by a.gen_prog_est
            left outer join coimaimp f on f.cod_impianto		= a.cod_impianto 
            left outer join coimfuge fl on fl.cod_fuge        = a.mod_funz
      where a.cod_impianto = :cod_impianto
+       and f.stato not in ('E','F') --rom30 E Respinto F da Validare
      and f.flag_tipo_impianto = 'C' 
 --     and a.flag_sostituito    = 'S' 
 $where_gend_sost
-and f.stato='A'
+--rom20and f.stato='A'
+       $and_st_imp --rom20
     order by a.gen_prog_est
        </querytext>
     </fullquery>
@@ -1413,14 +1740,16 @@ and f.stato='A'
            left outer join coimutgi g on g.cod_utgi         = a.cod_utgi
            left outer join coimaimp f on f.cod_impianto		= a.cod_impianto -- sim01 and f.flag_tipo_impianto = 'R'
            left outer join coimfuge fl on fl.cod_fuge        = a.mod_funz
-           inner join coimaimp h on f.cod_impianto = h.cod_impianto_princ
-	   and f.cod_impianto != h.cod_impianto
-     where h.cod_impianto = :cod_impianto
+ -- rom29 inner join coimaimp h on f.cod_impianto = h.cod_impianto_princ
+ -- rom29 and f.cod_impianto != h.cod_impianto
+   where f.cod_impianto in ('[join $lista_cod_impianti ',']') -- rom29
+     and f.cod_impianto != :cod_impianto
 -- 2014-06-10 (Standardizzata personalizzazione di Gorizia)      and a.flag_attivo    = 'S'
      and f.flag_tipo_impianto = 'C' --sim01
 --     and coalesce(a.flag_sostituito,'') !='S' --rom11
 $where_gend_sost
-and f.stato='A'
+--rom20and f.stato='A'
+       $and_st_imp --rom20
      order by a.gen_prog_est
        </querytext>
     </fullquery>
@@ -1465,13 +1794,15 @@ and f.stato='A'
            left outer join coimutgi g on g.cod_utgi         = a.cod_utgi
            left outer join coimaimp f on f.cod_impianto		= a.cod_impianto
            left outer join coimfuge fl on fl.cod_fuge        = a.mod_funz
-           inner join coimaimp h on f.cod_impianto = h.cod_impianto_princ
-	   and f.cod_impianto != h.cod_impianto
-     where h.cod_impianto = :cod_impianto
+ -- rom29 inner join coimaimp h on f.cod_impianto = h.cod_impianto_princ
+ -- rom29 and f.cod_impianto != h.cod_impianto
+   where f.cod_impianto in ('[join $lista_cod_impianti ',']') -- rom29
+     and f.cod_impianto != :cod_impianto
        and f.flag_tipo_impianto = 'C'
 --     and a.flag_sostituito    = 'S'
 $where_gend_sost
-and f.stato='A'
+--rom20and f.stato='A'
+       $and_st_imp --rom20
        order by a.gen_prog_est
        </querytext>
     </fullquery>
@@ -1518,11 +1849,13 @@ and f.stato='A'
            inner join coimaimp f      on f.cod_impianto	     = a.cod_impianto 
      where f.cod_impianto != :cod_impianto
        and upper(f.targa)  = upper(:targa)
+       and f.stato not in ('E','F') --rom30 E Respinto F da Validare
 -- 2014-06-10 (Standardizzata personalizzazione di Gorizia)      and a.flag_attivo    = 'S'
        and f.flag_tipo_impianto = 'C'
 --     and coalesce(a.flag_sostituito,'') !='S' --rom11
 $where_gend_sost
-and f.stato='A'
+--rom20and f.stato='A'
+       $and_st_imp --rom20
      order by a.gen_prog_est
        </querytext>
     </fullquery>
@@ -1568,10 +1901,12 @@ and f.stato='A'
            inner join coimaimp f      on f.cod_impianto	     = a.cod_impianto 
      where f.cod_impianto != :cod_impianto
        and upper(f.targa)  = upper(:targa)
+       and f.stato not in ('E','F') --rom30 E Respinto F da Validare
        and f.flag_tipo_impianto = 'C'
 --     and a.flag_sostituito    = 'S'
 $where_gend_sost
-and f.stato='A'
+--rom20and f.stato='A'
+       $and_st_imp --rom20
      order by a.gen_prog_est
        </querytext>
     </fullquery>
@@ -1661,10 +1996,12 @@ and f.stato='A'
            left outer join coimfuge fl on fl.cod_fuge        = a.mod_funz
      where a.cod_impianto = :cod_impianto
 -- 2014-06-10 (Standardizzata personalizzazione di Gorizia)      and a.flag_attivo    = 'S'
+       and f.stato not in ('E','F') --rom30 E Respinto F da Validare
      and f.flag_tipo_impianto = 'R' --sim01
 --     and coalesce(a.flag_sostituito,'') !='S' --rom11
 $where_gend_sost
-and f.stato='A'
+--rom20and f.stato='A'
+       $and_st_imp --rom20
     order by a.gen_prog_est
        </querytext>
     </fullquery>
@@ -1746,10 +2083,12 @@ and f.stato='A'
            left outer join coimaimp f on f.cod_impianto		= a.cod_impianto 
            left outer join coimfuge fl on fl.cod_fuge        = a.mod_funz
      where a.cod_impianto = :cod_impianto
+       and f.stato not in ('E','F') --rom30 E Respinto F da Validare
      and f.flag_tipo_impianto = 'R' 
 --     and a.flag_sostituito    = 'S' 
 $where_gend_sost
-and f.stato='A'
+--rom20and f.stato='A'
+       $and_st_imp --rom20
     order by a.gen_prog_est
        </querytext>
     </fullquery>
@@ -1832,14 +2171,16 @@ and f.stato='A'
            left outer join coimutgi g on g.cod_utgi         = a.cod_utgi
            left outer join coimaimp f on f.cod_impianto		= a.cod_impianto -- sim01 and f.flag_tipo_impianto = 'R'
            left outer join coimfuge fl on fl.cod_fuge        = a.mod_funz
-           inner join coimaimp h on f.cod_impianto = h.cod_impianto_princ
-	   and f.cod_impianto != h.cod_impianto
-     where h.cod_impianto = :cod_impianto
+ -- rom29 inner join coimaimp h on f.cod_impianto = h.cod_impianto_princ
+ -- rom29 and f.cod_impianto != h.cod_impianto
+   where f.cod_impianto in ('[join $lista_cod_impianti ',']') -- rom29
+     and f.cod_impianto != :cod_impianto
 -- 2014-06-10 (Standardizzata personalizzazione di Gorizia)      and a.flag_attivo    = 'S'
      and f.flag_tipo_impianto = 'R' --sim01
 --     and coalesce(a.flag_sostituito,'') !='S' --rom11
 $where_gend_sost
-and f.stato='A'
+--rom20and f.stato='A'
+       $and_st_imp --rom20
     order by a.gen_prog_est
        </querytext>
     </fullquery>
@@ -1921,13 +2262,15 @@ and f.stato='A'
            left outer join coimutgi g on g.cod_utgi         = a.cod_utgi
            left outer join coimaimp f on f.cod_impianto		= a.cod_impianto
            left outer join coimfuge fl on fl.cod_fuge        = a.mod_funz
-           inner join coimaimp h on f.cod_impianto = h.cod_impianto_princ
-	   and f.cod_impianto != h.cod_impianto
-     where h.cod_impianto = :cod_impianto
+ -- rom29 inner join coimaimp h on f.cod_impianto = h.cod_impianto_princ
+ -- rom29 and f.cod_impianto != h.cod_impianto
+   where f.cod_impianto in ('[join $lista_cod_impianti ',']') -- rom29
+     and f.cod_impianto != :cod_impianto
      and f.flag_tipo_impianto = 'R'
 --     and a.flag_sostituito    = 'S'
 $where_gend_sost
-and f.stato='A'
+--rom20and f.stato='A'
+       $and_st_imp --rom20
     order by a.gen_prog_est
        </querytext>
     </fullquery>
@@ -2011,11 +2354,13 @@ and f.stato='A'
            inner join coimaimp f      on f.cod_impianto	     = a.cod_impianto 
      where f.cod_impianto != :cod_impianto
        and upper(f.targa)  = upper(:targa)
+       and f.stato not in ('E','F') --rom30 E Respinto F da Validare
 -- 2014-06-10 (Standardizzata personalizzazione di Gorizia)      and a.flag_attivo    = 'S'
      and f.flag_tipo_impianto = 'R'
 --     and coalesce(a.flag_sostituito,'') !='S' --rom11
 $where_gend_sost
-and f.stato='A'
+--rom20and f.stato='A'
+       $and_st_imp --rom20
     order by a.gen_prog_est
        </querytext>
     </fullquery>
@@ -2098,10 +2443,12 @@ and f.stato='A'
            inner join coimaimp f      on f.cod_impianto	     = a.cod_impianto 
      where f.cod_impianto != :cod_impianto
        and upper(f.targa)  = upper(:targa)
+       and f.stato not in ('E','F') --rom30 E Respinto F da Validare
        and f.flag_tipo_impianto = 'R'
 --     and a.flag_sostituito    = 'S'
 $where_gend_sost
-and f.stato='A'
+--rom20and f.stato='A'
+       $and_st_imp --rom20
     order by a.gen_prog_est
        </querytext>
     </fullquery>
@@ -2133,12 +2480,15 @@ and f.stato='A'
 	 , coalesce(iter_edit_num(a.pot_utile_nom_freddo, 2),'&nbsp;') as pot_utile_nom_freddo_fr --sim09
 	 , coalesce(iter_edit_num(a.pot_utile_nom, 2),'&nbsp;') as pot_utile_nom_fr               --sim09
 	 , coalesce(iter_edit_num(a.pot_utile_lib, 2),'&nbsp;') as pot_utile_lib_fr               --sim09
-         , case a.mod_funz
-                when '0' then 'Non noto'
-                when '1' then 'Acqua calda'
-                when '2' then 'Aria calda'
-                when '3' then 'Altro'
-                end as mod_funz
+  --     , case a.mod_funz
+  --            when '0' then 'Non noto'
+  --            when '1' then 'Acqua calda'
+  --            when '2' then 'Aria calda'
+  --            when '3' then 'Altro'
+  --            end as mod_funz
+         , fu.descr_fuge               --rom28
+	 , fl.sigla      as descr_flre --rom28
+         , fl.fluido     as fluido_flre  --but04
          , coalesce(a.cod_tpco,'&nbsp;') as cod_tpco
 	 , a.sorgente_lato_esterno --rom11
 	 , a.fluido_lato_utenze    --rom11
@@ -2148,13 +2498,17 @@ and f.stato='A'
            left outer join coimcost c on c.cod_cost         = a.cod_cost
            left outer join coimtpem d on d.cod_emissione    = a.cod_emissione
            left outer join coimutgi g on g.cod_utgi         = a.cod_utgi
+           left outer join coimfuge fu on fu.cod_fuge       = a.mod_funz --rom28
+	   left outer join coimflre fl on fl.cod_flre       = a.cod_flre --rom28
            left outer join coimaimp f on f.cod_impianto		= a.cod_impianto --sim01 and f.flag_tipo_impianto = 'F'
      where a.cod_impianto = :cod_impianto
+       and f.stato not in ('E','F') --rom30 E Respinto F da Validare
 -- 2014-06-10 (Standardizzata personalizzazione di Gorizia)      and a.flag_attivo    = 'S' 
      and f.flag_tipo_impianto = 'F' --sim01
 --     and coalesce(a.flag_sostituito,'') !='S' --rom11
 $where_gend_sost
-and f.stato='A'
+--rom20and f.stato='A'
+       $and_st_imp --rom20
     order by a.gen_prog_est
        </querytext>
     </fullquery>
@@ -2185,12 +2539,15 @@ and f.stato='A'
 	 , coalesce(iter_edit_num(a.pot_utile_nom_freddo, 2),'&nbsp;') as pot_utile_nom_freddo_fr_sost
 	 , coalesce(iter_edit_num(a.pot_utile_nom, 2),'&nbsp;') as pot_utile_nom_fr_sost
 	 , coalesce(iter_edit_num(a.pot_utile_lib, 2),'&nbsp;') as pot_utile_lib_fr_sost
-         , case a.mod_funz
-                when '0' then 'Non noto'
-                when '1' then 'Acqua calda'
-                when '2' then 'Aria calda'
-                when '3' then 'Altro'
-                end as mod_funz_sost
+--         , case a.mod_funz
+--                when '0' then 'Non noto'
+--                when '1' then 'Acqua calda'
+--                when '2' then 'Aria calda'
+--                when '3' then 'Altro'
+--                end as mod_funz_sost
+         , fu.descr_fuge as descr_fuge_sost --rom28
+	 , fl.sigla      as descr_flre_sost --rom28
+         , fl.fluido     as fluido_flre_sost --but04
          , coalesce(a.cod_tpco,'&nbsp;') as cod_tpco_sost
 	 , a.sorgente_lato_esterno as sorgente_lato_esterno_sost --rom11
 	 , a.fluido_lato_utenze    as fluido_lato_utenze_sost    --rom11
@@ -2199,12 +2556,16 @@ and f.stato='A'
            left outer join coimcost c on c.cod_cost         = a.cod_cost
            left outer join coimtpem d on d.cod_emissione    = a.cod_emissione
            left outer join coimutgi g on g.cod_utgi         = a.cod_utgi
-           left outer join coimaimp f on f.cod_impianto		= a.cod_impianto 
+           left outer join coimaimp f on f.cod_impianto	    = a.cod_impianto 
+           left outer join coimfuge fu on fu.cod_fuge       = a.mod_funz --rom28
+	   left outer join coimflre fl on fl.cod_flre       = a.cod_flre --rom28
      where a.cod_impianto = :cod_impianto
+       and f.stato not in ('E','F') --rom30 E Respinto F da Validare
      and f.flag_tipo_impianto = 'F'
 --     and a.flag_sostituito    = 'S'
 $where_gend_sost
-and f.stato='A'
+--rom20and f.stato='A'
+       $and_st_imp --rom20
     order by a.gen_prog_est
        </querytext>
     </fullquery>
@@ -2237,30 +2598,38 @@ and f.stato='A'
 	 , coalesce(iter_edit_num(a.pot_utile_nom_freddo, 2),'&nbsp;') as pot_utile_nom_freddo_fr_padre --sim09
 	 , coalesce(iter_edit_num(a.pot_utile_nom, 2),'&nbsp;') as pot_utile_nom_fr_padre               --sim09
 	 , coalesce(iter_edit_num(a.pot_utile_lib, 2),'&nbsp;') as pot_utile_lib_fr_padre               --sim09
-         , case a.mod_funz
-                when '0' then 'Non noto'
-                when '1' then 'Acqua calda'
-                when '2' then 'Aria calda'
-                when '3' then 'Altro'
-                end as mod_funz_padre
+--         , case a.mod_funz
+--                when '0' then 'Non noto'
+--                when '1' then 'Acqua calda'
+--                when '2' then 'Aria calda'
+--                when '3' then 'Altro'
+--                end as mod_funz_padre
          , coalesce(a.cod_tpco,'&nbsp;') as cod_tpco_padre
          , a.sorgente_lato_esterno as sorgente_lato_esterno_padre --rom11
          , a.fluido_lato_utenze    as fluido_lato_utenze_padre    --rom11
 	 , f.cod_impianto_est as cod_impianto_est_padre
-          from coimgend a
+	 , f.cod_impianto     as cod_impianto_fr_padre --rom16
+         , fu.descr_fuge      as descr_fuge_padre      --rom28
+	 , fl.sigla           as descr_flre_padre      --rom28
+         , fl.fluido          as fluido_flre_padre     --but04
+         from coimgend a
            left outer join coimcomb b on b.cod_combustibile = a.cod_combustibile
            left outer join coimcost c on c.cod_cost         = a.cod_cost
            left outer join coimtpem d on d.cod_emissione    = a.cod_emissione
            left outer join coimutgi g on g.cod_utgi         = a.cod_utgi
+           left outer join coimfuge fu on fu.cod_fuge       = a.mod_funz --rom28
+	   left outer join coimflre fl on fl.cod_flre       = a.cod_flre --rom28
            left outer join coimaimp f on f.cod_impianto		= a.cod_impianto -- sim01 and f.flag_tipo_impianto = 'R'
-           inner join coimaimp h on f.cod_impianto = h.cod_impianto_princ
-	   and f.cod_impianto != h.cod_impianto
-     where h.cod_impianto = :cod_impianto
+ -- rom29 inner join coimaimp h on f.cod_impianto = h.cod_impianto_princ
+ -- rom29 and f.cod_impianto != h.cod_impianto
+   where f.cod_impianto in ('[join $lista_cod_impianti ',']') -- rom29
+     and f.cod_impianto != :cod_impianto
 -- 2014-06-10 (Standardizzata personalizzazione di Gorizia)      and a.flag_attivo    = 'S'
      and f.flag_tipo_impianto = 'F' --sim01
 --     and coalesce(a.flag_sostituito,'') !='S' --rom11
 $where_gend_sost
-and f.stato='A'
+--rom20and f.stato='A'
+       $and_st_imp --rom20
      order by a.gen_prog_est
        </querytext>
     </fullquery>
@@ -2292,12 +2661,15 @@ and f.stato='A'
 	 , coalesce(iter_edit_num(a.pot_utile_nom_freddo, 2),'&nbsp;') as pot_utile_nom_freddo_fr_padre_sost
 	 , coalesce(iter_edit_num(a.pot_utile_nom, 2),'&nbsp;') as pot_utile_nom_fr_padre_sost
 	 , coalesce(iter_edit_num(a.pot_utile_lib, 2),'&nbsp;') as pot_utile_lib_fr_padre_sost
-         , case a.mod_funz
-                when '0' then 'Non noto'
-                when '1' then 'Acqua calda'
-                when '2' then 'Aria calda'
-                when '3' then 'Altro'
-                end as mod_funz_padre_sost
+   --    , case a.mod_funz
+   --           when '0' then 'Non noto'
+   --           when '1' then 'Acqua calda'
+   --           when '2' then 'Aria calda'
+   --           when '3' then 'Altro'
+   --           end as mod_funz_padre_sost
+         , fu.descr_fuge as descr_fuge_padre_sost --rom28
+	 , fl.sigla      as descr_flre_padre_sost --rom28
+         , fl.fluido     as fluido_flre_padre_sost --but04
          , coalesce(a.cod_tpco,'&nbsp;') as cod_tpco_padre_sost
          , a.sorgente_lato_esterno as sorgente_lato_esterno_padre_sost --rom11
          , a.fluido_lato_utenze    as fluido_lato_utenze_padre_sost    --rom11
@@ -2307,14 +2679,18 @@ and f.stato='A'
            left outer join coimcost c on c.cod_cost         = a.cod_cost
            left outer join coimtpem d on d.cod_emissione    = a.cod_emissione
            left outer join coimutgi g on g.cod_utgi         = a.cod_utgi
+           left outer join coimfuge fu on fu.cod_fuge       = a.mod_funz --rom28
+	   left outer join coimflre fl on fl.cod_flre       = a.cod_flre --rom28
            left outer join coimaimp f on f.cod_impianto		= a.cod_impianto
-           inner join coimaimp h on f.cod_impianto = h.cod_impianto_princ
-	   and f.cod_impianto != h.cod_impianto
-     where h.cod_impianto = :cod_impianto
+ -- rom29 inner join coimaimp h on f.cod_impianto = h.cod_impianto_princ
+ -- rom29 and f.cod_impianto != h.cod_impianto
+   where f.cod_impianto in ('[join $lista_cod_impianti ',']') -- rom29
+     and f.cod_impianto != :cod_impianto
      and f.flag_tipo_impianto = 'F' 
 --     and a.flag_sostituito    = 'S' 
 $where_gend_sost
-and f.stato='A'
+--rom20and f.stato='A'
+       $and_st_imp --rom20
     order by a.gen_prog_est
        </querytext>
     </fullquery>
@@ -2345,13 +2721,16 @@ and f.stato='A'
 	 , coalesce(iter_edit_num(a.pot_utile_nom_freddo, 2),'&nbsp;') as pot_utile_nom_freddo_fr_padre --sim09
 	 , coalesce(iter_edit_num(a.pot_utile_nom, 2),'&nbsp;') as pot_utile_nom_fr_padre               --sim09
 	 , coalesce(iter_edit_num(a.pot_utile_lib, 2),'&nbsp;') as pot_utile_lib_fr_padre               --sim09
-         , case a.mod_funz
-                when '0' then 'Non noto'
-                when '1' then 'Acqua calda'
-                when '2' then 'Aria calda'
-                when '3' then 'Altro'
-                end as mod_funz_padre         
+   --    , case a.mod_funz
+   --           when '0' then 'Non noto'
+   --           when '1' then 'Acqua calda'
+   --           when '2' then 'Aria calda'
+   --           when '3' then 'Altro'
+   --           end as mod_funz_padre 
          , coalesce(a.cod_tpco,'&nbsp;') as cod_tpco_padre
+         , fu.descr_fuge as descr_fuge_padre      --rom28	 
+	 , fl.sigla      as descr_flre_padre      --rom28
+         , fl.fluido     as fluido_flre_padre     --but04
          , a.sorgente_lato_esterno as sorgente_lato_esterno_padre  --rom11
          , a.fluido_lato_utenze    as fluido_lato_utenze_padre     --rom11
 	 , f.cod_impianto_est as cod_impianto_est_padre
@@ -2361,14 +2740,18 @@ and f.stato='A'
            left outer join coimcost c on c.cod_cost         = a.cod_cost
            left outer join coimtpem d on d.cod_emissione    = a.cod_emissione
            left outer join coimutgi g on g.cod_utgi         = a.cod_utgi
+           left outer join coimfuge fu on fu.cod_fuge       = a.mod_funz --rom28
+	   left outer join coimflre fl on fl.cod_flre       = a.cod_flre --rom28
            inner join coimaimp f      on f.cod_impianto	     = a.cod_impianto 
      where f.cod_impianto != :cod_impianto
        and upper(f.targa)  = upper(:targa)
+       and f.stato not in ('E','F') --rom30 E Respinto F da Validare
 -- 2014-06-10 (Standardizzata personalizzazione di Gorizia)      and a.flag_attivo    = 'S'
      and f.flag_tipo_impianto = 'F'
 --     and coalesce(a.flag_sostituito,'') !='S' --rom11
 $where_gend_sost
-and f.stato='A'
+--rom20and f.stato='A'
+       $and_st_imp --rom20
    order by a.gen_prog_est
        </querytext>
     </fullquery>
@@ -2399,28 +2782,35 @@ and f.stato='A'
 	 , coalesce(iter_edit_num(a.pot_utile_nom_freddo, 2),'&nbsp;') as pot_utile_nom_freddo_fr_padre_sost
 	 , coalesce(iter_edit_num(a.pot_utile_nom, 2),'&nbsp;') as pot_utile_nom_fr_padre_sost
 	 , coalesce(iter_edit_num(a.pot_utile_lib, 2),'&nbsp;') as pot_utile_lib_fr_padre_sost
-         , case a.mod_funz
-                when '0' then 'Non noto'
-                when '1' then 'Acqua calda'
-                when '2' then 'Aria calda'
-                when '3' then 'Altro'
-                end as mod_funz_padre_sost    
-         , coalesce(a.cod_tpco,'&nbsp;') as cod_tpco_padre_sost
+  --     , case a.mod_funz
+  --            when '0' then 'Non noto'
+  --            when '1' then 'Acqua calda'
+  --            when '2' then 'Aria calda'
+  --            when '3' then 'Altro'
+  --            end as mod_funz_padre_sost    
+         , fu.descr_fuge as descr_fuge_padre_sost --rom28	 
+	 , fl.sigla      as descr_flre_padre_sost --rom28
+         , fl.fluido     as fluido_flre_padre_sost --but04
          , a.sorgente_lato_esterno as sorgente_lato_esterno_padre_sost --rom11
          , a.fluido_lato_utenze    as fluido_lato_utenze_padre_sost    --rom11
 	 , f.cod_impianto_est as cod_impianto_fr_est_padre_sost
+         , coalesce(a.cod_tpco,'&nbsp;') as cod_tpco_padre_sost
+
           from coimgend a
            left outer join coimcomb b on b.cod_combustibile = a.cod_combustibile
            left outer join coimcost c on c.cod_cost         = a.cod_cost
            left outer join coimtpem d on d.cod_emissione    = a.cod_emissione
            left outer join coimutgi g on g.cod_utgi         = a.cod_utgi
+           left outer join coimfuge fu on fu.cod_fuge       = a.mod_funz --rom28
+	   left outer join coimflre fl on fl.cod_flre       = a.cod_flre --rom28
            inner join coimaimp f      on f.cod_impianto	     = a.cod_impianto 
      where f.cod_impianto != :cod_impianto
        and upper(f.targa)  = upper(:targa)
      and f.flag_tipo_impianto = 'F'
 --     and a.flag_sostituito    = 'S'
 $where_gend_sost
-and f.stato='A'
+--rom20and f.stato='A'
+       $and_st_imp --rom20
      order by a.gen_prog_est
        </querytext>
     </fullquery>
@@ -2520,9 +2910,13 @@ and f.stato='A'
          , iter_edit_num(a.elet_lettura_iniziale_2, 2) as elet_lettura_iniziale_2  --gac04
          , iter_edit_num(a.elet_lettura_finale_2, 2)   as elet_lettura_finale_2    --gac04
          , iter_edit_num(a.elet_consumo_totale_2, 2)   as elet_consumo_totale_2    --gac04
-	 
+	 , a.cod_combustibile as cod_comb_dimp--rom26
+ 
       from coimdimp a
+         , coimaimp b --rom30
      where a.cod_impianto = :cod_impianto
+       and a.cod_impianto = b.cod_impianto --rom30
+       and b.stato        not in ('E','F') --rom30
      $where_flag_tracciato --sim01
     order by a.data_controllo desc
        </querytext>
@@ -2559,7 +2953,7 @@ select * from (
          , iter_edit_num(a.o2, 2) as o2
          , iter_edit_num(a.co2, 2) as co2
          , iter_edit_num(a.bacharach, 0) as bacharach
-         , a.co
+         , iter_edit_num(a.co, 2) as co --rom22
          , iter_edit_num(a.co_fumi_secchi_ppm, 2) as co_fumi_secchi_ppm
          , iter_edit_num(a.rend_combust, 2) as rend_combust 
          , iter_edit_num(a.fr_surrisc, 2)        as fr_surrisc
@@ -2571,6 +2965,7 @@ select * from (
 	 , iter_edit_num(a.fr_t_ing_lato_ute, 2) as fr_t_ing_lato_ute
 	 , iter_edit_num(a.fr_t_usc_lato_ute, 2) as fr_t_usc_lato_ute
 	 , a.fr_nr_circuito
+	 , a.flag_status as fr_flag_status_padre            -- rom29
          , 1 as progressivo_prova_fumi
          , a.tel_temp_est       as tel_temp_est             --rom02
          , a.tel_temp_mand_prim as tel_temp_mand_prim       --rom02
@@ -2665,11 +3060,15 @@ select * from (
          , iter_edit_num(a.elet_lettura_iniziale_2, 2) as elet_lettura_iniziale_2  --gac04
          , iter_edit_num(a.elet_lettura_finale_2, 2)   as elet_lettura_finale_2    --gac04
          , iter_edit_num(a.elet_consumo_totale_2, 2)   as elet_consumo_totale_2    --gac04
+	 , a.cod_combustibile as cod_comb_dimp --rom26
+
       from coimdimp a
-      inner join coimaimp b
-      on a.cod_impianto = b.cod_impianto_princ
-      and a.cod_impianto != b.cod_impianto
-      where b.cod_impianto = :cod_impianto
+ -- rom29     inner join coimaimp b
+ -- rom29     on a.cod_impianto = b.cod_impianto_princ
+ -- rom29     and a.cod_impianto != b.cod_impianto
+       left join coimaimp b on b.cod_impianto = a.cod_impianto   -- rom29
+      where b.cod_impianto in ('[join $lista_cod_impianti ',']') -- rom29
+        and b.cod_impianto != :cod_impianto                      -- rom29
       and b.stato='A'
      $where_flag_tracciato --sim01
      union all
@@ -2701,7 +3100,7 @@ select * from (
          , iter_edit_num(f.o2, 2) as o2
          , iter_edit_num(f.co2, 2) as co2
          , iter_edit_num(f.bacharach, 0) as bacharach
-         , f.co
+         , iter_edit_num(f.co, 2) as co --rom22
          , iter_edit_num(f.co_fumi_secchi_ppm, 2) as co_fumi_secchi_ppm
          , iter_edit_num(f.rend_combust, 2) as rend_combust 
          , iter_edit_num(f.fr_surrisc, 2)        as fr_surrisc
@@ -2713,6 +3112,7 @@ select * from (
 	 , iter_edit_num(f.fr_t_ing_lato_ute, 2) as fr_t_ing_lato_ute
 	 , iter_edit_num(f.fr_t_usc_lato_ute, 2) as fr_t_usc_lato_ute
 	 , f.fr_nr_circuito
+         , a.flag_status as fr_flag_status_padre            -- rom29
          , f.progressivo_prova_fumi
          , a.tel_temp_est       as tel_temp_est             --rom02
          , a.tel_temp_mand_prim as tel_temp_mand_prim       --rom02
@@ -2807,13 +3207,16 @@ select * from (
          , iter_edit_num(a.elet_lettura_iniziale_2, 2) as elet_lettura_iniziale_2  --gac04
          , iter_edit_num(a.elet_lettura_finale_2, 2)   as elet_lettura_finale_2    --gac04
          , iter_edit_num(a.elet_consumo_totale_2, 2)   as elet_consumo_totale_2    --gac04
+	 , a.cod_combustibile as cod_comb_dimp --rom26
       from coimdimp a
       inner join coimdimp_prfumi f
          on f.cod_dimp = a.cod_dimp   
-      inner join coimaimp b
-      on a.cod_impianto = b.cod_impianto_princ
-      and a.cod_impianto != b.cod_impianto
-      where b.cod_impianto = :cod_impianto
+ -- rom29     inner join coimaimp b
+ -- rom29     on a.cod_impianto = b.cod_impianto_princ
+ -- rom29     and a.cod_impianto != b.cod_impianto
+       left join coimaimp b on b.cod_impianto = a.cod_impianto   -- rom29
+      where a.cod_impianto in ('[join $lista_cod_impianti ',']') -- rom29
+        and a.cod_impianto != :cod_impianto                      -- rom29
       and b.stato='A'
      $where_flag_tracciato --sim01
 ) as q
@@ -2854,7 +3257,7 @@ select * from (
          , iter_edit_num(a.o2, 2) as o2
          , iter_edit_num(a.co2, 2) as co2
          , iter_edit_num(a.bacharach, 0) as bacharach
-         , a.co
+         , iter_edit_num(a.co, 2) as co  --rom22
          , iter_edit_num(a.co_fumi_secchi_ppm, 2) as co_fumi_secchi_ppm
          , iter_edit_num(a.rend_combust, 2) as rend_combust 
          , iter_edit_num(a.fr_surrisc, 2)        as fr_surrisc
@@ -2866,6 +3269,7 @@ select * from (
 	 , iter_edit_num(a.fr_t_ing_lato_ute, 2) as fr_t_ing_lato_ute
 	 , iter_edit_num(a.fr_t_usc_lato_ute, 2) as fr_t_usc_lato_ute
 	 , a.fr_nr_circuito
+         , a.flag_status as fr_flag_status_padre            -- rom29
          , 1 as progressivo_prova_fumi
          , a.tel_temp_est       as tel_temp_est             --rom02
          , a.tel_temp_mand_prim as tel_temp_mand_prim       --rom02
@@ -2960,6 +3364,7 @@ select * from (
          , iter_edit_num(a.elet_lettura_iniziale_2, 2) as elet_lettura_iniziale_2  --gac04
          , iter_edit_num(a.elet_lettura_finale_2, 2)   as elet_lettura_finale_2    --gac04
          , iter_edit_num(a.elet_consumo_totale_2, 2)   as elet_consumo_totale_2    --gac04
+	 , a.cod_combustibile as cod_comb_dimp --rom26
 	 
       from coimdimp a
       inner join coimaimp b
@@ -2997,7 +3402,7 @@ select * from (
          , iter_edit_num(f.o2, 2) as o2
          , iter_edit_num(f.co2, 2) as co2
          , iter_edit_num(f.bacharach, 0) as bacharach
-         , f.co
+         , iter_edit_num(f.co, 2) as co --rom22
          , iter_edit_num(f.co_fumi_secchi_ppm, 2) as co_fumi_secchi_ppm
          , iter_edit_num(f.rend_combust, 2) as rend_combust 
          , iter_edit_num(f.fr_surrisc, 2)        as fr_surrisc
@@ -3009,6 +3414,7 @@ select * from (
 	 , iter_edit_num(f.fr_t_ing_lato_ute, 2) as fr_t_ing_lato_ute
 	 , iter_edit_num(f.fr_t_usc_lato_ute, 2) as fr_t_usc_lato_ute
 	 , f.fr_nr_circuito
+         , a.flag_status as fr_flag_status_padre            -- rom29
          , f.progressivo_prova_fumi
          , a.tel_temp_est       as tel_temp_est             --rom02
          , a.tel_temp_mand_prim as tel_temp_mand_prim       --rom02
@@ -3103,11 +3509,13 @@ select * from (
          , iter_edit_num(a.elet_lettura_iniziale_2, 2) as elet_lettura_iniziale_2  --gac04
          , iter_edit_num(a.elet_lettura_finale_2, 2)   as elet_lettura_finale_2    --gac04
          , iter_edit_num(a.elet_consumo_totale_2, 2)   as elet_consumo_totale_2    --gac04
-      from coimdimp a
+	 , a.cod_combustibile as cod_comb_dimp --rom26
+
+       from coimdimp a
       inner join coimdimp_prfumi f
          on f.cod_dimp = a.cod_dimp   
       inner join coimaimp b
-        on a.cod_impianto = b.cod_impianto
+         on a.cod_impianto = b.cod_impianto
       where b.cod_impianto != :cod_impianto
       and upper(b.targa) = upper(:targa)
       and b.stato='A'
@@ -3328,7 +3736,9 @@ select * from (
                      , replace(m.flag_g, 't', 'X') as flag_g
                      , m.cert_uni_iso
                      , m.cert_altro
-		     , a.flag_as_resp --rom07  
+		     , a.flag_as_resp --rom07
+		     , c.cod_impianto_est as cod_impianto_est_as_resp --rom21
+		     , a.cod_impianto as cod_impianto_as_resp --rom22
                from coim_as_resp a
     left outer join coimmanu m on m.cod_manutentore = a.cod_manutentore
     left outer join coimcitt d on d.cod_cittadino = a.cod_legale_rapp
@@ -3337,7 +3747,7 @@ select * from (
     left outer join coimcomu f on f.cod_comune      = a.cod_comune
     left outer join coimutgi g on g.cod_utgi        = a.cod_utgi
     left outer join coimdist h on h.cod_distr		= c.cod_distributore
-              where a.cod_impianto = :cod_impianto
+              where a.cod_impianto in ('[join $lista_cod_impianti ',']') --rom21
 	      $where_data_inizio --rom07
        </querytext>
     </fullquery>
@@ -3369,11 +3779,13 @@ select * from (
                   left outer join coimutgi g on g.cod_utgi         = a.cod_utgi
                   left outer join coimaimp f on f.cod_impianto     = a.cod_impianto --sim01 and f.flag_tipo_impianto = 'F'
             where a.cod_impianto = :cod_impianto
+              and f.stato not in ('E','F') --rom30 E Respinto F da Validare
        -- 2014-06-10 (Standardizzata personalizzazione di Gorizia)      and a.flag_attivo    = 'S' 
               and f.flag_tipo_impianto = 'T'
 --	      and coalesce(a.flag_sostituito,'') != 'S'--rom11
 $where_gend_sost
-and f.stato='A'
+--rom20and f.stato='A'
+       $and_st_imp --rom20
             order  by a.gen_prog_est
       </querytext>
     </fullquery>
@@ -3405,10 +3817,12 @@ and f.stato='A'
                   left outer join coimutgi g on g.cod_utgi         = a.cod_utgi
                   left outer join coimaimp f on f.cod_impianto     = a.cod_impianto 
             where a.cod_impianto = :cod_impianto
+              and f.stato not in ('E','F') --rom30 E Respinto F da Validare
               and f.flag_tipo_impianto = 'T'
 --	      and coalesce(a.flag_sostituito) = 'S'
 $where_gend_sost
-and f.stato='A'
+--rom20and f.stato='A'
+       $and_st_imp --rom20
             order  by a.gen_prog_est
       </querytext>
     </fullquery>
@@ -3426,7 +3840,7 @@ and f.stato='A'
          , coalesce(iter_edit_num(a.pot_focolare_lib, 2),'&nbsp;') as pot_focolare_lib_tel_padre 
          , coalesce(iter_edit_num(a.pot_focolare_nom, 2),'&nbsp;') as pot_foc_nom_tel_padre
          , coalesce(c.descr_cost, '&nbsp;') as costruttore_gend_tel_padre
-         , coalesce(iter_edit_num(m.tel_potenza_termica, 0),'&nbsp;') as pot_termica_tel_padre
+-- rom29, coalesce(iter_edit_num(m.tel_potenza_termica, 0),'&nbsp;') as pot_termica_tel_padre
          , f.note_dest as note_dest_fr_padre
          , case a.flag_attivo
                 when 'S' then 'Attivo'
@@ -3440,15 +3854,17 @@ and f.stato='A'
            left outer join coimtpem d on d.cod_emissione    = a.cod_emissione
            left outer join coimutgi g on g.cod_utgi         = a.cod_utgi
            left outer join coimaimp f on f.cod_impianto		= a.cod_impianto -- sim01 and f.flag_tipo_impianto = 'R'
-           left outer join coimdimp m on m.cod_impianto     = a.cod_impianto
-          inner join coimaimp h on f.cod_impianto = h.cod_impianto_princ
-	   and f.cod_impianto != h.cod_impianto
-     where h.cod_impianto = :cod_impianto
+ -- rom29 left outer join coimdimp m on m.cod_impianto     = a.cod_impianto
+ -- rom29 inner join coimaimp h on f.cod_impianto = h.cod_impianto_princ
+ -- rom29 and f.cod_impianto != h.cod_impianto
+   where f.cod_impianto in ('[join $lista_cod_impianti ',']') -- rom29
+     and f.cod_impianto != :cod_impianto
 -- 2014-06-10 (Standardizzata personalizzazione di Gorizia)      and a.flag_attivo    = 'S'
        and f.flag_tipo_impianto = 'T'
 --     and coalesce(a.flag_sostituito,'') !='S' --rom11
 $where_gend_sost
-and f.stato='A'
+--rom20and f.stato='A'
+       $and_st_imp --rom20
      order by a.gen_prog_est
        </querytext>
     </fullquery>
@@ -3466,7 +3882,7 @@ and f.stato='A'
          , coalesce(iter_edit_num(a.pot_focolare_lib, 2),'&nbsp;') as pot_focolare_lib_tel_padre_sost 
          , coalesce(iter_edit_num(a.pot_focolare_nom, 2),'&nbsp;') as pot_foc_nom_tel_padre_sost
          , coalesce(c.descr_cost, '&nbsp;') as costruttore_gend_tel_padre_sost
-         , coalesce(iter_edit_num(m.tel_potenza_termica, 0),'&nbsp;') as pot_termica_tel_padre_sost
+ -- rom29, coalesce(iter_edit_num(m.tel_potenza_termica, 0),'&nbsp;') as pot_termica_tel_padre_sost
          , f.note_dest as note_dest_fr_padre_sost
          , case a.flag_attivo
                 when 'S' then 'Attivo'
@@ -3480,14 +3896,16 @@ and f.stato='A'
            left outer join coimtpem d on d.cod_emissione    = a.cod_emissione
            left outer join coimutgi g on g.cod_utgi         = a.cod_utgi
            left outer join coimaimp f on f.cod_impianto		= a.cod_impianto 
-           left outer join coimdimp m on m.cod_impianto     = a.cod_impianto
-          inner join coimaimp h on f.cod_impianto = h.cod_impianto_princ
-	   and f.cod_impianto != h.cod_impianto
-     where h.cod_impianto = :cod_impianto
+ -- rom29 left outer join coimdimp m on m.cod_impianto     = a.cod_impianto
+ -- rom29 inner join coimaimp h on f.cod_impianto = h.cod_impianto_princ
+ -- rom29 and f.cod_impianto != h.cod_impianto
+   where f.cod_impianto in ('[join $lista_cod_impianti ',']') -- rom29
+     and f.cod_impianto != :cod_impianto
      and f.flag_tipo_impianto = 'T'
 --     and coalesce(a.flag_sostituito,'') = 'S'
 $where_gend_sost
-and f.stato='A'
+--rom20and f.stato='A'
+       $and_st_imp --rom20
     order by a.gen_prog_est
        </querytext>
     </fullquery>
@@ -3519,11 +3937,13 @@ and f.stato='A'
            inner join coimaimp f      on f.cod_impianto	     = a.cod_impianto 
      where f.cod_impianto != :cod_impianto
        and upper(f.targa)  = upper(:targa)
+       and f.stato not in ('E','F') --rom30 E Respinto F da Validare
 -- 2014-06-10 (Standardizzata personalizzazione di Gorizia)      and a.flag_attivo    = 'S'
        and f.flag_tipo_impianto = 'T'
 --     and coalesce(a.flag_sostituito,'') !='S' --rom11
 $where_gend_sost
-and f.stato='A'
+--rom20and f.stato='A'
+       $and_st_imp --rom20
      order by a.gen_prog_est
        </querytext>
     </fullquery>
@@ -3555,10 +3975,12 @@ and f.stato='A'
            inner join coimaimp f      on f.cod_impianto	     = a.cod_impianto 
      where f.cod_impianto != :cod_impianto
        and upper(f.targa)  = upper(:targa)
+       and f.stato not in ('E','F') --rom30 E Respinto F da Validare
        and f.flag_tipo_impianto = 'T'
 --     and coalesce(a.flag_sostituito,'')   = 'S'
 $where_gend_sost
-and f.stato='A'
+--rom20and f.stato='A'
+       $and_st_imp --rom20
      order by a.gen_prog_est
        </querytext>
     </fullquery>
@@ -3579,7 +4001,7 @@ and f.stato='A'
          , coalesce(b.pec,'') as pec_condu    
       from coimaimp a
          , coimcondu b 
-       where a.cod_impianto = :cod_impianto
+       where a.cod_impianto = :cod_impianto_condu --rom21 messo cod_impianto_condu al posto di cod_impianto
          and b.cod_conduttore = a.cod_conduttore
       </querytext>
     </fullquery>
@@ -3620,7 +4042,8 @@ and f.stato='A'
                                     and d.cod_listino = '0'
                                     and d.data_inizio <= current_date)
             where a.cod_impianto = :cod_impianto_1bis
-              and coalesce(a.pot_utile_nom,a.pot_focolare_nom) >10
+     --rom32  and coalesce(a.pot_utile_nom,a.pot_focolare_nom) >10
+              and coalesce(a.pot_utile_nom,a.pot_focolare_nom) >=10 --rom32
               and flag_attivo = 'S' --rom01
               and f.flag_tipo_impianto !='F'
 	      and f.stato='A'
@@ -3664,7 +4087,8 @@ and f.stato='A'
                                       and d.data_inizio <= current_date)
             where a.cod_impianto = :cod_impianto_1bis
 	      and f.flag_tipo_impianto !='F'
-              and coalesce(a.pot_utile_nom,a.pot_focolare_nom) >10
+     --rom32  and coalesce(a.pot_utile_nom,a.pot_focolare_nom) >10
+              and coalesce(a.pot_utile_nom,a.pot_focolare_nom) >=10 --rom32
               and flag_attivo ='S' --rom01
 	      and f.stato='A'
            ) gen
@@ -3715,8 +4139,8 @@ and f.stato='A'
 		       and coalesce(a.flag_clim_est,'N')          = 'S' then 'Produzione ACS +<br>Climatizzazione invernale +<br>Climatizzazione estiva'
                       when coalesce(a.flag_prod_acqua_calda,'N')  = 'N'
   		       and coalesce(a.flag_clima_invernale,'N')   = 'N'
-		       and coalesce(a.flag_clim_est,'N')          = 'N' then ''
-		      else '' end as tipo_climatizzazione --rom05
+		       and coalesce(a.flag_clim_est,'N')          = 'N' then '&nbsp;'
+		      else '&nbsp;' end as tipo_climatizzazione --rom05
              from coimgend a
   left outer join coimtpco p              --rom04
                on p.cod_tpco = a.cod_tpco --rom04 
@@ -3733,7 +4157,9 @@ and f.stato='A'
                                     and d.data_inizio <= current_date)
             where a.cod_impianto = :cod_impianto_1bis
 	      and f.flag_tipo_impianto = 'F'
-	      and greatest(a.pot_focolare_nom, a.pot_focolare_lib) > 10 --sim06
+   --mic01    and greatest(a.pot_focolare_nom, a.pot_focolare_lib) > 10 --sim06	      
+   --rom32    and greatest(a.pot_focolare_nom, a.pot_focolare_lib) > 12 --mic01
+	      and greatest(a.pot_focolare_nom, a.pot_focolare_lib) >= 12 --rom32
 	      --sim06              and a.pot_focolare_nom >10
               and flag_attivo = 'S' --rom01
 	      and f.stato='A'
@@ -3749,8 +4175,8 @@ and f.stato='A'
        select iter_edit_num(sum(potenza),2) || ' (kW)' as tot_potenza
 	    , importo as tot_importo
 	    , $select_anni_tot_fr --rom14
-	    , coalesce(descr_tpco,'') as tot_descr_tpco --rom04
-	    , coalesce(tipo_climatizzazione,'') as tot_tipo_climatizzazione --rom05
+	    , coalesce(descr_tpco,'&nbsp;') as tot_descr_tpco --rom04
+	    , coalesce(tipo_climatizzazione,'&nbsp;') as tot_tipo_climatizzazione --rom05
 	 from (
            select --rom13 a.pot_focolare_nom as potenza
                   greatest(a.pot_focolare_nom, a.pot_focolare_lib) as potenza --rom13
@@ -3801,7 +4227,9 @@ and f.stato='A'
                                       and d.data_inizio <= current_date)
             where a.cod_impianto = :cod_impianto_1bis
 	      and f.flag_tipo_impianto = 'F'
-              and greatest(a.pot_focolare_nom, a.pot_focolare_lib) > 10 --sim06
+  --mic01     and greatest(a.pot_focolare_nom, a.pot_focolare_lib) > 10 --sim06
+  --rom32     and greatest(a.pot_focolare_nom, a.pot_focolare_lib) > 12 --mic01
+              and greatest(a.pot_focolare_nom, a.pot_focolare_lib) >= 12 --rom32
               --sim06 and a.pot_focolare_nom >10
               and flag_attivo ='S' --rom01
 	      and f.stato='A'
@@ -3823,7 +4251,7 @@ and f.stato='A'
 	             , a.regol_curva_ind_iniz_fabbricante               as fabbricante_sr
 	             , a.regol_curva_ind_iniz_modello                   as modello_sr
 	          from coimaimp a
-	         where a.cod_impianto = :cod_impianto
+	         where a.cod_impianto = :cod_impianto_reg
 		   and a.regol_curva_ind_iniz_num_sr is not null
 		   and a.regol_curva_ind_iniz_flag_sostituito = 'f'
 	         union all
@@ -3855,7 +4283,7 @@ and f.stato='A'
 	             , a.regol_curva_ind_iniz_fabbricante               as fabbricante_sr_sost_comp
 	             , a.regol_curva_ind_iniz_modello                   as modello_sr_sost_comp
 	          from coimaimp a
-	         where a.cod_impianto = :cod_impianto
+	         where a.cod_impianto = :cod_impianto_reg
 		   and a.regol_curva_ind_iniz_num_sr is not null
 		   and a.regol_curva_ind_iniz_flag_sostituito = 't'
 	         union all
@@ -3887,7 +4315,7 @@ and f.stato='A'
      		    , a.regol_valv_ind_iniz_n_vie                     as num_vie_vr
      		    , a.regol_valv_ind_iniz_servo_motore              as servomotore_vr
   		 from coimaimp a
- 		where a.cod_impianto = :cod_impianto
+ 		where a.cod_impianto = :cod_impianto_reg
                   and a.regol_valv_ind_num_vr is not null
 		  and a.regol_valv_ind_flag_sostituito = 'f'
                 union all
@@ -3919,7 +4347,7 @@ and f.stato='A'
      		    , a.regol_valv_ind_iniz_n_vie                     as num_vie_vr_sost_comp
      		    , a.regol_valv_ind_iniz_servo_motore              as servomotore_vr_sost_comp
   		 from coimaimp a
- 		where a.cod_impianto = :cod_impianto
+ 		where a.cod_impianto = :cod_impianto_reg
                   and a.regol_valv_ind_num_vr is not null
 		  and a.regol_valv_ind_flag_sostituito = 't'
                 union all
@@ -4006,15 +4434,19 @@ and f.stato='A'
           when 'D' then 'In edificio crollato/inagibile/sgomberato'
           when 'E' then 'Distaccato dalla rete per motivi di sicurezza'
 	  else '' end as motivazione_disattivo_4_1bis
-	 , f.cod_impianto_est as cod_impianto_est_4_1bis
-    from coimgend a
+	, f.cod_impianto_est as cod_impianto_est_4_1bis
+	, coalesce(i.cognome, '&nbsp;')||' '||coalesce(i.nome, '&nbsp;') as inst_4_1_bis --mat01
+     from coimgend a
+   left outer join coimmanu i  on i.cod_manutentore = a.cod_installatore --mat01
         , coimaimp f 
     where a.cod_impianto = f.cod_impianto
       and f.flag_tipo_impianto = 'R' --rom12
       and upper(f.targa)  = upper(:targa)
+      and f.stato not in ('E','F') --rom30 E Respinto F da Validare
 --      and coalesce(a.flag_sostituito,'') !='S'
 $where_gend_sost
-and f.stato='A'
+--rom20and f.stato='A'
+       $and_st_imp --rom20
     order by a.gen_prog_est   
              </querytext>
     </fullquery>
@@ -4075,15 +4507,19 @@ and f.stato='A'
           when 'D' then 'In edificio crollato/inagibile/sgomberato'
           when 'E' then 'Distaccato dalla rete per motivi di sicurezza'
 	  else '' end as motivazione_disattivo_4_1bis_sost
-	, f.cod_impianto_est as cod_impianto_est_4_1bis_sost
-	from coimgend a
+	  , f.cod_impianto_est as cod_impianto_est_4_1bis_sost
+	  , coalesce(i.cognome, '&nbsp;')||' '||coalesce(i.nome, '&nbsp;') as inst_4_1_bis_sost --mat01
+     from coimgend a
+  left outer join coimmanu i  on i.cod_manutentore = a.cod_installatore --mat01
         , coimaimp f 
     where a.cod_impianto = f.cod_impianto
       and f.flag_tipo_impianto = 'R' --rom12
       and upper(f.targa)  = upper(:targa)
+      and f.stato not in ('E','F') --rom30 E Respinto F da Validare
 --      and a.flag_sostituito ='S'
 $where_gend_sost
-and f.stato='A'
+--rom20and f.stato='A'
+       $and_st_imp --rom20
     order by a.gen_prog_est   
              </querytext>
     </fullquery>
@@ -4130,18 +4566,22 @@ and f.stato='A'
 --	        else '3' end as potenza_maggiore_fr_4_4bis
 ,'2' as potenza_maggiore_fr_4_4bis
 , f.cod_impianto_est as cod_impianto_est_4_4bis
+     , coalesce(i.cognome, '&nbsp;')||' '||coalesce(i.nome, '&nbsp;') as inst_4_4_bis --mat01
       from coimgend a
            left outer join coimcomb b on b.cod_combustibile = a.cod_combustibile
            left outer join coimcost c on c.cod_cost         = a.cod_cost
            left outer join coimtpem d on d.cod_emissione    = a.cod_emissione
            left outer join coimutgi g on g.cod_utgi         = a.cod_utgi
            left outer join coimaimp f on f.cod_impianto     = a.cod_impianto 
-     where a.cod_impianto = f.cod_impianto
+	   left outer join coimmanu i on i.cod_manutentore = a.cod_installatore --mat01
+	   where a.cod_impianto = f.cod_impianto
        and upper(f.targa)  = upper(:targa)	
        and f.flag_tipo_impianto = 'F' 
+       and f.stato not in ('E','F') --rom30 E Respinto F da Validare
 --       and coalesce(a.flag_sostituito,'') !='S' 
 $where_gend_sost
-and f.stato='A'
+--rom20and f.stato='A'
+       $and_st_imp --rom20
      order by a.gen_prog_est
        </querytext>
     </fullquery>
@@ -4185,19 +4625,23 @@ and f.stato='A'
 	 , case when pot_focolare_nom > pot_focolare_lib then '1'
 	        when pot_focolare_nom < pot_focolare_lib then '2'
 		else '3' end as potenza_maggiore_fr_4_4bis_sost
-, f.cod_impianto_est as cod_impianto_est_4_4bis_sost
+		, f.cod_impianto_est as cod_impianto_est_4_4bis_sost
+	, coalesce(i.cognome, '&nbsp;')||' '||coalesce(i.nome, '&nbsp;') as inst_4_4_bis_sost --mat01
       from coimgend a
            left outer join coimcomb b on b.cod_combustibile = a.cod_combustibile
            left outer join coimcost c on c.cod_cost         = a.cod_cost
            left outer join coimtpem d on d.cod_emissione    = a.cod_emissione
            left outer join coimutgi g on g.cod_utgi         = a.cod_utgi
-           left outer join coimaimp f on f.cod_impianto     = a.cod_impianto 
+           left outer join coimaimp f on f.cod_impianto     = a.cod_impianto
+	   left outer join coimmanu i on i.cod_manutentore = a.cod_installatore --mat01
      where a.cod_impianto = f.cod_impianto
        and upper(f.targa)  = upper(:targa)	
        and f.flag_tipo_impianto = 'F' 
+       and f.stato not in ('E','F') --rom30 E Respinto F da Validare
 --       and coalesce(a.flag_sostituito,'') ='S' 
 $where_gend_sost
-and f.stato='A'
+--rom20and f.stato='A'
+       $and_st_imp --rom20
      order by a.gen_prog_est
        </querytext>
     </fullquery>
@@ -4221,7 +4665,7 @@ and f.stato='A'
 	   else ''
 	    end as motivazione_disattivo_te_4_5bis
 	 , case a.rif_uni_10389
- 	   when 'U' then 'In attesa di definizione'
+ 	   when 'U' then 'norma UNI-10389-4' -- rom31 'In attesa di definizione'
 	   when 'A' then 'Altro'
     	   else '' end as rif_uni_10389_te_4_5bis
 	 , a. altro_rif as altro_rif_te_4_5bis
@@ -4230,19 +4674,23 @@ and f.stato='A'
 	 , a.flag_clim_est as flag_clim_est_te_4_5bis
 	 , iter_edit_num(coalesce(pot_focolare_nom, '0.00'),2) as pot_frig_nominale_te_4_5bis
 	 , iter_edit_num(coalesce(pot_focolare_lib, '0.00'),2) as pot_term_nominale_te_4_5bis
-	 , f.cod_impianto_est as cod_impianto_est_4_5bis 
+	 , f.cod_impianto_est as cod_impianto_est_4_5bis
+	 , coalesce(i.cognome, '&nbsp;')||' '||coalesce(i.nome, '&nbsp;') as inst_4_5_bis --mat01
       from coimgend a
            left outer join coimcomb b on b.cod_combustibile = a.cod_combustibile
            left outer join coimcost c on c.cod_cost         = a.cod_cost
            left outer join coimtpem d on d.cod_emissione    = a.cod_emissione
            left outer join coimutgi g on g.cod_utgi         = a.cod_utgi
            left outer join coimaimp f on f.cod_impianto     = a.cod_impianto 
+           left outer join coimmanu i on i.cod_manutentore = a.cod_installatore --mat01
      where a.cod_impianto = f.cod_impianto
        and upper(f.targa)  = upper(:targa)	
        and f.flag_tipo_impianto = 'T' 
+       and f.stato not in ('E','F') --rom30 E Respinto F da Validare
 --       and coalesce(a.flag_sostituito,'') !='S' 
 $where_gend_sost
-and f.stato='A'
+--rom20and f.stato='A'
+       $and_st_imp --rom20
      order by a.gen_prog_est
        </querytext>
     </fullquery>
@@ -4265,7 +4713,7 @@ and f.stato='A'
 	   when 'E' then 'Distaccato dalla rete per motivi di sicurezza'
 	   else '' end as motivazione_disattivo_te_4_5bis_sost
 	 , case a.rif_uni_10389
-	   when 'U' then 'In attesa di definizione'
+	   when 'U' then 'norma UNI-10389-4' -- rom31 'In attesa di definizione'
 	   when 'A' then 'Altro'
 	   else '' end as rif_uni_10389_te_4_5bis_sost
 	 , a. altro_rif as altro_rif_te_4_5bis_sost
@@ -4275,18 +4723,22 @@ and f.stato='A'
 	 , iter_edit_num(coalesce(pot_focolare_nom, '0.00'),2) as pot_frig_nominale_te_4_5bis_sost
 	 , iter_edit_num(coalesce(pot_focolare_lib, '0.00'),2) as pot_term_nominale_te_4_5bis_sost
          , f.cod_impianto_est as cod_impianto_est_4_5bis_sost
+	 , coalesce(i.cognome, '&nbsp;')||' '||coalesce(i.nome, '&nbsp;') as inst_4_5_bis_sost --mat01
       from coimgend a
            left outer join coimcomb b on b.cod_combustibile = a.cod_combustibile
            left outer join coimcost c on c.cod_cost         = a.cod_cost
            left outer join coimtpem d on d.cod_emissione    = a.cod_emissione
            left outer join coimutgi g on g.cod_utgi         = a.cod_utgi
-           left outer join coimaimp f on f.cod_impianto     = a.cod_impianto 
+           left outer join coimaimp f on f.cod_impianto     = a.cod_impianto
+	   left outer join coimmanu i on i.cod_manutentore = a.cod_installatore --mat01
      where a.cod_impianto = f.cod_impianto
        and upper(f.targa)  = upper(:targa)	
+       and f.stato not in ('E','F') --rom30 E Respinto F da Validare
        and f.flag_tipo_impianto = 'T' 
 --       and coalesce(a.flag_sostituito,'') ='S' 
 $where_gend_sost
-and f.stato='A'
+--rom20and f.stato='A'
+       $and_st_imp --rom20
      order by a.gen_prog_est
        </querytext>
     </fullquery>
@@ -4319,18 +4771,22 @@ and f.stato='A'
 	 , a.flag_clim_est as flag_clim_est_co_4_6bis
 	 , f.cod_impianto_est as cod_impianto_est_4_6bis
          , iter_edit_num(coalesce(a.pot_utile_nom,'0.00'),2) as pot_utile_nom_co_4_6bis
+	 , coalesce(i.cognome, '&nbsp;')||' '||coalesce(i.nome, '&nbsp;') as inst_4_6_bis --mat01
       from coimgend a
            left outer join coimcomb b on b.cod_combustibile = a.cod_combustibile
            left outer join coimcost c on c.cod_cost         = a.cod_cost
            left outer join coimtpem d on d.cod_emissione    = a.cod_emissione
            left outer join coimutgi g on g.cod_utgi         = a.cod_utgi
-           left outer join coimaimp f on f.cod_impianto     = a.cod_impianto 
+           left outer join coimaimp f on f.cod_impianto     = a.cod_impianto
+	   left outer join coimmanu i on i.cod_manutentore = a.cod_installatore --mat01
      where a.cod_impianto = f.cod_impianto
        and upper(f.targa)  = upper(:targa)	
        and f.flag_tipo_impianto = 'C' 
+       and f.stato not in ('E','F') --rom30 E Respinto F da Validare
 --       and coalesce(a.flag_sostituito,'') !='S' 
 $where_gend_sost
-and f.stato='A'
+--rom20and f.stato='A'
+       $and_st_imp --rom20
      order by a.gen_prog_est
        </querytext>
     </fullquery>
@@ -4365,18 +4821,22 @@ and f.stato='A'
          , f.cod_impianto_est as cod_impianto_est_te_sost
          , iter_edit_num(coalesce(a.pot_utile_nom,'0.00'),2) as pot_utile_nom_co_4_6bis_sost
 	 , f.cod_impianto_est as cod_impianto_est_4_6bis_sost
+	 , coalesce(i.cognome, '&nbsp;')||' '||coalesce(i.nome, '&nbsp;') as inst_4_6_bis_sost --mat01
 	 from coimgend a
            left outer join coimcomb b on b.cod_combustibile = a.cod_combustibile
            left outer join coimcost c on c.cod_cost         = a.cod_cost
            left outer join coimtpem d on d.cod_emissione    = a.cod_emissione
            left outer join coimutgi g on g.cod_utgi         = a.cod_utgi
-           left outer join coimaimp f on f.cod_impianto     = a.cod_impianto 
+           left outer join coimaimp f on f.cod_impianto     = a.cod_impianto
+	   left outer join coimmanu i on i.cod_manutentore = a.cod_installatore --mat01
      where a.cod_impianto = f.cod_impianto
        and upper(f.targa)  = upper(:targa)	
        and f.flag_tipo_impianto = 'C' 
+       and f.stato not in ('E','F') --rom30 E Respinto F da Validare
 --       and coalesce(a.flag_sostituito,'') ='S' 
 $where_gend_sost
-and f.stato='A'
+--rom20and f.stato='A'
+       $and_st_imp --rom20
        order by a.gen_prog_est
        </querytext>
     </fullquery>

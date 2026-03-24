@@ -1,6 +1,12 @@
 <!--
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    rom03 14/11/2022 Aggiunti i link per schede 14.1 e 14.2 per la gestione dei consumi dei
+    rom03            combustibili e di elettricita'.
+
+    rom02 16/11/2021 Per regione Marche aggiunti link per schede 14.3 e 14.4, Sandro ha detto
+    rom02            che possono essere visti da tutti.
+
     rom01 06/11/2018 Su richiesta delle Marche rinominati diversi titoli.
 
     gab01 17/08/2016 Gestite nuove pagine del libretto (8.1, 9.1, 9.2, 9.3, 9.4 ).
@@ -204,7 +210,52 @@
      <td>@table_result_11;noquote@</td>
   </tr>
   <tr><td>&nbsp;</td></tr>
-  
+
+  <!--rom03 Aggiunti link per schede 14.1 e 14.2-->
+    <tr>
+    <td>
+      <b>Scheda 14.1: Consumo di combustibile</b>
+      <br>@link_aggiungi_14;noquote@
+       </td>
+  </tr>
+  <tr>
+    <td>@table_result_14;noquote@</td>
+  </tr>
+  <tr><td>&nbsp;</td></tr>
+  <tr>
+    <td>
+      <b>Scheda 14.2: Consumo di elettricit&agrave;</b>
+      <br>@link_aggiungi_15;noquote@
+    </td>
+  </tr>
+    <tr>
+      <td>@table_result_15;noquote@</td>
+    </tr>
+  <tr><td>&nbsp;</td></tr>
+
+  <!--rom02 Aggiunti link per schede 14.3 e 14.4-->
+  <tr>
+    <td>
+      <b>Scheda 14.3: Consumo di acqua di reintegro nel circuito dell'impianto termico</b>
+      <br>@link_aggiungi_12;noquote@
+       </td>
+  </tr>
+  <tr>
+    <td>@table_result_12;noquote@</td>
+  </tr>
+  <tr><td>&nbsp;</td></tr>
+  <tr>
+    <td>
+      <b>Scheda 14.4: Consumo di prodotti chimici per il trattamento acqua del circuito dell'impianto termico</b>
+      <br>@link_aggiungi_13;noquote@
+    </td>
+  </tr>
+    <tr>
+      <td>@table_result_13;noquote@</td>
+    </tr>
+  <tr><td>&nbsp;</td></tr>
+
+
 </table>
 
 

@@ -15,6 +15,15 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== ===========================================================================
+    ric01 18/11/2025 Punto 17 MEV regione Marche: gestione terzo numero di protocollo.
+
+    rom02 30/08/2023 Napoli salva gli allegati sul file system cone Palermo e Regione Marche.
+
+    but01 20/06/2023 Aggiunto la classe ah-jquery-date ai campi:data_stampa, data_notifica,
+    but01            data_documento, data_prot_01, data_prot_02.
+
+    rom01 31/01/2022 Palermo salva gli allegati sul file system come Regione Marche.
+
     sim01 07/03/2019 Se presente il path_file visualizzo il file presente sul file system
 
     san01 11/04/2017 Aggiunto gestione inserimento RCEE
@@ -208,22 +217,22 @@ set data_corrente [iter_set_sysdate]
 # Personalizzo la pagina
 set link_list_script {[export_url_vars cod_impianto url_aimp url_list_aimp last_cod_documento cod_acts last_cod_acts caller nome_funz_caller ]&[iter_set_url_vars $extra_par]&nome_funz=[iter_get_nomefunz "coimdocu-list"]}
 set link_list        [subst $link_list_script]
-set titolo           "Documento"
+set titolo           "documento"
 switch $funzione {
-    M {set button_label "Conferma Modifica" 
+    M {set button_label "Conferma modifica" 
 	set page_title   "Modifica $titolo"}
-    D {set button_label "Conferma Cancellazione"
-	set page_title   "Cancellazione $titolo"}
-    I {set button_label "Conferma Inserimento"
-	set page_title   "Inserimento $titolo"}
+    D {set button_label "Conferma cancellazione"
+	set page_title   "Cancella $titolo"}
+    I {set button_label "Conferma inserimento"
+	set page_title   "Inserisci $titolo"}
     V { if {$nome_funz_caller != "docu-ins"} {
 	set button_label "Torna alla lista"
     } else {
-	set button_label "Inserisci Nuovo Documento"
+	set button_label "Inserisci nuovo documento"
     }
-	set page_title   "Visualizzazione $titolo"}
-    C {set button_label "Conferma Cancellazione"
-	set page_title   "Cancellazione allegato $titolo"}
+	set page_title   "Visualizza $titolo"}
+    C {set button_label "Conferma cancellazione"
+	set page_title   "Cancella allegato $titolo"}
 }
 
 switch $nome_funz_caller {
@@ -280,6 +289,10 @@ switch $funzione {
         set disabled_fld \{\}
     }
 }
+set jq_date "";#but01
+if {$funzione in "M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
 
 form create $form_name \
     -html    $onsubmit_cmd
@@ -306,33 +319,33 @@ element create $form_name cod_soggetto \
     -datatype text \
     -html    "size 8 maxlength 8 $readonly_fld {} class form_element" \
     -optional
-
+#but01 Aggiunto la classe ah-jquery-date ai campi:data_stampa, data_notifica, data_documento, data_prot_01, data_prot_02.
 element create $form_name data_stampa \
     -label   "Data stampa" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name data_notifica \
     -label   "Data notifica" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name data_documento \
     -label   "Data documento" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name data_prot_01 \
     -label   "Data prot.1" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name protocollo_01 \
@@ -346,10 +359,25 @@ element create $form_name data_prot_02 \
     -label   "Data prot. 2" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name protocollo_02 \
+    -label   "Protocollo 2" \
+    -widget   text \
+    -datatype text \
+    -html    "size 20 maxlength 20 $readonly_fld {} class form_element" \
+    -optional
+
+#ric01 aggiunta data_prot_03, protocollo_03
+element create $form_name data_prot_03 \
+    -label   "Data prot. 2" \
+    -widget   text \
+    -datatype text \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
+    -optional
+
+element create $form_name protocollo_03 \
     -label   "Protocollo 2" \
     -widget   text \
     -datatype text \
@@ -452,6 +480,9 @@ if {[form is_request $form_name]} {
 	} {
 	    element set_properties $form_name cod_impianto_est -value $cod_impianto_est
 	}
+	element set_properties $form_name data_prot_03   -value $data_prot_03;#ric01
+	element set_properties $form_name protocollo_03  -value $protocollo_03;#ric01
+
     }
 }
 
@@ -468,6 +499,8 @@ if {[form is_valid $form_name]} {
     set protocollo_02  [element::get_value $form_name protocollo_02]
     set flag_notifica  [element::get_value $form_name flag_notifica]
     set data_notifica  [element::get_value $form_name data_notifica]
+    set data_prot_03   [element::get_value $form_name data_prot_03];#ric01
+    set protocollo_03  [element::get_value $form_name protocollo_03];#ric01
     if {$funzione == "I"
 	||  $funzione == "M"
     } {
@@ -582,6 +615,19 @@ if {[form is_valid $form_name]} {
 	    }
         }
 
+	if {![string equal $data_prot_03 ""]} {
+	    set data_prot_03 [iter_check_date $data_prot_03]
+	    if {$data_prot_03 == 0} {
+		element::set_error $form_name data_prot_03 "Data non corretta"
+		incr error_num
+	    } else {
+		if {$data_prot_03 > $current_date} {
+		    element::set_error $form_name data_prot_03  "Data deve essere anteriore alla data odierna"
+		    incr error_num
+		}
+	    }
+	}
+	
 	if {$flag_notifica == "S"} {
 	    if {[string equal $data_notifica ""]} {
                 element::set_error $form_name data_notifica "Inserire Data notifica"
@@ -749,9 +795,12 @@ if {[form is_valid $form_name]} {
 		} {
 
 		    set contenuto_tmpfile  ${contenuto.tmpfile}
+		    exec chmod 775 $contenuto_tmpfile
 		    set tipo_contenuto     [ns_guesstype $contenuto]
 
-		    if {$coimtgen(regione) eq "MARCHE"} {#sim01 if e suo contenuto
+		    #rom01 Aggiuna comdizione per Palermo
+		    #rom02 Modificata condizione di rom01 per Napoli
+		    if {$coimtgen(regione) eq "MARCHE" || $coimtgen(ente) in [list "PPA" "PNA"]} {#sim01 if e suo contenuto
 
 			set nome_file_originale  [lindex $contenuto 0]			
 

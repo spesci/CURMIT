@@ -19,7 +19,7 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
-
+    but01 19/07/2023 Aggiunta class"link-button-2" nel actions"Selez"
 } {
    {last_concat_key   ""}
    {f_cod_conduttore   ""}
@@ -101,7 +101,7 @@ if {$caller == "index" && [string equal $flag_ins_manu ""]} {
     set link_aggiungi "<a href=\"$gest_prog?funzione=I&[export_url_vars caller nome_funz last_concat_key extra_par]\">Aggiungi</a>"
     set link    "\[export_url_vars cod_conduttore nome_funz last_concat_key extra_par\]"
     set actions "
-    <td nowrap><a href=\"$gest_prog?funzione=V&$link\">Selez.</a></td>"
+    <td nowrap><a href=\"$gest_prog?funzione=V&$link\" class=\" link-button-2\">Selez.</a></td>"
     set js_function ""
 } else {
     if {$caller == "index"} {

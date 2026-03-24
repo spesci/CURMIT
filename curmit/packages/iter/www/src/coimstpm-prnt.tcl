@@ -780,19 +780,19 @@ if {[form is_valid $form_name]} {
            <table width=100%>
               <tr>
                  <td width=60%>&nbsp;</td>
-                 <td width=40%>Spett.le/Al Sig.</td>
+                 <td width=40%>Egr.Sig.re/ra</td>
               </tr>
               <tr>
                  <td>&nbsp;</td>
-                 <td>$nome_resp</td>
+                 <td><b>$nome_resp</b></td>
               </tr>
               <tr>
                  <td>&nbsp;</td>
-                 <td>$indirizzo_resp</td>
+                 <td><b>$indirizzo_resp</b></td>
               </tr>
               <tr>
-                 <td>&nbsp;</td>
-                 <td>$cap_resp $localita_resp $comune_resp ($provincia_resp)</td>
+                 <td>Is.-Fab.-Sc.-P.-Int.-</td>
+                 <td><b>$cap_resp $localita_resp $comune_resp ($provincia_resp)</b></td>
            </table>"
 
     set firma_dirig "

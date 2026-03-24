@@ -62,7 +62,8 @@
                      ,:cod_potenza
                      ,:potenza
                      --sim04 ,:potenza_utile
-                     ,:potenza_utile_freddo
+                     --rom26 ,:potenza_utile_freddo
+		     ,:potenza_utile_freddo_aimp --rom26
                      ,:note
                      ,:stato
                      ,'N'
@@ -369,7 +370,8 @@
            select coalesce(progressivo,0) + 1 as progressivo
 	   --sim01 coalesce(lpad((progressivo + 1), 6, '0'), '000001') as progressivo
                 , cod_istat
-             from coimcomu
+                , id_belfiore -- rom24 12/03/2024
+	     from coimcomu
             where cod_comune = :cod_comune
        </querytext>
     </fullquery>

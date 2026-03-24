@@ -1,6 +1,8 @@
 <!--
     USER  DATA       MODIFICHE
     ===== ========== =================================================================================
+    but02 23/07/2024  Aggiunto pop-up bonifica campagna per gli amministratori.
+    
     gac01 24/01/2019 Su richiesta di Sandro del 24/01/2019 faccio vedere il campo flag_pagato
     gac01            anche in Visualizzazione.
 
@@ -217,6 +219,9 @@
          <formerror  id="cod_cind"><br>
          <span class="errori">@formerror.cod_cind;noquote@</span>
          </formerror>
+       </td>
+       <td><if @funzione@ eq "V" and @id_ruolo@ eq "admin"><a href="#" align=left onclick="javascript:window.open('@modif_cind@', 'help', 'scrollbars=yes, esizable=yes, width=600, height=300').moveTo(110,140)"><b>
+Bonifica</b></a></if><!--but02 aggiunto pop-up modifica campagna-->
        </td>
     </if>
 

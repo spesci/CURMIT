@@ -352,6 +352,7 @@
            select coalesce(progressivo,0) + 1 as progressivo
                 --sim01 lpad((coalesce(progressivo,0) + 1), $lun_progressivo, '0') as progressivo
                 , cod_istat
+		, id_belfiore  -- rom19 12/03/2024
              from coimcomu
             where cod_comune = :cod_comune
        </querytext>

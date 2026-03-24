@@ -11,6 +11,14 @@ ad_page_contract {
     @param nome_funz_caller identifica l'entrata di menu, serve per la 
     navigazione con navigation bar
     @cvs-id          coimscar-docu-gest-est.tcl
+
+    USER  DATA       MODIFICHE
+    ===== ========== ===========================================================================
+    rom02 10/10/2024 Aggiunte colonne cod_fiscale e data_nas del soggetto responsabile su richiesta
+    rom02            di Palermo Energia.
+
+    rom01 28/09/2022 Aggiunta colonna pec del soggetto responsabile su richiesta di Paravan di Ucit.
+
 } {
     {funzione        "I"}
     {caller      "index"}
@@ -57,12 +65,15 @@ fconfigure $file_id -encoding iso8859-1
 set     head_cols ""
 lappend head_cols "DENOMINAZIONE"
 lappend head_cols "COMPLEMENTO_ALLA_DENOMINAZIONE"
+lappend head_cols "DATA NAS";#rom02
+lappend head_cols "CODFIS"  ;#rom02
 lappend head_cols "INDIRIZZO"
 lappend head_cols "CIVICO"
 lappend head_cols "INDIRIZZO2"
 lappend head_cols "CAP"
 lappend head_cols "CITTA"
 lappend head_cols "PROVINCIA"
+lappend head_cols "PEC";#rom01
 lappend head_cols "CONTRID"
 lappend head_cols "DTPIAN"
 lappend head_cols "ORAPIAN"
@@ -79,12 +90,15 @@ lappend head_cols "PROTOCOLLO"
 set     file_cols ""
 lappend file_cols "nom_resp"
 lappend file_cols "campo"
+lappend file_cols "data_nas_resp";#rom02
+lappend file_cols "cod_fiscale_resp";#rom02
 lappend file_cols "indiresp"
 lappend file_cols "campo"
 lappend file_cols "campo"
 lappend file_cols "capresp"
 lappend file_cols "locaresp"
 lappend file_cols "provresp"
+lappend file_cols "pec_resp";#rom01
 lappend file_cols "cod_inco"
 lappend file_cols "data_verifica"
 lappend file_cols "ora_verifica"

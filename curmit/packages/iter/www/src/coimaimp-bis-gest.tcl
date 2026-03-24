@@ -14,6 +14,39 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== ===========================================================================
+    mat02 23/09/2025 Impostato readonly il campo stato per i manutentori
+
+    mat01 08/04/2025 Corretto problema sul refresh della pagina riscontrato dopo aggiornamento a
+    mat01            OpenACS 5.10.1
+
+    rom19 07/06/2023 MEV "Impianti condominiali con pompa di calore": Resi visibili i campi Unita'
+    rom19            immobiliari servite e Tipologia impianto.
+
+    rom18 19/05/2023 Gestito con if il mittente della mail per la Provincia di Fermo.
+
+    rom17 25/05/2022 Modificato messaggio per i terzi responsabili per problemi con il patentino.
+
+    rom16 31/03/2022 Su richiesta di Giuliodori con mail "MEV rilasciata in produzione." del 28/03/2022
+    rom16            vado a modificare/implementare l'intervento di rom15 per la MEV Stato impianto "Rottamato".
+    rom16            Se sto riattvando l'impianto il campo data_rottamaz va lasciato vuoto anche se non
+    rom16            sono un manutentore.
+    
+    rom15 18/03/2022 Manutenzione evolutiva richiesta da regione Marche.
+    rom15            25.  Stato impianto "Rottamato" in scheda 1.bis:
+    rom15            Se l'impianto Attivo viene messo in uno stato diverso tutti i generatori attivi
+    rom15            vanno disattivati (Non sono compresi i stati Da Validare e Da Accatastare).
+    rom15            Se l'impianto Non Attivo viene riattivato anche i generatori disattivi vanno
+    rom15            riattivati (vanno esclusi quelli sostituiti).
+
+    rom14 10/03/2022 Manutenzione evolutiva richiesta da regione Marche.
+    rom14            Punto 4. Allineamento responsabile su impianti con la stessa targa.
+    rom14            4.1 - la modifica di un responsabile dell'impianto sara' effettuata anche su
+    rom14            tutti gli impianti collegati.
+    rom14            4.2 - Contestualmente sar√† inviata un‚Äôemail all‚Äôente e ai manutentori interessati.
+
+    rom13 13/01/2021 Su segnalazione di Sandro e Regione Marche il pod e' sempre obbligatorio
+    rom13            se il combustibile e' GPL o GNL.
+
     rom12 21/06/2021 Corretto errore nella query che tira su i campi per l'invio mail in caso di
     rom12            modifiche al responsabile per Regione Marche: se sull'impianto c'era solo
     rom12            un installatore andava in errore.
@@ -51,7 +84,7 @@ ad_page_contract {
     rom06            sia sempre obbligatorio.
 
     rom05 11/01/2019 Messi i stessi controlli su POD e PDR che si fanno all'inserimento dell'impianto
-    rom05            Tolta obbligatoriet‡ sul campo Tipologia impianto per il freddo.
+    rom05            Tolta obbligatoriet√† sul campo Tipologia impianto per il freddo.
     
     gac02 18/12/2018 Aggiunto campi data_installaz e anno_costruzione
 
@@ -65,7 +98,7 @@ ad_page_contract {
 
     gac01 29/06/2018 Modificata label
 
-    rom01 28/05/2018 Nella combo 'Tipologia impianto' su richiesta di Sandro do la possibilit‡ di 
+    rom01 28/05/2018 Nella combo 'Tipologia impianto' su richiesta di Sandro do la possibilit√† di 
     rom01            scegliere solo 'autonomo' e 'centralizzato'
 
 } {
@@ -82,12 +115,13 @@ ad_page_contract {
     {flag_assegnazione ""}
     {conferma_inco     ""}
     {cod_cittadino     ""}
+    {is_warning_p      "f"}
+    {is_resp_da_agg    "f"}
 } -properties {
     page_title:onevalue
     context_bar:onevalue
     form_name:onevalue
 }
-
 
 # funzione = C --> copy
 # funzione = A --> Assegnazione
@@ -180,16 +214,16 @@ if {[db_0or1row q "select 1
 
 
 set classe           "func-menu"
-set titolo           "Dati Generali"
+set titolo           "dati generali"
 switch $funzione {
-    M {set button_label "Conferma Modifica" 
+    M {set button_label "Conferma modifica" 
 	set page_title   "Modifica $titolo"}
-    D {set button_label "Conferma Cancellazione"
-	set page_title   "Cancellazione $titolo"}
-    I {set button_label "Conferma Inserimento"
-	set page_title   "Inserimento $titolo"}
+    D {set button_label "Conferma cancellazione"
+	set page_title   "Cancella $titolo"}
+    I {set button_label "Conferma inserimento"
+	set page_title   "Inserisci $titolo"}
     V {set button_label "Torna alla lista"
-	set page_title   "Visualizzazione $titolo"}
+	set page_title   "Visualizza $titolo"}
 }
 
 if {$caller == "index"} {
@@ -467,6 +501,10 @@ element create $form_name extra_par          -widget hidden -datatype text -opti
 element create $form_name data_fin_valid     -widget hidden -datatype text -optional
 element create $form_name submit             -widget submit -datatype text -label "$button_label" -html "class form_submit"
 element create $form_name last_cod_impianto  -widget hidden -datatype text -optional
+element create $form_name is_warning_p       -widget hidden -datatype text -optional;#rom14
+element set_properties $form_name is_warning_p -value $is_warning_p;#rom14
+element create $form_name is_resp_da_agg     -widget hidden -datatype text -optional;#rom14
+element set_properties $form_name is_resp_da_agg -value $is_resp_da_agg;#rom14
 
 if {$funzione != "M" && $funzione != "D"} {
     element create $form_name data_ini_valid -widget hidden -datatype text -optional
@@ -576,12 +614,12 @@ element create $form_name cod_tpim \
     -options [iter_selbox_from_table_wherec coimtpim cod_tpim  descr_tpim  "cod_tpim" "where cod_tpim in ('A','C')"]
 
 element create $form_name unita_immobiliari_servite \
-    -label   "Unit‡ immobiliari servite" \
+    -label   "Unit√† immobiliari servite" \
     -widget   select \
     -datatype text \
     -html    "$disabled_fld {} class form_element" \
     -optional \
-    -options {{{} {}} {Unica U} {"Pi˘ unit‡" "P"}}
+    -options {{{} {}} {Unica U} {"Pi√π unit√†" "P"}}
 
 element create $form_name nome_condu \
     -label   "Nome" \
@@ -604,7 +642,7 @@ element create $form_name pres_certificazione \
     -datatype text \
     -html    "$disabled_fld {} class form_element" \
     -optional \
-    -options {{{} {}} {SÏ S} {No N}}
+    -options {{{} {}} {S√¨ S} {No N}}
 #rom03
 element create $form_name certificazione \
     -label   "Certificazione" \
@@ -785,13 +823,34 @@ if { ![string equal $cod_manutentore ""] && ($currentscandate > $expireddate) } 
     }
 }
 
-element create $form_name stato \
-    -label   "stato" \
-    -widget   select \
-    -datatype text \
-    -html    "size 1 maxlength 1 $disabled_fld {} class form_element" \
-    -optional \
-    -options $newList
+element create $form_name stato_db -widget hidden -datatype text -optional;#rom16
+
+set disabled_fld_stato $disabled_fld ;#mat02
+if {$cod_manutentore ne ""} { #mat02 aggiunta if e contenuto
+    set disabled_fld_stato "disabled"
+}
+
+if {[iter_check_uten_manu $id_utente] ne ""} {#mat02 Aggiunta if e contenuto
+    element create $form_name stato_edit \
+	-label   "stato" \
+	-widget   text \
+	-datatype text \
+	-html    "size 30 maxlength 100 disabled {} class form_element" \
+	-optional \
+
+    element create $form_name stato -widget hidden -datatype text -optional
+} else {#mat 02 Aggiunta else ma non il contenuto
+    element create $form_name stato \
+	-label   "stato" \
+	-widget   select \
+	-datatype text \
+	-html    "size 1 maxlength 1 $disabled_fld {} class form_element" \
+	-optional \
+	-options $newList
+    
+    element create $form_name stato_edit -widget hidden -datatype text -optional
+}
+    
 
 # fine inizializzazione drop down
 element create $form_name flag_conferma        -widget hidden -datatype text -optional;#rom05
@@ -952,6 +1011,7 @@ rzo responsabile>Terzo responsabile</a>"
     element set_properties $form_name url_aimp          -value $url_aimp
     element set_properties $form_name url_list_aimp     -value $url_list_aimp
     element set_properties $form_name flag_conferma    -value "s";#rom05
+    
     if {$funzione == "I"} {
 	# TODO: settare eventuali default!!
 
@@ -1020,6 +1080,9 @@ rzo responsabile>Terzo responsabile</a>"
 	}
 	element set_properties $form_name data_rottamaz    -value $data_rottamaz
 	element set_properties $form_name stato            -value $stato
+	set stato_edit_db [db_string q "select descr_imst from coimimst where cod_imst=:stato" -default ""];#mat02
+	element set_properties $form_name stato_edit       -value $stato_edit_db;#mat02
+	element set_properties $form_name stato_db         -value $stato_db;#rom16
         element set_properties $form_name data_attivaz     -value $data_attivaz
 	
     }
@@ -1075,14 +1138,15 @@ if {[form is_valid $form_name]} {
     set data_variaz        [element::get_value $form_name data_variaz]
     set data_installaz     [element::get_value $form_name data_installaz];#gac02
     set anno_costruzione   [element::get_value $form_name anno_costruzione];#gac02
-    
+    set is_warning_p     [string trim [element::get_value $form_name is_warning_p]];#rom14
+    set is_resp_da_agg   [string trim [element::get_value $form_name is_resp_da_agg]];#rom14
     if {[db_0or1row sel_aimp_1_6 ""] == 0} {
         set flag_dichiarato "S"
     }
 
     # controlli standard su numeri e date, per Ins ed Upd
     set error_num 0
-
+    
     if {$funzione == "I" || $funzione == "M"} {
         #routine generica per controllo codice soggetto
         set check_cod_citt {
@@ -1195,7 +1259,7 @@ if {[form is_valid $form_name]} {
 	    incr error_num
 	}
 
-	#sim02 devo settarlo a vuoto perchË in caso di annullamento il programma salta i controlli ed andava in errore
+	#sim02 devo settarlo a vuoto perch√® in caso di annullamento il programma salta i controlli ed andava in errore
 	set cod_responsabile "";#sim02
 
         #congruenza cod_resp con rispettivo codice
@@ -1211,7 +1275,8 @@ if {[form is_valid $form_name]} {
                                         where cod_manutentore = :cod_manutentore
                                           and patentino != 't'"]
 		    && 	$potenza_utile > 232} {#rom07 aggiunta if e contenuto, aggiunta else ma non contenuto
-			element::set_error $form_name cognome_terzi "Impossibile inserire come terzo responsabile un manutentore senza patentino se l'impianto ha potenza nominale utile > 232 kW $potenza_utile"
+			#rom17element::set_error $form_name cognome_terzi "Impossibile inserire come terzo responsabile un manutentore senza patentino se l'impianto ha potenza nominale utile > 232 kW $potenza_utile"
+			element::set_error $form_name cognome_terzi "Impossibile inserire come terzo responsabile un manutentore senza patentino<br>se l'impianto ha potenza nominale utile > 232 kW [iter_edit_num $potenza_utile 2].<br>Per informazioni, risoluzioni di problemi contattare l'ente/soggetto esecutore.";#rom17
 			incr error_num
 		    } else {
 			set cod_responsabile $cod_terzi
@@ -1303,8 +1368,8 @@ if {[form is_valid $form_name]} {
             }
         }
 
-        #non Ë possibile storicizzare modifiche con data_validit‡ inferiore
-        # a modifiche gi‡ storicizzate
+        #non √® possibile storicizzare modifiche con data_validit√† inferiore
+        # a modifiche gi√† storicizzate
         if {![string equal $data_ini_valid ""]} {
             db_1row sel_max_data ""
             if {$data_ini_valid <= $data_max_valid} {
@@ -1321,7 +1386,10 @@ if {[form is_valid $form_name]} {
         }
     }
     set stato            [string trim [element::get_value $form_name stato]];#sim02
-
+    set stato_db         [string trim [element::get_value $form_name stato_db]];#rom16
+    set stato_edit_db [db_string q "select descr_imst from coimimst where cod_imst=:stato_db" -default ""];#mat02
+    element set_properties $form_name stato_edit       -value $stato_edit_db                              ;#mat02
+    set stato_edit       [string trim [element::get_value $form_name stato_edit]]                         ;#mat02
     if {[db_0or1row q "select 1
                          from coimaimp
                         where cod_impianto = :cod_impianto
@@ -1331,6 +1399,51 @@ if {[form is_valid $form_name]} {
 	set error_num 0
     }
 
+    if {$error_num == 0 &&
+	[db_0or1row q "select 1
+                         from coimaimp
+                        where cod_impianto      = :cod_impianto
+                          and (flag_resp       != :flag_responsabile
+                           or cod_responsabile != :cod_responsabile)
+                        limit 1"]} {#rom14 Aggiunta if e suo contenuto
+
+	if {$is_warning_p eq "f" &&
+	    [db_0or1row q "select count(*)
+                             from coimaimp
+                            where upper(targa)  = upper(:targa)
+                           having count(*) > 1"]} {
+	    if {$flag_responsabile eq "T" ||
+		[db_0or1row q "select 1
+                                 from coimaimp
+                                where upper(targa)  = upper(:targa)
+                                  and cod_impianto != :cod_impianto
+                                  and upper(stato)  = 'A'
+                                  and flag_resp     = 'T'
+                                limit 1"]} {
+		
+		# Se sto modificando il responsabile dell'impianto mettendo un terzo responsabile non devo allineare automaticamente
+		# i responsabili degli altri impianti con la stessa targa ma faccio uscire un warning di avvertimento.
+		element::set_error $form_name flag_responsabile "ATTENZIONE: il responsabile d'impianto non coincide con quello degli impianti gi&agrave; a catasto con il medesimo codice targa: prima di confermare il dato, controlla se il responsabile da te indicato per questo impianto &egrave; corretto."
+		incr error_num
+		set is_resp_da_agg "f"
+
+	    } else {
+		
+		# Faccio uscire un warning anche quando devo allineare i responsabili degli altri impianti con la stessa.
+		element::set_error $form_name flag_responsabile "ATTENZIONE: il responsabile d'impianto non coincide con quello degli impianti gi&agrave; a catasto con il medesimo codice targa: sei sicuro del dato inserito? Se confermi l'inserimento, questo responsabile verr&agrave; associato anche agli impianti con lo stesso codice targa."
+		incr error_num
+		set is_resp_da_agg "t"
+		
+	    }
+	
+	    set is_warning_p "t"	
+	} else {
+	    set is_warning_p "f"
+	}
+    }
+    element set_properties $form_name is_warning_p   -value $is_warning_p
+    element set_properties $form_name is_resp_da_agg -value $is_resp_da_agg 
+    
     #sim02 aggiunto condizione su stato impianto
     if {$error_num > 0 && !($stato ne "A" && [string equal $cod_manutentore ""])} {
 #	[template::form::get_errors $form_name]
@@ -1344,7 +1457,7 @@ if {[form is_valid $form_name]} {
     if {$funzione == "M" || $funzione == "D"} {
         #leggo il record originale(prima delle modifiche)dalla tabella coimaimp
         if {![db_0or1row sel_aimp_db {}] == 0} {
-            # per ogni campo del soggetto che Ë stato modificato rispetto al
+            # per ogni campo del soggetto che √® stato modificato rispetto al
             # record originale (tranne il caso in cui l'originale fosse = ""),
             # viene storicizzato il record pre-modifica.
             set indice 1
@@ -1426,7 +1539,7 @@ if {[form is_valid $form_name]} {
             if {$coimtgen(regione) eq "MARCHE"} {#rom02 if e contenuto
 
                 set cod_manutentore [iter_check_uten_manu $id_utente]
-                if {$cod_manutentore ne ""} {
+                #rom14if {$cod_manutentore ne ""} {}
 		    set cod_propr_new         $cod_proprietario
 		    set cod_occu_new          $cod_occupante
 		    set cod_ammi_new          $cod_amministratore
@@ -1462,7 +1575,7 @@ if {[form is_valid $form_name]} {
                                     , coalesce(d.nome,'')               as nome_amm_old
                                     , coalesce(e.cognome,'')            as cognome_terzo_old
                                     , coalesce(e.nome,'')               as nome_terzo_old
-                       --             , coalesce(f.cognome,'')            as cognome_inte_old
+                               --   , coalesce(f.cognome,'')            as cognome_inte_old
                                     , coalesce(f.nome,'')               as nome_inte_old
                                     , case a.flag_resp
                                       when 'P' then 'il Proprietario'
@@ -1484,6 +1597,7 @@ if {[form is_valid $form_name]} {
                                                             and a.cod_installatore = :cod_manutentore) --rom12
                                 where a.cod_impianto    = :cod_impianto
                                 --rom12  and a.cod_manutentore = m.cod_manutentore"
+		if {$cod_manutentore ne ""} {#rom14 Aggiunta if ma non il suo contenuto
 		    set testo_mail ""
 		    if {$cod_inte_old     eq $cod_inte_new
 			&& $cod_propr_old eq $cod_propr_new
@@ -1495,9 +1609,24 @@ if {[form is_valid $form_name]} {
 			set invio_mail "N"
 		    } else {
 			set invio_mail "S"
+			
+			if {(($flag_resp_old eq "" && $flag_resp_new ne "") ||
+			     ($flag_resp_old ne "" && $flag_resp_old ne $flag_resp_new))
+			    && $flag_resp_new ne "T"} {#rom14 Aggiunta if e suo contenuto:
 
-			append testo_mail "ATTENZIONE: il Manutentore  $cognome_manutentore $nome_manutentore con codice $cod_manutentore ha modificato la \"Scheda 1.6: Soggetti che operano sull'impianto\" dell'impianto con codice $codice_impianto.
+			    set ls_cod_imp_est [db_list q "select cod_impianto_est
+                                                             from coimaimp
+                                                            where upper(targa)  = upper(:targa)
+                                                              and upper(stato)  = 'A'"]
+			    
+			    append testo_mail "ATTENZIONE: il Manutentore  $cognome_manutentore $nome_manutentore con codice $cod_manutentore ha modificato il responsabile delle \"Scheda 1.6: Soggetti che operano sull'impianto\" degli impianti $ls_cod_imp_est associati alla Targa $targa
 "
+			} else {#rom14 Aggiunta else ma non il suo contenuto
+
+			    append testo_mail "ATTENZIONE: il Manutentore  $cognome_manutentore $nome_manutentore con codice $cod_manutentore ha modificato la \"Scheda 1.6: Soggetti che operano sull'impianto\" dell'impianto con codice $codice_impianto.
+"
+			};#rom14
+
 			if {($flag_resp_old eq "") && ($flag_resp_new ne "")} {
 			    switch $flag_resp_new {
 				"P" { append testo_mail "E' stato messo come Responsabile il Proprietario $cognome_prop_new $nome_prop_new.
@@ -1512,7 +1641,7 @@ if {[form is_valid $form_name]} {
 				"A" { append testo_mail "E' stato messo come Responsabile l'Amministratore $cognome_amm_new $nome_amm_new.
 "
 				}
-				"I" {#Intestatario Ë stato tolto dalle options del responsabile; non aggiungo niente al messaggio della mail 
+				"I" {#Intestatario √® stato tolto dalle options del responsabile; non aggiungo niente al messaggio della mail 
 				    append testo_mail ""
 				}
 			    }
@@ -1540,29 +1669,29 @@ if {[form is_valid $form_name]} {
 
 			if {($flag_resp_old ne "") && ($flag_resp_old ne $flag_resp_new)} {
                             switch $flag_resp_new {
-                                "P" { append testo_mail "Il responsabile dell'Impianto non Ë pi˘ $edit_flag_resp_old ma il Proprietario $cognome_prop_new $nome_prop_new.
+                                "P" { append testo_mail "Il responsabile dell'Impianto non √® pi√π $edit_flag_resp_old ma il Proprietario $cognome_prop_new $nome_prop_new.
 "
                                 }
-                                "T" { append testo_mail "Il responsabile dell'Impianto non Ë pi˘ $edit_flag_resp_old ma il Terzo responsabile $cognome_terzo_new $nome_terzo_new.
+                                "T" { append testo_mail "Il responsabile dell'Impianto non √® pi√π $edit_flag_resp_old ma il Terzo responsabile $cognome_terzo_new $nome_terzo_new.
 "
                                 }
-                                "O" { append testo_mail "Il responsabile dell'Impianto non Ë pi˘ $edit_flag_resp_old ma l'Occupante $cognome_occ_new $nome_occ_new.
+                                "O" { append testo_mail "Il responsabile dell'Impianto non √® pi√π $edit_flag_resp_old ma l'Occupante $cognome_occ_new $nome_occ_new.
 "
                                 }
-                                "A" { append testo_mail "Il responsabile dell'Impianto non Ë pi˘ $edit_flag_resp_old ma l'Amministratore $cognome_amm_new $nome_amm_new.
+                                "A" { append testo_mail "Il responsabile dell'Impianto non √® pi√π $edit_flag_resp_old ma l'Amministratore $cognome_amm_new $nome_amm_new.
 "
                                 }
-                                "I" {#Intestatario Ë stato tolto dalle options del responsabile; non aggiungo niente al messaggio della mail
+                                "I" {#Intestatario √® stato tolto dalle options del responsabile; non aggiungo niente al messaggio della mail
                                     append testo_mail ""
                                 }
                             }
                         }
 #			if {($cod_inte_old ne "") && ($cod_inte_old ne $cod_inte_new)} {
 #			    if {$cod_inte_new eq ""} {
-#				append testo_mail "L'Intestatario contratto $cognome_inte_old $nome_inte_old Ë stato rimosso.
+#				append testo_mail "L'Intestatario contratto $cognome_inte_old $nome_inte_old √® stato rimosso.
 #"
 #			    } else {
-#				append testo_mail "Il vecchio Intestatario contratto $cognome_inte_old $nome_inte_old Ë stato cambiato con $cognome_inte_new $nome_inte_new.
+#				append testo_mail "Il vecchio Intestatario contratto $cognome_inte_old $nome_inte_old √® stato cambiato con $cognome_inte_new $nome_inte_new.
 #"
 #			    }
 #			}
@@ -1570,38 +1699,38 @@ if {[form is_valid $form_name]} {
 			    
 			    if {$cod_propr_new eq ""} {
 
-				append testo_mail "Il Proprietario $cognome_prop_old $nome_prop_old Ë stato rimosso.
+				append testo_mail "Il Proprietario $cognome_prop_old $nome_prop_old √® stato rimosso.
 "
 			    } else {
-				append testo_mail "Il vecchio Proprietario $cognome_prop_old $nome_prop_old Ë stato cambiato con $cognome_prop_new $nome_prop_new.
+				append testo_mail "Il vecchio Proprietario $cognome_prop_old $nome_prop_old √® stato cambiato con $cognome_prop_new $nome_prop_new.
 "
 			    }
 			}
 			if {($cod_occu_old ne "") && ($cod_occu_old ne $cod_occu_new)} {
 			    if {$cod_occu_new eq ""} {
-				append testo_mail "L'Occupante $cognome_occ_old $nome_occ_old Ë stato rimosso.
+				append testo_mail "L'Occupante $cognome_occ_old $nome_occ_old √® stato rimosso.
 "
                             } else {
-				append testo_mail "Il vecchio Occupante $cognome_occ_old $nome_occ_old Ë stato cambiato con $cognome_occ_new $nome_occ_new.
+				append testo_mail "Il vecchio Occupante $cognome_occ_old $nome_occ_old √® stato cambiato con $cognome_occ_new $nome_occ_new.
 "
 			    }
 			}
 			if {($cod_ammi_old ne "") && ($cod_ammi_old ne $cod_ammi_new)} {
 			    if {$cod_ammi_new eq ""} {
-				append testo_mail "L'Amministratore $cognome_amm_old $nome_amm_old Ë stato rimosso.
+				append testo_mail "L'Amministratore $cognome_amm_old $nome_amm_old √® stato rimosso.
 "
                             } else {
-				append testo_mail "Il vecchio Amministratore $cognome_amm_old $nome_amm_old Ë stato cambiato con $cognome_amm_new $nome_amm_new.
+				append testo_mail "Il vecchio Amministratore $cognome_amm_old $nome_amm_old √® stato cambiato con $cognome_amm_new $nome_amm_new.
 "
 			    }
 			}
 			if {($flag_resp_old ne $flag_resp_new) && $flag_resp_old eq "T"} {
-			    append testo_mail "Il Terzo responsabile $cognome_terzo_old $nome_terzo_old Ë stato rimosso.
+			    append testo_mail "Il Terzo responsabile $cognome_terzo_old $nome_terzo_old √® stato rimosso.
 "
 			}
 			if {($flag_resp_old eq $flag_resp_new) &&  
 			    ($cod_resp_old ne "") && ($cod_resp_old ne $cod_resp_new) && $flag_resp_old eq "T"} {
-			    append testo_mail "Il vecchio Terzo responsabile $cognome_terzo_old $nome_terzo_old Ë stato cambiato con $cognome_terzo_new $nome_terzo_new.
+			    append testo_mail "Il vecchio Terzo responsabile $cognome_terzo_old $nome_terzo_old √® stato cambiato con $cognome_terzo_new $nome_terzo_new.
 "
 			}
 			
@@ -1623,8 +1752,112 @@ if {[form is_valid $form_name]} {
 		    }
                 }
             };#rom02
-	    
+
 	    set dml_sql [db_map upd_aimp_1_6]
+
+	    if {$cod_resp_old ne $cod_resp_new && $is_resp_da_agg eq "t"} {#rom14 Aggiunta if e suo contenuto
+		
+		set testo_mail_imp_coll_manu ""
+
+		switch $flag_resp_new {
+		    "P" {
+			set resp_da_agg "  cod_proprietario = :cod_resp_new
+                                         , cod_responsabile = :cod_resp_new"
+			append testo_mail_imp_coll_manu "\n Il responsabile dell'Impianto non √® pi√π $edit_flag_resp_old ma il Proprietario $cognome_prop_new $nome_prop_new."
+		    }
+		    "T" {
+			# Giuliodori e Basili hanno detto per mail che i terzi responsabili
+			# possono essere diversi per ogni singolo impianto anche se hanno la
+			# stessa targa, quindi non devo fare niente.
+			
+			#set resp_da_agg "  cod_responsabile = :cod_resp_new"
+			append testo_mail_imp_coll_manu ""
+		    }
+		    "O" {
+			set resp_da_agg "  cod_occupante    = :cod_resp_new
+                                         , cod_responsabile = :cod_resp_new"
+			append testo_mail_imp_coll_manu "\n Il responsabile dell'Impianto non √® pi√π $edit_flag_resp_old ma l'Occupante $cognome_occ_new $nome_occ_new."
+		    }
+		    "A" {
+			set resp_da_agg "  cod_amministratore = :cod_resp_new
+                                         , cod_responsabile   = :cod_resp_new"
+			append testo_mail_imp_coll_manu "\n Il responsabile dell'Impianto non √® pi√π $edit_flag_resp_old ma l'Amministratore $cognome_amm_new $nome_amm_new."
+		    }
+		    "I" {#Intestatario √® stato tolto dalle options del responsabile; non aggiungo niente al messaggio della mail
+			set resp_da_agg ""
+			append testo_mail_imp_coll_manu ""
+		    }
+		}
+
+	
+		# Estraggo gli altri impianti collegati alla stessa targa dove andro' a modificare il responsabile.
+		set lst_cod_imp_coll [db_list_of_lists q "select cod_impianto
+                                                               , cod_impianto_est
+                                                            from coimaimp
+                                                           where upper(targa)  = upper(:targa)
+                                                             and cod_impianto != :cod_impianto
+                                                             and upper(stato)  = 'A'"]	       
+		
+		foreach aimp_coll $lst_cod_imp_coll {
+
+		    util_unlist $aimp_coll cod_imp_coll cod_imp_est_coll
+		    
+		    db_dml q "update coimaimp
+                                 set flag_resp     = :flag_responsabile
+                                   , $resp_da_agg
+                                   , data_mod      = current_date
+                                   , utente        = :id_utente
+                               where cod_impianto  = :cod_imp_coll"		    
+		}
+
+		set ls_cod_manu_coll [db_list q "select coalesce(cod_manutentore, 'null')
+                                                    from coimaimp
+                                                   where upper(targa)  = upper(:targa)
+                                                     and cod_impianto != :cod_impianto
+                                                     and upper(stato)  = 'A'
+                                                   group by cod_manutentore"]
+
+		foreach cod_manu_coll $ls_cod_manu_coll {
+		
+		    if {![string equal $cod_manutentore ""] &&
+			![string equal $cod_manu_coll "null"] &&
+			![string equal $cod_manu_coll $cod_manutentore]} {
+			# Faccio un invio mail ai manutentori degli impianti associati alla targa in questo modo:
+			#  1- Escludo da questo foreach il manutentore che ha fatto la modifica.
+			#  2- La modifica / inserimento del Responsabile deve essere fatta da un'altro manutentore, altrimenti non invio mail.
+			#  3- Se un manutentore ha piu' impianti faccio un'unica mail con l'elenco dei suoi impianti modificati.
+			#  4- Per mandare una mail devo trovare la mail del manutentore
+			
+			set ls_cod_imp_est_manu_coll [db_list q "select cod_impianto_est
+                                                                   from coimaimp
+                                                                  where upper(targa)    = upper(:targa)
+                                                                    and cod_manutentore = :cod_manu_coll"]
+			if {[db_0or1row q "select email as mail_manu
+                                             from coimmanu
+                                            where cod_manutentore = :cod_manu_coll"]} {
+			    if {[llength $ls_cod_imp_est_manu_coll] == "1"} {  
+				set testo_mail_imp_coll_manu "ATTENZIONE: √® stato modificato il soggetto responsabile per l'Impianto con codice $ls_cod_imp_est_manu_coll associato alla targa $targa: $testo_mail_imp_coll_manu"				
+			    } else {
+				set testo_mail_imp_coll_manu "ATTENZIONE: √® stato modificato il soggetto responsabile per gli Impianti con codice $ls_cod_imp_est_manu_coll associati alla targa $targa: $testo_mail_imp_coll_manu"
+			    }
+
+			    if {$coimtgen(ente) eq "PFM"} {#rom18 Aggiunte if, else e loro contenuto
+				set mail_ente "impiantitermici@regione.marche.it"
+			    } else {
+				set mail_ente $coimdesc(email)
+			    }
+				
+			    acs_mail_lite::send \
+				-send_immediately \
+				-to_addr "$mail_manu" \
+				-from_addr "$mail_ente" \
+				-subject "Modifica soggetto ITER $targa"\
+				-body $testo_mail_imp_coll_manu
+			}
+		    }
+		}
+	    }
+	    
 	}
 	D {set dml_sql [db_map del_aimp_1_6]}
     }
@@ -1690,7 +1923,10 @@ if {[form is_valid $form_name]} {
                                         limit 1"] == 1} {
 		    element::set_error $form_name pdr "Attenzione esiste a catasto un impianto con lo stesso PDR.<br>Confermi la modifica?"
 		    if {$error_num == 0} {
-			element set_properties $form_name flag_conferma -value "n"
+			#mat00 13/10/2025
+			#modifiche fatte perch√® il curmit ha la vecchia versione di openacs. Il programma non sar√† committato ma portato su a mano.
+			#element set_properties $form_name flag_conferma -values "n" ;#mat01 cambiato da -value a -values
+			element set_properties $form_name flag_conferma -value "n";#mat00
 		    }
 		    incr error_num
 		    if {[string equal $pod ""]} {
@@ -1700,7 +1936,10 @@ if {[form is_valid $form_name]} {
                                               and cod_combustibile = :cod_combustibile"] == 1} {
 			    element::set_error $form_name pod "Inserire POD"
 			    incr error_num
-			    element set_properties $form_name flag_conferma -value "s"
+			    #mat00 13/10/2025
+			    #modifiche fatte perch√® il curmit ha la vecchia versione di openacs. Il programma non sar√† committato ma portato su a mano.
+			    #element set_properties $form_name flag_conferma -values "s" ;#mat01 cambiato da -value a -values
+			    element set_properties $form_name flag_conferma -value "s";#mat00
 			}		    
 			if {$flag_tipo_impianto eq "F"} {
 			    element::set_error $form_name pod "Inserire POD"
@@ -1717,11 +1956,15 @@ if {[form is_valid $form_name]} {
                                 limit 1"] == 1} {
 		    element::set_error $form_name pod "Attenzione esiste a catasto un impianto con lo stesso POD.<br>Confermi la modifica?"
 		    if {$error_num == 0} {
-			element set_properties $form_name flag_conferma -value "n"
+			#mat00 13/10/2025
+			#modifiche fatte perch√® il curmit ha la vecchia versione di openacs. Il programma non sar√† committato ma portato su a mano.
+			#element set_properties $form_name flag_conferma -values "n" ;#mat01 cambiato da -value a -values
+			element set_properties $form_name flag_conferma -value "n";#mat00
 		    }
 		    incr error_num
 		}
 	    }
+   
 	};#rom05
 
 	if {[string equal $pdr ""]} {#rom10 aggiunta if e suo contenuto
@@ -1735,6 +1978,10 @@ if {[form is_valid $form_name]} {
                               from coimcomb
                              where tipo = 'G'
                                and cod_combustibile = :cod_combustibile"]} {
+		element::set_error $form_name pod "Inserire POD"
+		incr error_num
+	    }
+	    if {$cod_combustibile in [list "4" "21"]} {#rom13 Aggiunta if e suo contenuto
 		element::set_error $form_name pod "Inserire POD"
 		incr error_num
 	    }
@@ -1791,15 +2038,61 @@ if {[form is_valid $form_name]} {
             }
         }
 
-	if {$cod_tpim == "" && $flag_tipo_impianto ne "F"} {#rom05 aggiunta condizione sul tipo impianto
+	#rom19 Tolta condizione && $flag_tipo_impianto ne "F"
+	if {$cod_tpim == ""} {#rom05 aggiunta condizione sul tipo impianto
 	    element::set_error $form_name cod_tpim "Inserire tipologia impianto"
+	    #mat00 13/10/2025
+	    #modifiche fatte perch√® il curmit ha la vecchia versione di openacs. Il programma non sar√† committato ma portato su a mano.
+	    #element set_properties $form_name flag_conferma -values "s" ;#mat01 cambiato da -value a -values
+	    element set_properties $form_name flag_conferma -value "s";#mat00
 	    incr error_num
+	} else {#rom19 Aggiunta else e il suo contenuto
+	    if {[db_0or1row q "select 1
+                                 from coimaimp
+                                where targa         = :targa
+                                  and cod_impianto != :cod_impianto
+                                  and cod_tpim     != :cod_tpim
+                                  and stato         = 'A'
+                                limit 1"]
+	    && $flag_conferma == "s"} {
+		element::set_error $form_name cod_tpim "La scelta fatta non &egrave; coerente con quanto indicati negli altri impianti collegati.<br>Confermi la scelta?"
+		if {$error_num == 0} {
+		    #mat00 13/10/2025
+		    #modifiche fatte perch√® il curmit ha la vecchia versione di openacs. Il programma non sar√† committato ma portato su a mano.
+		    #element set_properties $form_name flag_conferma -values "n" ;#mat01 cambiato da -value a -values
+		    element set_properties $form_name flag_conferma -value "n";#mat00
+		}
+		incr error_num
+	    }
 	}
-	
-	if {$unita_immobiliari_servite == "" && $flag_tipo_impianto ne "F"} {#rom05 aggiunta condizione sul tipo impianto
-	    element::set_error $form_name unita_immobiliari_servite "Inserire Unit‡ Immobiliari Servite"
+
+	#rom19 Tolta condizione && $flag_tipo_impianto ne "F"
+	if {$unita_immobiliari_servite == ""} {#rom05 aggiunta condizione sul tipo impianto
+	    element::set_error $form_name unita_immobiliari_servite "Inserire Unit√† Immobiliari Servite"
+	    #mat00 13/10/2025
+	    #modifiche fatte perch√® il curmit ha la vecchia versione di openacs. Il programma non sar√† committato ma portato su a mano.
+	    #element set_properties $form_name flag_conferma -values "s" ;#mat01 cambiato da -value a -values
+	    element set_properties $form_name flag_conferma -value "s";#mat00
 	    incr error_num
-        }
+        } else {#rom19 Aggiunta else e il suo contenuto
+	    if {[db_0or1row q "select 1
+                                 from coimaimp
+                                where targa                      = :targa
+                                  and cod_impianto              != :cod_impianto
+                                  and unita_immobiliari_servite != :unita_immobiliari_servite
+                                  and stato                      = 'A'
+                                limit 1"]
+	    && $flag_conferma == "s"} {
+		element::set_error $form_name unita_immobiliari_servite "La scelta fatta non &egrave; coerente con quanto indicati negli altri impianti collegati.<br>Confermi la scelta?"
+		if {$error_num == 0} {
+		    #mat00 13/10/2025
+		    #modifiche fatte perch√® il curmit ha la vecchia versione di openacs. Il programma non sar√† committato ma portato su a mano.
+		    #element set_properties $form_name flag_conferma -values "n" ;#mat01 cambiato da -value a -values
+		    element set_properties $form_name flag_conferma -value "n"
+		}
+		incr error_num
+	    }	    
+	}
 
 	set indirizzo "";#sim02
 	set comune    "";#sim02
@@ -1853,11 +2146,21 @@ if {[form is_valid $form_name]} {
             } else {
 		if {$data_rottamaz > $current_date} {
 		    element::set_error $form_name data_rottamaz "Data deve essere anteriore alla data odierna"
+		    incr error_num 
+		}
+
+		if {[string equal $stato "A"]} {#rom16 Aggiunte if, elseif, else e il loro conteunto
+		    element::set_error $form_name data_rottamaz "Non &egrave; possibile riattivare l'impianto se non si cancella la data di dismissione/disattivazione."
 		    incr error_num
+		} elseif {![string equal $stato "N"]} {		    
+		    set stato "R"
+		} else {
+		    
 		}
 	    }
-	    set stato "R"
+	    #rom16set stato "R"
         }
+	
         if {![string equal $data_attivaz ""]} {
             set data_attivaz [iter_check_date $data_attivaz]
             if {$data_attivaz == 0} {
@@ -1877,16 +2180,18 @@ if {[form is_valid $form_name]} {
     # se sono in assegnazione dell'impianto (funzione per manutentori) 
     # aggiorno il manutentore e aggiorno lo storico dei soggetti
     #sim02 aggiunto condizione su stato impianto
-
+    #rom16 Se sto riattivando l'impianto non posso avere la data_rottamaz valorizzata.
+    
     if {[db_0or1row q "select 1
                          from coimaimp
                         where cod_impianto = :cod_impianto
                           and stato != :stato
-                          and :stato = 'A'"] && [string equal $cod_manutentore ""]} {#rom11 aggiunta if e suo contenuto
+                          and :stato = 'A'"] && [string equal $cod_manutentore ""]
+	&& [string equal $data_rottamaz ""]} {#rom11 aggiunta if e suo contenuto
 	#Se sto riattivando l'impianto e sono l'ente devo evitare i controlli.
 	set error_num 0
     }
-    
+
     if {$error_num > 0  && !($stato ne "A" && [string equal $cod_manutentore ""])} {
 	element::set_error $form_name cognome $msg_error
 	#[template::form::get_errors $form_name]
@@ -1905,6 +2210,34 @@ if {[form is_valid $form_name]} {
 	M {
 	    set dml_sql  [db_map upd_aimp]
 	    set dml_sql1 [db_map upd_citt]
+
+	    #rom16 Ora uso gia' la variabile stato_db come campo hidden della form
+	    #rom16 quindi e' inutile rileggerselo anche qua.
+	    #rom16db_1row q "select stato as stato_db
+            #rom16      from coimaimp 
+            #rom16      where cod_impianto = :cod_impianto";#rom15
+	    
+	    if {$stato_db eq "A" && !($stato in [list "A" "F" "D"]) } {#rom15 Aggiunta if e il suo contenuto
+		# Se l'impianto va in uno stato diverso da attivo, tutti i generatori vengono
+		# resi non attivi (tranne lo stato "Da Validare" e "Da Accatastare").
+
+		if {![string is space $data_rottamaz]} {#rom16 Aggiunte if, else e loro contenuto
+		    # Se sto disattivando l'impianto e indico la data anche il/i generatore/i
+		    # da disattivare deve/devono avere la medesima data di disattivazione.
+		    set data_rottamaz_gen $data_rottamaz
+		} else {
+		    # Altrimenti metto la data di oggi come data di disattivazione dei generatori.1
+		    set data_rottamaz_gen $current_date
+		}
+		
+		set dml_gend [db_map dis_gen]
+	    }
+
+	    if {$stato_db eq "N" && $stato eq "A"} {#rom15 Aggiunta if e il suo contenuto
+		# Se l'impianto da Non Attivo viene riattivato, tutti
+		# i generatori vengono riattivati (esclusi quelli sostituiti).
+		set dml_gend [db_map att_gen]
+	    }
 	}
         D {set dml_sql  [db_map del_aimp]}
     }
@@ -1916,7 +2249,9 @@ if {[form is_valid $form_name]} {
                 db_dml dml_coimaimp $dml_sql
 		db_dml dml_coimaimp $dml_sql1
                 if {[info exists dml_gend]} {
-		    db_dml dml_coimaimp $dml_gend
+		    #rom15db_dml dml_coimaimp $dml_gend
+
+		    db_dml dml_coimgend $dml_gend;#rom15
 		}
                 if {[info exists dml_comu]} {
 		    db_dml dml_coimcomu $dml_comu

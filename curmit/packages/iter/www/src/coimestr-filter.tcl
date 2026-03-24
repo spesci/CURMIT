@@ -14,6 +14,16 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    ric01 29/09/2025 Aggiunto filtro presenza/assenza ditta di manutenzione. (Punto 33 MEV regione Marche 2025).
+    ric01            Corretto mat02 per gestire il refresh a seconda della versione di openacs.
+
+    mat02 25/03/2025 Corretto il controllo sul refresh per fare il redirect corretto 
+
+    mat01 27/01/2025 Corretto problema sul refresh della pagina riscontrato dopo aggiornamento a
+    mat01            OpenACS 5.10.
+
+    but01 28/11/2024 Aggiunto il filtro della ditta di manutenzione.
+    
     rom02 18/03/2019 Aggiunti i filtri tipo_generatore, sistema_areazione e tipo_locale.
     rom02            I filtri sono stati voluti dalla Regione Marche ma Sandro ha detto che
     rom02            possono andare bene per tutti gli enti.
@@ -59,7 +69,11 @@ ad_page_contract {
     {tipo_generatore   ""}
     {sistema_areazione ""}
     {tipo_locale       ""}
+    {f_manu_cogn          ""}
+    {f_manu_nome          ""}
+    {f_cod_manu           ""}
     {__refreshing_p   0}
+    {f_manu_present_p            ""}
 } -properties {
     page_title:onevalue
     context_bar:onevalue
@@ -356,6 +370,36 @@ element create $form_name cod_noin \
 -optional \
 -options [iter_selbox_from_table_wherec coimnoin cod_noin "cod_noin||' - '||descr_noin" "" "where 1=1"]
 
+
+set cerca_manu [iter_search $form_name coimmanu-list [list dummy f_cod_manu dummy f_manu_cogn dummy f_manu_nome]];#but01
+#but01
+element create $form_name f_manu_cogn \
+    -label   "Cognome" \
+    -widget   text \
+    -datatype text \
+    -html    "size 23 maxlength 100 readonly {} class form_element tabindex 10" \
+    -optional
+#but01
+element create $form_name f_manu_nome \
+    -label   "Nome" \
+    -widget   text \
+    -datatype text \
+    -html    "size 23 maxlength 100 readonly {} class form_element tabindex 11"\
+    -optional
+
+if {$coimtgen(regione) eq "MARCHE"} {#ric01 aggiunta if, else e loro contenuto
+    element create $form_name f_manu_present_p \
+	-label   "Ditta di manutenzione presente" \
+	-widget   select \
+	-datatype text \
+	-html    "$disabled_fld {} class form_element" \
+	-optional \
+	-options {{{} {}} {Presente t} {Assente f}}
+
+} else {
+    element create $form_name f_manu_present_p -widget hidden -datatype text -optional
+}
+
 if {$flag_viario == "T"} {
     set cerca_viae [iter_search $form_name [ad_conn package_url]/tabgen/coimviae-filter [list dummy f_cod_via dummy descr_via dummy descr_topo cod_comune cod_comune dummy dummy dummy dummy dummy dummy]]
 } else {
@@ -391,6 +435,9 @@ element create $form_name tipo_locale \
 
 
 element create $form_name __refreshing_p -widget hidden -datatype text -optional
+#mat00 13/10/2025
+#modifiche fatte perchè il curmit ha la vecchia versione di openacs. Il programma non sarà committato ma portato su a mano.
+#element set_properties $form_name __refreshing_p -values 0;#mat01
 element create $form_name f_cod_via -widget hidden -datatype text -optional
 element create $form_name funzione  -widget hidden -datatype text -optional
 element create $form_name caller    -widget hidden -datatype text -optional
@@ -398,6 +445,7 @@ element create $form_name nome_funz -widget hidden -datatype text -optional
 element create $form_name cod_cinc  -widget hidden -datatype text -optional
 element create $form_name dummy     -widget hidden -datatype text -optional
 element create $form_name submitbut -widget submit -datatype text -label "$button_label" -html "class form_submit"
+element create $form_name f_cod_manu -widget hidden -datatype text -optional;#but01
 
 if {[form is_request $form_name]} {
    
@@ -441,6 +489,10 @@ if {[form is_request $form_name]} {
     element set_properties $form_name sistema_areazione -value $sistema_areazione;#rom02
     element set_properties $form_name tipo_locale       -value $tipo_locale;#rom02
 
+    element set_properties $form_name f_cod_manu        -value $f_cod_manu ;#but01
+    element set_properties $form_name f_manu_cogn       -value $f_manu_cogn;#but01
+    element set_properties $form_name f_manu_nome       -value $f_manu_nome;#but01
+    element set_properties $form_name f_manu_present_p  -value $f_manu_present_p;#ric01
 }
 
 if {[form is_valid $form_name]} {
@@ -486,6 +538,11 @@ if {[form is_valid $form_name]} {
     set tipo_generatore    [element::get_value $form_name tipo_generatore];#rom02
     set sistema_areazione  [element::get_value $form_name sistema_areazione];#rom02
     set tipo_locale        [element::get_value $form_name tipo_locale];#rom02
+ 
+    set f_cod_manu         [string trim [element::get_value $form_name f_cod_manu]];#but01
+    set f_manu_cogn        [string trim [element::get_value $form_name f_manu_cogn]];#but01
+    set f_manu_nome        [string trim [element::get_value $form_name f_manu_nome]];#but01
+    set f_manu_present_p   [string trim [element::get_value $form_name f_manu_present_p]];#ric01
 
     set error_num 0
 
@@ -624,6 +681,56 @@ if {[form is_valid $form_name]} {
 	incr error_num
     }
 
+    #but01 Inizio routine generica per controllo codice manutentore
+    set check_cod_manu {
+	set chk_out_rc       0
+	set chk_out_msg      ""
+	set chk_out_cod_manu ""
+	set ctr_manu         0
+	if {[string equal $chk_inp_cognome ""]} {
+	    set eq_cognome "is null"
+	} else {
+	    set eq_cognome "= upper(:chk_inp_cognome)"
+	}
+	if {[string equal $chk_inp_nome ""]} {
+	    set eq_nome    "is null"
+	} else {
+	    set eq_nome    "= upper(:chk_inp_nome)"
+	}
+
+	db_foreach sel_manu "" {
+	    incr ctr_manu
+	    if {$cod_manu_db == $chk_inp_cod_manu} {
+		set chk_out_cod_manu $cod_manu_db
+		set chk_out_rc       1
+	    }
+	}
+	switch $ctr_manu {
+	    0 { set chk_out_msg "Soggetto non trovato"}
+	    1 { set chk_out_cod_manu $cod_manu_db
+		set chk_out_rc       1 }
+	    default {
+		if {$chk_out_rc == 0} {
+		    set chk_out_msg "Trovati pi&ugrave; soggetti: usa il link cerca"
+		}
+	    }
+	}
+    }
+    
+    if {[string equal $f_manu_cogn ""] && [string equal $f_manu_nome ""]} {
+	set cod_manutentore ""
+    } else {
+	set chk_inp_cod_manu $f_cod_manu
+	set chk_inp_cognome  $f_manu_cogn
+	set chk_inp_nome     $f_manu_nome
+	eval $check_cod_manu
+	set f_cod_manu  $chk_out_cod_manu
+	if {$chk_out_rc == 0} {
+	    element::set_error $form_name f_manu_cogn $chk_out_msg
+	    incr error_num
+	}
+    };#finebut01
+#$f_cod_manu
     if {[string equal $num_max ""]} {
 	element::set_error $form_name num_max "Inserire numero di impianti da estrarre"
 	incr error_num
@@ -773,18 +880,29 @@ if {[form is_valid $form_name]} {
 	element::set_error $form_name n_anomalie "Questo valore pu&ograve; essere inserito solo per l'estrazione 'Pesi da modelli'"
 	incr error_num
     }
-
+    
     if {$error_num > 0} {
         ad_return_template
         return
     }
-#dpr74
-    if {![string equal $__refreshing_p ""]} {
-	#rom02 aggiunti tipo_generatore, sistema_areazione e tipo_locale
-	ad_returnredirect "coimestr-filter?funzione=V&[export_url_vars nome_funz nome_funz_caller tipo_estrazione cod_combustibile cod_cind anno_inst_da anno_inst_a cod_comune cod_via descr_topo descr_via num_max cod_cinc cod_area flag_scaduto flag_oss flag_racc flag_pres flag_status cod_raggruppamento peso_min n_anomalie bacharach co rend_combust tiraggio cod_noin cod_anom data_scad flag_tipo_impianto tipo_generatore sistema_areazione tipo_locale cod_zona __refreshing_p]"
+    #dpr74
+
+    set var_contr_refr "";#ric01
+    if {[apm_package_version_installed_p "acs-subsite" "5.10.1"]} {#ric01 aggiunta if e contenuto
+	set var_contr_refr 0
     }
+
+    #ric01 if {![string equal $__refreshing_p "0"]} { #mat02 sostituito "" con "0" a seguito dell'aggiornamento di openacs}
+    if {![string equal $__refreshing_p $var_contr_refr]} {#ric01 modificata if
+	#ric01 aggiunto f_manu_present_p
+	#rom02 aggiunti tipo_generatore, sistema_areazione e tipo_locale
+	#but01 aggiunto f_manu_cogn f_manu_nome f_cod_manu
+	ad_returnredirect "coimestr-filter?funzione=V&[export_url_vars nome_funz nome_funz_caller tipo_estrazione cod_combustibile cod_cind anno_inst_da anno_inst_a cod_comune cod_via descr_topo descr_via f_manu_cogn f_manu_nome f_cod_manu num_max cod_cinc cod_area flag_scaduto flag_oss flag_racc flag_pres flag_status cod_raggruppamento peso_min n_anomalie bacharach co rend_combust tiraggio cod_noin cod_anom data_scad flag_tipo_impianto tipo_generatore sistema_areazione tipo_locale cod_zona __refreshing_p f_manu_present_p]"
+    }
+    #ric01 aggiunto f_manu_present_p
     #rom02 aggiunti tipo_generatore, sistema_areazione e tipo_locale
-    set return_url "coimestr-list?funzione=V&[export_url_vars nome_funz nome_funz_caller tipo_estrazione cod_combustibile cod_cind anno_inst_da anno_inst_a cod_comune cod_via descr_topo descr_via num_max cod_cinc cod_area flag_scaduto flag_oss flag_racc flag_pres flag_status cod_raggruppamento peso_min n_anomalie bacharach co rend_combust cod_anom cod_noin tiraggio data_scad_chk flag_tipo_impianto cod_zona tipo_generatore sistema_areazione tipo_locale]"
+    #but01 aggiunto f_manu_cogn f_manu_nome f_cod_manu
+    set return_url "coimestr-list?funzione=V&[export_url_vars nome_funz nome_funz_caller tipo_estrazione cod_combustibile cod_cind anno_inst_da anno_inst_a cod_comune cod_via descr_topo descr_via f_manu_cogn f_manu_nome f_cod_manu num_max cod_cinc cod_area flag_scaduto flag_oss flag_racc flag_pres flag_status cod_raggruppamento peso_min n_anomalie bacharach co rend_combust cod_anom cod_noin tiraggio data_scad_chk flag_tipo_impianto cod_zona tipo_generatore sistema_areazione tipo_locale f_manu_present_p]"
 #fine dpr74
 
     ad_returnredirect $return_url

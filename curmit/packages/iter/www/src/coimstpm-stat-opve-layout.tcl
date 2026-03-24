@@ -8,6 +8,12 @@ ad_page_contract {
     @param nome_funz identifica l'entrata di menu, server per le autorizzazioni
     serve se lista e' uno zoom che permetti aggiungi.
     @cvs-id          coimstpm-stat-opve-layout.tcl     
+
+
+    USER  DATA       MODIFICHE
+    ===== ========== ===========================================================================
+    mic01 20/01/2023 Modifiche per il nuovo "Rapporto di Accertamento"
+
 } {
     {f_data_da         ""}
     {f_data_a          ""}
@@ -151,7 +157,7 @@ set assessorato       $coimdesc(assessorato)
 
 append testata "<!-- FOOTER LEFT   \"$sysdate_edit\"-->
                 <!-- FOOTER RIGHT  \"Pagina \$PAGE(1) di \$PAGES(1)\"-->
-             <table width=100% >
+             <table width=100%>
                <tr>
                    <td width=100% align=center>
                        <table><tr>
@@ -182,9 +188,10 @@ if {![string equal $f_data_da ""] || ![string equal $f_data_a ""]} {
 
 # Costruisco descrittivi tabella
 if {$flag_ente == "C"} {
+    #mic01 aggiunto tipo verbale
     append stampa "
           <center>
-          <table border=1>
+          <table border=1 class=table_s>
 	      <tr>
                  <th>Ente Ispettoree</th>
                  <th>Tecnico Ispettore</th>
@@ -197,7 +204,8 @@ if {$flag_ente == "C"} {
                  <th align=left>Negative</th>
                  <th align=left>Anomalia</th>
                  <th align=left>Numero</th>
-              </tr>"
+                 <th align=left>Tipo verbale</th>
+             </tr>"
 
     # Setto la prima riga del csv
     set     head_cols ""
@@ -214,6 +222,7 @@ if {$flag_ente == "C"} {
     lappend head_cols "Negative"
     lappend head_cols "Anomalia"
     lappend head_cols "Numero"
+    lappend head_cols "Tipo verbale";#mic01
 
     # imposto il tracciato record del file csv
     set     file_cols ""
@@ -230,10 +239,12 @@ if {$flag_ente == "C"} {
     lappend file_cols "n_verifiche_neg"
     lappend file_cols "anomalia"
     lappend file_cols "count_anomalie"
+    lappend file_cols "tipo_verbale";#mic01
 } else {
+    #mic01 aggiunto tipo verbale
     append stampa "
           <center>
-          <table border=1>
+          <table border=1 class=table_s>
 	      <tr>
                  <th>Ente Verificatore</th>
                  <th>Tecnico Verificatore</th>
@@ -247,6 +258,7 @@ if {$flag_ente == "C"} {
                  <th align=left>Negative</th>
                  <th align=left>Anomalia</th>
                  <th align=left>Numero</th>
+                 <th align=left>Tipo verbale</th>
               </tr>"
     # Setto la prima riga del csv
     set     head_cols ""
@@ -264,6 +276,7 @@ if {$flag_ente == "C"} {
     lappend head_cols "Negative"
     lappend head_cols "Anomalia"
     lappend head_cols "Numero"
+    lappend head_cols "Tipo verbale";#mic01
 
     # imposto il tracciato record del file csv
     set     file_cols ""
@@ -281,6 +294,7 @@ if {$flag_ente == "C"} {
     lappend file_cols "n_verifiche_neg"
     lappend file_cols "anomalia"
     lappend file_cols "count_anomalie"
+    lappend file_cols "tipo_verbale";#mic01
 }
 
 set sw_primo_rec "t"
@@ -314,6 +328,7 @@ db_foreach sel_stat_opve "" {
 
     #  ns_return 200 text/html "$nome_opve<br>$n_verifiche<br>$n_verifiche_pos<br>$n_verifiche_neg<br>$fascia_potenza<br>$combustibile"; return
     if {$flag_ente == "C"} {
+	#mic01 aggiunto tipo verbale
 	append stampa "
 	       <tr>
                    <td align=left>$nome_ente&nbsp;</td>
@@ -327,6 +342,7 @@ db_foreach sel_stat_opve "" {
                    <td align=left>$n_verifiche_neg&nbsp;</td>
                    <td align=left>$anomalia&nbsp;</td>
                    <td align=left>$count_anomalie&nbsp;</td>
+                   <td align=left>$tipo_verbale</td>
                </tr>"   
 	foreach column_name $file_cols {
 	    lappend file_cols_list [set $column_name]
@@ -334,6 +350,7 @@ db_foreach sel_stat_opve "" {
 	iter_put_csv $file_csv file_cols_list
 	
     } else {
+	#mic01 aggiunto tipo verbale
 	append stampa "
 	       <tr>
                    <td align=left>$nome_ente&nbsp;</td>
@@ -348,6 +365,7 @@ db_foreach sel_stat_opve "" {
                    <td align=left>$n_verifiche_neg&nbsp;</td>
                    <td align=left>$anomalia&nbsp;</td>
                    <td align=left>$count_anomalie&nbsp;</td>
+                   <td align=left>$tipo_verbale</td>
                </tr>"   
 	#	ns_return 200 text/html $file_cols; return
 	foreach column_name $file_cols {
@@ -380,8 +398,9 @@ append stampa "<p align=center><big>Statistiche relative alle anomalie riscontra
 
 # Costruisco descrittivi tabella
 if {$flag_ente == "C"} {
+    #mic01 aggiunto tipo verbale
     append stampa "
-          <table border=1>
+          <table border=1 class=table_s>
 	      <tr>
                  <th>Ente Ispettore</th>
                  <th>Tecnico Ispettore</th>
@@ -389,6 +408,7 @@ if {$flag_ente == "C"} {
                  <th>Numero</th>
   	         <th>Fascia di Potenza</th>
                  <th>Combustibile</th>
+                 <th>Tipo verbale</th>
               </tr>"
     # Setto la prima riga del csv
     set     head_cols_anom ""
@@ -398,6 +418,7 @@ if {$flag_ente == "C"} {
     lappend head_cols_anom "Combustibile"
     lappend head_cols_anom "Descrizione Anomalia"
     lappend head_cols_anom "Numero"
+    lappend head_cols_anom "Tipo verbale";#mic01
     
     # imposto il tracciato record del file csv
     set     file_cols_anom ""
@@ -407,11 +428,13 @@ if {$flag_ente == "C"} {
     lappend file_cols_anom "combustibile"
     lappend file_cols_anom "descr_anomalia"
     lappend file_cols_anom "count_anomalie"
+    lappend file_cols_anom "tipo_verbale";#mic01
 
 
 } else {
+    #mic01 aggiunto tipo verbale
     append stampa "
-          <table border=1>
+          <table border=1 class=table_s>
 	      <tr>
                  <th>Ente Ispettore/th>
                  <th>Tecnico Ispettore</th>
@@ -420,6 +443,7 @@ if {$flag_ente == "C"} {
                  <th>Numero</th>
   	         <th>Fascia di Potenza</th>
                  <th>Combustibile</th>
+                 <th>Tipo verbale</th>
               </tr>"
 
     # Setto la prima riga del csv
@@ -431,6 +455,7 @@ if {$flag_ente == "C"} {
     lappend head_cols_anom "Combustibile"
     lappend head_cols_anom "Descrizione Anomalia"
     lappend head_cols_anom "Numero"
+    lappend head_cols_anom "Tipo verbale";#mic01
     
     # imposto il tracciato record del file csv
     set     file_cols_anom ""
@@ -441,12 +466,14 @@ if {$flag_ente == "C"} {
     lappend file_cols_anom "combustibile"
     lappend file_cols_anom "descr_anomalia"
     lappend file_cols_anom "count_anomalie"
+    lappend file_cols_anom "tipo_verbale";#mic01
 }
 
 set sw_primo_rec "t"
 db_foreach sel_anom_opve "" {
 
     if {$flag_ente == "C"} {
+	#mic01 aggiunto tipo verbale
 	append stampa "
 	       <tr>
                    <td align=left>$nome_ente&nbsp;</td>
@@ -455,8 +482,10 @@ db_foreach sel_anom_opve "" {
                    <td align=left>$count_anomalie&nbsp;</td>
                    <td align=left>$fascia_potenza&nbsp;</td>
                    <td align=left>$combustibile&nbsp;</td>
+                   <td align=left>$tipo_verbale</td>
                </tr>"   
     } else {
+	#mic01 aggiunto tipo verbale
 	append stampa "
 	       <tr>
                    <td align=left>$nome_ente&nbsp;</td>
@@ -466,6 +495,7 @@ db_foreach sel_anom_opve "" {
                    <td align=left>$count_anomalie&nbsp;</td>
                    <td align=left>$fascia_potenza&nbsp;</td>
                    <td align=left>$combustibile&nbsp;</td>
+                   <td align=left>$tipo_verbale</td>
                </tr>"   
     }
     set file_cols_list_anom ""
@@ -491,8 +521,9 @@ append stampa "<p align=center><big>Statistiche relative alle anomalie riscontra
 
 # Costruisco descrittivi tabella
 if {$flag_ente == "C"} {
+    #mic01 aggiunto tipo verbale
     append stampa "
-          <table border=1>
+          <table border=1 class=table_s>
 	      <tr>
                  <th>Ente Ispettore</th>
                  <th>Tecnico Ispettore</th>
@@ -500,6 +531,7 @@ if {$flag_ente == "C"} {
                  <th>Numero</th>
   	         <th>Fascia di Potenza</th>
                  <th>Combustibile</th>
+                 <th>Tipo verbale</th>
               </tr>"
     # Setto la prima riga del csv
     set     head_cols_anom ""
@@ -509,6 +541,7 @@ if {$flag_ente == "C"} {
     lappend head_cols_anom "Combustibile"
     lappend head_cols_anom "Criticita'"
     lappend head_cols_anom "Numero"
+    lappend head_cols_anom "Tipo verbale";#mic01
     
     # imposto il tracciato record del file csv
     set     file_cols_anom ""
@@ -518,9 +551,11 @@ if {$flag_ente == "C"} {
     lappend file_cols_anom "combustibile"
     lappend file_cols_anom "criticita"
     lappend file_cols_anom "count_anomalie"
+    lappend file_cols_anom "tipo_verbale";#mic01
 } else {
+    #mic01 aggiunto tipo verbale
     append stampa "
-          <table border=1>
+          <table border=1 class=table_s>
 	      <tr>
                  <th>Ente Ispettore</th>
                  <th>Tecnico Ispettore</th>
@@ -529,6 +564,7 @@ if {$flag_ente == "C"} {
                  <th>Numero</th>
   	         <th>Fascia di Potenza</th>
                  <th>Combustibile</th>
+                 <th>Tipo verbale</th>
               </tr>"
 
     # Setto la prima riga del csv
@@ -540,6 +576,7 @@ if {$flag_ente == "C"} {
     lappend head_cols_anom "Combustibile"
     lappend head_cols_anom "Criticita'"
     lappend head_cols_anom "Numero"
+    lappend head_cols_anom "Tipo verbale";#mic01
     
     # imposto il tracciato record del file csv
     set     file_cols_anom ""
@@ -550,11 +587,12 @@ if {$flag_ente == "C"} {
     lappend file_cols_anom "combustibile"
     lappend file_cols_anom "criticita"
     lappend file_cols_anom "count_anomalie"
+    lappend file_cols_anom "tipo_verbale";#mic01
 }
-
 set sw_primo_rec "t"
 db_foreach sel_crit_opve "" {
     if {$flag_ente == "C"} {
+	#mic01 aggiunto tipo verbale
 	append stampa "
 	       <tr>
                    <td align=left>$nome_ente&nbsp;</td>
@@ -563,8 +601,10 @@ db_foreach sel_crit_opve "" {
                    <td align=left>$count_anomalie&nbsp;</td>
                    <td align=left>$fascia_potenza&nbsp;</td>
                    <td align=left>$combustibile&nbsp;</td>
+                   <td align=left>$tipo_verbale</td>
                </tr>"   
     } else {
+	#mic01 aggiunto tipo verbale
 	append stampa "
 	       <tr>
                    <td align=left>$nome_ente&nbsp;</td>
@@ -574,6 +614,7 @@ db_foreach sel_crit_opve "" {
                    <td align=left>$count_anomalie&nbsp;</td>
                    <td align=left>$fascia_potenza&nbsp;</td>
                    <td align=left>$combustibile&nbsp;</td>
+                   <td align=left>$tipo_verbale</td>
                </tr>"   
     }
     set file_cols_list_anom ""
@@ -599,7 +640,8 @@ close $file_id
 close $file_csv
 close $anom_csv
 # lo trasformo in PDF
-iter_crea_pdf [list exec htmldoc --webpage --header ... --footer ... --quiet --landscape --bodyfont arial --left 1cm --right 1cm --top 0cm --bottom 0cm -f $file_pdf $file_html]
+#mic01 modificata dimensione carattere
+iter_crea_pdf [list exec htmldoc --webpage --header ... --footer ... --quiet --landscape --fontsize 10 --bodyfont arial --left 1cm --right 1cm --top 0cm --bottom 1cm -f $file_pdf $file_html]
 
 ns_unlink $file_html
 ad_return_template

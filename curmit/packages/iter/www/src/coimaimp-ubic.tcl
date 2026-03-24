@@ -13,6 +13,14 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== ==================================================================================
+    mat01 06/03/2026 Aggiunto e gestito il campo note_ubic. Solo per le Marche
+
+    but01 21/06/2023 Aggiunto la classe ah-jquery-date ai campi:data_ini_valid, data_variaz.
+    rom06 28/04/2023 Aggiunto il campo unita_immobiliari_servite su segnalazione di Belluzzo, reso visibile per
+    rom06            tutti tranne che le Marche perche' lo gestiscono in coimaimp-bis-gest.
+
+    rom05 07/02/2023 Modifica per regione Friuli sulla valorizzazione del campo cod_tpdu in base a cod_cted.
+
     sim01 20/01/2020 In base all'apposito parametro rendo obbligatori i dati catastali
 
     rom04 19/01/2019 Per la Regione Marche mostro il campo volimetria_risc e volumetria_raff
@@ -90,16 +98,16 @@ db_1row q "select flag_tipo_impianto from coimaimp where cod_impianto = :cod_imp
 set link_list_script {[export_url_vars last_cod_impianto caller nome_funz nome_funz_caller]&[iter_set_url_vars $extra_par]}
 set link_list        [subst $link_list_script]
 set link_return $url_list_aimp 
-set titolo           "Ubicazione"
+set titolo           "ubicazione"
 switch $funzione {
-    M {set button_label "Conferma Modifica" 
+    M {set button_label "Conferma modifica" 
        set page_title   "Modifica $titolo"}
-    D {set button_label "Conferma Cancellazione"
-       set page_title   "Cancellazione $titolo"}
-    I {set button_label "Conferma Inserimento"
-       set page_title   "Inserimento $titolo"}
+    D {set button_label "Conferma cancellazione"
+       set page_title   "Cancella $titolo"}
+    I {set button_label "Conferma inserimento"
+       set page_title   "Inserisci $titolo"}
     V {set button_label "Torna alla lista"
-       set page_title   "Visualizzazione $titolo"}
+       set page_title   "Visualizza $titolo"}
 }
 
 if {$caller == "index"} {
@@ -119,10 +127,13 @@ set descr_dest_uso  "";#rom02
 db_1row q "select cod_cted
              from coimaimp
             where cod_impianto = :cod_impianto";#rom02
+#rom05 Aggiunte condizione $cod_cted eq "E1" e $cod_cted eq "E11" serve per Regione Friuli
 if {$cod_cted eq "E11a" ||
     $cod_cted eq "E11b" ||
     $cod_cted eq "E12"  ||
-    $cod_cted eq "E13"} {#rom02 aggiunta if, else e loro contenuto
+    $cod_cted eq "E13"  ||
+    $cod_cted eq "E1"   ||
+    $cod_cted eq "E11"} {#rom02 aggiunta if, else e loro contenuto
     set cod_dest_uso "A"
     set descr_dest_uso "Abitativo"
 } else {
@@ -146,6 +157,11 @@ switch $funzione {
    "M" {set readonly_fld \{\}
         set disabled_fld \{\}
        }
+}
+
+set jq_date "";#but01
+if {$funzione in "M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
 }
 
 form create $form_name \
@@ -268,12 +284,12 @@ element create $form_name descr_via \
 -datatype text \
 -html    "size 27 maxlength 80 $readonly_fld {} class form_element" \
 -optional \
-
+#but01 Aggiunto la classe ah-jquery-date ai campi data_ini_valid, data_variaz.
 element create $form_name data_variaz \
 -label   "data_variaz" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+-html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
 -optional
 
 if {$funzione == "M"
@@ -282,7 +298,7 @@ if {$funzione == "M"
     -label   "data_ini_valid" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 }
 
@@ -423,9 +439,30 @@ if {$coimtgen(regione) eq "MARCHE"} {#rom04 aggiunte if, else e loro contenuto
 	-datatype text \
 	-html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
 	-optional
+
+    #mat01
+    element create $form_name note_ubic \
+	-label   "Note" \
+	-widget   textarea \
+	-datatype text \
+	-html    "cols 60 rows 3 $readonly_fld {} class form_element" \
+	-optional
+    
+    element create $form_name unita_immobiliari_servite -widget hidden -datatype text -optional;#rom06
 } else {
     element create $form_name volimetria_risc -widget hidden -datatype text -optional
     element create $form_name volimetria_raff -widget hidden -datatype text -optional
+    element create $form_name note_ubic -widget hidden -datatype text -optional;#mat01
+    
+    #rom06
+    element create $form_name unita_immobiliari_servite \
+	-label   "Unità immobiliari servite" \
+	-widget   select \
+	-datatype text \
+	-html    "$disabled_fld {} class form_element" \
+	-optional \
+	-options {{{} {}} {Unica U} {"Più unità" "P"}}
+
 };#rom04
     
 element create $form_name f_cod_via     -widget hidden -datatype text -optional
@@ -512,6 +549,8 @@ if {[form is_request $form_name]} {
 	element set_properties $form_name cod_cted         -value $cod_cted;#rom03
 	element set_properties $form_name volimetria_risc  -value $volimetria_risc;#rom04
         element set_properties $form_name volimetria_raff  -value $volimetria_raff;#rom04
+	element set_properties $form_name unita_immobiliari_servite -value $unita_immobiliari_servite;#rom06
+	element set_properties $form_name note_ubic -value $note_ubic;#mat01
         #recupero ultima variazione effettuata
         db_1row ultima_mod ""
         if {![string equal $data_variaz ""]} {
@@ -555,13 +594,21 @@ if {[form is_valid $form_name]} {
     set cod_cted         [string trim [element::get_value $form_name cod_cted]];#rom03
     set volimetria_risc  [string trim [element::get_value $form_name volimetria_risc]];#rom04
     set volimetria_raff  [string trim [element::get_value $form_name volimetria_raff]];#rom04
-    
+    set unita_immobiliari_servite  [string trim [element::get_value $form_name unita_immobiliari_servite]];#rom06
+    set note_ubic             [element::get_value $form_name note_ubic];#mat01
   # controlli standard su numeri e date, per Ins ed Upd
     set error_num 0
     if {$funzione == "I"
     ||  $funzione == "M"
     } {
 
+	if {$coimtgen(regione) ne "MARCHE"} {#rom06 Aggiunta if e il suo contenuto
+	    if {$unita_immobiliari_servite == ""} {
+		element::set_error $form_name unita_immobiliari_servite "Inserire Unità Immobiliari Servite"
+		incr error_num
+	    }
+	}
+	
 	if {$coimtgen(regione) eq "MARCHE" && [string equal $cod_cted ""]} {#rom03 aggiunta if e suo contenuto
 	    element::set_error $form_name cod_cted "Inserire Categoria edificio"
 	    incr error_num

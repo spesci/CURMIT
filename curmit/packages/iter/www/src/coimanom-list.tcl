@@ -18,6 +18,14 @@ ad_page_contract {
                              separati da '|' ed impostarli come segue:
 
     @cvs-id coimanom-list.tcl 
+
+     USER  DATA       MODIFICHE
+    ===== ========== =======================================================================
+    mat01 15/09/2025 Aggiunta la variabile flag_att_sosp per l'aggiunta di una nuova tipologia
+    mat01            di attività sospesa
+
+    but01 19/07/2023 Aggiunta class"link-button-2" nel actions"Selez"
+
 } { 
     {search_word       ""}
     {rows_per_page     ""}
@@ -38,6 +46,7 @@ ad_page_contract {
     {cod_inco            ""}
     {funz_inco           ""}
     {extra_par_inco      ""}
+    {flag_att_sosp       ""}
 }  -properties {
     page_title:onevalue
     context_bar:onevalue
@@ -91,7 +100,6 @@ if {(   $flag_cimp == "S"
     }
 }
 
-
 if {$flag_inco == "S"} {
     set link_inco [iter_link_inco $cod_inco $nome_funz_caller $url_list_aimp $url_aimp $nome_funz $funz_inco $extra_par_inco]
 #   set cimp_funz "inco-cimp"
@@ -122,14 +130,15 @@ set col_di_ricerca  ""
 #dei rapporti di verifica
 #set extra_par       [list rows_per_page     $rows_per_page \
 #                          receiving_element $receiving_element]
-set link_aggiungi   "<a href=\"$gest_prog?funzione=I&[export_url_vars flag_origine cod_cimp_dimp url_list_aimp url_aimp cod_impianto gen_prog last_prog_anom caller nome_funz extra_par nome_funz_caller flag_cimp extra_par_inco cod_inco flag_inco]\">Aggiungi</a>"
+#mat01 aggiunto flag_att_sosp al link aggiungi
+set link_aggiungi   "<a href=\"$gest_prog?funzione=I&[export_url_vars flag_origine cod_cimp_dimp url_list_aimp url_aimp cod_impianto gen_prog last_prog_anom caller nome_funz extra_par nome_funz_caller flag_cimp extra_par_inco cod_inco flag_inco flag_att_sosp]\">Aggiungi</a>"
 set rows_per_page   [iter_set_rows_per_page $rows_per_page $id_utente]
 set link_righe      [iter_rows_per_page     $rows_per_page]
 
 
 set link    "\[export_url_vars cod_cimp_dimp flag_origine url_list_aimp url_aimp cod_impianto gen_prog prog_anom last_prog_anom nome_funz nome_funz_caller extra_par flag_cimp extra_par_inco cod_inco flag_inco\]"
 set actions "
-    <td nowrap><a href=\"$gest_prog?funzione=V&$link\">Selez.</a></td>"
+    <td nowrap><a href=\"$gest_prog?funzione=V&$link\" class=\" link-button-2\">Selez.</a></td>"
 set js_function ""
 
 

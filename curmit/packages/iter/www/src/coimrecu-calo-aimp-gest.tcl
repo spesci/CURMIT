@@ -20,8 +20,8 @@ ad_page_contract {
     
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    but01 22/06/2023 Aggiunto la classe ah-jquery-date ai campi:data_installaz, data_dismissione.
     gac01 21/12/2018 Aggiunto campo num_rc_sostituente
-
     rom01 04/09/2018 Aggiunto campo flag_sostituito
 } {
     {cod_recu_calo_aimp          ""}
@@ -98,6 +98,10 @@ switch $funzione {
         set disabled_fld \{\}
     }
 }
+set jq_date "";#but01
+if {$funzione in "M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
 
 form create $form_name \
     -html    $onsubmit_cmd
@@ -116,19 +120,19 @@ element create $form_name  num_rc_sostituente \
     -datatype text \
     -html    "size 3 maxlength 3 $readonly_fld {} class form_element" \
     -optional
-
+#but01
 element create $form_name data_installaz \
     -label   "Data installazione" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
-
+#but01
 element create $form_name data_dismissione \
     -label   "Data dismissione" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional 
 
 #rom01 

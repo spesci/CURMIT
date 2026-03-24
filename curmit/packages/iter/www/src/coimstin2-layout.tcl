@@ -2,6 +2,8 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    but01 31/10/2024 Aggiunto class=table_s nella tabella.
+    
     san01 21/07/2016 Aggiunto filtro obbligatorio da_data_ins e a_data_ins e rimossa
     san01            obbligatorieta' dal filtro da_data_app e a_data_app come concordato
     san01            con l'Agenzia Fiorentina per l'Energia.
@@ -83,7 +85,6 @@ set testata "
       <tr>
          <td align=center>&nbsp;</td>
       </tr>
-</table>
 <p align=center><big>Elenco modelli con osservazioni/raccomandazioni/prescrizioni</big>
 "
 
@@ -256,21 +257,21 @@ append stampa "
    <td>&nbsp;</td>
 </tr>
 </table>
-<table align=center border=1 cellspacing=0 celpadding=0>"
+<table align=center border=1 cellspacing=0 celpadding=0 class=table_s>";#but01
 
 append stampa "
        <tr>
-          <td><b>Data controllo</b></td>
-          <td><b>Manutentore   </b></td>
-          <td><b>Impianto      </b></td>
-          <td><b>Responsabile  </b></td>
-          <td><b>Ubicazione    </b></td>
-	  <td><b>Comune        </b></td>
-          <td><b>Cap           </b></td>
-          <td><b>Tiraggio      </b></td>
-          <td><b>CO            </b></td>
-          <td><b>Rend.         </b></td>
-          <td><b>Prescr/Osserv/Raccom/Funz(S/N) </b></td>
+          <th><b>Data controllo</b></th>
+          <th><b>Manutentore   </b></th>
+          <th><b>Impianto      </b></th>
+          <th><b>Responsabile  </b></th>
+          <th><b>Ubicazione    </b></th>
+	  <th><b>Comune        </b></th>
+          <th><b>Cap           </b></th>
+          <th><b>Tiraggio      </b></th>
+          <th><b>CO            </b></th>
+          <th><b>Rend.         </b></th>
+          <th><b>Prescr/Osserv/Raccom/Funz(S/N) </b></th>
        </tr>"
 
 db_foreach sel_dimp "select coalesce(iter_edit_data(a.data_controllo),'&nbsp;') as data_controllo

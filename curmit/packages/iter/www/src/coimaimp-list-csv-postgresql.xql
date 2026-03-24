@@ -1,4 +1,25 @@
 <?xml version="1.0"?>
+<!--
+  USER  DATA       MODIFICHE
+  ===== ========== =========================================================================
+  ric03 26/11/2024 MEV per regione Marche ordine 63/2022 punti 21 e 32.
+
+  rom03 16/04/2024 Aggiunti campi tipo pompa di calore per il freddo e combustibile su richiesta di Ucit.
+  rom03            Sandro ha detto che va bene per tutti gli enti.
+
+  rom02 14/11/2023 Vanno estratti gli impianti diversi dallo stato K
+
+  ric02 13/06/2023 Per gli impianti del freddo prendo sempre la maggiore tra potenza e potenza_utile.
+
+  ric01 09/06/2023 Aggiunto filtri per criteri aggiuntivi.
+
+  rom01 17/01/2023 Sviluppo per Palermo Energia: aggiunto filro "Per Soggetto presente nello storico RCEE".
+
+  mic01 13/05/2022 Corretta anomalia, l estrazione del file csv non teneva conto del filtro
+  mic01            per targa o cod_impianto_princ.
+  mic01            Corretta anomalia sul conteggio delle DAM, il campo swc_dam deve restituire NO
+  mic01            se non ho record sulla coimdimp con flag_tracciato = 'DA'.
+-->
 
 <queryset>
     <rdbms><type>postgresql</type><version>7.1</version></rdbms>
@@ -11,8 +32,8 @@
 
     <partialquery name="sel_aimp_vie">
        <querytext>
-           select
-                  a.cod_impianto_est
+           select a.cod_impianto_est
+                , h.cod_impianto_est    as cod_impianto_princ --mic01
                 , a.flag_tipo_impianto
                 , a.cod_impianto
                 , a.data_libretto
@@ -86,10 +107,10 @@
                     when a.data_scad_dich < current_date
                     then 'SC'
                     else 'SI'  end
-                  end as swc_mod_h
-                , data_ultim_dich as data_ultima_dich
-                , data_scad_dich as data_scadenza
-                , case
+                    end as swc_mod_h 
+                , a.data_ultim_dich as data_ultima_dich
+                , a.data_scad_dich  as data_scadenza
+		, case
                   when (
                       select count(*)
                         from coimcimp r
@@ -105,7 +126,8 @@
                       select count(*)
                         from coimdimp hj
                        where a.cod_impianto = hj.cod_impianto
-                         and flag_tracciato <> 'DA'
+                 --mic01 and flag_tracciato <> 'DA'
+                         and flag_tracciato = 'DA' --mic01
                         ) = 0
                   then 'NO'
                   else 'SI'
@@ -147,8 +169,17 @@
                 , b.nome
                 , b.cod_fiscale    as cod_fiscale 
                 , iter_edit_num(coalesce(a.potenza,0),2) as potenza
-                , iter_edit_num(coalesce(a.potenza_utile,0),2) as potenza_u
-                , case a.flag_dichiarato
+		
+                --ric02 , iter_edit_num(coalesce(a.potenza_utile,0),2) as potenza_u
+		
+		, case when a.flag_tipo_impianto ='F'
+           	       then (select greatest(iter_edit_num(coalesce(a.potenza,0),2),
+		                             iter_edit_num(coalesce(a.potenza_utile,0),2)))
+		       else (select iter_edit_num(coalesce(a.potenza_utile,0),2))
+		        end as potenza_u
+		--ric02
+
+		, case a.flag_dichiarato
                   when 'S' then 'SI'
                   when 'N' then 'NO'
                   when 'C' then 'N.C.'
@@ -169,23 +200,30 @@
                 , coalesce(kk.indirizzo,' ') as indirizzo_man -- Sandro 12/03/2018
                 , coalesce(kk.cap,' ')||' '||coalesce(kk.comune,' ') as comune_man -- Sandro 12/03/2018
                   $ruolo
-             from coimaimp a
-	    $sogg_join
-   $citt_join_pos coimcitt b  on b.cod_cittadino = a.cod_responsabile
-            $from_clause
-  left outer join coimcomu c  on c.cod_comune    = a.cod_comune
-  left outer join coimviae d  on d.cod_comune    = a.cod_comune	
-                             and d.cod_via       = a.cod_via
-  left outer join coimgend g  on g.cod_impianto  = a.cod_impianto
-                             and g.gen_prog = (select min(o.gen_prog)
-                                                 from coimgend o
-                                                where o.cod_impianto = a.cod_impianto
-                                                  and o.flag_attivo = 'S'
-                                                  and o.data_rottamaz is null)   
-  left outer join coimmanu kk on kk.cod_manutentore = a.cod_manutentore -- Sandro 28/07/2014
+                , tp.descr_tpco as sist_azio_gen1 --rom03
+                , cb.descr_comb as desc_comb_aimp --rom03
+	     from coimaimp a
+		  $sogg_join
+		  $citt_join_pos coimcitt b  on b.cod_cittadino = a.cod_responsabile
+		  $from_clause
+   	     left outer join coimcomu c  on c.cod_comune    = a.cod_comune
+	     left outer join coimviae d  on d.cod_comune    = a.cod_comune	
+	                                and d.cod_via       = a.cod_via
+    	     left outer join coimgend g  on g.cod_impianto  = a.cod_impianto
+	     	                        and g.gen_prog = (select min(o.gen_prog)
+                                                            from coimgend o
+                                                           where o.cod_impianto = a.cod_impianto
+                                                             and o.flag_attivo = 'S'
+                                                             and o.data_rottamaz is null)   
+	     left outer join coimmanu kk on kk.cod_manutentore = a.cod_manutentore   -- Sandro 28/07/2014
+             left outer join coimaimp h on h.cod_impianto  = a.cod_impianto_princ --mic01
+             left outer join coimcomb cb on cb.cod_combustibile = a.cod_combustibile --rom03
+             left outer join coimtpco tp on tp.cod_tpco = g.cod_tpco                 --rom03
             where 1 = 1
+ 	      and a.stato != 'K' --rom02
            $where_matr
            $where_sogg
+	   $where_resp_rcee --rom01
            $where_amministratore
            $where_word
            $where_nome
@@ -210,44 +248,25 @@
            $where_stato_aimp
            $where_last
            $where_mod_h
+	   $where_data_scad
            $where_rife
            $where_codimp_old
            $where_cod_utenza
            $where_dpr
            $where_prov_dati
               $where_ammin
-           $where_matr
-           $where_sogg
-           $where_word
-           $where_nome
-           $where_comune
-           $where_quartiere
-           $where_via
-           $where_manu
-           $where_manutentore
-	   $where_data_mod
-	   $where_data_verifica
-	   $where_utente
-           $where_pot
-           $where_codimp_est
-           $where_comb
            $where_cost
-           $where_data_installaz
-           $where_flag_dichiarato
-           $where_cod_tpim
-           $where_stato_conformita
-           $where_tpdu
-           $where_stato_aimp
-           $where_last
-           $where_mod_h
-           $where_rife
-           $where_codimp_old
-           $where_cod_utenza
-           $where_dpr
-           $where_prov_dati
+           $where_pod
            $where_bollino
            $where_tipo_impianto
            $where_cout
+	   $where_codimp_princ --mic01
+	   $where_targa        --mic01
+	   $where_ibrido       --ric01
+	   $where_dimp         --ric01
+	   $where_dich_conformita   --ric03
+	   $where_dfm_manu          --ric03
+	   $where_dfm_resp_mod      --ric03
            $ordinamento
 
        </querytext>
@@ -258,6 +277,7 @@
        <querytext>
            select
                   a.cod_impianto_est
+                , h.cod_impianto_est    as cod_impianto_princ --mic01		  
                 , a.flag_tipo_impianto
                 , a.cod_impianto
                 , a.targa --san02
@@ -347,6 +367,8 @@
                 , coalesce(kk.cognome,' ')||' '||coalesce(kk.nome,' ') as manu -- Sandro 28/07/2014
                 , coalesce(kk.cod_manutentore,' ') as cod_man -- Sandro 28/07/2014
                 $ruolo
+                , tp.descr_tpco as sist_azio_gen1 --rom03
+                , cb.descr_comb as desc_comb_aimp --rom03
              from coimaimp a
             $sogg_join
    $citt_join_pos coimcitt b  on b.cod_cittadino = a.cod_responsabile
@@ -355,10 +377,14 @@
   left outer join coimgend g  on g.cod_impianto  = a.cod_impianto
                              and g.gen_prog = '1'
   left outer join coimmanu kk on kk.cod_manutentore = a.cod_manutentore -- Sandro 28/07/2014
+  left outer join coimaimp h on h.cod_impianto  = a.cod_impianto_princ --mic01
+  left outer join coimcomb cb on cb.cod_combustibile = a.cod_combustibile --rom03
+  left outer join coimtpco tp on tp.cod_tpco = g.cod_tpco                 --rom03
 
             where 1 = 1
            $where_matr
            $where_sogg
+	   $where_resp_rcee --rom01
            $where_amministratore
            $where_word
            $where_nome
@@ -383,14 +409,23 @@
            $where_stato_aimp
            $where_last
            $where_mod_h
+	   $where_data_scad
            $where_rife
            $where_codimp_old
            $where_cod_utenza
+           $where_pod
            $where_dpr
            $where_prov_dati
            $where_bollino
            $where_tipo_impianto
            $where_cout
+	   $where_codimp_princ   --mic01
+	   $where_targa          --mic01
+	   $where_ibrido         --ric01
+	   $where_dimp           --ric01
+	   $where_dich_conformita   --ric03
+	   $where_dfm_manu          --ric03
+	   $where_dfm_resp_mod      --ric03
            $ordinamento
 
        </querytext>

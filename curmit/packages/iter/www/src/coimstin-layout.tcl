@@ -20,6 +20,19 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    but01 31/10/2024 Aggiunto class=table_s nella tabella.
+
+    rom02 28/02/2023 Paravan di UCit ha chiesto che venga aggiunta la targa. Modifica fatta valere per tutti
+    rom02            gli enti che hanno attiva la gestione delle targhe.
+    rom02bis         Paravan ha chiesto che venga estesa a tutta Regione Friuli una particolarita' presente per
+    rom02bis         Udine e Gorizia: vengono estratti contemporaneamente gli impianti in stato SPEDITO e CONFERMATO
+
+    rom01 03/02/2023 Corretti 2 errori presenti nella stampa: nella foreach degli incontri non
+    rom01            veniva chiusa la riga html tra un record e l'altro e questo faceva uscire
+    rom01            in modo scorretto la stampa formato pdf.
+    rom01            Per Udine e Gorizia era presente un errore se gli appuntamenti da stampare
+    rom01            si filtravano per stato Spedito o Confermato.
+
     san02 06/02/2018 Aggiunto descrizione della mancata ispezione
 
     san01 12/08/2016 Aggiunto campo data_ultim_dich
@@ -109,7 +122,12 @@ fconfigure $file_id -encoding iso8859-1
 fconfigure $file_csv -encoding iso8859-1
 
 # Setto la prima riga del csv
-puts $file_csv "Impianto;Responsabile;Ubicazione;Cap;Mun.;Comune;Data app.;Stato;Esito isp.;Note;Ora;Telefono;Coor. X Y;Pot.;Dich"
+#rom02
+if {$coimtgen(flag_gest_targa) eq "T"} {#rom02 Aggiunta if e il suo contenuto
+    puts $file_csv "Impianto;Targa;Responsabile;Ubicazione;Cap;Mun.;Comune;Data app.;Stato;Esito isp.;Note;Ora;Telefono;Coor. X Y;Pot.;Dich"
+} else {#rom02 Aggiunta else ma non il suo contenuto
+    puts $file_csv "Impianto;Responsabile;Ubicazione;Cap;Mun.;Comune;Data app.;Stato;Esito isp.;Note;Ora;Telefono;Coor. X Y;Pot.;Dich"
+}
 
 set testata "
 <!-- FOOTER LEFT   \"$sysdate_edit\"-->
@@ -194,11 +212,13 @@ if {![string equal $cod_opve ""]} {
     set flag_opve "N"
 }  
 
-if {$coimtgen(ente) eq "PUD" || $coimtgen(ente) eq "PGO"} {
+#rom02bis if {$coimtgen(ente) eq "PUD" || $coimtgen(ente) eq "PGO"} {}
+if {$coimtgen(regione) eq "FRIULI-VENEZIA GIULIA"} {#rom02bis Aggiunta if ma non il suo contenuto
     set where_stato ""
     if {![string equal $flag_stato_appuntamento ""]} {
         if {$flag_stato_appuntamento eq "3" || $flag_stato_appuntamento eq "4"} {
-	    set where_stato " and a.stato in (3, 4)"
+            #rom01set where_stato " and a.stato in (3, 4)"
+            set where_stato " and a.stato in ('3', '4')";#rom01 il campo stato e' un varchar quindi devo usare gli apici
         } else {
 	    set where_stato " and a.stato = :flag_stato_appuntamento"
         }
@@ -280,18 +300,24 @@ append stampa "
    <td>&nbsp;</td>
 </tr>
 </table>
-<table width=100% align=center border=1 cellspacing=0 celpadding=0>"
+<table width=100% align=center border=1 cellspacing=0 celpadding=0 class=table_s>";#but01
 
 if {$flag_enve == "S"} {
     set enve_join_pos "inner join"
     set enve_join_ora ""
     set where_enve    " and c.cod_enve = :cod_enve"
     if {$flag_opve == "N"} {
-	set n_colspan 10
+	#rom02set n_colspan 10
+	set n_colspan 13;#rom02
 	append stampa "
        <tr>
           <td><b>Oper.verif.   </b></td>
-          <td><b>Impianto      </b></td>
+          <td><b>Impianto      </b></td>"
+	if {$coimtgen(flag_gest_targa) eq "T"} {#rom02 Aggiunte if, else e il loro contenuto
+	    append stampa "<td><b>Targa      </b></td>"
+	    incr n_colspan
+	}       
+        append stampa "
           <td><b>Responsabile  </b></td>
           <td><b>Ubic. N/E/S/P/I </b></td>
           <td><b>Cap          </b></td>"
@@ -324,10 +350,16 @@ if {$flag_opve == "S"} {
     set opve_join_pos "inner join"
     set opve_join_ora ""
     set where_opve " and a.cod_opve = :cod_opve"
-    set n_colspan 10
+    #rom02set n_colspan 10
+    set n_colspan 13;#rom02
     append stampa "
     <tr>
-       <th>Impianto      </th>
+       <th>Impianto      </th>"
+    if {$coimtgen(flag_gest_targa) eq "T"} {#rom02 Aggiunte if, else e il loro contenuto
+	append stampa "<th>Targa</th>"
+	incr n_colspan
+    }       
+    append stampa "
        <th>Responsabile  </th>
        <th>Ubic. N/E/S/P/I </th>
        <th>Cap          </th>"
@@ -342,14 +374,14 @@ if {$flag_opve == "S"} {
     }
     append stampa "
        <th>Data app.</th>
-       <td><b>Ora</b></td>
-       <td><b>Stato</b></td>
+       <th><b>Ora</b></th>
+       <th><b>Stato</b></th>
        <th>Esito isp.</th>
-       <td><b>Note</b></td>
-       <td><b>Telefono</b></td>
-       <td><b>Coor. X Y</b></td>
-       <td><b>Pot.</b></td>
-       <td><b>Dich.S/N</b></td>
+       <th><b>Note</b></th>
+       <th><b>Telefono</b></th>
+       <th><b>Coor. X Y</b></th>
+       <th><b>Pot.</b></th>
+       <th><b>Dich.S/N</b></th>
     </tr>"
 } else {
     set opve_join_pos "left outer join"
@@ -358,12 +390,18 @@ if {$flag_opve == "S"} {
 }
 
 if {$flag_enve == "N" && $flag_opve == "N"} {
-    set n_colspan 11
+    #rom02set n_colspan 11
+    set n_colspan 14;#rom02
     append stampa "
     <tr>
        <th>Ente verif.   </th>
        <th>Oper.verif.   </th>
-       <th>Impianto      </th>
+       <th>Impianto      </th>" 
+    if {$coimtgen(flag_gest_targa) eq "T"} {#rom02 Aggiunte if, else e il loro contenuto
+	append stampa "<th>Targa</th>"
+	incr n_colspan
+    }       
+    append stampa "
        <th>Responsabile  </th>
        <th>Ubic. N/E/S/P/I </th>
         <th>Cap          </th>"
@@ -405,6 +443,14 @@ db_foreach $sel_inco "" {
     } else {
 	set nome_opve_csv "$nome_opve"
     }
+    
+    if {[string is space $targa]} {#rom02 Aggiunte if, else e il loro contenuto
+	set targa "&nbsp;"
+	set targa_csv ""
+    } else {
+	 set targa_csv "$targa"
+    }
+
     if {[string is space $nome_resp]} {
 	set nome_resp "&nbsp;"
 	set nome_resp_csv ""
@@ -435,7 +481,12 @@ db_foreach $sel_inco "" {
     }
 
     append stampa "
-           <td align=right>$cod_impianto_est</td>
+           <td align=right>$cod_impianto_est</td>"
+
+    if {$coimtgen(flag_gest_targa) eq "T"} {#rom02 Aggiunte if, else e il loro contenuto
+        append stampa "<td align=right>$targa</td>"
+    }
+    append stampa "
            <td>$nome_resp</td>
            <td>$indir</td>
            <td>$cap</td>"
@@ -509,7 +560,13 @@ db_foreach $sel_inco "" {
       <td>$potenza_csv</td>
       <td>$flag_dichiarato_csv - $data_ultim_dich</td></tr>"
 
+if {$coimtgen(flag_gest_targa) eq "T"} {#rom02 Aggiunta if e il suo contenuto
+    puts $file_csv "$cod_impianto_est;$targa_csv;$nome_resp_csv;$indir_csv;$cap_csv;$cod_qua_csv;$denom_comune_csv;$data_verifica_csv;$stato_inco;$desc_esito_csv;\"$note_csv\";$ora_verifica_csv;$telefono_csv;$gb_csv;$potenza_csv;$flag_dichiarato_csv - $data_ultim_dich"
+} else {#rom02 Aggiunta else ma non il suo contenuto
     puts $file_csv "$cod_impianto_est;$nome_resp_csv;$indir_csv;$cap_csv;$cod_qua_csv;$denom_comune_csv;$data_verifica_csv;$stato_inco;$desc_esito_csv;\"$note_csv\";$ora_verifica_csv;$telefono_csv;$gb_csv;$potenza_csv;$flag_dichiarato_csv - $data_ultim_dich"
+}
+
+    append stampa "</tr>";#rom01
 
 } if_no_rows {
     if {$flag_enve == "S" && $flag_opve == "N"} {
@@ -571,6 +628,12 @@ close $file_id
 # lo trasformo in PDF
 # Sandro 22/01/2016: messo portrait al posto di landscape
 # simone 17/07/2017: concordato con Sandro di rimettere landscape al posto di portrait
-iter_crea_pdf [list exec htmldoc --webpage --header ... --footer ... --quiet --landscape --bodyfont arial --fontsize 8 --left 0.5cm --right 0.5cm --top 0cm --bottom 0.5cm -f $file_pdf $file_html]
+if {$coimtgen(flag_gest_targa) eq "T"} {#rom02 Aggiunte if, else e il loro contenuto
+    set font_size 6
+} else {
+    set font_size 8
+}
+
+iter_crea_pdf [list exec htmldoc --webpage --header ... --footer ... --quiet --landscape --bodyfont arial --fontsize $font_size --left 0.5cm --right 0.5cm --top 0cm --bottom 0.5cm -f $file_pdf $file_html]
 
 ad_return_template

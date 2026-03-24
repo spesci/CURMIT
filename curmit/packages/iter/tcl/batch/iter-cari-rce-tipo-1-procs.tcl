@@ -15,6 +15,34 @@ ad_proc iter_cari_rce_tipo_1 {
     
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    rom10 29/05/2024 Corretta gestione del campo cod_tpcr, sulla coimtabs il campo è un varchar di 1
+    rom10            mentre sulla coimdimp il campo è una sigla di più lettere.
+
+    rom09 27/06/2023 MEV REGIONE MARCHE: Annullamento logico di uno strumento, vengono presi in
+    rom09            considerazione solo strumenti in stato attivo, vael per tutti gli enti.
+    rom09            MEV REGIONE MARCHE: Punto D dell'rcee, aggiunti vari controlli (spiegati sotto)
+    rom09            sui flag del punto D dell'rcee e il tipo locale del generatore, solo per le Marche.
+
+    rom08 17/05/2022 Corretto controllo sul manutentore associato all'impianto: Sulle Marche
+    rom08            solitamente il cod_impianto_est e' uguale al cod_impianto ma su alcuni enti,
+    rom08            ad esempio la Provincia di Fermo, ci sono casi dove cod_impianto_est e cod_impianto
+    rom08            non coincidono. Il controllo andava per cod_impianto_est = :cod_impianto
+    rom08            mentre ora cerca il cod_impianto_est con quello passato nel file.
+
+    rom07 04/05/2022 Il campo pdr non e' piu' obbligatorio sulla coimtabs quindi il controllo
+    rom07            fatto per verificare che il pdr sia associato all'impianto va fatto solo
+    rom07            se il campo pdr viene valorizzato nel file csv.
+
+    rom06 11/04/2022 Corretta anomalia sulla data di scadenza dell'rcee per Regione Marche.
+    rom06            In caso di anno bisestile, se la data del controllo e' il primo giorno
+    rom06            del mese, viene preso il mese sbagliato per settare la data scadenza.
+    rom06            Ora no vado piu' ad aggiungere i giorni alla data del controllo ma uso i mesi.
+
+    rom05 06/04/2022 Aggiunto campo potenza preso dal generatore nell'inserimento del dimp.
+    rom05            Corretto errore sul calcolo della data scadenza, venivano usati dei campi
+    rom05            non presenti sulla coimaimp e la variabile potenza_impianto veniva richiamata
+    rom05            in erronemante con i : al posto del $.
+
     rom04 06/07/2021 Su segnalazione della provincia di Pesaro e Urbino sono state fatte
     rom04            alcune correzioni sul campo idioneita_locale della coimdimp e sull'aggiornamento
     rom04            della data di scadenza e data dell'ultimo RCEE sulla coimaimp.
@@ -851,7 +879,7 @@ ad_proc iter_cari_rce_tipo_1 {
 			    
 			} else {
 			    if {![db_0or1row q "select 1 from coimaimp where cod_impianto = :cod_impianto and targa= :targa"]} {
-				set descr_errore "La targa non è associata all'impianto"
+				set desc_errore "La targa non è associata all'impianto"
 				incr errori
 				incr error_targa
 				db_dml upd_riga "update $nome_tabella 
@@ -1196,26 +1224,27 @@ ad_proc iter_cari_rce_tipo_1 {
 				}
 			    }
 			}
-		    }
+		    }		    
 		    #controllo che il pdr sia associato all'impianto
-		    if {![db_0or1row q "select 1 from coimaimp where cod_impianto = :cod_impianto and pdr = :pdr"]} {
-			set desc_errore "Il pdr non è associato all'impianto"
-			incr errori
+		    if {![string is space $pdr]} {#rom07 Aggiunta if ma non il suo contenuto
+			if {![db_0or1row q "select 1 from coimaimp where cod_impianto = :cod_impianto and pdr = :pdr"]} {
+			    set desc_errore "Il pdr non è associato all'impianto"
+			    incr errori
 			
-			db_dml upd_riga "update $nome_tabella 
-                                            set numero_anomalie = '1' 
-                                              , flag_stato      = 'S' 
-                                          where id_riga         = :id_riga"
-			
-			db_dml ins_anom "
+			    db_dml upd_riga "update $nome_tabella 
+                                                set numero_anomalie = '1' 
+                                                  , flag_stato      = 'S' 
+                                              where id_riga         = :id_riga"
+			    
+			    db_dml ins_anom "
                                          insert into $nome_tabella_anom
                                               values ( :id_riga
                                                      , :cod_manutentore
                                                      , 'pdr'
                                                      , :desc_errore )"
-			
-		    }
-
+			    
+			}
+		    };#rom07
 		    #gac01 controllo sul campo rispetta_indice_bacharach perchè deve essere obbligatorio solo in caso di impianto a gasolio
 		    if {$combustibile eq "GASOLIO" && $rispetta_indice_bacharach eq ""} {
 			set desc_errore "Rispetta indice di Bacharach è obbligatorio per impianti a gasolio"
@@ -1259,7 +1288,6 @@ ad_proc iter_cari_rce_tipo_1 {
                                                      , 'cod_strumento_02'
                                                      , :desc_errore )"
 		    }
-
 		    #rom03 inizio controlli su cod_strumento_01 (Analizzatore) e cod_strumento_02 (Deprimometro)
 
 		    set dati_analizzatore [split $cod_strumento_01 "-"];#rom03
@@ -1276,9 +1304,10 @@ ad_proc iter_cari_rce_tipo_1 {
                                            and upper(modello_strum)  = upper(:modello_analizzatore)
                                            and upper(matr_strum)     = upper(:matricola_analizzatore)
                                            and tipo_strum = '0'
+                                           and is_active_p = 't' --rom09
                                            and cod_manutentore = :cod_manutentore
                                          limit 1"]} {#rom03 aggiunta if e suo contenuto
-			set desc_errore "Analizzatore non trovato con i dati forniti. Il campo va passato nel formato Marca - Modello - Matricola."
+			set desc_errore "Nessun Analizzatore attivo trovato con i dati forniti. Il campo va passato nel formato Marca - Modello - Matricola."
 			incr errori
 
 			db_dml upd_riga "update $nome_tabella
@@ -1313,9 +1342,10 @@ ad_proc iter_cari_rce_tipo_1 {
                                                and upper(modello_strum) = upper(:modello_deprimometro)
                                                and upper(matr_strum)    = upper(:matricola_deprimometro)
                                                and tipo_strum = '1'
+                                               and is_active_p = 't' --rom09
                                                and cod_manutentore = :cod_manutentore
                                              limit 1"]} {
-			    set desc_errore "Deprimometro non trovato con i dati forniti. Il campo va passato nel formato Marca - Modello - Matricola"
+			    set desc_errore "Nessun Deprimometro attivo trovato con i dati forniti. Il campo va passato nel formato Marca - Modello - Matricola"
 			    incr errori
 			    
 			    db_dml upd_riga "update $nome_tabella
@@ -1332,12 +1362,114 @@ ad_proc iter_cari_rce_tipo_1 {
 
 		    };#rom03
 
+		    if {$coimtgen(regione) eq "MARCHE"} {#rom09 Aggiunta if e il suo contenuto.
+
+			if {[db_0or1row q "select 1
+                                         from coimgend
+                                        where cod_impianto    = :cod_impianto
+                                          and gen_prog        = :gen_prog_controllo_depri
+                                          and locale          in ('T','I')"]} {
+			    # Se tipo locale e' "Locale ad uso esclusivo" o "Interno"
+			    # il campo idoneita_locale puo' essere solo Si/No e rct_install_interna deve essere vuoto.
+			    
+			    if {!($idoneita_locale in [list "S" "N"])} {
+
+				set desc_errore "Per il Tipo locale ad uso esclusivo oppure interno, il campo può essere solo Si/No"
+				incr errori
+				db_dml upd_riga "update $nome_tabella
+                                                set numero_anomalie = :errori
+                                                  , flag_stato = 'S'
+                                              where id_riga = :id_riga"
+				db_dml ins_anom " insert into $nome_tabella_anom
+                                              values ( :id_riga
+                                                     , :cod_manutentore
+                                                     , 'idoneita_locale'
+                                                     , :desc_errore )"
+			    }
+			    if {![string is space $rct_install_interna]} {
+
+				set desc_errore "Per il Tipo locale ad uso esclusivo oppure interno, il campo può essere solo vuoto."
+				incr errori
+				db_dml upd_riga "update $nome_tabella
+                                                set numero_anomalie = :errori
+                                                  , flag_stato = 'S'
+                                              where id_riga = :id_riga"
+				db_dml ins_anom " insert into $nome_tabella_anom
+                                              values ( :id_riga
+                                                     , :cod_manutentore
+                                                     , 'rct_install_interna'
+                                                     , :desc_errore )"
+			    }
+
+			} elseif {[db_0or1row q "select 1
+                                         from coimgend
+                                        where cod_impianto    = :cod_impianto
+                                          and gen_prog        = :gen_prog_controllo_depri
+                                          and locale          in ('E')"]} {
+			    # Se tipo locale e'Esterno il campo idoneita_locale deve essere vuoto
+			    # mentre rct_install_interna puo' essere solo Si/No.
+			    if {!($rct_install_interna in [list "S" "N"])} {
+
+				set desc_errore "Per il Tipo locale ad uso esclusivo oppure interno, il campo può essere solo Si/No"
+				incr errori
+				db_dml upd_riga "update $nome_tabella
+                                                set numero_anomalie = :errori
+                                                  , flag_stato = 'S'
+                                              where id_riga = :id_riga"
+				db_dml ins_anom " insert into $nome_tabella_anom
+                                              values ( :id_riga
+                                                     , :cod_manutentore
+                                                     , 'rct_install_interna'
+                                                     , :desc_errore )"
+			    }
+			    if {![string is space $idoneita_locale]} {
+
+				set desc_errore "Per il Tipo locale ad uso esclusivo oppure interno, il campo può essere solo vuoto."
+				incr errori
+				db_dml upd_riga "update $nome_tabella
+                                                set numero_anomalie = :errori
+                                                  , flag_stato = 'S'
+                                              where id_riga = :id_riga"
+				db_dml ins_anom " insert into $nome_tabella_anom
+                                              values ( :id_riga
+                                                     , :cod_manutentore
+                                                     , 'idoneita_locale'
+                                                     , :desc_errore )"
+			    }
+			    
+			} elseif {[db_0or1row q "select 1
+                                         from coimgend
+                                        where cod_impianto    = :cod_impianto
+                                          and gen_prog        = :gen_prog_controllo_depri
+                                          and locale          is null"]} {
+			    # Se Tipo locale non e' valorizzato a catasto va bloccato il caricamento.
+			    set desc_errore "Inserire il campo Tipo locale del generatore sulla Scheda 4.1bis"
+				incr errori
+				db_dml upd_riga "update $nome_tabella
+                                                set numero_anomalie = :errori
+                                                  , flag_stato = 'S'
+                                              where id_riga = :id_riga"
+				db_dml ins_anom " insert into $nome_tabella_anom
+                                              values ( :id_riga
+                                                     , :cod_manutentore
+                                                     , 'idoneita_locale'
+                                                     , :desc_errore )"   
+
+			} else {
+			    #non dovrebbe esistere il caso.
+			}
+
+			# Il campo rct_canale_fumo_idoneo non puo' essere vuoto.
+
+
+		    }
+		    
 		    #ns_log notice "ROM1 cod_strumento_01: $cod_strumento_01 cod_strumento_02: $cod_strumento_02"
 		    
 		    #controllo che il manutentore sia associato all'impianto in cui sto inserendo l'rcee.
 		    if {![db_0or1row q "select cod_impianto as cod_impianto_per_controllo 
                                           from coimaimp 
-                                         where cod_impianto_est = :cod_impianto 
+                                         where cod_impianto_est = :cod_impianto_est --rom08 cod_impianto_est = :cod_impianto 
                                            and cod_manutentore  = :cod_manutentore"]} {
 			set desc_errore "Il manutentore non è associato all'impianto"
 			incr errori
@@ -1702,8 +1834,7 @@ ad_proc iter_cari_rce_tipo_1 {
 				}
 			    }
 			}
-			
-			
+						
 			set cod_comune_chk $comuni($comune)
 			set cod_comune $comuni($comune)
 			set cod_comb $combustibili($combustibile)		    
@@ -1713,31 +1844,28 @@ ad_proc iter_cari_rce_tipo_1 {
 			set sw_data_controllo_ok   "t";#Già controllata prima, se si arriva in questo punto, è sicuramente ok.
 			set sw_pot_focolare_nom_ok "t";#Già controllata prima, se si arriva in questo punto, è sicuramente ok.
 			set form_name              "";#Non serve perchè non capita mail il caso di data_scadenza_autocert già valorizzata
-			
-			
-			
+					       			
 			set colonna_errore "cod_impianto_est"
 			set msg_errore ""
 			set err_count 0
-			
-			
+						
 			######################
 			if {$coimtgen(flag_potenza) eq "pot_utile_nom"} {#sim08 Aggiunta if ed il suo contenuto
-			    set potenza_impianto "potenza_utile_nom"
+			    set potenza_impianto potenza_utile
 			} else {
-			    set potenza_impianto "potenza_foc_nom"
+			    set potenza_impianto potenza
 			}
-
 			
 			ns_log notice "simone inizio parte rifatta con gacalin"
 			db_1row q "select cod_potenza as cod_potenza_tari
-                                        , :potenza_impianto as potenza_impianto
+                                        , $potenza_impianto as potenza_impianto
                                         , cod_responsabile --lo rileggo dall'impianto perche' ho gia' verificato sopra che e' identico a quello inserito nel file  
                                      from coimaimp
                                     where cod_impianto=:cod_impianto_catasto"
 
-			ns_log notice "Gacalin - cod_impianto:$cod_impianto - cod_impianto_catasto:$cod_impianto_catasto - cod_responsabile:$cod_responsabile"
-			
+			ns_log notice "iter-cari-rce-tipo-1-procs Gacalin - cod_impianto:$cod_impianto - cod_impianto_catasto:$cod_impianto_catasto - cod_responsabile:$cod_responsabile
+potenza_impianto $potenza_impianto - data_scadenza_autocert $data_scadenza_autocert - sw_data_controllo_ok $sw_data_controllo_ok combustibile $combustibile"
+
 			set data_installaz_gend [db_string q "select data_installaz 
                                                                 from coimgend 
                                                                where cod_impianto =:cod_impianto_catasto
@@ -1792,18 +1920,20 @@ ad_proc iter_cari_rce_tipo_1 {
 			    };#rom04
 
 			} elseif {$coimtgen(regione) eq "MARCHE" || $coimtgen(ente) eq "PBT"} {#sim02  #sim22: Aggiunto || per BAT
-			    
-			    if {$potenza_impianto < 100.00 } {
+
+			    if {$potenza_impianto <= 100.00 } {
 				
 				if {[string equal $data_scadenza_autocert ""]} {
 				    if {$sw_data_controllo_ok == "t"} {
 					
 					#se combustibile gpl o metano 4 anni
 					if {$combustibile eq "4" || $combustibile eq "5"} {
-					    set data_scadenza_autocert [db_string query "select :data_controllo::date + 1460" -default ""]
+					    #rom06set data_scadenza_autocert [db_string query "select :data_controllo::date + 1460" -default ""]
+					    set data_scadenza_autocert [db_string query "select (:data_controllo::date + interval '48 month')::date" -default ""];#rom06
 					    
 					} else {;#per gli altri 2
-					    set data_scadenza_autocert [db_string query "select :data_controllo::date + 730" -default ""]
+					    #rom06set data_scadenza_autocert [db_string query "select :data_controllo::date + 730" -default ""]
+					    set data_scadenza_autocert [db_string query "select (:data_controllo::date + interval '24 month')::date" -default ""];#rom06
 					}
 				    }
 				    
@@ -1811,16 +1941,18 @@ ad_proc iter_cari_rce_tipo_1 {
 				
 			    }
 			    
-			    if {$potenza_impianto >= 100.00} {
+			    if {$potenza_impianto > 100.00} {
 				if {[string equal $data_scadenza_autocert ""]} {
 				    if {$sw_data_controllo_ok == "t"} {
 					
 					#se combustibile gpl o metano 2 anni
 					if {$combustibile eq "4" || $combustibile eq "5"} {
-					    set data_scadenza_autocert [db_string query "select :data_controllo::date + 730" -default ""]
+					    #rom06set data_scadenza_autocert [db_string query "select :data_controllo::date + 730" -default ""]
+					    set data_scadenza_autocert [db_string query "select (:data_controllo::date + interval '24 month')::date" -default ""];#rom06
 					    
 					} else {;#per gli altri 1 solo
-					    set data_scadenza_autocert [db_string query "select :data_controllo::date + 365" -default ""]
+					    #rom06set data_scadenza_autocert [db_string query "select :data_controllo::date + 365" -default ""]
+					    set data_scadenza_autocert [db_string query "select (:data_controllo::date + interval '12 month')::date" -default ""];#rom06
 					    
 					}
 				    }
@@ -2191,7 +2323,17 @@ ad_proc iter_cari_rce_tipo_1 {
                                              from coimgend
                                             where cod_impianto = :cod_impianto
                                               and gen_prog     = :gen_prog";#rom05
-				
+
+				switch $cod_tprc {
+				    "1" { set val_cod_tprc "CADALLE" }
+				    "2" { set val_cod_tprc "PRIMMES" }
+				    "3" { set val_cod_tprc "SOSTGEN" }
+				    "4" { set val_cod_tprc "RISTRUT" }
+				    "5" { set val_cod_tprc "RIATTIV" }
+				    "6" { set val_cod_tprc "MANSTRA" }
+				    "7" { set val_cod_tprc "REGINAD" }
+				};#rom10
+
 				db_dml ins_dimp ""
 
 				incr count_dimp

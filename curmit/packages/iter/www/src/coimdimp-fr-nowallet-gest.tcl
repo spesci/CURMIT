@@ -20,6 +20,17 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== ==================================================================================
+    but02 23/07/2024 Aggiunto il pop-up bonifica campagna.
+    
+    but01 24/07/2023 Aggiunto la "class ah-jquery-date" per tutti i campi data.
+
+    rom05 17/05/2023 Correzione sulla potenza_impianto per errore segnalato da Palermo.
+
+    rom04 07/10/2022 Settate le scadenze per la citta' metropolitana di Palermo. Con Sandro si e' deciso
+    rom04            di fare le if solo per Palemo e non per tutta la Regione Sicilia perche' la citta'
+    rom04            metropolitana ha particolarita' proprie.
+    rom04            Sandro ha chiesto che Palermo abbia anche Bollettino postale come opzione di tipologia_costo.
+
     rom03 12/01/2021 Le particolarita' della Provincia di Salerno ora sono sostituite dalla condizione
     rom03            su tutta la Regione Campania.
 
@@ -195,6 +206,7 @@ switch $funzione {
     "M" {set lvl 3}
     "D" {set lvl 4}
 }
+
 
 #modifica del 120913
 if {$funzione eq "I"} {
@@ -435,6 +447,11 @@ switch $funzione {
         set disabled_fld \{\}
     }
 }
+set jq_date "";#but01
+if {$funzione in "M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
+
 
 if {$funzione_stn eq "I"} {
     set readonly_key \{\}
@@ -523,6 +540,13 @@ if {$funzione == "I" || $funzione == "M"} {
     set cerca_resp [iter_search $form_name [ad_conn package_url]/src/coimcitt-filter [list dummy cod_responsabile f_cognome cognome_resp f_nome nome_resp dummy cod_fiscale_resp]]
 } else {
     set cerca_resp ""
+}
+
+set modif_cind "";#but02
+if {$funzione == "V"} {#but02 aggiunto if e suo contenuto
+    set cod_cind_dimp [db_string query "select max(cod_cind) from coimdimp where cod_dimp = :cod_dimp " -default ""]
+    set link_gest [export_url_vars flag_tracciato cod_dimp last_cod_dimp nome_funz nome_funz_caller extra_par caller cod_impianto url_list_aimp url_aimp url_gage flag_no_link cod_opma data_ins cod_cind_dimp]
+    set modif_cind [export_vars -base "coimdimp-bon-cind?$link_gest"]
 }
 
 element create $form_name cognome_prop \
@@ -645,12 +669,12 @@ if {$flag_mod_gend == "S"} {
 	-datatype text \
 	-html    "$disabled_fld {} class form_element" \
 	-optional
-
+#but01
     element create $form_name data_insta \
 	-label   "Data installazione" \
 	-widget   text \
 	-datatype text \
-	-html    "size 15 maxlength 100 $readonly_fld {} class form_element" \
+	-html    "size 15 maxlength 100 $readonly_fld {} class form_element $jq_date" \
 	-optional
 
     element create $form_name destinazione \
@@ -673,7 +697,7 @@ if {$flag_mod_gend == "S"} {
 	-label   "Data costruzione generatore" \
 	-widget   text \
 	-datatype text \
-	-html    "size 10 $readonly_fld {} class form_element" \
+	-html    "size 10 $readonly_fld {} class form_element $jq_date" \
 	-optional
     
     element create $form_name marc_effic_energ \
@@ -769,7 +793,7 @@ if {$flag_mod_gend == "S"} {
 	-label   "Data installazione" \
 	-widget   text \
 	-datatype text \
-	-html    "size 15 maxlength 100 readonly {} class form_element" \
+	-html    "size 15 maxlength 100 readonly {} class form_element $jq_date" \
 	-optional
     
     element create $form_name destinazione \
@@ -791,7 +815,7 @@ if {$flag_mod_gend == "S"} {
 	-label   "Data costruzione generatore" \
 	-widget   text \
 	-datatype text \
-	-html    "size 10 readonly {} class form_element" \
+	-html    "size 10 readonly {} class form_element $jq_date" \
 	-optional
     
     element create $form_name marc_effic_energ \
@@ -1644,14 +1668,14 @@ element create $form_name data_utile_inter \
     -label   "Data utile intervento" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name data_controllo \
     -label   "Data controllo" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_key {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_key {} class form_element $jq_date" \
     -optional
 
 element create $form_name n_prot \
@@ -1665,7 +1689,7 @@ element create $form_name data_prot \
     -label   "Data protocollo" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name saldo_manu \
@@ -1721,7 +1745,7 @@ element create $form_name data_prox_manut \
     -label   "Data prossima Manutenzione" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional;#gab01
 
 if {$flag_portafoglio == "T"} {
@@ -1756,6 +1780,10 @@ if {$coimtgen(regione) eq "CAMPANIA"} {
     set options_cod_tp_pag [db_list_of_lists sel_lol "select descrizione, cod_tipo_pag from coimtp_pag where cod_tipo_pag = 'BP'"]
 }
 
+if {$coimtgen(ente) eq "PPA"} {#rom04 Aggiunta if e il suo contenuto.
+    set options_cod_tp_pag [db_list_of_lists sel_lol "select descrizione, cod_tipo_pag from coimtp_pag where cod_tipo_pag in ('BO','BP')"]
+}
+
 element create $form_name tipologia_costo \
     -label   "Tipo pagamento" \
     -widget   select \
@@ -1776,7 +1804,7 @@ element create $form_name data_scad_pagamento \
     -label   "Data scadenza pagamento" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name scar_can_fu \
@@ -1812,7 +1840,7 @@ element create $form_name data_scadenza_autocert \
     -label   "Potenza" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_key {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_key {} class form_element $jq_date" \
     -optional
 
 element create $form_name num_autocert \
@@ -1826,7 +1854,7 @@ element create $form_name data_arrivo_ente \
     -label   "Data di arrivo all'ente" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 
@@ -1873,7 +1901,7 @@ while {$conta < 5} {
 	-label    "data utile intervento" \
 	-widget   text \
 	-datatype text \
-	-html     "size 10 maxlength 10 $readonly_fld {} class form_element" \
+	-html     "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
 	-optional 
 }
 
@@ -4145,6 +4173,11 @@ if {[form is_valid $form_name]} {
 	    }
 	}
 
+
+        db_1row query "select greatest(potenza, potenza_utile) as potenza_impianto
+                         from coimaimp
+                        where cod_impianto = :cod_impianto";#rom05 copiato da coimdimp-fr-gest.tcl
+
 	# se viene indicato il bollino (riferimento pagamento valorizzato e
 	# tipologia costo = 'BO').
 	set note_todo_boll ""
@@ -4252,6 +4285,51 @@ if {[form is_valid $form_name]} {
 		    }
 		}
 	    }
+	} elseif {$coimtgen(ente) eq "PPA"} {#rom04 Aggiunta if e suo contenuto
+
+	    if {$sw_data_controllo_ok == "t"} {
+
+		db_1row q "select cod_tpco
+                             from coimgend
+                            where gen_prog =:gen_prog
+                              and cod_impianto=:cod_impianto"
+		# Per pompe di calore a compresisone di vapore ad azionamento elettrico (cod_tpco 2)
+		# e/o ad assorbimento a fiamma diretta (cod_tpco 1):
+		# Con potenza impianto tra 12 e 100 la data di scadenza e' a 4 anni dalla data del controllo.
+		# Con potenza impianto > di 100 la data di scadenza e' a 2 anni dalla data del controllo.
+		if {$cod_tpco in [list "1" "2"]} {
+		    
+		    if {$potenza_impianto >= 12.00 && $potenza_impianto <= 100.00} {
+
+			set data_scadenza_autocert [db_string query "select :data_controllo::date + interval '4 year'" -default ""]
+			
+		    } elseif { $potenza_impianto > 100.00} {
+
+			set data_scadenza_autocert [db_string query "select :data_controllo::date + interval '2 year'" -default ""]
+		    }
+		}
+
+		if {$potenza_impianto >= 12.00} {
+		    # Per pompe di calore a compresisone di vapore azionate da motore endotermico (cod_tpco 4)
+		    # con potenza impianto >= 12.00 la scadenza e' a 4 anni dalla data del controllo.
+		    if {[string equal $cod_tpco "4"]} {
+			
+			set data_scadenza_autocert [db_string query "select :data_controllo::date + interval '4 year'" -default ""]
+		    }
+		    # Per pompe di calore ad assorbimento alimentate con energia termica
+		    # con potenza impianto >= 12.00 la scadenza e' a 2 anno dalla data del controllo.
+		    if {[string equal $cod_tpco "3"]} {
+			set data_scadenza_autocert [db_string query "select :data_controllo::date + interval '2 year'" -default ""]
+		    }
+		}
+	    } else {
+		set data_scadenza_autocert [iter_check_date $data_scadenza_autocert]
+		if {$data_scadenza_autocert == 0} {
+		    element::set_error $form_name data_scadenza_autocert "Inserire correttamente"
+		    incr error_num
+		}
+	    }
+	   
 	} else {;#sim02
 	    #caso standard
 	    if {[string equal $data_scadenza_autocert ""]} {

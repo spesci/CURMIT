@@ -10,7 +10,7 @@
        <a href=transactions-filter?@link_filter;noquote@  class=func-menu>Ritorna</a>
    </td>
    <td width="25%" nowrap class=func-menu>
-       <a href=transactions?format=csv&@link_scar;noquote@  class=func-menu>Scarica</a>
+       <a href=transactions?format=csv&@link_scar;noquote@  class=func-menu>Scarica CSV</a>
    </td>
    <td width="75%" class=func-menu>&nbsp;</td>
 </tr>

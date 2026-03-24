@@ -6,6 +6,13 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== ================================================================================================
+    rom04 07/12/2023 Per regione Friuli modificata variabile logo_regione.
+
+    ric01 02/03/2023 Modifiche per loghi e diciture per UCIT.
+
+    rom03 10/01/2022 Su richiesta di Regione Marche oltre al logo vado anche a scrivere il nome dell'ente di riferimento
+    rom03            che sta stampando la targa.
+
     rom02 03/07/2020 Sul server OASI-AMAZON-09 la versione di zint e' più aggiornata rispetto a qella degli altri
     rom02            server, passa dalla versione 2.4.2 alla versione 2.7.0. La versione 2.7.0 non supporta piu' 
     rom02            il comando --directeps, bisogna usare invece --filetype=EPS. Per ovviare il problema delle versioni 
@@ -67,11 +74,28 @@ set master_logo_sx_height  [parameter::get_from_package_key -package_key iter -p
 set logo_regione "<img src=$logo_dir/$logo_regione height=$master_logo_dx_height>"
 set logo_ente    "<img src=$logo_dir/$logo_ente height=$master_logo_sx_height>"
 #set logo_ente "<img src=$logo_dir/$logo_ente width=32 height=32>"
+set master_logo_sx_titolo_sopra [parameter::get_from_package_key -package_key iter -parameter master_logo_sx_titolo_sopra];#rom03
+set master_logo_sx_titolo_sotto [parameter::get_from_package_key -package_key iter -parameter master_logo_sx_titolo_sotto];#rom03
+set dicitura_ente "$master_logo_sx_titolo_sopra $master_logo_sx_titolo_sotto";#rom03
+
+#ric01 aggiunte modifiche loghi e diciture per UCIT
+set intestazione_bassa "";#ric01
+
+iter_get_coimtgen;#ric01
+
+if {$coimtgen(regione) eq "FRIULI-VENEZIA GIULIA"} {#ric01 aggiunta if e suo contenuto
+    #rom01set logo_regione "<img src=$logo_dir/ucit-sfondo-bianco.jpg height=34>"
+    set logo_regione "<img src=$logo_dir/fvg_energia_spa.png  height=23>"
+    set logo_ente    "<img src=$logo_dir/friuli-ve-giu-new.jpg  height=23>"
+    set intestazione_bassa "<tr><td>&nbsp;</td></tr>
+            <tr><td colspan=3 align=center><font size=1><b>Targa impianto stampata dal CRIT-FVG Catasto Regionale Impianti Termici Friuli Venezia Giulia</b></font></td></tr>"
+}
+
 set etichetta "
 <table width=100% border=0>
    <tr>
      <td width=11%>$logo_ente</td>
-     <td width=78%>&nbsp;</td>
+     <td width=78%><b>$dicitura_ente</b></td><!--rom03 Aggiunta variabile dicitura_ente al posto di &nbsp; -->
      <td width=11%>$logo_regione</td>
    </tr>
    <tr>
@@ -80,6 +104,7 @@ set etichetta "
    <tr>
      <td colspan=3 align=center>$qrcode</td>
    </tr> 
+$intestazione_bassa
 </table>"
 
 set html "

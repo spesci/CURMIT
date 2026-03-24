@@ -1,4 +1,9 @@
 <?xml version="1.0"?>
+<!-- 
+    USER  DATA       MODIFICHE
+    ===== ========== ===========================================================================
+    rom01 28/09/2022 Aggiunta colonna pec del soggetto responsabile su richiesta di Paravan di Ucit.
+-->
 
 <queryset>
     <rdbms><type>postgresql</type><version>7.1</version></rdbms>
@@ -15,6 +20,7 @@
                , d.cod_impianto_est
                , coalesce(e.descr_topo,'')||' '||coalesce(e.descrizione,'')||' '||coalesce(d.numero,'')||' '||coalesce(d.esponente,'') as indir
                , coalesce(g.nome, '')||' '||coalesce(g.cognome, '') as nom_resp
+               , coalesce(g.pec, '') as pec_resp --rom01
                , coalesce(g.indirizzo,'')||' '||coalesce(g.numero,'') as indir_resp
                , coalesce(g.localita,'') as loca_resp
                , coalesce(g.cap,'')||' '||coalesce(g.comune,'') ||' '||coalesce(g.provincia,'') as cap_comune_provincia_resp
@@ -47,6 +53,7 @@
                , d.cod_impianto_est
                , coalesce(d.indirizzo,'')||' '||coalesce(d.numero,'')||' '||coalesce(d.esponente,'')||' '||coalesce(d.localita, '')||' '||coalesce(f.denominazione, '') as indir
                , coalesce(g.nome, '')||' '||coalesce(g.cognome, '') as nom_resp
+               , coalesce(g.pec, '') as pec_resp --rom01
                , coalesce(g.indirizzo,'')||' '||coalesce(g.numero,'') as indir_resp
                , coalesce(g.localita,'-') as loca_resp
                , coalesce(g.cap,'')||' '||coalesce(g.comune,'') ||' '||coalesce(g.provincia,'') as cap_comune_provincia_resp

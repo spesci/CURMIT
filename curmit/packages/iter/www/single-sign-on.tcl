@@ -89,14 +89,24 @@ set link_enti_coll [db_list_of_lists -dbn $db_name q "
 set url_redirect ""
 ad_form -name form_login \
     -export {id_utente token_code} \
-    -edit_buttons [list [list "Vai" new]] \
+    -edit_buttons [list [list "Vai" new -html {class "form_submit"}]] \
     -has_edit 1 \
+    -html {class ""} \
     -form {
+	{-section "sec1" {legendtext "Selezionare l'ente su cui collegarsi:"} {fieldset {class legend}}}
 	{ente:text(radio),optional
 	    {label ""}
 	    {options $link_enti_coll}
+	    {html {class "form-field-radio"}}
 	}
-    } -on_submit {
+	
+    }
+ad_form -extend -name form_login -form {
+    # Reset section
+    {-section ""}
+}
+
+ad_form -extend -name form_login -on_submit {
 
 #	set id_utente [ad_get_client_property iter logged_user_id]
 	

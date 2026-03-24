@@ -152,7 +152,8 @@ Numero impianti inseriti: $tot_imp <br>"
 
 append righe_stampa "
 
-<table width=100% border=1>
+<table width=100% border=1 class=table_s>
+<br>
     <tr>
         <th align=left   valign=top>Cod.Imp.</th>
         <th align=center valign=top>Data ins.</th>

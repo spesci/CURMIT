@@ -11,6 +11,11 @@ ad_page_contract {
     @                serve se lista e' uno zoom che permetti aggiungi.
 
     @cvs-id          coimfile-pagamenti-postali-filter.tcl
+
+    USER  DATA       MODIFICHE
+    ===== ========== =========================================================================
+    but01 19/06/2023 Aggiunto la classe ah-jquery-date ai campi:f_data_caricamento_da, f_data_caricamento_a.
+
 } {
     {funzione         "V"}
     {caller       "index"}
@@ -49,19 +54,19 @@ set onsubmit_cmd ""
 
 form create $form_name \
     -html    $onsubmit_cmd
-
+#but01 Aggiunto la classe ah-jquery-date ai campi:f_data_caricamento_da, f_data_caricamento_a.
 element create $form_name f_data_caricamento_da \
     -label   "Da data caricamento file" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 class form_element" \
+    -html    "size 10 maxlength 10 class form_element class ah-jquery-date" \
     -optional
 
 element create $form_name f_data_caricamento_a \
     -label   "A data caricamento file" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 class form_element" \
+    -html    "size 10 maxlength 10 class form_element class ah-jquery-date" \
     -optional
 
 element create $form_name f_nome_file \

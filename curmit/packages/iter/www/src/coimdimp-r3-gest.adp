@@ -1,6 +1,17 @@
+<!DOCTYPE html>
 <!--
     USER  DATA       MODIFICHE
     ===== ========== ============================================================================================
+    rom08 05/07/2023 Giuliodori ha chiesto di non visualizzare piu' la nota ipertestuale del campo cont_rend.
+
+    rom07 28/11/2022 Aggiunta possibilita' di stampare gli rcee con la firma grafometrica in base
+    rom07            ai parametri flag_firma_manu_stampa_rcee e flag_firma_resp_stampa_rcee.
+
+    rom06 03/08/2022 Modifiche per allineamento Ucit al nuovo cvs, Regione Friuli non deve vedere il campo potenza
+    rom06            ma solo pot_focolare_nom come succede gia' per Regione Marche.
+
+    gia01 08/11/2021 Commentata l'inserzione delle anomalie perchè non venga mostrata.
+
     rom05 12/01/2021 Le particolarita' della Provincia di SAlerno da ora vengono messe sotto la condizione di
     rom05            tutta la Regione Campania.
 
@@ -86,12 +97,22 @@
            <a href="@pack_dir;noquote@/coim_d_anom-list?@link_d_anom;noquote@" class=func-menu>Anomalie Dich.</a>
        </td>
 
+       <if @coimtgen.flag_firma_manu_stampa_rcee@ eq "t" or @coimtgen.flag_firma_resp_stampa_rcee@ eq "t"><!--rom07 Aggiunta if e il suo contenuto-->
+              <td width="12.5%" nowrap class=func-menu>
+   	        <a href="#" onclick="javascript:window.open('@pack_dir;noquote@/coimdimp-firma-layout?@link_gest;noquote@&flag_ins=N&flag_traccaito=@flag_tracciato;noquote@' , 'help', 'scrollbars=yes, resizable=yes, width=840, height=520').moveTo(110,140)">Stampa RCEE (Tipo 3) e firma</a>
+              </td>
+       	      <td width="12.5%" nowrap class=func-menu>
+	        <a href="#" onclick="javascript:window.open('@pack_dir;noquote@/coimdimp-firma-layout?@link_gest;noquote@&flag_ins=S' , 'help', 'scrollbars=yes, resizable=yes, width=840, height=520').moveTo(110,140)">Storicizza stampa RCEE (Tipo 3) e firma</a>
+	      </td>
+       </if>
+       <else><!-- rom07 Aggiunta else ma non il suo contenuto-->
        <td width="12.5%" nowrap class=func-menu>
            <a href="@pack_dir;noquote@/coimdimp-r3-layout?@link_gest;noquote@&flag_ins=N" class=func-menu target="Stampa ">Stampa RCEE (Tipo 3)</a>
        </td>
        <td width="12.5%" nowrap class=func-menu>
            <a href="@pack_dir;noquote@/coimdimp-rct-layout?@link_gest;noquote@&flag_ins=S" class=func-menu target="Stampa RCEE (Tipo 3)">Storicizza stampa RCEE</a><!--rom03 sostituita dicitura bottone-->
        </td>
+       </else><!-- rom07 -->
    </if>
    <else>
        <td width="12.5%" nowrap class=func-menu>Visualizza</td>
@@ -108,7 +129,7 @@
 </table>
 
 <center>
-<formtemplate id="@form_name;noquote@">
+<formtemplate id="@form_name@">
 <formwidget   id="funzione">
 <formwidget   id="caller">
 <formwidget   id="nome_funz">
@@ -170,6 +191,10 @@
 <tr>
 <td align="right" colspan=2><b>Saldo attuale del portafoglio N. <formwidget id="cod_portafoglio">: &#8364;<formwidget id="saldo_manu"></b></td></tr>
 <if @coimtgen.regione@ eq "MARCHE"><!--gac01M aggiunta if-->
+<!--but02 aggiunto msg_dfm -->
+<tr>
+  <td align="center" colspan=2><b><font color=red>@msg_dfm;noquote@</font></b></td>
+</tr>
   <tr>
     <td colspan=2 align=center>
       <formerror  id="err_rcee"><br><!--gac01M-->
@@ -185,6 +210,7 @@
 <else>
 </table></td></tr>
 </else>
+@warning_scansione_mancante;noquote@
 <tr><td><table width="100%" border=0><tr>
       <if @coimtgen.regione@ eq "MARCHE"><!--gac02 if e suo contenuto-->
 	<tr>
@@ -518,6 +544,7 @@
 </if>
 <tr>
     <if @coimtgen.regione@ ne "MARCHE"><!--gac02 aggiunta if else e contenuto di if-->
+    <if @coimtgen.regione@ ne "FRIULI-VENEZIA GIULIA"><!--rom06 Aggiunta if ma non il contenuto--> 
     <td valign=top align=right class=form_title>Potenza termica nominale (kW) @ast;noquote@</td><!-- mis01 -->
     <td valign=top><formwidget id="potenza">
         <formerror  id="potenza"><br>
@@ -530,6 +557,16 @@
         <span class="errori">@formerror.pot_focolare_nom;noquote@</span>
         </formerror>
     </td>
+    </if>
+    <else><!--rom06 Aggiunta else e il contenuto-->
+      <td valign=top align=right class=form_title>Potenza termica nominale totale(kW) @ast;noquote@</td>
+      <td valign=top><formwidget id="pot_focolare_nom">
+        <formerror  id="pot_focolare_nom"><br>
+          <span class="errori">@formerror.pot_focolare_nom;noquote@</span>
+        </formerror>
+      </td>
+    </else>
+
 </tr>
     <td valign=top align=right class=form_title>Destinazione @ast;noquote@</td>
     <td valign=top><formwidget id="destinazione">
@@ -660,7 +697,7 @@
   <tr>
     <td><b>Controllo efficienza energetica</b></td>
     <td valign=top align=left colspan=1><formwidget id="cont_rend">
-	<a href="#" onclick="javascript:window.open('coimaimp-gest-help?caller=cont_rend', 'help', 'scrollbars=yes, esizable=yes, width=520, height=280').moveTo(110,140)"><b>Vedi nota</b></a>
+	<!-- rom08 <a href="#" onclick="javascript:window.open('coimaimp-gest-help?caller=cont_rend', 'help', 'scrollbars=yes, esizable=yes, width=520, height=280').moveTo(110,140)"><b>Vedi nota</b></a> -->
 	<formerror id="cont_rend"><br>
 	  <span class="errori">@formerror.cont_rend;noquote@</span>
 	</formerror>
@@ -846,7 +883,7 @@
     </td>
     </tr></table></td>
 </tr>
-
+<!--gia01
 <tr><td align=right><table border=0 width="100%">
     <tr>
         <td valign=top align=right class=form_title>Data utile interv.</td>
@@ -857,19 +894,20 @@
 
     <multiple name=multiple_form>
     <tr>
-        <formwidget id="prog_anom.@multiple_form.conta;noquote@">
-        <td valign=top align=right><formwidget id="data_ut_int.@multiple_form.conta;noquote@">
-            <formerror  id="data_ut_int.@multiple_form.conta;noquote@"><br>
-            <span class="errori"><%= $formerror(data_ut_int.@multiple_form.conta;noquote@) %></span>
+        <formwidget id="prog_anom.@multiple_form.conta@">
+        <td valign=top align=right><formwidget id="data_ut_int.@multiple_form.conta@">
+            <formerror  id="data_ut_int.@multiple_form.conta@"><br>
+            <span class="errori"><%= $formerror(data_ut_int.@multiple_form.conta@) %></span>
             </formerror>
         </td>
-        <td valign=top><formwidget id="cod_anom.@multiple_form.conta;noquote@">
-            <formerror  id="cod_anom.@multiple_form.conta;noquote@"><br>
-            <span class="errori"><%= $formerror(cod_anom.@multiple_form.conta;noquote@) %></span>
+        <td valign=top><formwidget id="cod_anom.@multiple_form.conta@">
+            <formerror  id="cod_anom.@multiple_form.conta@"><br>
+            <span class="errori"><%= $formerror(cod_anom.@multiple_form.conta@) %></span>
             </formerror>
         </td>
     </tr>
     </multiple>
+-->
 </table></td></tr>
 </if>
 <tr><td><table border=0 width="100%"><tr>
@@ -889,7 +927,12 @@
                 </formerror>
         </else>
     </td>
-    <td width="30%" valign=top align=right class=form_title>Data scadenza RCEE con segno identificativo</td>
+    <if @coimtgen.regione@ ne "FRIULI-VENEZIA GIULIA">    
+      <td width="30%" valign=top align=right class=form_title>Data scadenza RCEE con segno identificativo</td>
+    </if>
+    <else>
+        <td width="30%" valign=top align=right class=form_title>Data scadenza dichiarazione</td>
+    </else>
     <td width="20%" valign=top><formwidget id="data_scadenza_autocert">
         <formerror  id="data_scadenza_autocert"><br>
         <span class="errori">@formerror.data_scadenza_autocert;noquote@</span>

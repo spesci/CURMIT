@@ -1,6 +1,40 @@
 <!--
     USER  DATA       MODIFICHE
     ===== ========== =================================================================================
+    mat01 09/09/2025 Aggiunto un if per cambiare il link del modifica nel caso di regione Marche.
+
+    ric01 21/01/2025 Centrato link "Aggiungi" e tabella bruciatori, aggiunta riga vuota.
+
+    rom27 16/03/2023 Belluzzo ha chiesto che non venisse piu' mostrata la dicitura in alto alla pagina in fase di
+    rom27            inserimento di un nuovo generatore.
+
+    rom26 15/03/2023 Modificato intervento di rom25, il cmapo fluido lato utenze per il freddo va mostrato anche
+    rom26            per Palermo e regione Campania.
+
+    rom25 13/03/2023 Ucit deve vedere il campo fluido lato utenze per il freddo.
+
+    rom24 30/01/2023 Belluzzo ha richiesto con mail "Richiesta informativa normativa Dpr 660/96" del 20/01/2023 di rendere
+    rom24            il campo Marcatura efficienza energetica (marc_effic_energ) non obbligatorio.
+
+    rom23 04/08/2022 Modifiche per allineamento enti di Ucit al nuovo cvs. Ucit per il freddo non deve vedere
+    rom23            il campo potenza frigorifera utile pot_utile_nom_freddo.
+
+    rom22 08/04/2022 Su segnalazione del Comune di Potenza e indicazione di Sandro il campo note per il
+    rom22            fluido termovettore da compilare se si sceglie Altro si deve vedere per tutte le
+    rom22            di impianto, prima veniva visualizzato solo per le Marche.
+
+    rom21 02/03/2022 Regione Marche tramite mail di Giuliodori "sostituzione bruciatore" del 20/01/2022
+    rom21            ha richiesto che per ogni generatore sia possibile sostituire il bruciatore.
+    rom21            Con Sandro si e' deciso di dare la possibilita' di avere piu' bruciatori attivi
+    rom21            per lo stesso generatore. Quando un generatore viene sostituito i bruciatori attivi
+    rom21            collegati al generatore vanno disattivati. Il nuovo generatore attivo all'inizio non
+    rom21            ha nessun bruciatore collegato.
+
+    rom20 08/11/2021 Aggiunto warning in fase di modifica per il combustibile per Regione Marche.
+
+    rom19 08/11/2021 Corretto errore sulla visualizzazione di alcuni campi obbligatori che non erano 
+    rom19            visibili per regione Basilicata.
+
     rom18 20/04/2021 Modificato messaggio "Se non esiste la Potenza termica nominale mettere 0" per il
     rom18            freddo in "Lasciare vuoti i campi relativi alla funzione non presente."    	  
 
@@ -105,7 +139,7 @@
 <property name="focus_field">@focus_field;noquote@</property><!-- nic01 -->
 
 <center>
-<formtemplate id="@form_name;noquote@">
+<formtemplate id="@form_name@">
 <formwidget   id="funzione">
 <formwidget   id="caller">
 <formwidget   id="nome_funz">
@@ -123,38 +157,46 @@
 @dett_tab;noquote@
 <table width="100%" cellspacing=0 class=func-menu>
 <tr>
-<td width="20%" nowrap class=@func_i;noquote@>
-<!--rom07  <a href="coimgend-gest?funzione=I&@link_gest;noquote@" class=@func_i;noquote@>Inserimento Ulteriori generatori</a>-->
-<a href="coimgend-gest?funzione=I&@link_gest;noquote@" class=@func_i;noquote@>Inserimento Ulteriori generatori dello stesso impianto</a><!--rom07-->
-</td>
-<if @funzione@ ne I >
-  <if @link_sost_gen@ eq "S">
-<td width="20%" nowrap class=@func_s;noquote@><!--rom09.bis-->
-<a href="coimgend-gest?funzione=S&@link_gest;noquote@" class=@func_s;noquote@>Sostituzione generatore esistente</a>
-</td>
-  </if>
-  <else>
-<td width="20%" nowrap class=func-menu>Sostituzione generatore esistente</td>
-  </else>
-<td width="20%" nowrap class=@func_v;noquote@>
-  <a href="coimgend-gest?funzione=V&@link_gest;noquote@" class=@func_v;noquote@>Visualizza</a>
-</td>
-<td width="20%" nowrap class=@func_m;noquote@>
-  <a href="coimgend-gest?funzione=M&@link_gest;noquote@" class=@func_m;noquote@>Modifica</a>
-</td>
-<td width="20%" nowrap class=@func_d;noquote@>
-  <a href="coimgend-gest?funzione=D&@link_gest;noquote@" class=@func_d;noquote@>Cancella</a>
-</td>
-</if>
-<else>
-       <td width="20%" nowrap class=func-menu>Sostituzione generatore esistente</td><!--rom09.bis-->
-       <td width="20%" nowrap class=func-menu>Visualizza</td>
-       <td width="20%" nowrap class=func-menu>Modifica</td>
-       <td width="20%" nowrap class=func-menu>Cancella</td>
-</else>
+	<td width="20%" nowrap class=@func_i;noquote@>
+	    <!--rom07  <a href="coimgend-gest?funzione=I&@link_gest;noquote@" class=@func_i;noquote@>Inserimento Ulteriori generatori</a>-->
+	    <a href="coimgend-gest?funzione=I&@link_gest;noquote@" class=@func_i;noquote@>Inserimento ulteriori generatori dello stesso impianto</a><!--rom07-->
+	</td>
+
+	<if @funzione@ ne I >
+  	    <if @link_sost_gen@ eq "S">
+	    	<td width="20%" nowrap class=@func_s;noquote@><!--rom09.bis-->
+	    	    <a href="coimgend-gest?funzione=S&@link_gest;noquote@" class=@func_s;noquote@>Sostituzione generatore esistente</a>
+	    	</td>
+            </if>
+            <else>
+                <td width="20%" nowrap class=func-menu>Sostituzione generatore esistente</td>
+            </else>
+            <td width="20%" nowrap class=@func_v;noquote@>
+	    	    <a href="coimgend-gest?funzione=V&@link_gest;noquote@" class=@func_v;noquote@>Visualizza</a>
+	    </td>  
+	    <if @coimtgen.regione@ ne "MARCHE"> <!--mat01 aggiunta if-else e contenuto else-->
+    	       <td width="20%" nowrap class=@func_m;noquote@>
+                   <a href="coimgend-gest?funzione=M&@link_gest;noquote@" class=@func_m;noquote@>Modifica</a>
+               </td>
+	     </if><else>
+		<td width="20%" nowrap class=@func_m;noquote@>
+        	    <a href="coimgend-gest-modifica-intermedio?@link_gest;noquote@" class=@func_m;noquote@>Modifica</a>
+    		</td>
+	     </else>
+             <td width="20%" nowrap class=@func_d;noquote@>
+  		    <a href="coimgend-gest?funzione=D&@link_gest;noquote@" class=@func_d;noquote@>Cancella</a>
+	    </td>
+	</if>
+       <else>
+	<td width="20%" nowrap class=func-menu>Sostituzione generatore esistente</td><!--rom09.bis-->
+       	<td width="20%" nowrap class=func-menu>Visualizza</td>
+       	<td width="20%" nowrap class=func-menu>Modifica</td>
+       	<td width="20%" nowrap class=func-menu>Cancella</td>
+       </else>
 </tr>
 </table>
 
+<if @coimtgen.regione@ ne "FRIULI-VENEZIA GIULIA"><!-- rom27 Aggiunta if ma non il suo contenuto. -->
 <if @funzione@ eq I>
 <!--rom08<b><u>Per una nuova Installazione aggiornare i dati relativi alla scheda su Dati tecnici e stampare la scheda E1/E2 da Scheda Imp.</u></b>-->
 <table ><!--rom08 aggiunta table e contenuto-->
@@ -169,11 +211,13 @@
   </tr>
 </table>
 </if>
+</if><!-- rom27 -->
 
 <table border=0>
 
 <if @coimtgen.regione@ ne "MARCHE"><!--rom11 Aggiunta if-->
-  <tr><td colspan=6 class=func-menu-yellow2><b>Scheda 1.3: Generatore destinato a soddisfare i seguenti servizi</b></td></tr>
+  <tr><td colspan=6 class=func-menu-yellow2><b>Scheda 1.3: Generatore destinato a soddisfare i seguenti servizi</b></td></tr> 
+  <tr><td colspan=6>&nbsp;</td></tr>
   <tr><td valign=top align=right class=form_title>Destinazione d'uso <font color=red>@cod_utgi_asterisco@</font></td><!-- gab01 -->
     <td valign=top colspan=3><formwidget id="cod_utgi">
         <formerror  id="cod_utgi"><br>
@@ -188,24 +232,26 @@
 <if @coimtgen.regione@ eq "MARCHE"><!--rom14 aggiunta if e suo contenuto-->
   <tr><td colspan=6 align=center>@warning_sostituzione;noquote@</td></tr>
 </if>
+<tr><td colspan=6>&nbsp;</td></tr>
 <if @flag_tipo_impianto@ eq "R">
-<tr><td colspan=6 class=func-menu-yellow2><b>Scheda 4.1: Dati del Gruppo Termico/Generatore</b></td></tr> <!--gac03-->
+<tr><td colspan=6 class=func-menu-yellow2><b>Scheda 4.1: Dati del gruppo termico/ generatore</b></td></tr> <!--gac03-->
 </if>
 <if @flag_tipo_impianto@ eq "F">
-<tr><td colspan=6 class=func-menu-yellow2><b>Scheda 4.4: Dati della Macchina frigorifera / Pompa di calore</b></td></tr>
+<tr><td colspan=6 class=func-menu-yellow2><b>Scheda 4.4: Dati della macchina frigorifera / pompa di calore</b></td></tr>
 </if>
 <if @flag_tipo_impianto@ eq "T">
-<tr><td colspan=6 class=func-menu-yellow2><b>Scheda 4.5: Dati dello Scambiatore di calore</b></td></tr>
+<tr><td colspan=6 class=func-menu-yellow2><b>Scheda 4.5: Dati dello scambiatore di calore</b></td></tr>
 </if>
 <if @flag_tipo_impianto@ eq "C"> <!--gac01-->
-<tr><td colspan=6 class=func-menu-yellow2><b>Scheda 4.6: Dati del Cogeneratore / Trigeneratore</b></td></tr>
+<tr><td colspan=6 class=func-menu-yellow2><b>Scheda 4.6: Dati del cogeneratore / trigeneratore</b></td></tr>
 </if>
+<tr><td colspan=6>&nbsp;</td></tr>
 <tr>
       <if @flag_tipo_impianto@ eq "R">
 	<td valign=baseline align=right class=form_title>Gruppo termico numero</td><!--gac03-->
       </if>
       <if @flag_tipo_impianto@ eq "F">
-	<td valign=baseline align=right class=form_title>Gruppo Frigo/Pompa di calore numero</td>
+	<td valign=baseline align=right class=form_title>Gruppo Frigo/pompa di calore numero</td>
       </if>
       <if @flag_tipo_impianto@ eq "C"><!--rom14-->
 	<td valign=baseline align=right class=form_title>Cogeneratore numero</td>
@@ -241,7 +287,7 @@
         <span class="errori">@formerror.data_installaz;noquote@</span>
         </formerror>
     </td>
-    <td valign=top align=right nowrap class=form_title>Data dismissione</td>
+    <td valign=top align=right nowrap class=form_title>Data dismissione/disattivazione</td>
     <td valign=top><formwidget id="data_rottamaz">
         <formerror  id="data_rottamaz"><br>
         <span class="errori">@formerror.data_rottamaz;noquote@</span>
@@ -308,6 +354,14 @@
 	    <span class="errori">@formerror.sorgente_lato_esterno;noquote@</span>
 	  </formerror>
       </td>
+      <if @coimtgen.regione@ eq "FRIULI-VENEZIA GIULIA" or @coimtgen.regione@ eq "CAMPANIA" or @coimtgen.ente@ eq "PPA" or @coimtgen.ente@ eq "PRI"><!-- rom25 Aggiunta if e il suo contenuto -->
+        <td valign="top" align="right" class="form_title">Fluido lato utenze</td>
+        <td valign="top"><formwidget id="fluido_lato_utenze">
+          <formerror id="fluido_lato_utenze"><br>
+            <span class="errori">@formerror.fluido_lato_utenze;noquote@</span>
+          </formerror> 
+        </td>
+      </if><!-- rom25 -->
     </if>
     <if @flag_tipo_impianto@ eq "T"><!--rom14-->
       <td valign=top nowrap align=right class=form_title>Potenza termica nominale totale<font color=red>*</font></td>
@@ -332,6 +386,13 @@
 	    <span class="errori">@formerror.mod_funz;noquote@</span>
 	  </formerror>
       </td>
+    <td valign=top align=right class=form_title>Se Altro specificare</td><!--rom22-->
+    <td valign=top><formwidget id="altro_funz">
+	<formerror  id="altro_funz"><br>
+          <span class="errori">@formerror.altro_funz;noquote@</span>
+	</formerror>
+    </td>
+    
   </tr>
 </if>
 <if @flag_tipo_impianto@ eq "C"> <!--gac01 aggiunto if e suo contenuto-->
@@ -366,6 +427,12 @@
       </td>
     </if> 
   </tr>
+  <if @coimtgen.regione@ eq "MARCHE" and @funzione@ eq "M"><!--rom20 Aggiunta if e suo contenuto-->
+    <tr>
+      <td>&nbsp;</td>
+      <td colspan="3"><font color="red">Se si cambia il combustibile, occorre verificare la correttezza della potenza nominale utile e del rendimento termico utile preesistenti.</font></td>
+    </tr>
+  </if>
   <tr>
 <td></td>
 <td colspan=3>
@@ -376,23 +443,25 @@
 </tr>
 </if>
 </if>
-<if @flag_tipo_impianto@ eq "F" and @coimtgen.regione@ eq "MARCHE"><!--rom013 if e contenuto-->
-  <tr>
-    <td valign="top" align="right" class="form_title">Fluido frigorigeno@cod_flre_asterisco;noquote@</td>
-    <td valign="top">
-      <formwidget id="cod_flre">
-        <formerror  id="cod_flre"><br>
-          <span class="errori">@formerror.cod_flre;noquote@</span>
-        </formerror>
-    </td>
-    <td valign="top" align="right" class="form_title">Fluido lato utenze@fluido_lato_utenze_asterisco;noquote@</td>
-    <td valign="top"><formwidget id="fluido_lato_utenze">
-	<formerror id="fluido_lato_utenze"><br>
+<if @coimtgen.regione@ eq "MARCHE" or @coimtgen.regione@ eq "BASILICATA"><!--rom19 Aggiunta if ma non il contenuto-->
+  <if @flag_tipo_impianto@ eq "F"><!--rom013 if e contenuto-->
+    <tr>
+      <td valign="top" align="right" class="form_title">Fluido frigorigeno@cod_flre_asterisco;noquote@</td>
+      <td valign="top">
+        <formwidget id="cod_flre">
+          <formerror  id="cod_flre"><br>
+            <span class="errori">@formerror.cod_flre;noquote@</span>
+          </formerror>
+      </td>
+      <td valign="top" align="right" class="form_title">Fluido lato utenze@fluido_lato_utenze_asterisco;noquote@</td>
+      <td valign="top"><formwidget id="fluido_lato_utenze">
+        <formerror id="fluido_lato_utenze"><br>
 	  <span class="errori">@formerror.fluido_lato_utenze;noquote@</span>
 	</formerror> 
-    </td>
-  </tr>
-</if>
+      </td>
+    </tr>
+  </if>
+</if><!--rom19-->
 <!-- gac01 aggiunta if e suo contenuto --><!--rom14 aggiunta condizione x teleriscaldamento-->
 <if @flag_tipo_impianto@ ne "C" and  @flag_tipo_impianto@ ne "F" and @flag_tipo_impianto@ ne "T">
   <td valign=top align=right class=form_title>Fluido termovettore <font color=red>@mod_funz_asterisco@</font></td><!-- gab01 -->
@@ -439,6 +508,12 @@
 	    <td valign=top><formwidget id="mod_funz">
 		<formerror id="mod_funz"><br>
 		  <span class="errori">@formerror.mod_funz;noquote@</span>
+		</formerror>
+	    </td>
+	    <td valign=top align=right class=form_title>Se Altro specificare</td><!--rom22-->
+	    <td valign=top><formwidget id="altro_funz">
+		<formerror  id="altro_funz"><br>
+		  <span class="errori">@formerror.altro_funz;noquote@</span>
 		</formerror>
 	    </td>
 	  </tr>
@@ -533,6 +608,12 @@
             <span class="errori">@formerror.mod_funz;noquote@</span>
           </formerror>
       </td>
+      <td valign=top align=right class=form_title>Se Altro specificare</td><!--rom22-->
+      <td valign=top><formwidget id="altro_funz">
+	  <formerror  id="altro_funz"><br>
+	    <span class="errori">@formerror.altro_funz;noquote@</span>
+	  </formerror>
+      </td>
     </if><else><!--rom13 else e contenuto-->
       <td valign="top" align="right" class="form_title">Sistema di azionamento@cod_tpco_asterisco;noquote@</td>
       <td valign="top" colspan=4><formwidget id="cod_tpco">
@@ -610,13 +691,13 @@
     </tr>
   </if><else>
     <tr>
-      <td valign=top align=right class=form_title>Raffrescamento: EER (o GUE) @ast_MARCHE;noquote@</td>
+      <td valign=top align=right class=form_title>Raffrescamento: EER (o GUE) @ast_freddo;noquote@</td>
       <td valign=top><formwidget id="per">
           <formerror  id="per"><br>
             <span class="errori">@formerror.per;noquote@</span>
           </formerror>
       </td>
-      <td valign=top align=right class=form_title>COP  @ast_MARCHE;noquote@</td>
+      <td valign=top align=right class=form_title>Riscaldamento: COP  @ast_freddo;noquote@</td>
       <td valign=top><formwidget id="cop">
           <formerror  id="cop"><br>
             <span class="errori">@formerror.cop;noquote@</span>
@@ -646,7 +727,7 @@
         <span class="errori">@formerror.pot_focolare_nom;noquote@</span>
         </formerror>
         </td>
-        <if @flag_tipo_impianto@ eq "F" > <!--sim04 if e suo contenuto -->
+        <if @flag_tipo_impianto@ eq "F" and @coimtgen.regione@ ne "FRIULI-VENEZIA GIULIA"> <!--sim04 if e suo contenuto -->
           <td valign=top align=right class=form_title>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </td>
           <td valign=top align=right class=form_title>utile (kW)<font color=red>*</font></td>
           <td valign=top><formwidget id="pot_utile_nom_freddo">
@@ -815,6 +896,7 @@
 </if>
 <!--fine gac01-->
 <!-- gac03 spostato scheda 4.1bis prima della scheda 4.2-->
+<tr><td colspan=6>&nbsp;</td></tr>
 <if @coimtgen.regione@ eq "MARCHE" > <!-- rom02M aggiunte if ed else  -->
   <if @flag_tipo_impianto@ eq "R">
     <tr><td colspan=6 class=func-menu-yellow2><b>Scheda 4.1bis: Dati Specifici Gruppi Termici</b></td></tr>
@@ -832,6 +914,7 @@
 <else>
 <tr><td colspan=6 class=func-menu-yellow2><b>Dati specifici richiesti:</b></ td></tr>   
 </else>
+<tr><td colspan=6>&nbsp;</td></tr>
 <if @flag_tipo_impianto@ ne "T" and @flag_tipo_impianto@ ne "C"> <!-- gab02 aggiunta if-->
 <tr>
   <!--rom09.bis    <td valign=top align=right class=form_title nowrap>Marcatura efficienza energetica @ast_MARCHE;noquote@</td>-->
@@ -840,7 +923,7 @@
     <td valign=top><formwidget id="marc_effic_energ">
         <formerror  id="marc_effic_energ"><br>
           <span class="errori">@formerror.marc_effic_energ;noquote@</span>
-        </formerror><br><font color=blue><small>Obbligatoria per impianti installati dal 2015</small></font><!--gac04-->
+        </formerror><br><if @coimtgen.regione@ ne "FRIULI-VENEZIA GIULIA"><font color=blue><small>Obbligatoria per impianti installati dal 2015</small></font></if><!--gac04-->
     </td>
   </if>
     <if @coimtgen.regione@ ne "MARCHE"> <!-- rom02M aggiunta if -->
@@ -937,7 +1020,7 @@
     <table>
       <if @coimtgen.regione@ ne "MARCHE"><!--rom13 le marche visualizzano i campi da un'altra parte-->
 	<tr>
-	  <td valign="top" align="right" class="form_title">Sistema di azionamento</td>
+	  <td valign="top" align="right" class="form_title">Sistema di azionamento@cod_tpco_asterisco;noquote@</td>
 	  <td valign="top" colspan="1">
             <formwidget id="cod_tpco">
               <formerror  id="cod_tpco"><br>
@@ -1040,7 +1123,7 @@
     </td>
   </tr>
   <tr>
-    <td valign=top align=right class=form_title>Produzione Acqua calda sanitaria</td><!--rom12-->
+    <td valign=top align=right class=form_title>Produzione acqua calda sanitaria</td><!--rom12-->
     <td valign=top colspan=5><formwidget id="flag_prod_acqua_calda">
 	@pot_utile_acq;noquote@
     </td>
@@ -1087,12 +1170,29 @@
   </td>
 </tr>
 <!--gac03 spostato scheda 4.1bis prima della scheda 4.2 -->
-<if @flag_tipo_impianto@ eq "R">
+<if @flag_tipo_impianto@ eq "R" and @funzione@ ne "S">
+<tr><td colspan=6>&nbsp;</td></tr>
 <tr>
 <!--rom09 Rimpaginata tutta la sezione 4.2 e cambiate le label su richiesta della Regione Marche.
           Per ogni label che cambio riporto di fianco al td la vecchia dicitura commentata.-->
-<td valign=top colspan=6 class=func-menu-yellow2><b>Scheda 4.2: Dati Bruciatore</b></td>
+<td valign=top colspan=6 class=func-menu-yellow2><b>Scheda 4.2: Dati bruciatore</b></td>
 </tr>
+<tr><td colspan=6 align=center>&nbsp;</td></tr>
+<center>
+<tr>
+    <td>&nbsp;</td>
+    <!--ric01 td colspan=5 align=left>@link_aggiungi_1;noquote@</td -->
+    <td colspan=3 align=center>@link_aggiungi_1;noquote@</td>
+</tr>
+<tr><td colspan=6 align=center>&nbsp;</td></tr> <!--ric01 aggiunta riga-->
+<tr>
+  <td>&nbsp;</td>
+  <!--ric01 td colspan=5 align=left>@@table_result_1;noquote@</td -->
+  <td colspan=3 align=center>@table_result_1;noquote@</td>
+</tr>
+</center>
+</if>  
+<if 1 eq 0 > <!--rom21 aggiunta if ma non il suo contenuto-->
 <tr>
 <if @coimtgen.regione@ ne "MARCHE"><!--rom09.bis-->
 <td valign=top align=right class=form_title>Data costruzione bruciatore</td>
@@ -1202,7 +1302,7 @@
   </td>
 </tr>
 </if> <!--fine if su dati bruciatore del caldo-->
-
+</if><!--rom21-->
 
 <if @funzione@ ne "V">
     <tr><td colspan=7 align=center><formwidget id="submit"></td></tr>

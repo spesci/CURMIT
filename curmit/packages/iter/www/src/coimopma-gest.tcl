@@ -15,6 +15,10 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    rom01 11/04/2025 Aggiunta la funzione, per gli utenti amministratori, di reset password per gli operatori.
+
+    but01 01/10/2024 A ggiunto il campo email_operator.
+    
     gac01 19/02/2018 Gestiti nuovi campi patentino e patentino_fgas
 
     sim02 25/09/2017 Per Trieste il codice operatore deve avere un progressivo di due decimali (01) 
@@ -60,16 +64,16 @@ if {[string is space $nome_funz_caller]} {
 # Personalizzo la pagina
 set link_list_script {[export_url_vars last_cod_opma caller nome_funz_caller nome_funz cod_manutentore url_manu]&[iter_set_url_vars $extra_par]}
 set link_list        [subst $link_list_script]
-set titolo           "Operatore"
+set titolo           "operatore"
 switch $funzione {
-    M {set button_label "Conferma Modifica" 
+    M {set button_label "Conferma modifica" 
        set page_title   "Modifica $titolo"}
-    D {set button_label "Conferma Cancellazione"
-       set page_title   "Cancellazione $titolo"}
-    I {set button_label "Conferma Inserimento"
-       set page_title   "Inserimento $titolo"}
+    D {set button_label "Conferma cancellazione"
+       set page_title   "Cancella $titolo"}
+    I {set button_label "Conferma inserimento"
+       set page_title   "Inserisci $titolo"}
     V {set button_label "Torna alla lista"
-       set page_title   "Visualizzazione $titolo"}
+       set page_title   "Visualizza $titolo"}
 }
 
 #if {$caller == "index"} {
@@ -87,7 +91,19 @@ set sigla_prov       $coimtgen(sigla_prov)
 set flag_portafoglio $coimtgen(flag_portafoglio);#sim01
 
 if {[db_0or1row sel_manu ""] == 0} {
-    iter_return_complaint "Ditta manutentrice non trovato"
+    iter_return_complaint "Ditta manutentrice non trovata"
+}
+
+set db_name [parameter::get_from_package_key -package_key iter -parameter dbname_portale -default ""];#rom01
+set url_portale                 [parameter::get_from_package_key -package_key iter -parameter url_portale];#rom01
+if {[string equal [iter_check_uten_manu $id_utente] ""]} {#rom01 Aggiunta if e contenuto
+        db_1row -dbn $db_name q "
+      select user_id
+           , password as hash_user
+        from users
+       where username = :cod_opma"
+    
+    set riga_reset_password "<a class=main href=$url_portale/user/password-reset?password_hash=$hash_user&user_id=$user_id&caller_admin=t target=reset>Reset password</a>"
 }
 
 # sproteggo la chiave solo in inserimento e gli attributi in inserimento e mod.
@@ -190,6 +206,14 @@ element create $form_name note \
 -html    "cols 80 rows 3 $readonly_fld {} class form_element" \
 -optional
 
+#but01 aggiunto il campo email_operator.
+element create $form_name email_operator \
+    -label   "Email" \
+    -widget   text  \
+    -datatype email  \
+    -html    "size 40 maxlength 40 $readonly_fld {} class form_element" \
+    -optional
+
 if {$flag_portafoglio eq "T"} {#sim01: aggiunta if e suo contenuto
     element create $form_name flag_portafoglio_admin \
 	-label   "Portafoglio" \
@@ -245,6 +269,7 @@ if {[form is_request $form_name]} {
 	element set_properties $form_name patentino_fgas -value $patentino_fgas ;#gac01
         element set_properties $form_name note           -value $note
 	element set_properties $form_name flag_portafoglio_admin -value $flag_portafoglio_admin;#sim01
+	element set_properties $form_name email_operator -value $email_operator ;#but01
     }
 }
 
@@ -262,7 +287,7 @@ if {[form is_valid $form_name]} {
     set patentino_fgas [string trim [element::get_value $form_name patentino_fgas]];#gac01
     set note           [string trim [element::get_value $form_name note]]
     set flag_portafoglio_admin [string trim [element::get_value $form_name flag_portafoglio_admin]];#sim01
-
+    set email_operator [string trim [element::get_value $form_name email_operator]];#but01
     # controlli standard su numeri e date, per Ins ed Upd
     set error_num 0
     if {$funzione == "I"
@@ -302,7 +327,10 @@ if {[form is_valid $form_name]} {
             element::set_error $form_name stato "Stato"
             incr error_num
         }
-
+	if {[string equal $email_operator ""]} {;#but01 aggiunto if e suo contenuto
+	    element::set_error $form_name email_operator "Inserire Email"
+	    incr error_num
+	} 
     }
 
     if {$funzione == "I"

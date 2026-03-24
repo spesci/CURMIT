@@ -2,6 +2,12 @@
 <!--
     USER   DATA       MODIFICHE
     ===== ========== =======================================================================
+    rom05 11/03/2024 Quando si fa l'update sulla coimaimp non bisogna aggiornare i campi stato_conformita e
+    rom05            flag_dichiarato perche' non vengono piuì mostrati a video e in alcuni casi vengono sbiancati.
+    
+    rom04 20/12/2022 Messo upper nel campo targa in fase di update, cosi' da non aver piu' problemi
+    rom04            con i caratteri minuscoli inseriti per sbaglio.
+
     rom03 18/10/2018 Su richiesta delle Marche portati tutti i campi della scheda 1.2 
     rom03            Per ora li metto solo in visualizzazione e li faccio vedere solo alle Marche.
 
@@ -85,14 +91,14 @@
                      , data_rottamaz     = :data_rottamaz
                      , note              = :note
                      , stato             = :stato
-                     , flag_dichiarato   = :flag_dichiarato   
+             --rom05 , flag_dichiarato   = :flag_dichiarato   
                      , data_prima_dich   = :data_prima_dich
                      , data_ultim_dich   = :data_ultim_dich 
                      , data_scad_dich    = :data_scad_dich 
                      , cod_tpim          = :cod_tpim
                      , consumo_annuo     = :consumo_annuo
                      , n_generatori      = :n_generatori
-                     , stato_conformita  = :stato_conformita
+             --rom05 , stato_conformita  = :stato_conformita
                      , cod_cted          = :cod_cted
                      , tariffa           = :tariffa
                      , data_mod          = current_date
@@ -105,7 +111,7 @@
 		     , dati_scheda         = :dati_scheda
 		     , data_scheda         = :data_scheda
 		     , cod_impianto_princ  = :cod_impianto_princ --sim01
-                     , targa               = :targa              --sim06
+                     , targa               = upper(:targa)              --sim06
                      , pres_certificazione = :pres_certificazione
                      , certificazione      = :certificazione
 		     , data_libretto       = :data_libretto --rom01

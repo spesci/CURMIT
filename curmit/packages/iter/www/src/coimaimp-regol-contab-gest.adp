@@ -1,6 +1,9 @@
 <!--
     USER  DATA       MODIFICHE
-    ====  ========== =========================================================================
+    ===== ========== =========================================================================
+    rom03 30/03/2022 In base alla variabile visualizza_scheda5_1 faccio vedere o meno i campi 
+    rom03            della scheda stessa (solo per le Marche puo' valere "f").
+
     rom01 07/11/2018 Aggiunti titoli 5.1,5.2,5.3,5.4 e cambiate label.
     rom02            Solo per le marche aggiunte liste ....
 -->
@@ -41,7 +44,6 @@
 </tr>
 </table>
 
-
 <%=[iter_form_iniz]%>
 <!-- Inizio della form colorata -->
 <table width="80%"><!--rom01-->
@@ -51,7 +53,8 @@
     </td>
   </tr>
   <tr><td>&nbsp;</td></tr>
-</table>  
+</table>
+<if @visualizza_scheda5_1@ eq "t"><!--rom03 Aggiunta if ma non il suo contenuto -->
 <table width="100%">
   <tr>
     <td valign=top align=right class=form_title>Sistema di regolazione ON-OFF</td>
@@ -261,6 +264,16 @@
   </td>
 </tr>
 </table>
+</if>
+<else><!--rom03 Aggiunta else e il suo contenuto -->
+  <table width="50%">
+    <tr>
+      <td valign="top" align="justify" class="form_title">Il sistema di regolazione primaria nella scheda 1 &egrave; stato indicato come unico all'impianto ibrido principale con codice @cod_impianto_est_ibrido_princ@.<br>
+	Per visualizzare/modificare i dati della scheda 5.1 dell'impianto ibrido principale <a href="#" onclick="javascript:window.open('coimaimp-regol-contab-gest?@export_vars_ibrido;noquote@', 'scrollbars=yes, resizable=yes')">clicca qui</a>.<br>
+	
+      </td>
+    </tr>
+</else>
 <table width="80%"><!--rom01-->
   <tr><td>&nbsp;</td></tr>
   <tr>

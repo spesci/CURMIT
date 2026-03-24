@@ -21,6 +21,7 @@ ad_page_contract {
 
     USER   DATA       MODIFICHE
     ====== ========== =======================================================================
+   but01 14/07/2023 Aggiunta class"link-button-2" nel actions"Selez","Storico"
     sim01  18/03/2020 Corretto link sui totali
 
     rom01  12/04/2018 Tolto il parametro f_prot, il campo protocollo_01 e il collegamento  
@@ -122,7 +123,7 @@ set link_righe      [iter_rows_per_page     $rows_per_page]
 
 set link    "\[export_url_vars cod_movi nome_funz nome_funz_caller extra_par flag_filter\]"
 set actions "
-    <td nowrap><a href=\"$gest_prog?funzione=V&$link\">Selez.</a></td>"
+    <td nowrap><a href=\"$gest_prog?funzione=V&$link\" class=\"link-button-2\">Selez.</a></td>"
 set js_function ""
 #rom01 tolto [list protocollo_01    "Protocollo"        no_sort      {c}]
 # imposto la struttura della tabella

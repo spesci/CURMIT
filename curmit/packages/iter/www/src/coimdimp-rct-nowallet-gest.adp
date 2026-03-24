@@ -1,6 +1,12 @@
 <!--
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    but01 23/07/2024 Aggiunto pop-up modifica campagna per gli amministratori.
+    
+    rom02 14/04/2023 Regione Friuli non deve vedere la parte relativa ai consumi.
+
+    gia01 08/11/2021 Commentata l'inserzione delle anomalie perchè non venga mostrata
+
     rom01 26/01/2018 Aggiunto sezione multirow per prove fumi aggiuntive
 
     mis01 17/10/2016 Aggiunto asterisco sui campi obbligatori.
@@ -219,6 +225,9 @@
          <span class="errori">@formerror.cod_cind;noquote@</span>
          </formerror>
        </td>
+       <if @funzione@ eq "V" and @id_ruolo@ eq "admin">
+         <td><a href="#" align=left onclick="javascript:window.open('@modif_cind@', 'help', 'scrollbars=yes, esizable=yes, width=600, height=300').moveTo(110,140)"><b>Bonifica</b></a></td>
+       </if><!--but01 aggiunto pop-up modifica campagna-->
     </if>
 
     </tr></table></td>
@@ -475,6 +484,7 @@
         <span class="errori">@formerror.volimetria_risc;noquote@</span>
         </formerror>
 </tr>
+<if @coimtgen.regione@ ne "FRIULI-VENEZIA GIULIA"><!--rom12 Aggiunta if ma non il suo contenuto -->
 <tr>
     <td valign=top align=right class=form_title>Stagione di riscaldamento attuale</td>
     <td valign=top><formwidget id="stagione_risc">
@@ -503,7 +513,7 @@
         </formerror>
     </td>
 </tr>
-
+</if><!-- rom12 -->
 <tr>
     <td valign=top align=right class=form_title>Tipo <if @flag_mod_gend@ eq "S">@ast_PFI;noquote@</if></td>
     <td valign=top><formwidget id="tipo_a_c">
@@ -897,7 +907,7 @@
     </td>
     </tr></table></td>
 </tr>
-
+<!--gia01
 <tr><td align=right><table border=0 width="100%">
     <tr>
         <td valign=top align=right class=form_title>Data utile interv.</td>
@@ -921,6 +931,7 @@
         </td>
     </tr>
     </multiple>
+-->
 </table></td></tr>
 <tr><td><table border=0 width="100%"><tr>
 <tr>

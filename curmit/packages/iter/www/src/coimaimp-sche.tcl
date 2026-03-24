@@ -10,6 +10,123 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== ========================================================================================
+    mat02 12/03/2026 Punto 3 MEV 2026. Ordine 00084/2026. Aggiunto installatore alle schede 4.1bis,4.4 bis,4.5bis,
+    mat02            4.6 bis.
+
+    mat01 18/03/2025 Corretti valori di img_fl_lt_ut_aria e img_fl_lt_ut_acqua
+
+    but06 26/11/2024 MEV per regione Marche ordine 63/2022 punto 36: Tolti i dati di recapito del Terzo responsabile
+    but06            nella scheda 1Bis e mostrati quelli della ditta.
+    
+    ric01 05/11/2024 Gestiti flag multipli per utilizzo sistema di accumulo.
+
+    rom53 23/05/2024 Gestiti i flag_tracciato per il Ravvedimanto operoso di Caserta.
+
+    rom52 22/05/2024 Su segnalazione di Regione Marche e Sandro ora per gli impianti del teleriscaldamento
+    rom52            tengo in considerazione solo i generatori con potenza > di 10 kW nella pagina 1bis.
+
+    but05 07/05/2024 Modificato il valore di fluido_lato_utenze nella stampa di libretto.
+    
+    but04 04/03/2024 Ho modificato la descrizione e il contenuto del campo Fluido frigorigeno.
+
+    rom51 08/01/2024 Coretto refuso di rom50 su nome della variabile nom_resp: prima veniva usata la varibile nome_resp
+    rom51            che veniva letta piu' volte dal file postgresql includendo anche il cognome del responsabile.
+
+    rom50 21/11/2023 Corretta sezione 1.6 su segnalazione di Paravan: se il responsabile e' una ditta va compilata
+    rom50            la ragione Sociale e non il Cognome.
+
+    rom49 28/09/2023 Su segnalazione di Paravan di Ucit modificato intervento di but02: la stampa dell'impianto
+    rom49            viene bloccata solo ai manutentori se l'impianto e' sprovvisto di targa.
+
+    rom48 06/09/2023 Su segnalazione di Palermo si e' deciso con Sandro di includere nelle sezioni 11.1 e 11.2
+    rom48            anche gli rcee nowallet, rispettivamente con flag_tracciato NW per il caldo e NF per il freddo.
+
+    rom47 08/06/2023 MEV "Impianti condominiali con pompa di calore": Modificata sezione 1.2 per regione Marche.
+    rom47            MEV "Impianti in stato Respinto e da Validare": Se l'impianto e' singolo non si  permette la stampa del libretto.
+    rom47            Se invece è collegato ad altri impianti, i dati dell'impianto non devono essere compresi nella stampa.
+    
+    but03 18/05/2023 Per cercare di velocizzare l'esecuzione del programma commentato la creazione di un file pdf che
+    but03            poi non viene piu' richiamato nell'adp.
+
+    but02 17/05/2023 Su richiesta di Sandro aggiunto per tutti gli enti un controllo sulla stampa libretto: se e'
+    but02            attiva la gestione delle targhe allora gli impianto devono avere la targa  per poter stampare il libretto.
+
+    rom46 28/04/2023 Modifica sul campo unita' immobiliari servite della scheda 1.2 per tutti gli enti tranne Regione Marche.
+
+    but01 05/04/2023 Modifica su campo Riferimento norma UNI-10389-1: in caso di piu' impianti collegati veniva
+    but01            preso sempre l'ultimo generatore come riferimento.
+
+    rom45 03/04/2023 Modificata parte per i bruciatori (non per le Marche), i bruciatori vanno impaginati in base
+    rom45            ai generatori collegati.
+    rom45            Su richiesta di Belluzzo modificata la sezione 11.2, i flag sui filtri puliti e verifica superata
+    rom45            vanno in base al flag_status (l'impianto puo' funzionare sull'rcee), vale per tutti tranne le Marche.
+    
+    rom44 05/03/2023 Modificata sezione 1.3 per gli enti diversi da Regione Marche, la potenza mostrata nelle varie
+    rom44            combo era sbagliata.
+
+    rom43 13/03/2023 Corretta sezione 4.4 su segnalazioni di Regione Marche e Friuli.
+
+    rom42 08/03/2023 Corretta sezione 3 Nomina del terzo responsabile per Regione Marche.
+
+    rom41 03/03/2023 Su richiesta di Sandro nella sezione 1.3 la potenza utile da mostrare negli impianti del freddo
+    rom41            non deve essere sempre la potenza utile ma deve essere diversa in base al flag di riferimento.
+
+    rom40 02/03/2023 Corrette le condizioni per i flag della scheda 1.3 per gli enti diversi dalle Marche.
+
+    rom39 27/09/2023 Modificato intervento di rom38, Palermo non deve salvare i file sul file system per non
+    rom39            intasare la memoria del server.
+
+    rom38 31/10/2022 Per Palermo i file verranno salvati su file system non sul db.
+    rom38            Ora le schede 14.1 e 14.2 oltre i dati degli rcee si basano ancche sulle relative tabelle.
+
+    rom37 03/02/2023 Paravan di Ucit ha chiesto che non sia visualizzata la targa ma anche il codice impianto.
+
+    rom36 03/01/2023 Corretta anomalia su data_libretto scheda 1.1, per gli enti diversi da Marche veniva
+    rom36            sempre usata la data odierna. Ora su tutti gli enti viene presa la data_libretto.
+
+    mic01 07/07/2022 Corretto il nome di alcune variabili utilizzate nella foreach di sel_tot_gend_fr.
+
+    rom35 30/05/2022 Su richiesta di Giuliodori con mail "scheda 6 impianti misti/ibridi" del 18/05/2022 avvallata
+    rom35            da Sandro se un impianto e' collegato ad un altro principale tramite il flag_ibrido la scheda
+    rom35            6 e' inibita e non deve comparire nella stampa del libretto.
+
+    rom34 22/03/2022 MEV Regione Marche per sistemi ibridi.
+
+    rom33 04/03/2022 Modificata la Scheda 4.2: Ora anche per i bruciatori viene gestita la parte della sostituzione
+    rom33            dei componenti, per questa modifica serve la versione di I.Ter. 2.5.73.
+
+    rom32 17/02/2022 Su segnalazione di Giuliodori di Regione Marche corett anomalia su visualizzazione campo
+    rom32            CO scheda 11.1. Corretta visualizzazione scheda 12. Corretta visualizzazione scheda 2.
+    rom32            Corretta visualizzazione POD e PDR per regione Marche.
+
+    rom31 21/01/2022 Su segnalazione di Sandro e Regione Marche sistemata la visualizzazione delle scehde 1bis,
+    rom31            6.1, 6.2 e Scheda 3. Ora vengono mostrati i dati di tutti gli impianti collegati tra loro
+    rom31            (sia che si usino le targhe, sia che si usi il codice impianto principale.)
+
+    rom30 27/12/2021 Su segnalazione di Regione Marche modificata Scheda 1.3: se non ho generatori attivi
+    rom30            sull'impianto vado a vedere se ho altri generatori (scheda 4.8) e, su indicazione di Basili,
+    rom30            spunto sempre Climatizazione invernale. Intervento fatto solo per le Marche.
+    rom30            Regione Marche ha richiesto anche che i generatori vengano stampati anche se l'impianto e'
+    rom30            non attivo. Sandro ha detto che per le Marche i generatori e sezione 1bis vanno stampati a
+    rom30            prescindere dallo stato dell'impianto, per gli altri invece stampo solo se l'impianto è attivo.
+    rom30bis         Su segnalazione di Basili se e' presente almeno un altro generatore attivo (scheda 4.8) allora nella
+    rom30bis         scheda 1.5 deve essere sempre fleggata anche la voce altro insieme a quanto indicato a video dall'utente.
+    
+    rom29 22/12/2021 Corretta modifica di rom26: se non trovo il combustibile sul dimp vado a prendere quello
+    rom29            del generatore o, al limite, quello dell'impianto.
+
+    rom28 01/12/2021 Manutenzione evolutiva CURMIT-2021-11: Se il fluido termovettore del generatore e' 
+    rom28            "Acqua calda + Aria" nella scheda 1.4 deve esserci la spunta sia su Acqua che su aria.
+    rom28            Integrate le voci del campo tratt_acqua_calda_sanit_tipo indicando le stesse voci del 
+    rom28            campo tratt_acqua_clima_tipo. Sandro ha detto che entrambe le modifiche vanno bene per tutti.
+    
+    rom27 17/11/2021 Aggiunte schede 14.3 e 14.4, sono state sviluppate su richiesta delle Marche ma Sandro
+    rom27            ha detto che vanno bene per tutti.
+    rom27            Completata sezione 14.1, mancavano i dati per i consumi della seconda stagione.
+
+    rom26 05/11/2021 Modifica scheda 11.1 per Regione Marche: devo mostrare anche il combustibile dell'RCEE
+    rom26            perche' potrebbe essere diverso da quello del generatore.
+
     rom25 04/08/2021 Su segnalazione di regione Marche corretta la visualizzazione delle schede 6.3, 6.4, 7 e 9.5
 
     rom24 28/01/2021 Corretta Sezione 4.2: per capire meglio ora espongo anche il codice impianto del bruciatore
@@ -236,12 +353,14 @@ if {$flag_aces == "S"} {
 # imposto variabili usate nel programma:
 set sysdate_edit [list [iter_edit_date [iter_set_sysdate]] [iter_set_systime]]
 
+set cod_manu_check [iter_check_uten_manu $id_utente];#rom49
+
 # imposta le class css della barra delle funzioni
 iter_set_func_class $funzione
 
 # Personalizzo la pagina
-set titolo       "Stampa Scheda Tecnica"
-set page_title   "Stampa Scheda Tecnica"
+set titolo       "Stampa scheda tecnica"
+set page_title   "Stampa scheda tecnica"
 
 db_1row q "select current_date as oggi, to_char(current_date, 'DD/MM/YYYY') as oggi_pretty";#sim05
 
@@ -278,6 +397,14 @@ if {$coimtgen(regione) eq "MARCHE"} {#rom03 if e suo contenuto
     }
 };#rom03
 
+
+if {$coimtgen(regione) eq "MARCHE"} {#rom30 Aggiunta if, else e loro contenuto
+
+    set and_st_imp ""
+} else {
+
+    set and_st_imp "and f.stato='A'"
+}
 
 db_1row gen "
 select count(*) as numero_gend
@@ -414,22 +541,27 @@ if {[db_0or1row $sel_aimp_2 ""] == 0} {
 	}
     }
 
+    if {$coimtgen(regione) eq "FRIULI-VENEZIA GIULIA"} {#rom37 Aggiunte if, else e loro contenuto
+	set dicitura_cod_cat_targa "Codice catasto: $cod_impianto_est - Codice targa: $cod_impianto_princ_stampa"
+    } else {
+	set dicitura_cod_cat_targa "Codice catasto/Targa: $cod_impianto_princ_stampa"
+    }
     append stampa "
     <table width=100%>
           <tr>
-             <td align=center><big><b>Codice catasto/Targa: $cod_impianto_princ_stampa</b></big></td>
+             <td align=center><big><b>$dicitura_cod_cat_targa</b></big></td>
           </tr>
           <tr>
              <td>&nbsp;</td>
           </tr>
     </table>
-    <table width=100% align=center border>
+    <table width=100% align=center border class=table_s>
           <tr>
-             <td align=center colspan=2><b>Ubicazione Impianto</b></td>
+             <th align=center colspan=2><b>Ubicazione Impianto</b></th>
           </tr>
           <tr>
-             <td align=center><b>Indirizzo</b></td>
-             <td align=center><b>Data fine validit&agrave;</b></td>
+             <td class=td_int align=center><b>Indirizzo</b></td>
+             <td class=td_int align=center><b>Data fine validit&agrave;</b></td>
           </tr>
           <tr>
              <td>$indir $nome_comu ($sigla) $cap</td>
@@ -463,9 +595,9 @@ if {[db_0or1row sel_resp ""] == 0} {
     }
 
     append stampa "
-    <table width=100% align=center border>
+    <table width=100% align=center border class=table_s>
           <tr>
-             <td align=center colspan=2><b>Responsabile</b></td>
+             <th align=center colspan=2><b>Responsabile</b></th>
           </tr>
           <tr>
              <td>$nome_resp</td>
@@ -491,13 +623,13 @@ if {[db_0or1row sel_aimp ""] == 0} {
                                               from coimmanu 
                                               where cod_manutentore='$cod_installatore'" -default ""]
     append stampa "
-    <table width=100% align=center border>
+    <table width=100% align=center border class=table_s>
           <tr>
-             <td align=center colspan=2><b>Dati generali</b></td>
+             <th align=center colspan=2><b>Dati generali</b></th>
           </tr>
           <tr>
-             <td><b>Dato</b></td>
-             <td><b>Valore</b></td>
+             <td class=td_int><b>Dato</b></td>
+             <td class=td_int><b>Valore</b></td>
           </tr>
           <tr>
              <td>Dichiarato</td>
@@ -585,19 +717,19 @@ if {$data_scad_dich > $oggi} {;#sim05 if else e suo contributo
 
 # Generatori
 append stampa "
-<table width=100% align=center border>
+<table width=100% align=center border class=table_s>
        <tr>
-          <td align=center colspan=8><b>Generatori</b></td>
+          <th align=center colspan=8><b>Generatori</b></th>
        </tr>
        <tr>
-          <td align=center><b>N.Gen.      </b></td>
-          <td align=center><b>Matricola   </b></td>
-          <td align=center><b>Costruttore </b></td>
-          <td align=center><b>Modello     </b></td>
-          <td align=center><b>Combustibile</b></td>
-          <td align=center><b>Data inst.  </b></td>
-          <td align=center><b>Potenza     </b></td>
-          <td align=center><b>Stato Gen.  </b></td>
+          <td class=td_int align=center><b>N.Gen.      </b></td>
+          <td class=td_int align=center><b>Matricola   </b></td>
+          <td class=td_int align=center><b>Costruttore </b></td>
+          <td class=td_int align=center><b>Modello     </b></td>
+          <td class=td_int align=center><b>Combustibile</b></td>
+          <td class=td_int align=center><b>Data inst.  </b></td>
+          <td class=td_int align=center><b>Potenza     </b></td>
+          <td class=td_int align=center><b>Stato Gen.  </b></td>
        </tr>"
 
 set ctr_gend_scheda 0;#nic02
@@ -676,15 +808,15 @@ if {[db_0or1row sel_aimp_3 ""] == 0} {
 
     append stampa "
     <!-- PAGE BREAK -->
-    <table width=100% align=center border>
+    <table width=100% align=center border class=table_s>
           <tr>
-             <td align=center colspan=4><b>Soggetti/Responsabili</b></td>
+             <th align=center colspan=4><b>Soggetti/Responsabili</b></th>
           </tr>
           <tr>
-             <td align=center><b>Tipo soggetto</b></td>
-             <td align=center><b>Nominativo</b></td>
-             <td align=center><b>Indirizzo</b></td>
-             <td align=center><b>Data fine validit&agrave;</b></td>
+             <td class=td_int align=center><b>Tipo soggetto</b></td>
+             <td class=td_int align=center><b>Nominativo</b></td>
+             <td class=td_int align=center><b>Indirizzo</b></td>
+             <td class=td_int align=center><b>Data fine validit&agrave;</b></td>
           </tr>
           <tr>
              <td>Intestatario</td>
@@ -751,15 +883,15 @@ if {[db_0or1row sel_aimp_4 ""] == 0} {
     }
 
     append stampa "
-    <table width=100% align=center border>
+    <table width=100% align=center border class=table_s>
           <tr>
-             <td align=center colspan=4><b>Ditte/Tecnici</b></td>
+             <th align=center colspan=4><b>Ditte/Tecnici</b></th>
           </tr>
           <tr>
-             <td align=center><b>Tipo soggetto</b></td>
-             <td align=center><b>Nominativo</b></td>
-             <td align=center><b>Indirizzo</b></td>
-             <td align=center><b>Data fine validit&agrave;</b></td>
+             <td class=td_int align=center><b>Tipo soggetto</b></td>
+             <td class=td_int align=center><b>Nominativo</b></td>
+             <td class=td_int align=center><b>Indirizzo</b></td>
+             <td class=td_int align=center><b>Data fine validit&agrave;</b></td>
           </tr>
           <tr>
              <td>Manutentore</td>
@@ -808,16 +940,16 @@ if {[db_0or1row sel_aimp_4 ""] == 0} {
 
 # Modelli H
 append stampa "
-<table width=100% align=center border>
+<table width=100% align=center border class=table_s>
        <tr>
-          <td align=center colspan=5><b>Modelli RCEE/DAM/DFM</b></td>
+          <th align=center colspan=5><b>Modelli RCEE/DAM/DFM</b></th>
        </tr>
        <tr>
-          <td align=center><b>Data controllo  </b></td>
-          <td align=center><b>Stato conformit&agrave;</b></td>
-          <td align=center><b>Num. prot.      </b></td>
-          <td align=center><b>Data prot.      </b></td>
-          <td align=center><b>Num. bollino    </b></td>
+          <td class=td_int align=center><b>Data controllo  </b></td>
+          <td class=td_int align=center><b>Stato conformit&agrave;</b></td>
+          <td class=td_int align=center><b>Num. prot.      </b></td>
+          <td class=td_int align=center><b>Data prot.      </b></td>
+          <td class=td_int align=center><b>Num. bollino    </b></td>
        </tr>"
 
 db_foreach sel_dimp "" {
@@ -845,13 +977,10 @@ append stampa "</table>
 
 # Allegati 284
 append stampa "
-<table width=100% align=center>
+<table width=100% align=center class=table_s>
        <tr>
-          <td align=center colspan=4><b>Allegati 284</b></td>
-       </tr>
-       <tr>
-          <td colspan=4>&nbsp;</td>
-             </tr>"
+          <th align=center colspan=4><b>Allegati 284</b></th>
+       </tr>"
 
 db_foreach sel_noveb "" {
     append stampa "
@@ -878,17 +1007,17 @@ append stampa "</table>
 
 # Incontri
 append stampa "
-<table width=100% align=center border>
+<table width=100% align=center border class=table_s>
        <tr>
-          <td align=center colspan=6><b>Appuntamenti per le ispezioni</b></td>
+          <th align=center colspan=6><b>Appuntamenti per le ispezioni</b></th>
        </tr>
        <tr>
-          <td align=center><b>Campagna         </b></td>
-          <td align=center><b>Data appuntamento</b></td>
-          <td align=center><b>Ora appuntamento </b></td>
-          <td align=center><b>Stato            </b></td>
-          <td align=center><b>Esito ispezione  </b></td>
-          <td align=center><b>Ispettore        </b></td>
+          <td class=td_int align=center><b>Campagna         </b></td>
+          <td class=td_int align=center><b>Data appuntamento</b></td>
+          <td class=td_int align=center><b>Ora appuntamento </b></td>
+          <td class=td_int align=center><b>Stato            </b></td>
+          <td class=td_int align=center><b>Esito ispezione  </b></td>
+          <td class=td_int align=center><b>Ispettore        </b></td>
        </tr>"
 
 db_foreach sel_inco "" {
@@ -926,17 +1055,17 @@ if {$coimtgen(ente) eq "PUD" || $coimtgen(ente) eq "PGO" || $coimtgen(ente) eq "
 
 # Rapporti di verifica
 append stampa "
-<table width=100% align=center border>
+<table width=100% align=center border class=table_s>
        <tr>
-          <td align=center colspan=6><b>Rapporti di Ispezione</b></td>
+          <th align=center colspan=6><b>Rapporti di Ispezione</b></th>
        </tr>
        <tr>
-          <td align=center><b>Data controllo </b></td>
-          <td align=center><b>Esito ispezione $titolo_dati_fattura</b></td>
-          <td align=center><b>Num. prot.     </b></td>
-          <td align=center><b>Data prot.     </b></td>
-          <td align=center><b>Costo ispezione</b></td>
-          <td align=center><b>Ispettore      </b></td>
+          <td class=td_int align=center><b>Data controllo </b></td>
+          <td class=td_int align=center><b>Esito ispezione $titolo_dati_fattura</b></td>
+          <td class=td_int align=center><b>Num. prot.     </b></td>
+          <td class=td_int align=center><b>Data prot.     </b></td>
+          <td class=td_int align=center><b>Costo ispezione</b></td>
+          <td class=td_int align=center><b>Ispettore      </b></td>
        </tr>"
 
 db_foreach sel_cimp "" {
@@ -989,18 +1118,18 @@ append stampa "</table>
 
 # Pagamenti
 append stampa "
-<table width=100% align=center border>
+<table width=100% align=center border class=table_s>
        <tr>
-          <td align=center colspan=6><b>Pagamenti</b></td>
+          <th align=center colspan=7><b>Pagamenti</b></th>
        </tr>
        <tr>
-          <td align=center><b>Tipo pag.   </b></td>
-          <td align=center><b>Data scad.  </b></td>
-          <td align=center><b>Importo     </b></td>
-          <td align=center><b>Data pag.   </b></td>
-          <td align=center><b>Importo pag.</b></td>
-          <td align=center><b>Tipo pag.   </b></td>
-          <td align=center><b>Pagato      </b></td>
+          <td class=td_int align=center><b>Tipo pag.   </b></td>
+          <td class=td_int align=center><b>Data scad.  </b></td>
+          <td class=td_int align=center><b>Importo     </b></td>
+          <td class=td_int align=center><b>Data pag.   </b></td>
+          <td class=td_int align=center><b>Importo pag.</b></td>
+          <td class=td_int align=center><b>Tipo pag.   </b></td>
+          <td class=td_int align=center><b>Pagato      </b></td>
        </tr>"
 
 db_foreach sel_movi "" {
@@ -1030,13 +1159,13 @@ append stampa "</table>
 
 # Provvedimenti
 append stampa "
-<table width=100% align=center border>
+<table width=100% align=center border class=table_s>
        <tr>
-          <td align=center colspan=2><b>Provvedimenti</b></td>
+          <th align=center colspan=2><b>Provvedimenti</b></th>
        </tr>
        <tr>
-          <td align=center><b>Data provvedimento</b></td>
-          <td align=center><b>Causale           </b></td>
+          <td class=td_int align=center><b>Data provvedimento</b></td>
+          <td class=td_int align=center><b>Causale           </b></td>
        </tr>"
 
 db_foreach sel_prvv "" {
@@ -1061,14 +1190,14 @@ append stampa "</table>
 
 # Attività sospese
 append stampa "
-<table width=100% align=center border>
+<table width=100% align=center border class=table_s>
        <tr>
-          <td align=center colspan=3><b>Anomalie da rapporto di ispezione non evase</b></td>
+          <th align=center colspan=3><b>Anomalie da rapporto di ispezione non evase</b></th>
        </tr>
        <tr>
-          <td align=center><b>Tipologia     </b></td>
-          <td align=center><b>Stato evasione</b></td>
-          <td align=center><b>Data evasione </b></td>
+          <td class=td_int align=center><b>Tipologia     </b></td>
+          <td class=td_int align=center><b>Stato evasione</b></td>
+          <td class=td_int align=center><b>Data evasione </b></td>
        </tr>"
 
 db_foreach sel_todo "" {
@@ -1127,10 +1256,23 @@ if {$flag_gest_targa eq "T"} {#sim04: aggiunta if e suo contenuto
 	set cod_impianto_princ_stampa $cod_impianto_est
     }
 }
+if {$coimtgen(regione) eq "FRIULI-VENEZIA GIULIA"} {#rom37 Aggiunte if, else e loro contenuto
+    set dicitura_cod_cat_targa "Codice catasto: $cod_impianto_est - Codice targa: $cod_impianto_princ_stampa"
+} else {
+    set dicitura_cod_cat_targa "Codice catasto/Targa: $cod_impianto_princ_stampa"
+}
+
+#rom49 Aggiunta condizione su cod_manu_check
+if {$flag_gest_targa eq "T" && ![string equal $cod_manu_check ""]} {#but02 Aggiunta if e contenuto
+    if {$targa eq ""} {
+          iter_return_complaint "Inserire la Targa per potere stampare il libretto"
+    }
+}
+
 set table_con_header_per_tutte_le_pagine "
     <table width=100%>
        <tr>
-          <td align=center><big><b><font color=grey>Codice catasto/Targa: $cod_impianto_princ_stampa</font></b></big></td>
+          <td align=center><big><b><font color=grey>$dicitura_cod_cat_targa</font></b></big></td>
        </tr>
        <tr>
           <td>&nbsp;</td>
@@ -1155,34 +1297,125 @@ set lista_cod_impianti [list]
 
 if {$flag_gest_targa eq "T"} {
 
+    if {$coimtgen(regione) eq "MARCHE"} {#rom30 aggiunta if e suo contenuto
+    set lista_cod_impianti [db_list q "select cod_impianto
+                                         from coimaimp
+                                        where upper(targa)  = upper(:targa)
+                                          and stato    not in ('E','F') --rom47
+                                    --    and stato = 'A'"]
+    } else {#rom30 Aggiunta else ma non il suo contenuto
     set lista_cod_impianti [db_list q "select cod_impianto
                                          from coimaimp
                                         where upper(targa)  = upper(:targa)
                                           and stato = 'A'"]
+    };#rom30
 
 } else {
 
+    set cod_impianto_principale [db_string q "select coalesce(cod_impianto_princ,:cod_impianto)
+                                           from coimaimp
+                                          where cod_impianto = :cod_impianto"];#rom45
+
+
     set lista_cod_impianti [db_list q "select f.cod_impianto
                                          from coimaimp f
-                                   inner join coimaimp h on f.cod_impianto = h.cod_impianto_princ
-                                          and f.cod_impianto != h.cod_impianto
-                                        where h.cod_impianto = :cod_impianto
-                                          and f.stato='A'  --rom25 query che partendo dal figlio trova il padre
-                                       union all
-                                       select f.cod_impianto
-                                         from coimaimp f
-                                   inner join coimaimp h 
-                                           on h.cod_impianto = f.cod_impianto_princ
-                                          and f.cod_impianto != h.cod_impianto
-                                        where h.cod_impianto = :cod_impianto
-                                          and f.stato='A' --rom25 query che partendo dal padre trova i figli  
-                                      "]
+                                        where f.cod_impianto_princ = :cod_impianto_principale
+                                          and f.stato='A'  
+					  union
+                                       select :cod_impianto"];#rom45
+
+
+#rom45    set lista_cod_impianti [db_list q "select f.cod_impianto
+#                                         from coimaimp f
+#                                   inner join coimaimp h on f.cod_impianto = h.cod_impianto_princ
+#                                          and f.cod_impianto != h.cod_impianto
+#                                        where h.cod_impianto = :cod_impianto
+#                                          and f.stato='A'  --rom25 query che partendo dal figlio trova il padre
+#                                       union all
+#                                       select f.cod_impianto
+#                                         from coimaimp f
+#                                   inner join coimaimp h 
+#                                           on h.cod_impianto = f.cod_impianto_princ
+#                                          and f.cod_impianto != h.cod_impianto
+#                                        where h.cod_impianto = :cod_impianto
+#                                          and f.stato='A' --rom25 query che partendo dal padre trova i figli  
+#rom45                                      "]
     
-    lappend lista_cod_impianti $cod_impianto
+#rom45    lappend lista_cod_impianti $cod_impianto
 }
 
+if {[llength $lista_cod_impianti] <= 1 &&
+    [db_0or1row q "select 1
+                     from coimaimp
+                     where cod_impianto = :cod_impianto
+                       and stato        in ('E','F') -- E respinto F da validare "]} {#rom47 Aggiunta if e il suo contenuto
+    iter_return_complaint "Non è possibile stampare il libretto per un impianto singolo in stato Respinto o Da Validare."
+}
 
-    
+set ls_aimp_ibridi_da_escl_5_1 [list ];#rom34
+set ls_aimp_ibridi_da_escl_8   [list ];#rom34
+set ls_aimp_ibridi_da_escl_9_3 [list ];#rom34
+set ls_aimp_ibridi_da_escl_9_6 [list ];#rom34
+set ls_aimp_ibridi_da_escl_6   [list ];#rom35
+
+if {$coimtgen(regione) eq "MARCHE"} {#rom34  Aggiunte if e suo contenuto
+
+    # Costruisco una lista con gli eventuali cod_impianto da escludere per
+    # le schede che possono essere uniche in caso di sistemi ibridi.
+
+    set ls_aimp_ibridi_da_escl [db_list_of_lists q " 
+        select b.cod_impianto_ibrido as cod_impianto_5_1_da_escl
+             , c.cod_impianto_ibrido as cod_impianto_8_da_escl
+             , d.cod_impianto_ibrido as cod_impianto_9_3_da_escl
+             , e.cod_impianto_ibrido as cod_impianto_9_6_da_escl
+             , f.cod_impianto_ibrido as cod_impianto_6_da_escl   --rom35
+          from coimaimp a
+          left join coimaimp_ibrido b
+            on b.cod_impianto_ibrido = a.cod_impianto
+           and b.is_regolazione_primaria_unica = 'S'
+          left join coimaimp_ibrido c
+            on c.cod_impianto_ibrido = a.cod_impianto
+           and c.is_coimaccu_aimp_unici        = 'S'
+          left join coimaimp_ibrido d
+            on d.cod_impianto_ibrido = a.cod_impianto
+           and d.is_coimscam_calo_aimp_unici   = 'S'
+          left join coimaimp_ibrido e
+            on e.cod_impianto_ibrido = a.cod_impianto
+           and e.is_coimrecu_calo_aimp_unici   = 'S'
+          left join coimaimp_ibrido f                            --rom35
+            on f.cod_impianto_ibrido = a.cod_impianto            --rom35
+         where a.targa = :targa"]
+
+    foreach aimp_ibridi_da_escl $ls_aimp_ibridi_da_escl {
+
+	#rom35util_unlist $aimp_ibridi_da_escl cod_impianto_5_1_da_escl cod_impianto_8_da_escl cod_impianto_9_3_da_escl cod_impianto_9_6_da_escl
+	util_unlist $aimp_ibridi_da_escl cod_impianto_5_1_da_escl cod_impianto_8_da_escl cod_impianto_9_3_da_escl cod_impianto_9_6_da_escl cod_impianto_6_da_escl;#rom35
+	
+	if {![string is space $cod_impianto_5_1_da_escl]} {
+	    lappend ls_aimp_ibridi_da_escl_5_1 $cod_impianto_5_1_da_escl
+	}
+	if {![string is space $cod_impianto_8_da_escl]} {
+	    lappend ls_aimp_ibridi_da_escl_8   $cod_impianto_8_da_escl
+	}
+	if {![string is space $cod_impianto_9_3_da_escl]} {
+	    lappend ls_aimp_ibridi_da_escl_9_3 $cod_impianto_9_3_da_escl
+	}
+	if {![string is space $cod_impianto_9_6_da_escl]} {
+	    lappend ls_aimp_ibridi_da_escl_9_6 $cod_impianto_9_6_da_escl
+	}
+	if {![string is space $cod_impianto_6_da_escl]} {#rom35 Aggiunta if e il suo contenuto
+	    lappend ls_aimp_ibridi_da_escl_6 $cod_impianto_6_da_escl
+	}
+
+    }
+
+    set ls_aimp_ibridi_da_escl_5_1 "'[join $ls_aimp_ibridi_da_escl_5_1 ',']'"
+    set ls_aimp_ibridi_da_escl_8   "'[join $ls_aimp_ibridi_da_escl_8   ',']'"
+    set ls_aimp_ibridi_da_escl_9_3 "'[join $ls_aimp_ibridi_da_escl_9_3 ',']'"
+    set ls_aimp_ibridi_da_escl_9_6 "'[join $ls_aimp_ibridi_da_escl_9_6 ',']'"
+
+}
+
     append libretto "
     <table width=100% border=1>
         <tr>
@@ -1227,6 +1460,7 @@ if {$flag_gest_targa eq "T"} {
 
     #sim08 aggiunto $oggi_pretty
     #gac01 aggiunto titolo "1. Scheda identificativa dell’impianto"
+    #rom36 Modificata oggi_pretty con data_libretto_pretty
     append libretto "
     <table width=100% border=1>
           <tr>
@@ -1247,7 +1481,7 @@ if {$flag_gest_targa eq "T"} {
              <td>&nbsp;</td>
           </tr>
           <tr>
-              <td align=left>In data: $oggi_pretty</td>
+              <td align=left>In data: $data_libretto_pretty</td>
           </tr>
           <tr>
           <td align=left>$img_tip_n Nuova Installazione $img_tip_r Ristrutturazione $img_tip_s Sostituzione del Generatore $img_tip_c Compilazione libretto impianto esistente</td>
@@ -1271,7 +1505,6 @@ if {$flag_gest_targa eq "T"} {
              <td align=left>Provincia: $sigla</td>
           <tr>
 "
-
 #commentato perchè non presente nel modello di esempio. Viene messa solo la ubicazione attuale
 #    db_foreach $sel_stub "" {
 #	append libretto "
@@ -1280,7 +1513,6 @@ if {$flag_gest_targa eq "T"} {
 #             <td align=left>Data fine validit&agrave;: $data_fin_valid</td>
 #          </tr>"
 #    }
-
 
     append libretto "</table>
     <table width=100%>
@@ -1339,10 +1571,19 @@ if {$flag_gest_targa eq "T"} {
                     from coimaimp
                    where cod_impianto in ('[join $lista_cod_impianti ',']')"
     
+set img_uni_imm $img_unchecked;#rom46
+#rom47if {$coimtgen(regione) ne "MARCHE"} {#rom46 Aggiunta if e il suo contenuto
+
+    if {[string match [string toupper $unita_immobiliari_servite] "UNICA"]} {
+	set img_uni_imm $img_checked
+    }
+#rom47}
+
    append libretto "<table width=100% align=left>
           <tr>
-             <td><img src=\"$img_url/unchecked.bmp\" height=12 width=12> Singola Unità imm.</td>
+             <td>$img_uni_imm Singola Unità imm.</td>
              <td align=left valign=center>Categoria: $img_E1 E.1 $img_E2 E.2 $img_E3 E.3 $img_E4 E.4 $img_E5 E.5 $img_E6 E.6 $img_E7 E.7 $img_E8 E.8</td>
+          </tr>
           <tr>
              <td align=left colspan=2>Volume lordo Riscaldato: $tot_volimetria_risc (m&#179;)</td>
           </tr>
@@ -1370,8 +1611,7 @@ if {$coimtgen(regione) ne "MARCHE"} {
              <td align=left>POD: $pod</td>
              <td>&nbsp;</td>
           </tr>
-          </table><br>";#sim02
-          
+          </table><br>";#sim02          
 }
 
 #destinazione uso
@@ -1395,7 +1635,7 @@ if {$flag_gest_targa eq "F"} {#sim04: aggiunta if, else e contenuto dell'else
 } else {#sim04: aggiunta else e suo contenuto
 
     if {![db_0or1row query "
-         select a.potenza_utile as potenza_utile_padre
+         select coalesce(iter_edit_num(a.potenza_utile, 2),'&nbsp;') as potenza_utile_padre
            from coimaimp a
           where upper(targa)  = upper(:targa)
             and cod_impianto != :cod_impianto
@@ -1407,7 +1647,6 @@ if {$flag_gest_targa eq "F"} {#sim04: aggiunta if, else e contenuto dell'else
     }
 }
 
-
 set img_cli_est $img_unchecked;#sim02 
 set pot_utile_cli_est "";#sim02
 set img_prod_acqua $img_unchecked;#sim02
@@ -1417,34 +1656,100 @@ set pot_utile_cli_inv "";#sim02
 set img_altro $img_unchecked;#sim02
 set note_altro "______________";#rom09
 
+if {$coimtgen(regione) ne "MARCHE" && $coimtgen(regione) ne "FRIULI-VENEZIA GIULIA"} {#rom09 aggiunta if; aggiunta else e contenuto
 
-if {$coimtgen(regione) ne "MARCHE"} {#rom09 aggiunta if; aggiunta else e contenuto
-    if {$cod_utgi == "F"} {#sim02
+    set ls_img_cli_est    [list];#rom44
+    set ls_img_prod_acqua [list];#rom44
+    set ls_img_cli_inv    [list];#rom44
+
+    set ls_img_cli_est [db_list q "select i.cod_impianto
+                                     from coimgend g
+                                        , coimaimp i
+                                    where g.cod_impianto in ('[join $lista_cod_impianti ',']')
+                                      and i.cod_impianto = g.cod_impianto
+                                      and flag_attivo  = 'S'
+                                      and g.cod_utgi in ('F', 'FD','I','C','FRD')
+                                    group by i.cod_impianto"];#rom44
+
+    if {[lindex $ls_img_cli_est]>0} {#rom44 Aggiunta if
 	set img_cli_est $img_checked;#sim02
-	set pot_utile_cli_est "- <b>Potenza Utile: $potenza_utile</b>";#sim02
     }
-    
-    if {$cod_utgi eq "A" || $cod_utgi eq "D" || $cod_utgi eq "E"} {#sim02;#nic01
-	set img_prod_acqua $img_checked;#sim02
-	set pot_utile_prod_acqua "- <b>Potenza Utile: $potenza_utile</b>";#sim02
-    }
-    
-    if {$cod_utgi == "E" || $cod_utgi == "R"} {#sim02
-	set img_cli_inv $img_checked;#sim02
-	set pot_utile_cli_inv "- <b>Potenza Utile: $potenza_utile</b>";#sim02
-	
-	#Se l'impianto del freddo ha un padre visualizzo i suoi dati
-	if {$potenza_utile_padre ne ""} {
-	    set pot_utile_cli_est "- <b>Potenza Utile: $potenza_utile_padre</b>"
-	    set img_cli_est $img_checked;
-	}
-    }
-    
-    if {$cod_utgi == "0" || $cod_utgi == "X"} {#sim02
-    set img_altro $img_checked;#sim02
-    }
-} else {
 
+    set ls_img_prod_acqua [db_list q "select i.cod_impianto
+                                        from coimgend g
+                                           , coimaimp i
+                                       where g.cod_impianto in ('[join $lista_cod_impianti ',']')
+                                         and i.cod_impianto = g.cod_impianto
+                                         and flag_attivo  = 'S'
+                                         and g.cod_utgi in ('A', 'D','E','FD','FRD','RAD')
+                                       group by i.cod_impianto"];#rom44
+
+    set tot_pot_prod_acqua 0;#rom44
+    if {[lindex $ls_img_prod_acqua]>0} {#rom44 Aggiunta if
+	set img_prod_acqua $img_checked;#sim02
+	db_0or1row q "select sum(coalesce(potenza_utile,0)) as tot_pot_prod_acqua
+                        from coimaimp
+                       where cod_impianto in ('[join $ls_img_prod_acqua ',']')"
+	set tot_pot_prod_acqua [db_string q "select iter_edit_num(:tot_pot_prod_acqua,2)"]
+	set pot_utile_prod_acqua "- <b>Potenza Utile: $tot_pot_prod_acqua</b>";#sim02    
+    }
+
+    set ls_img_cli_inv [db_list q "select i.cod_impianto
+                                     from coimgend g
+                                        , coimaimp i
+                                    where g.cod_impianto in ('[join $lista_cod_impianti ',']')
+                                      and i.cod_impianto = g.cod_impianto
+                                      and flag_attivo  = 'S'
+                                      and g.cod_utgi in ('E', 'R','I','C','FRD','RA','RAD')
+                                    group by i.cod_impianto"];#rom44
+
+    set tot_pot_cli_inv 0;#rom44
+    if {[lindex $ls_img_cli_inv]>0} {#rom44 Aggiunta if
+	set img_cli_inv $img_checked;#sim02
+
+	db_0or1row q "select sum(coalesce(potenza_utile,0)) as tot_pot_cli_inv
+                        from coimaimp
+                       where cod_impianto in ('[join $ls_img_cli_inv ',']')";#rom44
+	set tot_pot_cli_inv [db_string q "select iter_edit_num(:tot_pot_cli_inv,2)"]
+	set pot_utile_cli_inv "- <b>Potenza Utile: $tot_pot_cli_inv</b>"
+
+    }
+
+    if {[db_0or1row q "select 1
+                         from coimgend g
+                       , coimaimp i
+                   where g.cod_impianto in ('[join $lista_cod_impianti ',']')
+                     and i.cod_impianto = g.cod_impianto
+                     and flag_attivo  = 'S'
+                     and g.cod_utgi in ('0', 'X')
+                     limit 1"]} {#rom44 Aggiunta if
+	set img_altro $img_checked;#sim02
+    }
+
+    set tot_pot_cli_est 0;#rom44
+    foreach cod_imp_cli_est $ls_img_cli_est {#rom44 Aggiunta foreach e il suo contenuto
+
+	set flag_tipo_impianto ""
+	db_0or1row q "select i.flag_tipo_impianto as flag_tipo_impianto_cli_est
+                           , coalesce(potenza,0) as  potenza_cli_est
+                           , coalesce(potenza_utile,0) as potenza_utile_cli_est
+                        from coimaimp i
+                       where i.cod_impianto = :cod_imp_cli_est"
+                         
+	if {$flag_tipo_impianto_cli_est eq "F"} {
+	    set tot_pot_cli_est [expr $tot_pot_cli_est + $potenza_cli_est]
+	} else {
+	    set tot_pot_cli_est [expr $tot_pot_cli_est + $potenza_utile_cli_est]
+	}
+
+    }
+
+    if {$tot_pot_cli_est > 0} {#rom44 Aggiunta if
+	set tot_pot_cli_est [db_string q "select iter_edit_num(:tot_pot_cli_est,2)"];#rom44
+	set pot_utile_cli_est "- <b>Potenza Utile: $tot_pot_cli_est</b>";#sim02
+    }
+
+} else {
     
     set tot_pot_utile_cli_est    0
     set tot_pot_utile_prod_acqua 0
@@ -1523,6 +1828,28 @@ if {$coimtgen(regione) ne "MARCHE"} {#rom09 aggiunta if; aggiunta else e contenu
 
     }
 
+    #rom30 Se non ho nessun flag valorizzato verifico se per gli impianti della targa sono presenti degli altri generatori.
+    #rom30 Se li trovo sommo la potenza e fleggo sempre climatizzazione invernale.
+    if {[string equal $img_cli_est $img_unchecked] &&
+	[string equal $img_prod_acqua $img_unchecked] &&
+	[string equal $img_cli_inv $img_unchecked]} {#rom30 Aggiunta if e suo contenuto
+
+	set ls_altri_gend [db_list_of_lists q "
+        select cod_altr_gend_aimp
+             , potenza_utile
+          from coimaltr_gend_aimp
+         where cod_impianto in ('[join $lista_cod_impianti ',']')
+           and flag_sostituito != 't'"]
+
+	foreach altro_gend $ls_altri_gend {
+
+	        util_unlist $altro_gend cod_altr_gend_aimp pot_utile_altr_gend
+
+		set img_cli_inv $img_checked
+		set tot_pot_utile_cli_inv [expr $tot_pot_utile_cli_inv + $pot_utile_altr_gend]
+	    }
+    }
+
     if {$tot_pot_utile_cli_est > 0} {
 	set tot_pot_utile_cli_est [db_string a "select iter_edit_num(:tot_pot_utile_cli_est,2)"]
 	set pot_utile_cli_est "- <b>Potenza Utile: $tot_pot_utile_cli_est</b>"
@@ -1537,7 +1864,7 @@ if {$coimtgen(regione) ne "MARCHE"} {#rom09 aggiunta if; aggiunta else e contenu
 	set tot_pot_utile_cli_inv [db_string a "select iter_edit_num(:tot_pot_utile_cli_inv,2)"]
 	set pot_utile_cli_inv "- <b>Potenza Utile: $tot_pot_utile_cli_inv</b>"
     }
-
+  
 };#rom09
 
 #sim04: corretto <tr> che erano scritti sbagliati
@@ -1596,6 +1923,32 @@ if {$mod_funz == "0" || $mod_funz == "3"} {#sim02
     set img_altro_vet $img_unchecked;#sim02
 };#sim02
 
+if {$mod_funz == "7"} {#rom28 aggiunta if e suo contenuto
+    set img_aria $img_checked
+    set img_acqua $img_checked
+    set img_altro_vet $img_unchecked
+}
+
+#mat01set img_fl_lt_ut_aria  $img_unchecked;#but05
+#mat01set img_fl_lt_ut_acqua $img_unchecked;#but05
+set img_fl_lt_ut_aria  $img_aria;#mat01
+set img_fl_lt_ut_acqua $img_acqua;#mat01
+
+db_foreach q "select fluido_lato_utenze
+                from coimgend
+               where cod_impianto in ('[join $lista_cod_impianti ',']')
+                 and coalesce(flag_sostituito,'') !='S'
+                 and flag_attivo = 'S'
+ " {#but05 aggiunto db_foreach e suo contenuto.
+     
+     if {$fluido_lato_utenze eq "AR"} {#but05
+	 set img_fl_lt_ut_aria $img_checked
+     }
+     if {$fluido_lato_utenze eq "AC"} {#but05
+	 set img_fl_lt_ut_acqua $img_checked
+     }
+ }
+
     append libretto "
     <table width=100% align=center>
           <tr>
@@ -1607,8 +1960,8 @@ if {$mod_funz == "0" || $mod_funz == "3"} {#sim02
    </table>
    <table width=100% align=left colspan= 4>
           <tr>
-             <td align=left>$img_acqua Acqua</td> 
-             <td align=left>$img_aria Aria  </td> 
+             <td align=left>$img_fl_lt_ut_acqua Acqua</td>    --but05
+             <td align=left>$img_fl_lt_ut_aria Aria  </td>    --but05
              <td align=left>$img_altro_vet Altro_____________ </td>
           </tr>";#sim02
 
@@ -1637,6 +1990,17 @@ set img_clest_pracs $img_unchecked
 set img_altro $img_unchecked
 set img_pannelli_solari $img_unchecked
 set img_altra_integ $img_unchecked
+
+#rom30bis Per Basili se ci sono altri generatori (scheda 4.8) bisogna avere la spunta su altro.
+if {$coimtgen(regione) eq "MARCHE"} {#rom30bis Aggiunta if suo conteunto
+    if {[db_0or1row q "select count(*)
+                         from coimaltr_gend_aimp
+                        where cod_impianto in ('[join $lista_cod_impianti ',']')
+                          and flag_sostituito != 't'
+                       having count(*) > 0"]} {
+	set img_altro_tip_gen $img_checked
+    }
+}
 
 db_foreach q "select tipologia_generatore
                    , integrazione_per
@@ -1702,6 +2066,7 @@ if {$integrazione eq "A"} {#gac07
 }
 
 }
+
     append libretto "
     <table width=100% align=center>
           <tr>
@@ -1762,6 +2127,20 @@ if {[db_0or1row sel_resp ""] == 0} {
 	set nome_resp "&nbsp;"
     }
 
+    if {[string equal "GIURIDICA" $natura_giuridica]} {#rom50 Aggiunte if, else e il loro contenuto
+	#rom51set rag_soc   "$cgn_resp $nome_resp"
+	set rag_soc   "$cgn_resp $nom_resp";#rom51
+	set cogn_resp ""
+	set nm_resp   ""
+	set cf_resp   ""
+    } else {
+	set rag_soc   ""
+	set cogn_resp $cgn_resp
+	#rom51set nm_resp   $nome_resp
+	set nm_resp   $nom_resp;#rom51
+	set piva_resp ""
+    }
+
     append libretto "
     <table width=100% align=center>
           <tr><td>&nbsp;</td></tr>
@@ -1769,24 +2148,24 @@ if {[db_0or1row sel_resp ""] == 0} {
              <td align=center colspan=3><b>1.6 Responsabile dell'Impianto</b></td>
           </tr>
           <tr>
-             <td>Cognome: $cgn_resp</td>
-             <td>Nome: $nom_resp</td>
+             <td>Cognome: $cogn_resp</td>
+             <td>Nome: $nm_resp</td>
              <td>CF: $cf_resp</td>
           </tr>
           <tr>
-             <td colspan=2>Ragione Sociale: __________________</td>                     
+             <td colspan=2>Ragione Sociale: $rag_soc</td>                     
              <td>P.IVA: $piva_resp</td>
           </tr>
-          <tr>
+  <!--    <tr>
              <td>&nbsp;</td>
-          </tr>"
+          </tr> -->"
 
-    append libretto "</table>
-    <table width=100%>
-          <tr>
-             <td>&nbsp;</td>
-          <tr>
-    </table>"
+#rom50    append libretto "</table>
+#    <table width=100%>
+#          <tr>
+#             <td>&nbsp;</td>
+#          <tr>
+#rom50    </table>"
 
     append libretto "
     <table width=100%>
@@ -1797,7 +2176,7 @@ if {[db_0or1row sel_resp ""] == 0} {
           </tr>
          <tr>
              <td width=50%>&nbsp;</td>
-             <td>________________________________________________</td>
+             <td align=center>________________________________________________</td>
          </tr>
     </table>"
 
@@ -1816,14 +2195,21 @@ if {$coimtgen(regione) eq "MARCHE"} {#gac02: if e suo contenuto
     set ls_cod_impianto_padre_fr [list]
     set ls_cod_impianto_padre_ca [list]
     
-    if {$flag_tipo_impianto eq "F"} {
+    if {![db_0or1row q "select 1
+                         from coimaimp
+                        where cod_impianto = :cod_impianto
+                          and stato        in ('E','F') -- respinto"]} {#rom47 Aggiunta if ma non il suo contenuto
 	
-	set ls_cod_impianto_padre_fr "$cod_impianto "
-    }
-    
-    if {$flag_tipo_impianto ne "F"} {     
-	set ls_cod_impianto_padre_ca "$cod_impianto "
-    }
+	if {$flag_tipo_impianto eq "F"} {
+	    
+	    set ls_cod_impianto_padre_fr "$cod_impianto "
+	}
+	
+	if {$flag_tipo_impianto ne "F"} {     
+	    set ls_cod_impianto_padre_ca "$cod_impianto "
+	}
+	
+    };#rom47
     
     if {$flag_gest_targa eq "T"} {
 	
@@ -1929,11 +2315,20 @@ if {$coimtgen(regione) eq "MARCHE"} {#gac02: if e suo contenuto
              <td align=center bgcolor=\"E1E1E1\"><big><b>1Bis. Dati Generali</b></big></td>
           </tr>
     </table>"
-        
+
+    set ls_pod_pdr [db_list_of_lists q "select pod
+                                             , pdr
+                                             , cod_impianto_est as cod_impianto_est_imp_1bis
+                                          from coimaimp
+                                         where cod_impianto in ('[join $lista_cod_impianti ',']')"];#rom32
+    foreach pod_pdr $ls_pod_pdr {;#rom32 Aggiunta foreach ma non il suo contenuto
+
+	util_unlist $pod_pdr pod pdr cod_impianto_est_imp_1bis;#rom32
+    
     append libretto "
         <table align=left border=0>
           <tr>
-             <td>&nbsp;</td>
+             <td><b>Impianto $cod_impianto_est_imp_1bis:</b></td>
           </tr>
               <tr>
                  <td align=left>PDR</td>
@@ -1944,8 +2339,22 @@ if {$coimtgen(regione) eq "MARCHE"} {#gac02: if e suo contenuto
                  <td align=left>$pod</td>
               </tr>
         </table>
-<br>
-
+<br>"
+    };#rom32
+    
+    if {$flag_resp == "TERZI"} {#but06 aggiunto if e else e loro contenuto
+	set flag_resp "TERZO RESPONSABILE"
+	set nome_tresp  $nome_resp
+	set indir_r     $indir_m
+	set nome_comu_r $nome_comu_m
+	set sigla_r     $sigla_m
+	set cap_r       $cap_m
+	set tel         $tel_m
+	set fax         $fax_m
+	set email       $email_m
+	set pec         $pec_m
+    }
+    append libretto "
         <table align=center width=100% >
               <tr>
                  <td align=center><b>Ulteriori dati Responsabile d'impianto</b></td>
@@ -1964,7 +2373,7 @@ if {$coimtgen(regione) eq "MARCHE"} {#gac02: if e suo contenuto
               </tr>
               <tr>
                  <td align=left>Ruolo:</td>
-                 <td colspan=4 align=left>$flag_resp</td>
+                 <td colspan=4 align=left nowrap>$flag_resp</td>
               </tr>
               <tr>
                  <td colspan=5>&nbsp;</td>
@@ -2134,9 +2543,15 @@ if {$coimtgen(regione) eq "MARCHE"} {#gac02: if e suo contenuto
                          </table><br>"
     }
 
+
+    foreach cod_impianto_condu $lista_cod_impianti {#rom31 Aggiunta foreach ma non il suo contenuto
+	db_1row q "select cod_impianto_est as cod_impianto_est_condu
+                     from coimaimp
+                    where cod_impianto= :cod_impianto_condu";#rom31
+	
     append libretto "        <table align=center border=0 width=100%>
               <tr>
-                 <td align=center nowrap><b>Eventuale conduttore (per impianti con potenza nominale utile superiore a 232 kW) per l'impianto $cod_impianto_est</b></td>
+                 <td align=center nowrap><b>Eventuale conduttore (per impianti con potenza nominale utile superiore a 232 kW) per l'impianto $cod_impianto_est_condu</b></td>
               </tr>
         </table>"
 
@@ -2216,6 +2631,7 @@ if {$coimtgen(regione) eq "MARCHE"} {#gac02: if e suo contenuto
               </tr>
         </table> "
     }
+    };#rom31
     set descr_tpim_1bis [db_string q "select case cod_tpim
                                         when 'A' then 'Autonomo'
                                         when 'C' then 'Centralizzato'
@@ -2385,6 +2801,10 @@ append libretto "<br>
 	    if {$flag_tipo_impianto_1bis eq "F" && $potenza_1bis < 12} {
 		continue
 	    }
+	    if {$flag_tipo_impianto_1bis eq "T" && $potenza_bis <= 10} {#rom52
+		continue
+	    }
+
 	    
 	append libretto "<br>
         <table width=100% align=center>
@@ -2500,9 +2920,9 @@ append libretto "<br>
 	    append libretto "
              <tr>
                 <td align=center>$tot_descr_tpco</td>
-                <td align=center>$tipo_climatizzazione</td>
+                <td align=center>$tot_tipo_climatizzazione</td><!--mic01 Prima veniva erroneamente usato tipo_climatizzazione.-->
                 <td align=center>$tot_potenza</td>
-                <td align=center>&euro; $importo</td>
+                <td align=center>&euro; $tot_importo</td><!--mic01 Prima veniva erroneamente usato importo.-->
                 <td align=center>$anni</td>
              </tr>"
 	}
@@ -2521,24 +2941,22 @@ append libretto "<br>
 }
 #GACALIN FINE SCHEDA 1BIS
 
-
-
-append libretto "
-<table width=100% border=1>
-     <tr>
-        <td align=center bgcolor=\"E1E1E1\"><big><b>2. Trattamento Acqua</b></big></td>
-     </tr>
-</table>"
-   
-
-
 #trattamento dell'acqua
 
 #contenuto acqua
 
-if {[db_0or1row sel_aimp_tratt_acqua ""] == 0} {
-    iter_return_complaint "Impianto non trovato"
-} else {
+#rom32if {[db_0or1row sel_aimp_tratt_acqua ""] == 0} {
+#rom32    iter_return_complaint "Impianto non trovato"
+#rom32} else {}
+db_foreach sel_aimp_tratt_acqua "" {#rom32 Aggiunta if ma non il contenuto
+
+    append libretto "
+<table width=100% border=1>
+     <tr>
+        <td align=center bgcolor=\"E1E1E1\"><big><b>2. Trattamento Acqua impianto $cod_impianto_est_tratt_acqua</b></big></td>
+     </tr>
+</table>"
+   
 
     append libretto "
 
@@ -2586,7 +3004,8 @@ if {[db_0or1row sel_aimp_tratt_acqua ""] == 0} {
     set img_propilenico           $img_unchecked
 
     if {$tratt_acqua_clima_tipo eq "A"} {
-	set img_assente     $img_checked
+	#rom28set img_assente     $img_checked
+	set img_assente_cli_tipo  $img_checked;#rom28
     }
     if {$tratt_acqua_clima_tipo eq "F"} {
         set img_filtrazione $img_checked
@@ -2685,7 +3104,24 @@ append libretto "
     if {$tratt_acqua_calda_sanit_tipo eq "C"} {
         set img_con_chimico_acs $img_checked
     }
-
+    if {$tratt_acqua_calda_sanit_tipo eq "K"} {#rom28 Aggiunta if  e contenuto
+        set img_filtrazione_acs $img_checked
+	set img_addolcimento_acs $img_checked
+    }
+    if {$tratt_acqua_calda_sanit_tipo eq "J"} {#rom28 Aggiunta if  e contenuto
+        set img_filtrazione_acs $img_checked
+	set img_con_chimico_acs $img_checked
+    }
+    if {$tratt_acqua_calda_sanit_tipo eq "W"} {#rom28 Aggiunta if  e contenuto
+        set img_con_chimico_acs $img_checked
+	set img_addolcimento_acs $img_checked
+    }
+    if {$tratt_acqua_calda_sanit_tipo eq "T"} {#rom28 Aggiunta if  e contenuto
+        set img_filtrazione_acs $img_checked
+        set img_con_chimico_acs $img_checked
+	set img_addolcimento_acs $img_checked
+    }
+    
     append libretto "
     <table width=100% align=center>
           <tr>
@@ -2975,12 +3411,12 @@ append libretto "
     #      <tr>
     #</table>"
 
-
+    append libretto "    <!-- PAGE BREAK -->";#rom32
 }
 
 
 append libretto "
-    <!-- PAGE BREAK -->
+
     $table_con_header_per_tutte_le_pagine
 "
 
@@ -3037,11 +3473,12 @@ $table_con_header_per_tutte_le_pagine"
     
     if {$coimtgen(regione) eq "MARCHE"} {#rom06 aggiunta if, else e loro contenuto
 
+	#rom32 Corretta anomalia su visualizzazione terzi responsabili
 	if {[db_0or1row q "select coalesce(iter_edit_data(data_fine),'&nbsp;') as data_cessazione
                              from coim_as_resp
-                            where cod_impianto =  :cod_impianto
-                              and cod_manutentore = :cod_manutentore
-                              and data_fine > :db_data_inizio
+                            where cod_impianto =  :cod_impianto_as_resp
+                              and cod_responsabile = :cod_responsabile
+                              and data_fine >= :db_data_inizio
                             order by data_fine desc
 	                     limit 1"] == 1} {
 	    set data_fine "al <b>$data_cessazione</b>"
@@ -3050,12 +3487,18 @@ $table_con_header_per_tutte_le_pagine"
 	};#rom08	
 	if {$flag_as_resp eq "P"} {
 	    set flag_as_resp_prop $img_checked
+	    set flag_as_resp_occu $img_unchecked;#rom42
+	    set flag_as_resp_ammi $img_unchecked;#rom42
 	} 
 	if {$flag_as_resp eq "O"} {
 	    set flag_as_resp_occu $img_checked
+	    set flag_as_resp_prop $img_unchecked;#rom42
+	    set flag_as_resp_ammi $img_unchecked;#rom42
 	}
 	if {$flag_as_resp eq "A"} {
 	    set flag_as_resp_ammi $img_checked
+	    set flag_as_resp_occu $img_unchecked;#rom42
+	    set flag_as_resp_prop $img_unchecked;#rom42
 	}
 	
 	append libretto "
@@ -3069,7 +3512,7 @@ $table_con_header_per_tutte_le_pagine"
                         <br>responsabile dell'impianto in qualit&agrave; di  $flag_as_resp_prop proprietario $flag_as_resp_occu occupante $flag_as_resp_ammi amministratore</td>
                      </tr>
                      <tr>
-                        <td>affida la responsabilit&agrave; dell'impianto termico $cod_impianto_est alla Ditta <b> $cognome_manu $nome_manu</b></td><!--gac11-->
+                        <td>affida la responsabilit&agrave; dell'impianto termico $cod_impianto_est_as_resp alla Ditta <b> $cognome_manu $nome_manu</b></td><!--gac11-->
                      </tr>
                      <tr> 
                         <td>iscritta alla CCIAA di <b>$localita_reg</b>, al numero <b>$reg_imprese</b></td>
@@ -3717,6 +4160,11 @@ if {$coimtgen(regione) eq "MARCHE"} {#rom03: if e suo contenuto
          <td align=left>Motivazione GT inattivo</td>
          <td align=left>$motivazione_disattivo_4_1bis</td>
        </tr>
+       <tr><!--mat02-->  
+         <td align=left>Installatore</td>
+         <td align=left>$inst_4_1_bis</td>
+       </tr>
+
     </table>
 </td>
 </tr>
@@ -3811,6 +4259,10 @@ if {$coimtgen(regione) eq "MARCHE"} {#rom03: if e suo contenuto
          <td align=left>Motivazione GT inattivo</td>
          <td align=left>$motivazione_disattivo_4_1bis_sost</td>
        </tr>
+       <tr><!--mat02-->  
+         <td align=left>Installatore</td>
+         <td align=left>$inst_4_1_bis_sost</td>
+       </tr>
 </table>
 </td>
 </tr>
@@ -3854,28 +4306,42 @@ append libretto "
 
 set num_bruc "0"
 
-db_foreach sel_bruc "" {
+#rom33db_foreach sel_bruc "" {}
+if {$coimtgen(regione) eq "MARCHE" } {#rom45 Aggiunta if, else e contenuto
+    set q_bruc "sel_bruc_u"
+} else {
+    set q_bruc "sel_bruc_u_no_marche"
+}
+
+db_foreach $q_bruc "" {#rom33 Aggiunta foreach ma non il suo contenuto
     regsub -all {<} $matricola_bruc {\&lt;} matricola_bruc;#sim07
     regsub -all {>} $matricola_bruc {\&gt;} matricola_bruc;#sim07
+    
+    db_1row q "select coalesce(c.descr_comb, '&nbsp;') as descr_comb_bruc
+                 from coimgend g
+                 left join coimcomb c on c.cod_combustibile = g.cod_combustibile
+                where g.cod_impianto = :cod_impianto_bruc
+                  and g.gen_prog     = :gen_prog_bruc"
+	
     append libretto "
 <table width=100% border=1>
   <tr>
-    <td align=left width=20%>Bruciatore<br>BR $gen_prog_est_bruc</td>
-    <td align=left width=25%>Collegato <small>al Gruppo Termico</small>  $cod_impianto_est_bruc<br>GT $gen_prog_est_bruc</td>
-    <td align=left width=100%>Situazione alla prima installazione o alla ristrutturazione dell'impianto termico</td>
+    <td align=left width=20%>Bruciatore<br>BR $numero_bruc</td>
+    <td align=left width=25%>Collegato al Gruppo Termico GT $gen_prog_est_bruc</td>
+    <td align=left width=100%>Situazione alla prima installazione o alla ristrutturazione dell'impianto termico $cod_impianto_est_bruc</td>
   </tr>
   <tr>
     <td colspan=3>
       <table width=100%>
         <tr>
-          <td align=left>Data di installazione</td>
-          <td align=left>$data_installaz_bruc</td>
+           <td align=left>Data di installazione</td>
+          <td align=left>$data_installaz_bruc_edit</td>
           <td align=left>Data di dismissione</td>
-          <td align=left>$data_rottamaz_bruc</td>
+          <td align=left>$data_rottamaz_bruc_edit</td>
         </tr>
         <tr>
           <td align=left>Fabbricante</td>
-          <td align=left>$descr_cost</td>
+          <td align=left>$fabbricante_bruc</td>
           <td align=left>Modello</td>
           <td align=left>$modello_bruc</td>
         </tr>
@@ -3887,14 +4353,18 @@ db_foreach sel_bruc "" {
           <td align=left>Tipologia</td>
           <td align=left>$tipo_bruciatore</td>
           <td align=left>Combustibile</td>
-          <td align=left>$descr_comb</td>
-        </tr>
+          <td align=left>$descr_comb_bruc</td>
+        </tr>"
+    if {$coimtgen(regione) eq "MARCHE"} {#rom33 Aggiunta if ma non il contenuto
+	append libretto "
         <tr>   
           <td align=left>Portata termica max nominale</td>
-          <td align=left>$campo_funzion_max (kW)</td>
+          <td align=left>$campo_funzion_max_edit (kW)</td>
           <td align=left>Portata termica min nominale</td>
-          <td align=left>$campo_funzion_min (kW)</td>
-        </tr>
+          <td align=left>$campo_funzion_min_edit (kW)</td>
+        </tr>"
+    }
+    append libretto "
         <tr>
           <td colspan=4>&nbsp;</td>
         </tr>
@@ -3906,149 +4376,226 @@ db_foreach sel_bruc "" {
     set  num_bruc "1"
 }
 
-if {$flag_gest_targa eq "T"} {#sim04: aggiunta if e suo contenuto
-    set q_sel_bruc_padre "sel_bruc_padre_targa"
-} else {
-    set q_sel_bruc_padre "sel_bruc_padre"
-}
+#rom33if {$flag_gest_targa eq "T"} {#sim04: aggiunta if e suo contenuto
+#rom33    set q_sel_bruc_padre "sel_bruc_padre_targa"
+#rom33} else {
+#rom33    set q_sel_bruc_padre "sel_bruc_padre"
+#rom33}
 
-db_foreach $q_sel_bruc_padre "" {
-    regsub -all {<} $matricola_bruc_padre {\&lt;} matricola_bruc_padre;#sim07
-    regsub -all {>} $matricola_bruc_padre {\&gt;} matricola_bruc_padre;#sim07
-    append libretto "
+#rom33db_foreach $q_sel_bruc_padre "" {
+#rom33    regsub -all {<} $matricola_bruc_padre {\&lt;} matricola_bruc_padre;#sim07
+#rom33    regsub -all {>} $matricola_bruc_padre {\&gt;} matricola_bruc_padre;#sim07
+#rom33    append libretto "
+#rom33<table width=100% border=1>
+#rom33  <tr>
+#rom33    <td align=left width=20%>Bruciatore<br>BR $gen_prog_est_bruc_padre</td>
+#rom33    <td align=left width=25%>Collegato <small>al Gruppo Termico</small>  $cod_impianto_est_bruc_padre<br>GT $gen_prog_est_bruc_padre</td>
+#rom33    <td align=left width=100%>Situazione alla prima installazione o alla ristrutturazione dell'impianto termico</td>
+#rom33  </tr>
+#rom33  <tr>
+#rom33    <td colspan=3>
+#rom33      <table width=100%>
+#rom33        <tr> 
+#rom33          <td align=left>Data di installazione</td>
+#rom33          <td align=left>$data_installaz_bruc_padre</td>
+#rom33          <td align=left>Data di dismissione</td>
+#rom33          <td align=left>$data_rottamaz_bruc_padre</td>
+#rom33        </tr>
+#rom33        <tr>
+#rom33          <td align=left>Fabbricante</td>
+#rom33          <td align=left>$descr_cost_padre</td>
+#rom33          <td align=left>Modello</td>
+#rom33          <td align=left>$modello_bruc_padre</td>
+#rom33        </tr>
+#rom33        <tr>
+#rom33          <td align=left>Matricola</td>
+#rom33          <td align=left>$matricola_bruc_padre</td>
+#rom33        </tr>
+#rom33        <tr>
+#rom33          <td align=left>Tipologia</td>
+#rom33          <td align=left>$tipo_bruciatore_padre</td>
+#rom33          <td align=left>Combustibile</td>
+#rom33          <td align=left>$descr_comb_padre</td>
+#rom33        </tr>
+#rom33        <tr>   
+#rom33          <td align=left>Portata termica max nominale</td>
+#rom33          <td align=left>$campo_funzion_max_padre</td>
+#rom33          <td align=left>Portata termica min nominale</td>
+#rom33          <td align=left>$campo_funzion_min_padre</td>
+#rom33        </tr>
+#rom33      </table>
+#rom33    </td>
+#rom33  </tr>
+#rom33</table><br><br>"
+
+#rom33    set  num_bruc "1"
+#rom33}
+
+        append libretto "
+    <table width=100%>
+      <tr>
+        <td colspan=2>&nbsp;</td>
+      </tr>
+      <tr>
+        <td colspan=2><b>SOSTITUZIONI DEL COMPONENTE</b></td>
+      </tr>
+      <tr>
+        <td colspan=2>&nbsp;</td>
+      </tr>"
+
+if {$coimtgen(regione) eq "MARCHE" } {#rom45 Aggiunta if, else e contenuto
+    set q_bruc_sost_comp "sel_bruc_u_sost_comp"
+} else {
+    set q_bruc_sost_comp "sel_bruc_u_sost_comp_no_marche"
+}
+    
+db_foreach $q_bruc_sost_comp "" {#rom33 Aggiunta foreach e il suo contenuto
+	regsub -all {<} $matricola_bruc_sost_comp {\&lt;} matricola_bruc_sost_comp
+	regsub -all {<} $matricola_bruc_sost_comp {\&gt;} matricola_bruc_sost_comp
+
+	db_1row q "select coalesce(c.descr_comb, '&nbsp;') as descr_comb_bruc_sost_comp
+                     from coimgend g
+                     left join coimcomb c on c.cod_combustibile = g.cod_combustibile
+                    where g.cod_impianto = :cod_impianto_bruc_sost_comp
+                      and g.gen_prog     = :gen_prog_bruc_sost_comp"
+	
+	append libretto "
 <table width=100% border=1>
   <tr>
-    <td align=left width=20%>Bruciatore<br>BR $gen_prog_est_bruc_padre</td>
-    <td align=left width=25%>Collegato <small>al Gruppo Termico</small>  $cod_impianto_est_bruc_padre<br>GT $gen_prog_est_bruc_padre</td>
-    <td align=left width=100%>Situazione alla prima installazione o alla ristrutturazione dell'impianto termico</td>
+    <td align=left width=20%>Bruciatore<br>BR $numero_bruc_sost_comp</td>
+    <td align=left width=25%>Collegato al Gruppo Termico GT $gen_prog_est_bruc_sost_comp</td>
+    <td align=left width=100%>Sostituzione del componente dell'impianto termico $cod_impianto_est_bruc_sost_comp</td>
   </tr>
   <tr>
     <td colspan=3>
       <table width=100%>
-        <tr> 
-          <td align=left>Data di installazione</td>
-          <td align=left>$data_installaz_bruc_padre</td>
+        <tr>
+           <td align=left>Data di installazione</td>
+          <td align=left>$data_installaz_bruc_edit_sost_comp</td>
           <td align=left>Data di dismissione</td>
-          <td align=left>$data_rottamaz_bruc_padre</td>
+          <td align=left>$data_rottamaz_bruc_edit_sost_comp</td>
         </tr>
         <tr>
           <td align=left>Fabbricante</td>
-          <td align=left>$descr_cost_padre</td>
+          <td align=left>$fabbricante_bruc_sost_comp</td>
           <td align=left>Modello</td>
-          <td align=left>$modello_bruc_padre</td>
+          <td align=left>$modello_bruc_sost_comp</td>
         </tr>
         <tr>
           <td align=left>Matricola</td>
-          <td align=left>$matricola_bruc_padre</td>
+          <td align=left>$matricola_bruc_sost_comp</td>
         </tr>
         <tr>
           <td align=left>Tipologia</td>
-          <td align=left>$tipo_bruciatore_padre</td>
+          <td align=left>$tipo_bruciatore_sost_comp</td>
           <td align=left>Combustibile</td>
-          <td align=left>$descr_comb_padre</td>
-        </tr>
+          <td align=left>$descr_comb_bruc_sost_comp</td>
+        </tr>"
+	if {$coimtgen(regione) eq "MARCHE"} {#rom33 Aggiunta if ma non il suo contenuto
+	    append libretto "
         <tr>   
           <td align=left>Portata termica max nominale</td>
-          <td align=left>$campo_funzion_max_padre</td>
+          <td align=left>$campo_funzion_max_edit_sost_comp (kW)</td>
           <td align=left>Portata termica min nominale</td>
-          <td align=left>$campo_funzion_min_padre</td>
+          <td align=left>$campo_funzion_min_edit_sost_comp (kW)</td>
+        </tr>"
+	};#rom33
+	append libretto "
+        <tr>
+          <td colspan=4>&nbsp;</td>
         </tr>
       </table>
     </td>
   </tr>
 </table><br><br>"
-
-    set  num_bruc "1"
 }
 
-if {$num_bruc eq "1"} {
-
-    append libretto "
-    <table width=100%>
-        <tr>
-             <td colspan=2>&nbsp;</td>
-          </tr>
-          <tr>
-             <td colspan=2><b>SOSTITUZIONI DEL COMPONENTE</b></td>
-          </tr>
-          <tr>
-             <td colspan=2>&nbsp;</td>
-          </tr>
-          <tr>
-             <td>Data di installazione _________________</td>
-             <td>Data di dismissione _________________</td>
-          </tr>
-          <tr> 
-             <td>Fabbricante _________________</td>
-             <td>Modello _________________</td>
-          </tr>
-          <tr>
-             <td colspan=2>Matricola _________________</td>
-          </tr>
-          <tr>
-             <td>Tipologia _________________</td>
-             <td>Combustibile_________________</td>
-          </tr>
-          <tr>
-             <td>Potenza termica max nominale</td>
-             <td>Potenza termica min nominale</td>
-          <tr>
-             <td colspan=2>&nbsp;</td>
-          </tr>
-          <tr>
-             <td colspan=2>&nbsp;</td>
-          </tr>
-          <tr>
-             <td>Data di installazione _________________</td>
-             <td>Data di dismissione _________________</td>
-          </tr>
-          <tr>
-             <td>Fabbricante _________________</td>
-             <td>Modello _________________</td>
-          </tr>
-          <tr>
-             <td colspan=2>Matricola_________________</td>
-          </tr>
-          <tr>
-             <td>Tipologia _________________</td>
-             <td>Combustibile _________________</td>
-          </tr>
-          <tr>
-             <td>Potenza termica max nominale</td>
-             <td>Potenza termica min nominale</td>
-          </tr>
-           <tr>
-             <td colspan=2>&nbsp;</td>
-          </tr>
-          <tr>
-             <td colspan=2>&nbsp;</td>
-          </tr>
-          <tr>
-             <td>Data di installazione _________________</td>
-             <td>Data di dismissione _________________</td>
-          </tr>
-          <tr>
-             <td>Fabbricante _________________</td>
-             <td>Modello _________________</td>
-          </tr>
-          <tr>
-             <td colspan=2>Matricola_________________</td>
-          </tr>
-          <tr>
-             <td>Tipologia _________________</td>
-             <td>Combustibile _________________</td>
-          </tr>
-          <tr>
-             <td>Potenza termica max nominale</td>
-             <td>Potenza termica min nominale</td>
-          </tr>
-          <tr>
-             <td colspan=2>&nbsp;</td>
-          </tr>
-    </table>"
+#rom33    append libretto "
+#rom33    <table width=100%>
+#rom33        <tr>
+#rom33             <td colspan=2>&nbsp;</td>
+#rom33          </tr>
+#rom33          <tr>
+#rom33             <td colspan=2><b>SOSTITUZIONI DEL COMPONENTE</b></td>
+#rom33          </tr>
+#rom33          <tr>
+#rom33             <td colspan=2>&nbsp;</td>
+#rom33          </tr>
+#rom33          <tr>
+#rom33             <td>Data di installazione _________________</td>
+#rom33             <td>Data di dismissione _________________</td>
+#rom33          </tr>
+#rom33          <tr> 
+#rom33             <td>Fabbricante _________________</td>
+#rom33             <td>Modello _________________</td>
+#rom33          </tr>
+#rom33          <tr>
+#rom33             <td colspan=2>Matricola _________________</td>
+#rom33          </tr>
+#rom33          <tr>
+#rom33             <td>Tipologia _________________</td>
+#rom33             <td>Combustibile_________________</td>
+#rom33          </tr>
+#rom33          <tr>
+#rom33             <td>Potenza termica max nominale</td>
+#rom33             <td>Potenza termica min nominale</td>
+#rom33          <tr>
+#rom33             <td colspan=2>&nbsp;</td>
+#rom33          </tr>
+#rom33          <tr>
+#rom33             <td colspan=2>&nbsp;</td>
+#rom33          </tr>
+#rom33          <tr>
+#rom33             <td>Data di installazione _________________</td>
+#rom33             <td>Data di dismissione _________________</td>
+#rom33          </tr>
+#rom33          <tr>
+#rom33             <td>Fabbricante _________________</td>
+#rom33             <td>Modello _________________</td>
+#rom33          </tr>
+#rom33          <tr>
+#rom33             <td colspan=2>Matricola_________________</td>
+#rom33          </tr>
+#rom33          <tr>
+#rom33             <td>Tipologia _________________</td>
+#rom33             <td>Combustibile _________________</td>
+#rom33          </tr>
+#rom33          <tr>
+#rom33             <td>Potenza termica max nominale</td>
+#rom33             <td>Potenza termica min nominale</td>
+#rom33          </tr>
+#rom33           <tr>
+#rom33             <td colspan=2>&nbsp;</td>
+#rom33          </tr>
+#rom33          <tr>
+#rom33             <td colspan=2>&nbsp;</td>
+#rom33          </tr>
+#rom33          <tr>
+#rom33             <td>Data di installazione _________________</td>
+#rom33             <td>Data di dismissione _________________</td>
+#rom33          </tr>
+#rom33          <tr>
+#rom33             <td>Fabbricante _________________</td>
+#rom33             <td>Modello _________________</td>
+#rom33          </tr>
+#rom33          <tr>
+#rom33             <td colspan=2>Matricola_________________</td>
+#rom33          </tr>
+#rom33          <tr>
+#rom33             <td>Tipologia _________________</td>
+#rom33             <td>Combustibile _________________</td>
+#rom33          </tr>
+#rom33          <tr>
+#rom33             <td>Potenza termica max nominale</td>
+#rom33             <td>Potenza termica min nominale</td>
+#rom33          </tr>
+#rom33          <tr>
+#rom33             <td colspan=2>&nbsp;</td>
+#rom33          </tr>
+#rom33    </table>"
 
 
-} else {
+if {!$num_bruc} {
     append libretto "
 <table width=100%>
   <tr>
@@ -4361,6 +4908,17 @@ db_foreach sel_gend_fr "" {
 	set img_fl_lt_ut_acqua $img_checked
     }
 
+    if {$coimtgen(regione) eq "MARCHE"} {#rom43 Aggiunte if, elseif, else e il loro contenuto
+	set pot_ass_nom_raff $pot_utile_nom_freddo_fr
+	set descr_fluido_frig $descr_flre
+    } elseif {$coimtgen(regione) eq "BASILICATA"} {
+	set pot_ass_nom_raff $pot_utile_nom_fr
+	set descr_fluido_frig $descr_flre
+    } else {
+	set pot_ass_nom_raff $pot_utile_nom_fr
+	#but04 set descr_fluido_frig $descr_fuge
+	set descr_fluido_frig $descr_flre;#but04
+    }
     
     append libretto "
   <table width=100% border=1>
@@ -4390,8 +4948,8 @@ db_foreach sel_gend_fr "" {
           <td align=left>$img_sor_lt_est_aria Aria  $img_sor_lt_est_acqua Acqua</td><!--rom15-->
        </tr>
        <tr>
-          <td align=left>Fluido frigorigeno</td>
-          <td align=left>$mod_funz</td>
+          <td align=left>Fluido refrigerante</td>
+          <td align=left>$descr_fluido_frig : $fluido_flre</td> <!--but04-->
           <td align=left> Fluido lato utenze:</td>
           <td align=left>$img_fl_lt_ut_aria Aria $img_fl_lt_ut_acqua Acqua</td><!--rom15-->
 
@@ -4415,7 +4973,7 @@ db_foreach sel_gend_fr "" {
 <tr> 
           <td align=left nowrap>Raffrescamento EER(o GUE) $per_fr</td>
           <td align=left>Pot. Frig. Nom. $pot_foc_gend_fr (kW)</td>
-          <td align=left>Potenza assorbita nominale $pot_utile_nom_fr (kW)</td>
+          <td align=left>Potenza assorbita nominale $pot_ass_nom_raff (kW)</td>
        </tr>
        <tr>
           <td align=left nowrap>Riscaldamento COP (o &#951;) $cop_fr</td>
@@ -4475,6 +5033,18 @@ db_foreach $q_sel_gend_fr_padre "" {#gab05
 	set img_fl_lt_ut_acqua_padre $img_checked
     }
     
+    if {$coimtgen(regione) eq "MARCHE"} {#rom43 Aggiunte if, elseif, else e il loro contenuto
+	set pot_ass_nom_raff_padre  $pot_utile_nom_freddo_fr_padre
+	set descr_fluido_frig_padre $descr_flre_padre
+    } elseif {$coimtgen(regione) eq "BASILICATA"} {
+	set pot_ass_nom_raff_padre  $pot_utile_nom_fr_padre
+	set descr_fluido_frig_padre $descr_flre_padre
+    } else {
+	set pot_ass_nom_raff_padre  $pot_utile_nom_fr_padre
+	#but04 set descr_fluido_frig_padre $descr_fuge_padre
+	set descr_fluido_frig_padre $descr_flre_padre;#but04
+    }
+
     append libretto "
     <table width=100% border=1>
      <tr>
@@ -4503,8 +5073,8 @@ db_foreach $q_sel_gend_fr_padre "" {#gab05
           <td align=left>$img_sor_lt_est_aria_padre Aria $img_sor_lt_est_acqua_padre Acqua</td>
        </tr>
        <tr>
-          <td align=left>Fluido frigorigeno</td>
-          <td align=left>$mod_funz_padre</td>
+          <td align=left>Fluido refrigerante</td>
+          <td align=left>$descr_fluido_frig_padre : $fluido_flre_padre </td>
           <td align=left> Fluido lato utenze:</td>
           <td align=left>$img_fl_lt_ut_aria_padre Aria $img_fl_lt_ut_acqua_padre Acqua</td>
        </tr>
@@ -4528,7 +5098,7 @@ db_foreach $q_sel_gend_fr_padre "" {#gab05
 
           <td align=left nowrap >Raffrescamento EER(o GUE) $per_fr_padre</td>
           <td align=left>Pot. Frig. Nom. $pot_foc_gend_fr_padre (kW)</td>
-          <td align=left>Potenza assorbita nominale $pot_utile_nom_fr_padre (kW)</td>
+          <td align=left>Potenza assorbita nominale $pot_ass_nom_raff_padre (kW)</td>
        </tr>
        <tr>
           <td align=left nowrap>Riscaldamento COP (o &#951;) $cop_fr_padre</td>
@@ -4601,7 +5171,17 @@ if {$num_gend_fr eq 1} { #gab05 aggiunta if
 	    set img_fl_lt_ut_acqua_sost $img_checked
 	}
 	
-	
+	if {$coimtgen(regione) eq "MARCHE"} {#rom43 Aggiunte if, elseif, else e il loro contenuto
+	    set pot_ass_nom_raff_sost  $pot_utile_nom_freddo_fr_sost
+	    set descr_fluido_frig_sost $descr_flre_sost
+	} elseif {$coimtgen(regione) eq "BASILICATA"} {
+	    set pot_ass_nom_raff_sost  $pot_utile_nom_fr_sost
+	    set descr_fluido_frig_sost $descr_flre_sost
+	} else {
+	    set pot_ass_nom_raff_sost  $pot_utile_nom_fr_sost
+	    #but04 set descr_fluido_frig_sost $descr_fuge_sost
+	    set descr_fluido_frig_sost $descr_flre_sost;#but04
+	}
 	
 	append libretto "
   <table width=100% border=1>
@@ -4631,8 +5211,8 @@ if {$num_gend_fr eq 1} { #gab05 aggiunta if
           <td align=left>$img_sor_lt_est_aria_sost Aria $img_sor_lt_est_acqua_sost Acqua</td>
        </tr>
        <tr>
-          <td align=left>Fluido frigorigeno</td>
-          <td align=left>$mod_funz_sost</td>
+          <td align=left>Fluido refrigerante</td>
+          <td align=left>$descr_fluido_frig_sost : $fluido_flre_sost</td>
           <td align=left> Fluido lato utenze:</td>
           <td align=left>$img_fl_lt_ut_aria_sost Aria $img_fl_lt_ut_acqua_sost Acqua</td>
        </tr>
@@ -4655,7 +5235,7 @@ if {$num_gend_fr eq 1} { #gab05 aggiunta if
        <tr>
           <td align=left nowrap>Raffrescamento EER(o GUE) $per_fr_sost</td>
           <td align=left>Pot. Frig. Nom. $pot_foc_gend_fr_sost (kW)</td>
-          <td align=left>Potenza assorbita nominale $pot_utile_nom_fr_sost (kW)</td>
+          <td align=left>Potenza assorbita nominale $pot_ass_nom_raff_sost (kW)</td>
        </tr>
        <tr>
           <td align=left nowrap>Riscaldamento COP (o &#951;) $cop_fr_sost</td>
@@ -4711,6 +5291,19 @@ if {$num_gend_fr eq 1} { #gab05 aggiunta if
 	    if {$fluido_lato_utenze_padre_sost eq "AC"} {#rom15
 		set img_fl_lt_ut_acqua_padre_sost $img_checked
 	    }
+
+	if {$coimtgen(regione) eq "MARCHE"} {#rom43 Aggiunte if, elseif, else e il loro contenuto
+	    set pot_ass_nom_raff_padre_sost  $pot_utile_nom_freddo_fr_padre_sost
+	    set descr_fluido_frig_padre_sost $descr_flre_padre_sost
+	} elseif {$coimtgen(regione) eq "BASILICATA"} {
+	    set pot_ass_nom_raff_padre_sost  $pot_utile_nom_fr_padre_sost
+	    set descr_fluido_frig_padre_sost $descr_flre_padre_sost
+	} else {
+	    set pot_ass_nom_raff_padre_sost  $pot_utile_nom_fr_padre_sost
+	    #but04 set descr_fluido_frig_padre_sost $descr_fuge_padre_sost
+	    set descr_fluido_frig_padre_sost $descr_flre_padre_sost;#but04
+	}
+
 	    append libretto "
     <table width=100% border=1>
      <tr>
@@ -4739,8 +5332,8 @@ if {$num_gend_fr eq 1} { #gab05 aggiunta if
           <td align=left>$img_sor_lt_est_aria_padre_sost Aria $img_sor_lt_est_acqua_padre_sost Acqua</td>
        </tr>
        <tr>
-          <td align=left>Fluido frigorigeno</td>
-          <td align=left>$mod_funz_padre_sost</td>
+          <td align=left>Fluido refrigerante</td>
+          <td align=left>$descr_fluido_frig_padre_sost : $fluido_flre_padre_sost</td>
           <td align=left> Fluido lato utenze:</td>
           <td align=left>$img_fl_lt_ut_aria_padre_sost Aria $img_fl_lt_ut_acqua_padre_sost Acqua</td>
        </tr>
@@ -4763,7 +5356,7 @@ if {$num_gend_fr eq 1} { #gab05 aggiunta if
        <tr>
           <td align=left nowrap>Raffrescamento EER(o GUE) $per_fr_padre_sost</td>
           <td align=left>Pot. Frig. Nom. $pot_foc_gend_fr_padre_sost (kW)</td>
-          <td align=left>Potenza assorbita nominale $pot_utile_nom_fr_padre_sost (kW)</td>
+          <td align=left>Potenza assorbita nominale $pot_ass_nom_raff_padre_sost (kW)</td>
        </tr>
        <tr>
           <td align=left nowrap>Riscaldamento COP (o &#951;) $cop_fr_padre_sost</td>
@@ -4917,6 +5510,10 @@ if {$coimtgen(regione) eq "MARCHE"} {#rom17 Aggiunta if e suo contenuto
        </tr>
        <tr>
        </tr>
+       <tr><!--mat02-->  
+         <td align=left>Installatore</td>
+         <td align=left>$inst_4_4_bis</td>
+       </tr>
     </table>
 </td>
 </tr>
@@ -5021,6 +5618,10 @@ if {$coimtgen(regione) eq "MARCHE"} {#rom17 Aggiunta if e suo contenuto
          <td align=left colspan=2 width=50%>$img_cli_est_fr_4_4bis_sost Climatizzazione est. $pot_utile_cli_est_fr_4_4bis_sost</td>
        </tr>
        <tr>
+       </tr>
+       <tr><!--mat02-->  
+         <td align=left>Installatore</td>
+         <td align=left>$inst_4_4_bis_sost</td>
        </tr>
     </table>
 </td>
@@ -5346,6 +5947,10 @@ if {$coimtgen(regione) eq "MARCHE"} {#rom17 aggiunta if e suop contenuto
        </tr>
        <tr>
        </tr>
+       <tr><!--mat02-->  
+         <td align=left>Installatore</td>
+         <td align=left>$inst_4_5_bis</td>
+       </tr>
     </table>
 </td>
 </tr>
@@ -5420,6 +6025,10 @@ if {$coimtgen(regione) eq "MARCHE"} {#rom17 aggiunta if e suop contenuto
          <td align=left colspan=2 width=50%>$img_cli_est_te_4_5bis_sost Climatizzazione est. $pot_utile_cli_est_te_4_5bis_sost</td>
        </tr>
        <tr>
+       </tr>
+       <tr><!--mat02-->  
+         <td align=left>Installatore</td>
+         <td align=left>$inst_4_5_bis_sost</td>
        </tr>
     </table>
 </td>
@@ -5902,6 +6511,10 @@ if {$coimtgen(regione) eq "MARCHE"} {#rom17: aggiunta if e suo contenuto per sez
        </tr>
        <tr>
        </tr>
+       <tr><!--mat02-->  
+         <td align=left>Installatore</td>
+         <td align=left>$inst_4_6_bis</td>
+       </tr>
     </table>
 </td>
 </tr>
@@ -5975,6 +6588,10 @@ if {$coimtgen(regione) eq "MARCHE"} {#rom17: aggiunta if e suo contenuto per sez
          <td align=left colspan=2 width=50%>$img_cli_est_co_4_6bis_sost Climatizzazione est. $pot_utile_cli_est_co_4_6bis_sost</td>
        </tr>
        <tr>
+       </tr>
+       <tr><!--mat02-->  
+         <td align=left>Installatore</td>
+         <td align=left>$inst_4_6_bis_sost</td>
        </tr>
     </table>
 </td>
@@ -6197,8 +6814,7 @@ append libretto "
              <td>&nbsp;</td>
           </tr>
        <tr>
-          <td align=center colspan=4><b>4.8 Altri Generatori.
-<br>Situazione alla prima installazione o alla ristrutturazione dell'impianto termico $cod_impianto_est</b></td><!--gac11-->
+          <td align=center colspan=4><b>4.8 Altri Generatori.</td><!--gac11-->
        </tr>
        <tr>
           <td colspan=4>&nbsp;</td>
@@ -6213,7 +6829,7 @@ db_foreach sel_altr_gend "" {
   <table width=100% border=1>
        <tr>
           <td align=left width=20%>Altro  Generatore<br>AG $num_ag</td>
-    <td align=left width=70%>Situazione alla prima installazione o alla ristrutturazione dell'impianto termico $cod_impianto_est</td><!--gac11-->
+    <td align=left width=70%>Situazione alla prima installazione o alla ristrutturazione dell'impianto termico $cod_impianto_est_altr_gend</td><!--gac11-->
   </tr>
    <tr>
     <td colspan=2>
@@ -6270,7 +6886,7 @@ if {$sw_altr_gend eq "t"} {
   <table width=100% border=1>
        <tr>
           <td align=left width=20%>Altro  Generatore<br>AG $num_ag_sost_comp</td>
-    <td align=left width=70%>Sostituzione del componente</td>
+    <td align=left width=70%>Sostituzione del componente dell'impianto termico $cod_impianto_est_altr_gend_sost_comp</td>
   </tr>
    <tr>
     <td colspan=2>
@@ -6390,15 +7006,11 @@ if {$sw_altr_gend eq "t"} {
     </table>"
 }
 
-
-
 #Contabilizzazione del calore
 
 append libretto "
     <!-- PAGE BREAK -->
-    $table_con_header_per_tutte_le_pagine
-"
-
+    $table_con_header_per_tutte_le_pagine"
 
 append libretto "
     <table width=100% border=1>
@@ -6413,12 +7025,17 @@ append libretto "
 
 if {$coimtgen(regione) eq "MARCHE"} {
 
-    set or_aimp_rego "or targa = :targa"
+    #rom34set or_aimp_rego "or targa = :targa"
 
+    #rom47set or_aimp_rego " targa = :targa
+    #rom47             and cod_impianto not in ($ls_aimp_ibridi_da_escl_5_1)";#rom34
+    set or_aimp_rego " cod_impianto in ('[join $lista_cod_impianti ',']')
+                       and cod_impianto not in ($ls_aimp_ibridi_da_escl_5_1)";#rom47
+    
 } else {
-    set or_aimp_rego ""
+    #rom47set or_aimp_rego " cod_impianto = :cod_impianto"
+    set or_aimp_rego " cod_impianto in ('[join $lista_cod_impianti ',']')";#rom47
 }
-
 db_foreach sel_aimp_rego "" {
     
     append libretto "
@@ -6660,7 +7277,7 @@ $img_curva_indipendente Sistema di regolazione con impostazione della curva clim
            <table width=90% border=1>
                 <tr>
                    <td align=left width=20%>Sistema reg.ne<br>SR $num_sr</td>
-                   <td align=left width=80%>Situazione alla prima installazione o alla ristrutturazione dell'impianto termico $cod_impianto_est</td><!--gac11-->
+                   <td align=left width=80%>Situazione alla prima installazione o alla ristrutturazione dell'impianto termico $cod_impianto_est_rego</td><!--gac11-->
                 </tr>
                 <tr>
                    <td colspan=2>
@@ -6708,7 +7325,7 @@ $img_curva_indipendente Sistema di regolazione con impostazione della curva clim
            <table width=90% border=1 align=center>
                 <tr>
                    <td align=left width=20%>Sistema reg.ne<br>SR $num_sr_sost_comp</td>
-                   <td align=left width=80%>Sostituzione del componente</td>
+                   <td align=left width=80%>Sostituzione del componente  dell'impianto termico $cod_impianto_est_rego</td>
                 </tr>
                 <tr>
                    <td colspan=2>
@@ -6738,7 +7355,16 @@ $img_curva_indipendente Sistema di regolazione con impostazione della curva clim
         </td>
       </tr>
 </table>"
-	    }
+	    } if_no_rows {#rom34 Aggiunta if e il suo contenuto
+
+		    append libretto "
+             <table width=90%>
+                  <tr>
+                    <td align=center>Non esiste alcuna sostituzione del componente del Sistema di Regolazione</td>
+                  </tr>
+             </table>"
+		}
+	
 	} else {
 	    append libretto "
              <table width=90%>
@@ -6761,7 +7387,7 @@ $img_curva_indipendente Sistema di regolazione con impostazione della curva clim
             <table width=90% border=1>
                   <tr>
                      <td align=left width=20%>Valvola reg.ne<br>VR $num_vr</td>
-                     <td align=left width=80%>Situazione alla prima installazione o alla ristrutturazione dell'impianto termico $cod_impianto_est</td><!--gac11-->
+                     <td align=left width=80%>Situazione alla prima installazione o alla ristrutturazione dell'impianto termico $cod_impianto_est_rego</td><!--gac11-->
                   </tr>
                   <tr>
                      <td colspan=2>
@@ -6811,7 +7437,7 @@ $img_curva_indipendente Sistema di regolazione con impostazione della curva clim
            <table width=90% border=1 align=center>
                 <tr>
                    <td align=left width=20%>Valvola reg.ne<br>VR $num_vr_sost_comp</td>
-                   <td align=left width=80%>Sostituzione del componente</td>
+                   <td align=left width=80%>Sostituzione del componente dell'impianto termico $cod_impianto_est_rego</td>
                 </tr>
                 <tr>
                    <td colspan=2>
@@ -6841,7 +7467,16 @@ $img_curva_indipendente Sistema di regolazione con impostazione della curva clim
         </td>
       </tr>
 </table>"
-	    }
+	    } if_no_rows {#rom34 Aggiunta if e il suo contenuto
+
+		    append libretto "
+             <table width=90%>
+                  <tr>
+                    <td align=center>Non esiste alcuna sostituzione del componente della Valvola di Regolazione</td>
+                  </tr>
+             </table>"
+		}
+	
 	} else {
             append libretto "
              <table width=90%>
@@ -6873,6 +7508,14 @@ append libretto "<!-- PAGE BREAK -->
           </tr>
     </table>"
 
+if {$coimtgen(regione) eq "MARCHE"} {#rom34 Aggiunte if, else e loro contenuto
+
+    set or_aimp_rego " targa = :targa"
+
+    } else {
+	set or_aimp_rego " cod_impianto = :cod_impianto"
+    }
+set or_aimp_rego "cod_impianto in ('[join $lista_cod_impianti ',']')";#rom47
 db_foreach sel_aimp_rego "" {
     append libretto "
     <table width=100%>
@@ -6972,6 +7615,16 @@ if {$regol_valv_tre_vie  eq "A"} {
 </table>"
 }
 
+if {$coimtgen(regione) eq "MARCHE"} {#rom34 Aggiunte if, else e loro contenuto
+
+    set or_aimp_rego " targa = :targa"
+
+} else {
+    set or_aimp_rego " cod_impianto = :cod_impianto"
+
+}
+set or_aimp_rego "cod_impianto in ('[join $lista_cod_impianti ',']')";#rom47
+
 db_foreach sel_aimp_rego "" {
 
 append libretto "
@@ -7023,7 +7676,7 @@ if {$regol_telegestione eq "A"} {
              <td>$img_telegestione_ass Assenti</td>
           </tr>
           <tr>
-             <td colspan=4><br>Descrizione del sistema (situazione alla prima installazione o alla ristrutturazione dell'impianto termico $cod_impianto_est):</td><!--gac11-->
+             <td colspan=4><br>Descrizione del sistema (situazione alla prima installazione o alla ristrutturazione dell'impianto termico $cod_impianto_est_rego):</td><!--gac11-->
           </tr>
           <tr>
              <td colspan=4>$regol_desc_sistema_iniz</td>
@@ -7042,6 +7695,15 @@ if {$regol_telegestione eq "A"} {
 </tr>
 </table>"
 }
+if {$coimtgen(regione) eq "MARCHE"} {#rom34 Aggiunte if, else e loro contenuto
+
+    set or_aimp_rego " targa = :targa"
+
+} else {
+    set or_aimp_rego " cod_impianto = :cod_impianto"
+}
+set or_aimp_rego "cod_impianto in ('[join $lista_cod_impianti ',']')";#rom47
+
 db_foreach sel_aimp_rego "" {
 
     append libretto "
@@ -7149,7 +7811,7 @@ if {$contab_tipo_sistema eq "I"} {
              <td></td>
           </tr>
           <tr>
-             <td colspan=5><br>Descrizione del sistema (situazione alla prima installazione o alla ristrutturazione dell'impianto termico $cod_impianto_est):</td><!--gac11-->
+             <td colspan=5><br>Descrizione del sistema (situazione alla prima installazione o alla ristrutturazione dell'impianto termico $cod_impianto_est_rego):</td><!--gac11-->
           </tr>
           <tr>
              <td colspan=5>$contab_desc_sistema_iniz</td>
@@ -7175,6 +7837,28 @@ append libretto "
     $table_con_header_per_tutte_le_pagine
 "
 
+if {$coimtgen(regione) in [list "MARCHE"]} {#rom35 Aggiunte if, else e loro contenuto
+
+    set ls_aimp_da_stamp_scheda_6 [list ]
+    
+    foreach cod_impianto_da_contr $lista_cod_impianti {
+
+	if {$cod_impianto_da_contr in $ls_aimp_ibridi_da_escl_6} {
+	    continue
+	} else {
+	    lappend ls_aimp_da_stamp_scheda_6 $cod_impianto_da_contr
+	}
+    }
+
+    set where_cod_impianto_scheda_6 "cod_impianto in ('[join $ls_aimp_da_stamp_scheda_6 ',']')"
+
+} else {
+
+    set where_cod_impianto_scheda_6 "cod_impianto in ('[join $lista_cod_impianti ',']')"
+}
+
+
+    
 append libretto "
     <table width=100% border=1>
        <tr>
@@ -7182,25 +7866,37 @@ append libretto "
        </tr>
     </table>"
 
+set ls_tipi_distr [db_list_of_lists q "
+                   select cod_impianto_est               as cod_impianto_est_61
+                        , sistem_dist_tipo               as sistem_dist_tipo_61
+                        , sistem_dist_note_altro         as sistem_dist_note_altro_61 
+                     from coimaimp
+            --rom35 where cod_impianto in ('[join $lista_cod_impianti ',']')
+                    where $where_cod_impianto_scheda_6 --rom35"];#rom31
+
+foreach tipo_distr $ls_tipi_distr {;#rom31 Aggiunta foreach ma non il suo contenuto
+
+    util_unlist $tipo_distr cod_impianto_est_61 sistem_dist_tipo_61 sistem_dist_note_altro_61    
+
 set img_verticale   $img_unchecked
 set img_orizzontale $img_unchecked
 set img_canali      $img_unchecked
 set img_altro       $img_unchecked
-
-if {$sistem_dist_tipo eq "V"} {
+    
+if {$sistem_dist_tipo_61 eq "V"} {
     set img_verticale   $img_checked
 }
-if {$sistem_dist_tipo eq "O"} {
+if {$sistem_dist_tipo_61 eq "O"} {
     set img_orizzontale $img_checked
 }
-if {$sistem_dist_tipo eq "C"} {
+if {$sistem_dist_tipo_61 eq "C"} {
     set img_canali      $img_checked
 }
-if {$sistem_dist_tipo eq "A"} {
+if {$sistem_dist_tipo_61 eq "A"} {
     set img_altro       $img_checked
 }
 
-set sistem_dist_note_altro [iter_edit_crlf $sistem_dist_note_altro];#trasformo i crlf, etc... in <br>
+set sistem_dist_note_altro_61 [iter_edit_crlf $sistem_dist_note_altro_61];#trasformo i crlf, etc... in <br>
 
 append libretto "
     <table width=100% align=center>
@@ -7208,7 +7904,7 @@ append libretto "
           <td>&nbsp;</td>
        </tr>
        <tr>
-          <td align=center><b>6.1 Tipo di distribuzione</b></td>
+          <td align=center><b>6.1 Tipo di distribuzione impianto $cod_impianto_est_61</b></td>
        </tr>
        <tr>
           <td>&nbsp;</td>
@@ -7223,29 +7919,43 @@ append libretto "
           <td>$img_canali Canali d'aria</td>
        </tr>
        <tr>
-          <td>$img_altro Altro:<br>$sistem_dist_note_altro </td>
+          <td>$img_altro Altro:<br>$sistem_dist_note_altro_61 </td>
        </tr>
        <tr>
           <td>&nbsp;</td>
        <tr>
     </table>"
 
+};#rom31
+
+set ls_coib_rt_distr [db_list_of_lists q "
+                                     select cod_impianto_est               as cod_impianto_est_62
+                                          , sistem_dist_coibentazione_flag as sistem_dist_coibentazione_flag_62
+                                          , sistem_dist_note               as sistem_dist_note_62
+                                       from coimaimp
+                             --rom35  where cod_impianto in ('[join $lista_cod_impianti ',']')
+                                      where $where_cod_impianto_scheda_6 --rom35"];#rom31
+
+foreach coib_rt_distr $ls_coib_rt_distr {;#rom31 Aggiunta foreach ma non il suo contenuto
+
+    util_unlist $coib_rt_distr cod_impianto_est_62 sistem_dist_coibentazione_flag_62 sistem_dist_note_62
+    
 set img_assente  $img_unchecked
 set img_presente $img_unchecked
 
-if {$sistem_dist_coibentazione_flag eq "P"} {
+if {$sistem_dist_coibentazione_flag_62 eq "P"} {
     set img_presente $img_checked
 }
-if {$sistem_dist_coibentazione_flag eq "A"} {
+if {$sistem_dist_coibentazione_flag_62 eq "A"} {
     set img_assente $img_checked
 }
 
-set sistem_dist_note [iter_edit_crlf $sistem_dist_note];#trasformo i crlf, etc... in <br>
+set sistem_dist_note_62 [iter_edit_crlf $sistem_dist_note_62];#trasformo i crlf, etc... in <br>
 
 append libretto "
     <table width=100% align=center>
        <tr>
-          <td align=center><b>6.2 Coibentazione rete di distribuzione</b></td>
+          <td align=center><b>6.2 Coibentazione rete di distribuzione impianto $cod_impianto_est_62</b></td>
        </tr>
        <tr>
           <td>&nbsp;</td>
@@ -7257,12 +7967,13 @@ append libretto "
           <td>$img_presente Presente</td>
        </tr>
        <tr>
-          <td>Note:<br>$sistem_dist_note</td>
+          <td>Note:<br>$sistem_dist_note_62</td>
        </tr>
        <tr>
           <td>&nbsp;</td>
        <tr>"
 
+};#rom31
 
 set cod_vasi_espa_aimp ""
 set num_vx ""
@@ -7280,7 +7991,15 @@ set pressione ""
 #rom25          <td colspan=3>&nbsp;</td>
 #rom25       </tr>"
 
-foreach cod_impianto_vasi_espa $lista_cod_impianti {
+if {$coimtgen(regione) in [list "MARCHE"] } {#rom35 Aggiunte if, else e loro contenuto
+    set ls_vasi_espa $ls_aimp_da_stamp_scheda_6
+} else {
+    set ls_vasi_espa $lista_cod_impianti
+}
+
+#rom35foreach cod_impianto_vasi_espa $lista_cod_impianti {}
+
+foreach cod_impianto_vasi_espa $ls_vasi_espa {#rom35 Aggiunta foreach ma non il suo contenuto
     set cod_impianto_est_vasi_espa [db_string q "select cod_impianto_est as cod_impianto_est_vasi_espa from coimaimp where cod_impianto = :cod_impianto_vasi_espa"]
     append libretto "
     <table width=100% align=center>
@@ -7350,6 +8069,12 @@ append libretto "
        <tr>
           <td>&nbsp;</td>
        </tr>"
+
+if {$coimtgen(regione) in [list "MARCHE"] } {#rom35 Aggiunte if, else e loro contenuto
+    set ls_aimp_pomp_circ $ls_aimp_da_stamp_scheda_6
+} else {
+    set ls_aimp_pomp_circ $lista_cod_impianti
+}
 
 set num_po_cir "0"
 db_foreach sel_pomp_circ "" {
@@ -7441,6 +8166,12 @@ db_foreach sel_pomp_circ_sost_comp "" {#rom07 aggiunta foreach e contenuto
             </table>  
          </td>
       </tr>"
+}  if_no_rows {
+
+    append libretto "
+       <tr>
+          <td colspan=3>Non esiste alcuna sostituzione del componente per le Pompe di Circolazione</td>
+       </tr>"
 };#rom07
 
 #rom07<table width=100% align=center>
@@ -7630,6 +8361,15 @@ append libretto "
     <!-- PAGE BREAK -->
     $table_con_header_per_tutte_le_pagine
 "
+set sw_accu "f";#rom34
+if {$coimtgen(regione) eq "MARCHE"} {#rom34 Aggiunte if, else e il loro contenuto
+
+    set where_accu " c.targa = :targa
+                       and c.cod_impianto not in ($ls_aimp_ibridi_da_escl_8)"
+
+} else {
+    set where_accu " c.cod_impianto in ('[join $lista_cod_impianti ',']') "
+}
 
 append libretto "
     <table width=100% border=1>
@@ -7637,7 +8377,8 @@ append libretto "
              <td align=center bgcolor=\"E1E1E1\"><big><b>8. Sistema di Accumulo</b></big></td>
           </tr>
     </table>"
- 
+db_foreach sel_accu "" {;#rom34 Aggiunta foreach ma non il suo contenuto
+    
 append libretto "
     <table width=100% align=center>
           <tr>
@@ -7645,16 +8386,16 @@ append libretto "
           </tr>
        <tr>
           <td align=center colspan=4><b>8.1 Accumuli (se non incorporati nel gruppo termico o caldaia).
-<br>Situazione alla prima installazione o alla ristrutturazione dell'impianto termico $cod_impianto_est</b></td><!--gac11-->
+<br>Situazione alla prima installazione o alla ristrutturazione dell'impianto termico $cod_impianto_est_accu</b></td><!--gac11-->
        </tr>
        <tr>
           <td colspan=4>&nbsp;</td>
        </tr>
 </table>"
 
-set sw_accu "f"
+#rom34set sw_accu "f"
 
-db_foreach sel_accu "" {
+#rom34db_foreach sel_accu "" {}
     regsub -all {<} $matricola {\&lt;} matricola;#sim07
     regsub -all {>} $matricola {\&gt;} matricola;#sim07
 
@@ -7674,6 +8415,27 @@ set img_raffredda           $img_unchecked
 	set img_raffredda $img_checked
     }
 
+    if {$utilizzo_codice eq "T"} {#ric01 aggiunta if e contenuto
+	set img_riscalda  $img_checked
+	set img_raffredda $img_checked
+    }
+
+    if {$utilizzo_codice eq "U"} {#ric01 aggiunta if e contenuto
+	set img_acq_calda $img_checked
+	set img_riscalda  $img_checked
+    }
+    
+    if {$utilizzo_codice eq "V"} {#ric01 aggiunta if e contenuto
+	set img_acq_calda $img_checked
+	set img_raffredda $img_checked
+    }
+    
+    if {$utilizzo_codice eq "Z"} {#ric01 aggiunta if e contenuto
+	set img_acq_calda $img_checked
+	set img_raffredda $img_checked
+	set img_riscalda  $img_checked
+    }
+    
     set img_coib_assente  $img_unchecked;#rom10
     set img_coib_presente $img_unchecked;#rom10
 
@@ -7688,7 +8450,7 @@ set img_raffredda           $img_unchecked
             <table width=100% border=1>
                   <tr>
                      <td align=left width=20%>Accumolo<br>AC $num_ac</td>
-                     <td align=left width=80%>Situazione alla prima installazione o alla ristrutturazione dell'impianto termico $cod_impianto_est</td><!--gac11-->
+                     <td align=left width=80%>Situazione alla prima installazione o alla ristrutturazione dell'impianto termico $cod_impianto_est_accu</td><!--gac11-->
                   </tr>
                   <tr>
                      <td colspan=2>
@@ -7782,7 +8544,7 @@ db_foreach sel_accu_sost_comp "" {#rom07 aggiunta foreach e contenuto
             <table width=100% border=1>
                   <tr>
                      <td align=left width=20%>Accumolo<br>AC $num_ac_sost_comp</td>
-                     <td align=left width=80%>Sostituzione del componente</td>
+                     <td align=left width=80%>Sostituzione del componente dell'impianto termico $cod_impianto_est_accu</td>
                   </tr>
                   <tr>
                      <td colspan=2>
@@ -7824,7 +8586,15 @@ db_foreach sel_accu_sost_comp "" {#rom07 aggiunta foreach e contenuto
 </tr>
 </table><br> "
 
-};#rom07
+} if_no_rows {#rom34 Aggiunta if e il suo contenuto
+
+    append libretto "
+             <table width=90%>
+                  <tr>
+                    <td align=center>Non esiste alcuna sostituzione del componente del Sistema di accumulo.</td>
+                  </tr>
+             </table>"
+}
 
     #rom07<tr>
     #rom07   <td colspan=2>&nbsp;</td>
@@ -8383,6 +9153,17 @@ append libretto "
           </tr>
     </table>"
 
+set sw_scam_calo "f";#rom34
+if {$coimtgen(regione) eq "MARCHE"} {#rom34 Aggiunte if, else e il loro contenuto
+
+    set where_scam_calo " c.targa = :targa
+                              and c.cod_impianto not in ($ls_aimp_ibridi_da_escl_8)"
+
+} else {
+    set where_scam_calo " c.cod_impianto in ('[join $lista_cod_impianti ',']') "
+}
+
+db_foreach sel_scam_calo_aimp "" {#rom34 Aggiunta foreach ma non il suo contenuto
 
 append libretto "
     <table width=100% align=center>
@@ -8391,20 +9172,20 @@ append libretto "
        </tr>
        <tr>
           <td align=center colspan=4><b>9.3 Scambiatori di Calore Intermedi (per acqua di superficie o di falda)
-       </tr>
+          <br>Situazione alla prima installazione o alla ristrutturazione dell'impianto termico $cod_impianto_est_scam_calo</b></td><!--rom34-->
        <tr>
           <td colspan=4>&nbsp;</td>
        </tr>
    </table>"
 
-set sw_scam_calo "f"
+#rom34set sw_scam_calo "f"
 
-db_foreach sel_scam_calo_aimp "" {
+#rom34db_foreach sel_scam_calo_aimp "" {}
     append libretto "
  <table width=100% border=1>
        <tr>
           <td align=left width=20%>Scambiatore<br>SC $num_sc</td>
-          <td align=left width=80%>Situazione alla prima installazione o alla ristrutturazione dell'impianto termico $cod_impianto_est</td><!--gac11-->
+          <td align=left width=80%>Situazione alla prima installazione o alla ristrutturazione dell'impianto termico $cod_impianto_est_scam_calo</td><!--gac11-->
        </tr>
        <tr>
           <td colspan=2>
@@ -8452,7 +9233,7 @@ db_foreach sel_scam_calo_aimp_sost_comp "" {#rom07 aggiunta foreach e contenuto
  <table width=100% border=1>
        <tr>
           <td align=left width=20%>Scambiatore<br>SC $num_sc_sost_comp</td>
-          <td align=left width=80%>Sostituzione del componente</td>
+          <td align=left width=80%>Sostituzione del componente dell'impianto termico $cod_impianto_est_scam_calo</td>
        </tr>
        <tr>
           <td colspan=2>
@@ -8473,9 +9254,15 @@ db_foreach sel_scam_calo_aimp_sost_comp "" {#rom07 aggiunta foreach e contenuto
 </td>
 </tr>
 </table><br>"
-};#rom07
+} if_no_rows {#rom34 Aggiunta if e il suo contenuto
 
-
+    append libretto "
+             <table width=100%>
+                  <tr>
+                    <td align=center>Non esiste alcuna sostituzione del componente scambiatore di calore intermedio.</td>
+                  </tr>
+             </table>"
+}
 
 #rom07     <tr>
 #rom07        <td colspan=2>&nbsp;</td>
@@ -8958,6 +9745,18 @@ append libretto "
           </tr>
     </table>"
 
+set sw_recu_calo "f";#rom34
+if {$coimtgen(regione) eq "MARCHE"} {#rom34 Aggiunte if, else e il loro contenuto
+
+        set where_recu_calo " c.targa = :targa
+                              and c.cod_impianto not in ($ls_aimp_ibridi_da_escl_8)"
+
+    } else {
+	set where_recu_calo " c.cod_impianto in ('[join $lista_cod_impianti ',']') "
+    }
+
+db_foreach sel_recu_calo "" {#rom34 Aggiunta foreach ma non il suo contenuto
+    
 #gab04 Aggiunta sezione 9.6
 append libretto "
     <table width=100% align=center>
@@ -8966,14 +9765,14 @@ append libretto "
        </tr>
        <tr>
           <td align=center colspan=4><b>9.6 Recuperatori di Calore (aria ambiente)
-       </tr>
+          <br>Situazione alla prima installazione o alla ristrutturazione dell'impianto termico $cod_impianto_est_recu_calo</b></td><!--rom34-->
        <tr>
           <td colspan=4>&nbsp;</td>
        </tr>"
 
-set sw_recu_calo "f"
+#rom34set sw_recu_calo "f"
 
-db_foreach sel_recu_calo "" {
+#rom34db_foreach sel_recu_calo "" {}
     
     set rc_uta_vmc $img_unchecked
     set rc_indipendente $img_unchecked
@@ -8992,7 +9791,7 @@ db_foreach sel_recu_calo "" {
  <table width=100% border=1>
        <tr>
           <td align=left width=20%>Recuperatore<br>RC $num_rc</td>
-          <td align=left width=80%>Situazione alla prima installazione o alla ristrutturazione dell'impianto termico $cod_impianto_est</td><!--gac11-->
+          <td align=left width=80%>Situazione alla prima installazione o alla ristrutturazione dell'impianto termico $cod_impianto_est_recu_calo</td><!--gac11-->
        </tr>
        <tr>
           <td colspan=2>
@@ -9069,7 +9868,7 @@ if {$sw_recu_calo eq "t"} {
  <table width=100% border=1>
        <tr>
           <td align=left width=20%>Recuperatore<br>RC $num_rc_sost_comp</td>
-          <td align=left width=80%>Sostituzione del componente</td>
+          <td align=left width=80%>Sostituzione del componente dell'impianto termico $cod_impianto_est_recu_calo</td>
        </tr>
        <tr>
           <td colspan=2>
@@ -9109,7 +9908,16 @@ if {$sw_recu_calo eq "t"} {
        </tr>
  </table><br>"
 	
-    };#rom07
+    } if_no_rows {#rom34 Aggiunta if e il suo contenuto
+	
+	append libretto "
+             <table width=100%>
+                  <tr>
+                    <td align=center>Non esiste alcuna sostituzione del componente del recuperatore di calore.</td>
+                  </tr>
+             </table>"
+	}
+    
 
 #rom07     <tr>
 #             <td colspan=2>&nbsp;</td>
@@ -9553,7 +10361,8 @@ set num_row "0"
 set max_coll 6
 #set where_flag_tracciato " and flag_tracciato != 'R2' and flag_tracciato != 'F' and flag_tracciato != 'DA'" 
 
-set where_flag_tracciato " and flag_tracciato = 'R1'"
+#rom48 set where_flag_tracciato " and flag_tracciato = 'R1'"
+set where_flag_tracciato " and flag_tracciato in ('R1','NW')";#rom48
 set num_dimp_caldo 0
 db_foreach sel_gend_ri "" {
 
@@ -9563,7 +10372,7 @@ db_foreach sel_gend_ri "" {
 	set norma_uni $img_checked
     }
     if {$rif_uni_10389 eq "A"} {
-    set norma_uni_altro $img_checked
+	set norma_uni_altro $img_checked
     }
 
 set where_gen_prog $gen_prog
@@ -9600,6 +10409,10 @@ set st_firma.$prog_controllo             ""
 set calcola_colspan.$prog_controllo  [expr $num_row + 1]
 set gt_dimp.$prog_controllo $gen_prog_est
 set cod_impianto_gend.$prog_controllo $cod_impianto_gend ;#rom23
+set norma_uni.$prog_controllo $norma_uni ;#but01
+set norma_uni_altro.$prog_controllo $norma_uni_altro ;#but01
+set altro_rif.$prog_controllo $altro_rif ;#but01
+set st_comb_dimp "" ;#rom26
 
 db_foreach sel_dimp__ "    
  select * from (
@@ -9639,6 +10452,7 @@ select case a.flag_status
          , coalesce(iter_edit_num(a.portata_termica_effettiva,2),'/') as port_ter_eff
          , a.gen_prog
          , a.data_controllo as data_controllo_date
+         , a.cod_combustibile as cod_comb_dimp  --rom26
       from coimdimp a
      where a.cod_impianto = :cod_impianto
      $where_flag_tracciato --sim01
@@ -9679,6 +10493,7 @@ select case a.flag_status
          , coalesce(iter_edit_num(a.portata_termica_effettiva,2), '/') as port_ter_eff
          , a.gen_prog
          , a.data_controllo as data_controllo_date
+         , a.cod_combustibile as cod_comb_dimp  --rom26
       from coimdimp a
          , coimdimp_prfumi b
      where a.cod_impianto = :cod_impianto
@@ -9695,7 +10510,6 @@ where gen_prog=:where_gen_prog
     }
     
     incr num_dimp_caldo
-
     set check_bacharach        $img_unchecked
     set uncheck_bacharach      $img_unchecked
     set check_co_fumi_secchi   $img_unchecked
@@ -9723,6 +10537,24 @@ where gen_prog=:where_gen_prog
         set uncheck_rend_min_legge $img_checked
     }
 
+    set comb_dimp "";#rom26
+    if {$coimtgen(regione) eq "MARCHE"} {#rom26 Aggiunta if e suo contenuto.
+	if {![string equal $cod_comb_dimp ""]} {
+	    db_1row q "select upper(descr_comb) as comb_dimp
+                         from coimcomb
+                        where cod_combustibile = :cod_comb_dimp"
+	} else {#rom29 Aggiunta else e contenuto
+	    db_1row q "select upper(descr_comb) as comb_dimp
+                         from coimcomb
+                        where cod_combustibile = (select coalesce(g.cod_combustibile, a.cod_combustibile)
+                                                    from coimgend g
+                                                       , coimaimp a
+                                                   where g.cod_impianto = :cod_impianto
+                                                     and g.gen_prog     = :gen_prog
+                                                     and g.cod_impianto = a.cod_impianto)"
+	}
+    }
+    
     #    append libretto "
     #     <table width=100% align=center border>
     #       <tr>
@@ -9747,6 +10579,9 @@ where gen_prog=:where_gen_prog
     if {$num_row == $max_coll} {
 	
 	incr prog_controllo
+        set norma_uni.$prog_controllo $norma_uni ;#but01
+	set norma_uni_altro.$prog_controllo $norma_uni_altro;#but01
+	set altro_rif.$prog_controllo $altro_rif ;#but01
 	set gt_dimp.$prog_controllo $gen_prog_est
 	set cod_impianto_gend.$prog_controllo $cod_impianto_gend;#rom23
 	set st_num_gen.$prog_controllo    $where_gen_prog
@@ -9773,6 +10608,7 @@ where gen_prog=:where_gen_prog
 	set st_cod_dimp.$prog_controllo      "";#gac04
         set st_port_ter_eff.$prog_controllo      ""
 	set st_firma.$prog_controllo             ""
+	set st_comb_dimp "";#rom26
 	set num_row 0;#sim09
 	set calcola_colspan.$prog_controllo  [expr $num_row + 1]
     }
@@ -9881,6 +10717,7 @@ where gen_prog=:where_gen_prog
     append st_co_fumi_secchi.$prog_controllo "<td align=center>$check_co_fumi_secchi  Si $uncheck_co_fumi_secchi No</td>";#gac04
     append st_rend_magg_o_ugua_rend_min.$prog_controllo "<td align=center>$check_rend_min_legge Si $uncheck_rend_min_legge No</td>";#gac04
     append st_firma.$prog_controllo "<td align=center>&nbsp;</td>"
+    append st_comb_dimp.$prog_controllo "<td align=center>$comb_dimp&nbsp;</td>";#rom26
     set calcola_colspan.$prog_controllo [expr $num_row + 1]
 }
 
@@ -9897,7 +10734,6 @@ if {$num_row <$max_coll} {
 	if {$contatore_ciclo_col_vuote eq 10} {
 	    break
 	}
-
 	append st_dt_contr.$prog_controllo   "<td align=left width=9%>&nbsp;</td>"
 	append st_progressivo_prova_fumi.$prog_controllo  "<td align=left>&nbsp;</td>"
 	append st_stat_conf.$prog_controllo  "<td align=left>&nbsp;</td>"
@@ -9920,7 +10756,7 @@ if {$num_row <$max_coll} {
 	append st_co_fumi_secchi.$prog_controllo "<td align=center>&nbsp;</td>"
 	append st_rend_magg_o_ugua_rend_min.$prog_controllo "<td align=center>&nbsp;</td>"
 	append st_firma.$prog_controllo "<td align=center>&nbsp;</td>"
-
+	append st_comb_dimp.$prog_controllo "<td align=center>&nbsp;</td>";#rom26
     }
 
 
@@ -9947,17 +10783,18 @@ db_foreach $q_sel_gend_ri_padre "" {
         set norma_uni $img_checked
     }
     if {$rif_uni_10389_padre eq "A"} {
-    set norma_uni_altro $img_checked
+	set norma_uni_altro $img_checked
     }
     set altro_rif $altro_rif_padre
 
 incr prog_controllo
 
 set where_gen_prog_padre $gen_prog_padre
-set where_cod_impianto_padre $cod_impianto_padre;#rom23
-    
+set where_cod_impianto_padre $cod_impianto_padre;#rom23      
 set num_row 0
-
+set norma_uni.$prog_controllo $norma_uni ;#but01
+set norma_uni_altro.$prog_controllo $norma_uni_altro ;#but01
+set altro_rif.$prog_controllo $altro_rif_padre ;#but01
 set gt_dimp.$prog_controllo $gen_prog_est_padre
 set cod_impianto_gend.$prog_controllo $cod_impianto_est_padre;#rom23
 set st_num_gen.$prog_controllo    $where_gen_prog_padre
@@ -9984,6 +10821,7 @@ set st_co_fumi_secchi.$prog_controllo             "" ;#gac04
 set st_rend_magg_o_ugua_rend_min.$prog_controllo  "" ;#gac04
 set st_port_ter_eff.$prog_controllo  ""
 set st_progressivo_prova_fumi.$prog_controllo  "";#sim09
+    set st_comb_dimp.$prog_controllo "";#rom26
 set st_firma.$prog_controllo             ""
 set calcola_colspan.$prog_controllo  [expr $num_row + 1]
 
@@ -10022,10 +10860,30 @@ db_foreach $q_sel_dimp_padre "" {
         set uncheck_rend_min_legge $img_checked
     }
 
+    set comb_dimp "";#rom26
+    if {$coimtgen(regione) eq "MARCHE"} {#rom26 Aggiunta if e suo contenuto.
+	if {![string equal $cod_comb_dimp ""]} {
+	    db_1row q "select upper(descr_comb) as comb_dimp
+                         from coimcomb
+                        where cod_combustibile = :cod_comb_dimp"
+	} else {#rom29 Aggiunta else e contenuto
+	    db_1row q "select upper(descr_comb) as comb_dimp
+                         from coimcomb
+                        where cod_combustibile = (select coalesce(g.cod_combustibile, a.cod_combustibile)
+                                                    from coimgend g
+                                                       , coimaimp a
+                                                   where g.cod_impianto = :cod_impianto_padre
+                                                     and g.gen_prog     = :gen_prog_padre
+                                                     and g.cod_impianto = a.cod_impianto)"
+	}
+    }
 
     if {$num_row == $max_coll} {
 	
 	incr prog_controllo
+	set norma_uni.$prog_controllo   "";#but01
+	set norma_uni_altro.$prog_controllo  "";#but01
+	set altro_rif.$prog_controllo $altro_rif_padre ;#but01
 	set gt_dimp.$prog_controllo $gen_prog_est_padre
 	set cod_impianto_gend.$prog_controllo $cod_impianto_est_padre;#rom23
 	set st_num_gen.$prog_controllo    $where_gen_prog_padre
@@ -10050,6 +10908,7 @@ db_foreach $q_sel_dimp_padre "" {
         set st_co_fumi_secchi.$prog_controllo             "" ;#gac04
         set st_rend_magg_o_ugua_rend_min.$prog_controllo  "" ;#gac04
 	set st_cod_dimp.$prog_controllo      "";#gac04
+	set st_cod_dimp.$prog_controllo      "";#rom26
 	set num_row 0;#sim09
 	set calcola_colspan.$prog_controllo [expr $num_row + 1]
 
@@ -10154,6 +11013,7 @@ db_foreach $q_sel_dimp_padre "" {
     append st_co_fumi_secchi.$prog_controllo "<td align=center>$check_co_fumi_secchi  Si $uncheck_co_fumi_secchi No</td>";#gac04
     append st_rend_magg_o_ugua_rend_min.$prog_controllo "<td align=center>$check_rend_min_legge Si $uncheck_rend_min_legge No</td>";#gac04
     append st_firma.$prog_controllo "<td align=center>&nbsp;</td>"
+    append st_comb_dimp.$prog_controllo "<td align=center>$comb_dimp&nbsp;</td>";#rom26
     incr num_row 
     set calcola_colspan.$prog_controllo [expr $num_row + 1]
 }
@@ -10194,7 +11054,8 @@ if {$num_row <$max_coll} {
 	append st_co_fumi_secchi.$prog_controllo "<td align=center>&nbsp;</td>"
 	append st_rend_magg_o_ugua_rend_min.$prog_controllo "<td align=center>&nbsp;</td>"
 	append st_firma.$prog_controllo "<td align=center>&nbsp;</td>"
-
+	append st_comb_dimp.$prog_controllo "<td align=left>&nbsp;</td>";#rom26
+	
     }
 
 }
@@ -10251,10 +11112,26 @@ while {$num_tabella_gen < $prog_controllo} {#sim09
 	set gt_dimp [set gt_dimp.$num_tabella_gen]
 	set cod_impianto_gend_html [set cod_impianto_gend.$num_tabella_gen];#rom23
 	#rom23 Aggiunta variabile cod_impianto_gend_html per visualizzare il codice impianto dell'RCEE che sto stampando.
+	set  norma_uni_html [set norma_uni.$num_tabella_gen];#but01
+        set  norma_uni_altro_html [set norma_uni_altro.$num_tabella_gen];#but01
+	set  altro_rif_html [set altro_rif.$num_tabella_gen];#but01
+	if {$coimtgen(regione) eq "MARCHE"} {#rom26 Aggiunte if, else e loro contenuto
+
+	    set riga_comb_dimp "
+       <tr>
+          <td nowrap height=4% valign=center align=left>Combustibile</td>[set st_comb_dimp.$num_tabella_gen]
+       </tr>"
+	    
+	} else {
+
+	    set riga_comb_dimp ""
+
+	}
+      
 	append libretto "
      <table width=100% align=center border=0>
        <tr>
-          <td align=left>Riferimento: $norma_uni norma UNI-10389-1   $norma_uni_altro altro $altro_rif</td>
+          <td align=left>Riferimento: $norma_uni_html  norma UNI-10389-1   $norma_uni_altro_html altro $altro_rif_html</td>
        </tr>
      </table><br>
      <table width=100% align=center border=1>
@@ -10270,6 +11147,7 @@ while {$num_tabella_gen < $prog_controllo} {#sim09
        <tr>
           <td nowrap height=4% valign=center align=left>Numero modulo</td>[set st_progressivo_prova_fumi.$num_tabella_gen]
        </tr>
+       $riga_comb_dimp <!--rom26-->
        <tr>
           <td nowrap height=4% valign=center align=left>Portata termica effettiva (kW)</td>[set st_port_ter_eff.$num_tabella_gen]
        </tr>
@@ -10410,7 +11288,8 @@ set prog_controllo 0;#rom01
 #set st_rend_comb  ""
 
 set num_row "0"
-set where_flag_tracciato " and flag_tracciato = 'R2' "
+#rom48 set where_flag_tracciato " and flag_tracciato = 'R2' "
+set where_flag_tracciato " and flag_tracciato in ('R2','NF')";#rom48
 set num_dimp_freddo 0
 set max_coll 5
 db_foreach sel_gend_fr "" {
@@ -10454,6 +11333,7 @@ select case a.flag_status
            when 'N' then 'Negativo'
            else '&nbsp;'
            end as desc_status
+         , a.flag_status as fr_flag_status -- rom45
          , coalesce(a.n_prot,'&nbsp;') as n_prot
          , coalesce(iter_edit_data(a.data_controllo),'&nbsp;') as data_controllo
          , a.data_controllo as data_controllo_data
@@ -10483,6 +11363,7 @@ select case a.flag_status
            when 'N' then 'Negativo'
            else '&nbsp;'
            end as desc_status
+         , a.flag_status as fr_flag_status -- rom45
          , coalesce(a.n_prot,'&nbsp;') as n_prot
          , coalesce(iter_edit_data(a.data_controllo),'&nbsp;') as data_controllo
          , a.data_controllo as data_controllo_data
@@ -10558,6 +11439,17 @@ fr_nr_circuito" {
     set img_fr_filtri_puliti_no     $img_unchecked
     set img_fr_verifica_superata_si $img_unchecked
     set img_fr_verifica_superata_no $img_unchecked
+
+    if {$coimtgen(regione) ne "MARCHE"} {#rom45 Aggiunta if e il suo contenuto
+	if {$fr_flag_status eq "P"} {
+	    set img_fr_filtri_puliti_si     $img_checked
+	    set img_fr_verifica_superata_si $img_checked
+	}
+	if {$fr_flag_status eq "N"} {
+	    set img_fr_filtri_puliti_no     $img_checked
+            set img_fr_verifica_superata_no $img_checked
+	}
+    }
     
     if {$fr_assenza_perdita_ref eq "S"} {
 	set img_fr_assenza_perdita_ref_si $img_checked
@@ -10639,10 +11531,10 @@ if {$num_row <$max_coll} {
 	    break
 	}
 	
-	set img_fr_filtri_puliti_si     $img_unchecked
-	set img_fr_filtri_puliti_no     $img_unchecked
-	set img_fr_verifica_superata_si $img_unchecked
-	set img_fr_verifica_superata_no $img_unchecked
+	#rom45set img_fr_filtri_puliti_si     $img_unchecked
+	#rom45set img_fr_filtri_puliti_no     $img_unchecked
+	#rom45set img_fr_verifica_superata_si $img_unchecked
+	#rom45set img_fr_verifica_superata_no $img_unchecked
 
 	
 	append st_dt_contr.$prog_controllo                "<td align=center width=10%>&nbsp;</td>"
@@ -10657,8 +11549,8 @@ if {$num_row <$max_coll} {
 	append st_fr_t_usc_lato_est.$prog_controllo       "<td align=center>&nbsp;</td>"
 	append st_fr_t_ing_lato_ute.$prog_controllo       "<td align=center>&nbsp;</td>"
 	append st_fr_t_usc_lato_ute.$prog_controllo       "<td align=center>&nbsp;</td>"
-	append st_fr_filtri_puliti.$prog_controllo        "<td align=center>$img_fr_filtri_puliti_si S&igrave; $img_fr_filtri_puliti_no No</td>"
-	append st_fr_img_fr_verifica_superata.$prog_controllo "<td align=center>$img_fr_verifica_superata_si S&igrave; $img_fr_verifica_superata_no No</td>"
+	append st_fr_filtri_puliti.$prog_controllo        "<td align=center>$img_unchecked S&igrave; $img_unchecked No</td>"
+	append st_fr_img_fr_verifica_superata.$prog_controllo "<td align=center>$img_unchecked S&igrave; $img_unchecked No</td>"
 	append st_firma.$prog_controllo                   "<td align=center>&nbsp;</td>"
 	append st_fr_uscita_fluido.$prog_controllo          "<td align=center>&nbsp;</td>"
 	append st_fr_bulbo_umido.$prog_controllo            "<td align=center>&nbsp;</td>"
@@ -10763,6 +11655,17 @@ db_foreach $q_sel_dimp_padre "" {
     set img_fr_verifica_superata_si $img_unchecked
     set img_fr_verifica_superata_no $img_unchecked
     
+    if {$coimtgen(regione) ne "MARCHE"} {#rom45 Aggiunta if e il suo contenuto
+	if {$fr_flag_status_padre eq "P"} {
+	    set img_fr_filtri_puliti_si     $img_checked
+	    set img_fr_verifica_superata_si $img_checked
+	}
+	if {$fr_flag_status_padre eq "N"} {
+	    set img_fr_filtri_puliti_no     $img_checked
+            set img_fr_verifica_superata_no $img_checked
+	}
+    }
+    
     if {$fr_assenza_perdita_ref eq "S"} {
 	set img_fr_assenza_perdita_ref_si $img_checked
     }
@@ -10826,7 +11729,7 @@ db_foreach $q_sel_dimp_padre "" {
     append st_fr_uscita_dalla_macchina.$prog_controllo  "<td align=center>&nbsp;</td>"
     append st_fr_potenza_assorbita.$prog_controllo      "<td align=center>&nbsp;</td>"
     append st_fr_entro_data.$prog_controllo             "<td align=center>&nbsp;</td>"
-    
+
    # set num_row "1"
    
 }
@@ -10838,10 +11741,10 @@ if {$num_row <$max_coll} {
     set colonne_da_aggiungere [expr $max_coll - $num_row]
     set contatore_ciclo_col_vuote 0
 
-    set img_fr_filtri_puliti_si     $img_unchecked
-    set img_fr_filtri_puliti_no     $img_unchecked
-    set img_fr_verifica_superata_si $img_unchecked
-    set img_fr_verifica_superata_no $img_unchecked
+    #rom45set img_fr_filtri_puliti_si     $img_unchecked
+    #rom45set img_fr_filtri_puliti_no     $img_unchecked
+    #rom45set img_fr_verifica_superata_si $img_unchecked
+    #rom45set img_fr_verifica_superata_no $img_unchecked
 
     
     while {$colonne_da_aggiungere > 0} {#rom02: aggiunta while, if e loro contenuto
@@ -10865,8 +11768,8 @@ if {$num_row <$max_coll} {
 	append st_fr_t_ing_lato_ute.$prog_controllo       "<td align=center>&nbsp;</td>"
 	append st_fr_t_usc_lato_ute.$prog_controllo       "<td align=center>&nbsp;</td>"
 	append st_firma.$prog_controllo                   "<td align=center>&nbsp;</td>"
-	append st_fr_filtri_puliti.$prog_controllo        "<td align=center>$img_fr_filtri_puliti_si S&igrave; $img_fr_filtri_puliti_no No</td>"
-	append st_fr_img_fr_verifica_superata.$prog_controllo "<td align=center>$img_fr_verifica_superata_si S&igrave; $img_fr_verifica_superata_no No</td>"
+	append st_fr_filtri_puliti.$prog_controllo        "<td align=center>$img_unchecked S&igrave; $img_unchecked No</td>"
+	append st_fr_img_fr_verifica_superata.$prog_controllo "<td align=center>$img_unchecked S&igrave; $img_unchecked No</td>"
 	append st_fr_uscita_fluido.$prog_controllo          "<td align=center>&nbsp;</td>"
 	append st_fr_bulbo_umido.$prog_controllo            "<td align=center>&nbsp;</td>"
 	append st_fr_ingresso_sorg_esterna.$prog_controllo  "<td align=center>&nbsp;</td>"
@@ -10984,10 +11887,10 @@ while {$num_tabella_gen < $prog_controllo} {#rom01
           <td nowrap height=3% valign=center align=left>Potenza assorbita (kW)</td>[set st_fr_potenza_assorbita.$prog_controllo]
        </tr>
        <tr>
-          <td nowrap height=3% valign=center align=left>Filtri puliti</td>[set st_fr_filtri_puliti.$prog_controllo]
+          <td nowrap height=3% valign=center align=left>Filtri puliti</td>[set st_fr_filtri_puliti.$num_tabella_gen]
        </tr>
        <tr>
-          <td nowrap height=3% valign=center align=left>Verifica superata</td>[set st_fr_img_fr_verifica_superata.$prog_controllo]
+          <td nowrap height=3% valign=center align=left>Verifica superata</td>[set st_fr_img_fr_verifica_superata.$num_tabella_gen]
        </tr>
        <tr>
           <td nowrap height=3% valign=center align=left>Se NO, l'efficienza dell'impianto<br>va ripristinata entro la data del</td>[set st_fr_entro_data.$prog_controllo]
@@ -11875,104 +12778,65 @@ append libretto "
 </table>
 <br>
 <table width=100% border=1>
-<tr>
-  <td align=center>Data<br>controllo</td>
-  <td align=center>Ragione sociale manutentore</td>
-  <td align=center>CCIAA</td>
-  <td align=center>Tipo<br>Allegato</td>
-  <td align=center><small>Raccomandazioni</small><br>Si&nbsp;&nbsp;&nbsp;No</td>
-  <td align=center><small>Prescrizioni</small><br>Si&nbsp;&nbsp;&nbsp;No</td>
-</tr>
+  <tr>
+    <td align=center>Codice<br>Impianto</td>
+    <td align=center>Data<br>controllo</td>
+    <td align=center>Ragione sociale manutentore</td>
+    <td align=center>CCIAA</td>
+    <td align=center>Tipo<br>Allegato</td>
+    <td align=center><small>Raccomandazioni</small><br>Si&nbsp;&nbsp;&nbsp;No</td>
+    <td align=center><small>Prescrizioni</small><br>Si&nbsp;&nbsp;&nbsp;No</td>
+  </tr>
 "
-set where_flag_tracciato ""
-set where_gen_prog_padre "gen_prog"
-db_foreach sel_dimp "" {
+
+set whre_fl_tracc_12 "and d.flag_tracciato not in ('O1','O2')";#rom53
+set ls_dimp_schd_12 [db_list_of_lists q "select coalesce(iter_edit_data(d.data_controllo),'&nbsp;') as data_controllo
+                                              , d.flag_tracciato
+                                              , coalesce(d.raccomandazioni, '') as raccomandazioni
+                                              , coalesce(d.prescrizioni, '') as prescrizioni
+                                              , m.reg_imprese
+                                              , coalesce(m.cognome,'') || ' ' || coalesce(m.nome,'') as manutentore_dimp
+                                              , a.cod_impianto_est as cod_impianto_est_dimp
+                                           from coimdimp d
+                                           left join coimmanu m on m.cod_manutentore = d.cod_manutentore
+                                           left join coimaimp a on a.cod_impianto = d.cod_impianto
+                                          where d.cod_impianto in ('[join $lista_cod_impianti ',']')
+                                            $whre_fl_tracc_12 --rom53
+                                          order by d.cod_impianto, d.data_controllo"];#rom32
+
+foreach dimp_schd_12 $ls_dimp_schd_12 {#rom32 Aggiunta foreach ma non il suo contenuto
+    
+    util_unlist $dimp_schd_12 data_controllo flag_tracciato raccomandazioni prescrizioni reg_imprese manutentore_dimp cod_impianto_est_dimp
 
     set img_raccomandazioni_si $img_unchecked
     set img_raccomandazioni_no $img_unchecked
     set img_prescrizioni_si    $img_unchecked
     set img_prescrizioni_no    $img_unchecked
-
+    
     if {[string trim $raccomandazioni] ne ""} {
 	set img_raccomandazioni_si $img_checked
     } else {
 	set img_raccomandazioni_no $img_checked
     }
-
+    
     if {[string trim $prescrizioni] ne ""} {
 	set img_prescrizioni_si $img_checked
     } else {
 	set img_prescrizioni_no $img_checked
     }
-
-    set reg_imprese ""
-    set manutentore_dimp ""
-
-    db_0or1row q "select reg_imprese
-                    , coalesce(cognome,'') || ' ' || coalesce(nome,'') as manutentore_dimp
-                 from coimmanu 
-                where cod_manutentore = :cod_manutentore_dimp"
-
-append libretto "
-<tr>
-  <td align=center>$data_controllo</td>
-  <td align=center>$manutentore_dimp</td>
-  <td align=center>$reg_imprese&nbsp;</td>
-  <td align=center>$flag_tracciato</td>
-  <td align=center>$img_raccomandazioni_si&nbsp;&nbsp;&nbsp;$img_raccomandazioni_no</td>
-  <td align=center>$img_prescrizioni_si&nbsp;&nbsp;&nbsp;$img_prescrizioni_no</td>
-</tr>
-"
-
+    
+    append libretto "
+  <tr>
+    <td align=center>$cod_impianto_est_dimp</td>
+    <td align=center>$data_controllo</td>
+    <td align=center>$manutentore_dimp</td>
+    <td align=center>$reg_imprese&nbsp;</td>
+    <td align=center>$flag_tracciato</td>
+    <td align=center>$img_raccomandazioni_si&nbsp;&nbsp;&nbsp;$img_raccomandazioni_no</td>
+    <td align=center>$img_prescrizioni_si&nbsp;&nbsp;&nbsp;$img_prescrizioni_no</td>
+  </tr>
+" 
 }
-
-if {$flag_gest_targa eq "T"} {#sim04: aggiunta if e suo contenuto
-    set q_sel_dimp_padre "sel_dimp_padre_targa"
-} else {
-    set q_sel_dimp_padre "sel_dimp_padre"
-}
-
-db_foreach $q_sel_dimp_padre "" {
-
-    set img_raccomandazioni_si $img_unchecked
-    set img_raccomandazioni_no $img_unchecked
-    set img_prescrizioni_si    $img_unchecked
-    set img_prescrizioni_no    $img_unchecked
-
-    if {[string trim $raccomandazioni] ne ""} {
-	set img_raccomandazioni_si $img_checked
-    } else {
-	set img_raccomandazioni_no $img_checked
-    }
-
-    if {[string trim $prescrizioni] ne ""} {
-	set img_prescrizioni_si $img_checked
-    } else {
-	set img_prescrizioni_no $img_checked
-    }
-
-    set reg_imprese ""
-    set manutentore_dimp ""
-
-    db_0or1row q "select reg_imprese
-                    , coalesce(cognome,'') || ' ' || coalesce(nome,'') as manutentore_dimp
-                 from coimmanu 
-                where cod_manutentore = :cod_manutentore_dimp"
-
-append libretto "
-<tr>
-  <td align=center>$data_controllo</td>
-  <td align=center>$manutentore_dimp</td>
-  <td align=center>$reg_imprese&nbsp;</td>
-  <td align=center>$flag_tracciato</td>
-  <td align=center>$img_raccomandazioni_si&nbsp;&nbsp;&nbsp;$img_raccomandazioni_no</td>
-  <td align=center>$img_prescrizioni_si&nbsp;&nbsp;&nbsp;$img_prescrizioni_no</td>
-</tr>
-"
-
-}
-
-
 
 ####inizio simone rapporti di verifica
 
@@ -12126,7 +12990,12 @@ foreach tipo_comb $ls_tipo_comb {
                                              , iter_edit_num(d.scorta_o_lett_iniz, 2)  as scorta_o_lett_iniz
                                              , iter_edit_num(d.scorta_o_lett_fin, 2)   as scorta_o_lett_fin
                                              , iter_edit_num(d.consumo_annuo, 2)       as consumo_annuo
-                                             , g.cod_impianto                          as cod_impianto_tipo_comb --rom23
+                                             , d.stagione_risc2                                                  --rom27
+                                             , iter_edit_num(d.acquisti2, 2)            as acquisti2             --rom27
+                                             , iter_edit_num(d.scorta_o_lett_iniz2, 2)  as scorta_o_lett_iniz2   --rom27
+                                             , iter_edit_num(d.scorta_o_lett_fin2, 2)   as scorta_o_lett_fin2    --rom27
+                                             , iter_edit_num(d.consumo_annuo2, 2)       as consumo_annuo2        --rom27
+                                             , b.cod_impianto_est                       as cod_impianto_tipo_comb --rom23
                                              , case b.flag_tipo_impianto
                                                when 'R' then 'GT'
                                                when 'F' then 'GF'
@@ -12144,44 +13013,36 @@ foreach tipo_comb $ls_tipo_comb {
                                            and coalesce(c.um,'')   = coalesce(:um,'')
                                            and d.cod_impianto      = g.cod_impianto
                                            and d.gen_prog          = g.gen_prog
-                                           and g.cod_impianto      = :cod_impianto"]
+                                           and g.cod_impianto      = :cod_impianto
+                                           and b.stato             not in ('E','F') --rom47"]
 
-    if {$flag_gest_targa eq "T"} {#sim04: aggiunta if e suo contenuto
-
-	set ls_letture_padre [db_list_of_lists q "select d.stagione_risc
-                                             , iter_edit_num(d.acquisti, 2)            as acquisti
-                                             , iter_edit_num(d.scorta_o_lett_iniz, 2)  as scorta_o_lett_iniz
-                                             , iter_edit_num(d.scorta_o_lett_fin, 2)   as scorta_o_lett_fin
-                                             , iter_edit_num(d.consumo_annuo, 2)       as consumo_annuo
-                                             , g.cod_impianto                          as cod_impianto_tipo_comb --rom23
-                                             , case b.flag_tipo_impianto
-                                               when 'R' then 'GT'
-                                               when 'F' then 'GF'
-                                               when 'T' then 'SC'
-                                               when 'C' then 'CG'
-                                               else ''  end                            as flag_tipo_imp_comb --rom23
-                                             , g.gen_prog_est                          as gen_prog_est_comb  --rom23
-                                          from coimgend g 
-                                             , coimcomb c
-                                             , coimdimp d
+    set ls_letture_14_1 [db_list_of_lists q "select cc.esercizio                       as stagione_risc_cc
+                                             , iter_edit_num(cc.acquisti, 2)           as acquisti_cc
+                                             , iter_edit_num(cc.lett_iniziale, 2)      as scorta_o_lett_iniz_cc
+                                             , iter_edit_num(cc.lett_finale, 2)        as scorta_o_lett_fin_cc
+                                             , iter_edit_num(cc.consumo_tot, 2)        as consumo_annuo_cc
+                                             , b.cod_impianto_est                      as cod_impianto_tipo_comb
+                                          from coimcons_comb cc
                                     inner join coimaimp b
-                                            on d.cod_impianto = b.cod_impianto
-                                         where c.cod_combustibile  = g.cod_combustibile
+                                            on cc.cod_impianto = b.cod_impianto
+                                             , coimcomb c
+                                         where cc.cod_impianto = :cod_impianto
+                                           and b.stato         not in ('E','F') --rom47
+                                           and c.cod_combustibile  = b.cod_combustibile
                                            and coalesce(c.tipo,'') = coalesce(:tipo_comb_codice,'')
-                                           and coalesce(c.um,'')   = coalesce(:um,'')
-                                           and b.cod_impianto != :cod_impianto
-                                           and upper(b.targa) = upper(:targa)
-                                           and d.cod_impianto     = g.cod_impianto
-                                           and d.gen_prog         = g.gen_prog"]
+                                           and coalesce(c.um,'')   = coalesce(:um,'')"];#rom38
 
-    } else {
-	
 	set ls_letture_padre [db_list_of_lists q "select d.stagione_risc
                                              , iter_edit_num(d.acquisti, 2)            as acquisti
                                              , iter_edit_num(d.scorta_o_lett_iniz, 2)  as scorta_o_lett_iniz
                                              , iter_edit_num(d.scorta_o_lett_fin, 2)   as scorta_o_lett_fin
                                              , iter_edit_num(d.consumo_annuo, 2)       as consumo_annuo
-                                             , g.cod_impianto                          as cod_impianto_tipo_comb --rom23
+                                             , d.stagione_risc2                                                  --rom27
+                                             , iter_edit_num(d.acquisti2, 2)            as acquisti2             --rom27
+                                             , iter_edit_num(d.scorta_o_lett_iniz2, 2)  as scorta_o_lett_iniz2   --rom27
+                                             , iter_edit_num(d.scorta_o_lett_fin2, 2)   as scorta_o_lett_fin2    --rom27
+                                             , iter_edit_num(d.consumo_annuo2, 2)       as consumo_annuo2        --rom27
+                                             , b.cod_impianto_est                       as cod_impianto_tipo_comb_padre --rom23
                                              , case b.flag_tipo_impianto
                                                when 'R' then 'GT'
                                                when 'F' then 'GF'
@@ -12192,20 +13053,36 @@ foreach tipo_comb $ls_tipo_comb {
                                           from coimgend g
                                              , coimcomb c
                                              , coimdimp d
-                                    inner join coimaimp b
-                                            on d.cod_impianto = b.cod_impianto_princ
-                                           and d.cod_impianto != b.cod_impianto
-                                         where b.cod_impianto = :cod_impianto
+                                     left join coimaimp b
+                                            on d.cod_impianto = b.cod_impianto
+                                         where b.cod_impianto in ('[join $lista_cod_impianti ',']')
+                                           and b.cod_impianto != :cod_impianto
                                            and c.cod_combustibile  = g.cod_combustibile
                                            and coalesce(c.tipo,'') = coalesce(:tipo_comb_codice,'')
                                            and coalesce(c.um,'')   = coalesce(:um,'')
                                            and d.cod_impianto      = g.cod_impianto
-                                           and d.gen_prog          = g.gen_prog"]
+                                           and d.gen_prog          = g.gen_prog"];#rom01
 
-    }
 
+    set ls_letture_14_1_padre [db_list_of_lists q "select cc.esercizio                       as stagione_risc_cc
+    	                                                , iter_edit_num(cc.acquisti, 2)      as acquisti_cc
+                                                        , iter_edit_num(cc.lett_iniziale, 2) as scorta_o_lett_iniz_cc
+                                                        , iter_edit_num(cc.lett_finale, 2)   as scorta_o_lett_fin_cc
+                                                        , iter_edit_num(cc.consumo_tot, 2)   as consumo_annuo_cc
+                                                        , b.cod_impianto_est                 as cod_impianto_tipo_comb_padre
+                                                     from coimcons_comb cc
+                                                     left join coimaimp b
+                                                       on b.cod_impianto  = cc.cod_impianto
+                                                        , coimcomb c
+                                                    where cc.cod_impianto in ('[join $lista_cod_impianti ',']')
+                                                      and cc.cod_impianto != :cod_impianto
+                                                      and c.cod_combustibile  = b.cod_combustibile
+                                                      and coalesce(c.tipo,'') = coalesce(:tipo_comb_codice,'')
+                                                      and coalesce(c.um,'')   = coalesce(:um,'')"];#rom38
     
-    if {[llength $ls_letture] >0 || [llength $ls_letture_padre] >0} {
+
+   
+    if {[llength $ls_letture] >0 || [llength $ls_letture_padre] >0 || [llength $ls_letture_14_1] >0 || [llength $ls_letture_14_1_padre] >0} {
 
 #rom23	append libretto "
 #  <table width=100% border=1>
@@ -12220,7 +13097,13 @@ foreach tipo_comb $ls_tipo_comb {
 #        <td align=center>Consumo</td>
 #      </tr>"
 
-	set table_consumi {
+	foreach letture $ls_letture {
+	    
+	    #rom27 Aggiunti campi stagione_risc2 acquisti2 scorta_o_lett_iniz2 scorta_o_lett_fin2 consumo_annuo2
+	    util_unlist $letture stagione_risc acquisti scorta_o_lett_iniz scorta_o_lett_fin consumo_annuo stagione_risc2 acquisti2 scorta_o_lett_iniz2 scorta_o_lett_fin2 consumo_annuo2 cod_impianto_tipo_comb flag_tipo_imp_comb gen_prog_est_comb
+	    
+	    #eval $table_consumi;#rom23
+	    #gac03 aggiunti nuovi campi alla stampa
 	    append libretto "
    <table width=100% border=1>
        <tr>
@@ -12232,43 +13115,116 @@ foreach tipo_comb $ls_tipo_comb {
          <td align=center>Scorta o lettura iniziale</td>
          <td align=center>Scorta o lettura finale</td>
          <td align=center>Consumo</td>
-       </tr>"
-    };#rom23
-
-	foreach letture $ls_letture {
-	    
-	    util_unlist $letture stagione_risc acquisti scorta_o_lett_iniz scorta_o_lett_fin consumo_annuo cod_impianto_tipo_comb flag_tipo_imp_comb gen_prog_est_comb
-	    
-	    eval $table_consumi;#rom23
-	    #gac03 aggiunti nuovi campi alla stampa
-	    append libretto "
+       </tr>
        <tr>
           <td align=center>$stagione_risc&nbsp;</td>
           <td align=center>$acquisti&nbsp;</td>
           <td align=center>$scorta_o_lett_iniz&nbsp;</td>
           <td align=center>$scorta_o_lett_fin&nbsp;</td>
           <td align=center>$consumo_annuo&nbsp;</td>
+       </tr>
+       <tr><!--rom27 Aggiunta riga e contenuti-->
+          <td align=center>$stagione_risc2&nbsp;</td>
+          <td align=center>$acquisti2&nbsp;</td>
+          <td align=center>$scorta_o_lett_iniz2&nbsp;</td>
+          <td align=center>$scorta_o_lett_fin2&nbsp;</td>
+          <td align=center>$consumo_annuo2&nbsp;</td>
+       </tr>"
+	    append libretto "</table><br>"
+	}
+
+	foreach letture_14_1 $ls_letture_14_1 {#rom38 Aggiunta foreach e contenuto
+	    
+	    util_unlist $letture_14_1 stagione_risc_cc acquisti_cc scorta_o_lett_iniz_cc scorta_o_lett_fin_cc consumo_annuo_cc cod_impianto_tipo_comb
+	    
+	    #eval $table_consumi_14_1
+	    append libretto "
+   <table width=100% border=1>
+       <tr>
+         <td colspan=4>Codice Impianto: $cod_impianto_tipo_comb Tipo di combustibile: $tipo_combustibile</td><td>Unità di misura: $um</td>
+       </tr>
+       <tr>
+         <td align=center>Esercizio</td>
+         <td align=center>Acquisti</td>
+         <td align=center>Scorta o lettura iniziale</td>
+         <td align=center>Scorta o lettura finale</td>
+         <td align=center>Consumo</td>
+       </tr>
+       <tr>
+          <td align=center>$stagione_risc_cc&nbsp;</td>
+          <td align=center>$acquisti_cc&nbsp;</td>
+          <td align=center>$scorta_o_lett_iniz_cc&nbsp;</td>
+          <td align=center>$scorta_o_lett_fin_cc&nbsp;</td>
+          <td align=center>$consumo_annuo_cc&nbsp;</td>
        </tr>"
 	    append libretto "</table><br>"
 	}
 	
 	foreach letture_padre $ls_letture_padre {
-	    util_unlist $letture_padre stagione_risc acquisti scorta_o_lett_iniz scorta_o_lett_fin consumo_annuo cod_impianto_tipo_comb flag_tipo_imp_comb gen_prog_est_comb
+
+	    #rom27 Aggiunti campi stagione_risc2 acquisti2 scorta_o_lett_iniz2 scorta_o_lett_fin2 consumo_annuo2
+	    util_unlist $letture_padre stagione_risc acquisti scorta_o_lett_iniz scorta_o_lett_fin consumo_annuo stagione_risc2 acquisti2 scorta_o_lett_iniz2 scorta_o_lett_fin2 consumo_annuo2 cod_impianto_tipo_comb_padre flag_tipo_imp_comb_padre gen_prog_est_comb_padre
 	    
-	    eval $table_consumi;#rom23
+	    #eval $table_consumi_padre;#rom23
 	    #gac03 aggiunti nuovi campi alla stampa
 	    append libretto "
+   <table width=100% border=1>
+       <tr>
+         <td colspan=4>Codice Impianto: $cod_impianto_tipo_comb_padre $flag_tipo_imp_comb_padre: $gen_prog_est_comb_padre Tipo di combustibile: $tipo_combustibile</td><td>Unità di misura: $um</td>
+       </tr>
+       <tr>
+         <td align=center>Esercizio</td>
+         <td align=center>Acquisti</td>
+         <td align=center>Scorta o lettura iniziale</td>
+         <td align=center>Scorta o lettura finale</td>
+         <td align=center>Consumo</td>
+       </tr>
+
        <tr>
           <td align=center>$stagione_risc&nbsp;</td>
           <td align=center>$acquisti&nbsp;</td>
           <td align=center>$scorta_o_lett_iniz&nbsp;</td>
           <td align=center>$scorta_o_lett_fin&nbsp;</td>
           <td align=center>$consumo_annuo&nbsp;</td>
+       </tr>
+       <tr><!--rom27-->
+          <td align=center>$stagione_risc2&nbsp;</td>
+          <td align=center>$acquisti2&nbsp;</td>
+          <td align=center>$scorta_o_lett_iniz2&nbsp;</td>
+          <td align=center>$scorta_o_lett_fin2&nbsp;</td>
+          <td align=center>$consumo_annuo2&nbsp;</td>
        </tr>"
 	    append libretto "</table><br>";#rom23
 
 	}
 	
+	foreach letture_14_1_padre $ls_letture_14_1_padre {#rom38 Aggiunta foreach e contenuto
+	    
+	    util_unlist $letture_14_1_padre stagione_risc_cc acquisti_cc scorta_o_lett_iniz_cc scorta_o_lett_fin_cc consumo_annuo_cc cod_impianto_tipo_comb_padre
+	    
+	    #eval $table_consumi_14_1_padre
+	    append libretto "
+   <table width=100% border=1>
+       <tr>
+         <td colspan=4>Codice Impianto: $cod_impianto_tipo_comb_padre Tipo di combustibile: $tipo_combustibile</td><td>Unità di misura: $um</td>
+       </tr>
+       <tr>
+         <td align=center>Esercizio</td>
+         <td align=center>Acquisti</td>
+         <td align=center>Scorta o lettura iniziale</td>
+         <td align=center>Scorta o lettura finale</td>
+         <td align=center>Consumo</td>
+       </tr>
+       <tr>
+          <td align=center>$stagione_risc_cc&nbsp;</td>
+          <td align=center>$acquisti_cc&nbsp;</td>
+          <td align=center>$scorta_o_lett_iniz_cc&nbsp;</td>
+          <td align=center>$scorta_o_lett_fin_cc&nbsp;</td>
+          <td align=center>$consumo_annuo_cc&nbsp;</td>
+       </tr>"
+	    append libretto "</table><br>"
+	}
+
     }
     
 }
@@ -12288,7 +13244,7 @@ append libretto "
 append libretto "
     <table width=100% border=1>
           <tr>
-             <td align=center bgcolor=\"E1E1E1\"><big><b>14. Registrazione dei Consumi nei veri Esercizi</b></big></td>
+             <td align=center bgcolor=\"E1E1E1\"><big><b>14. Registrazione dei Consumi nei vari Esercizi</b></big></td>
           </tr>
     </table>"
 
@@ -12336,6 +13292,32 @@ append libretto "
        </tr>"
 };#gac06
 
+set ls_cons_elet_14_2 [db_list_of_lists q "select c.esercizio1
+                                           , c.esercizio2
+                                           , iter_edit_num(c.lett_iniziale, 2) as lett_iniziale
+                                           , iter_edit_num(c.lett_finale,   2) as lett_finale
+                                           , iter_edit_num(c.consumo_tot,   2) as consumo_tot
+                                        from coimcons_elet c
+                                           , coimaimp      b --rom47
+                                       where c.cod_impianto = :cod_impianto
+                                         and c.cod_impianto = b.cod_impianto --rom47
+                                         and b.stato        not in ('E','F') --rom47"];#rom38
+
+if {[llength $ls_cons_elet_14_2 ]> 0} {#rom38 Aggiunta if e il suo contenuto 
+    foreach cons_elet_14_2 $ls_cons_elet_14_2 {
+	util_unlist $cons_elet_14_2 esercizio1 esercizio2 lett_iniziale lett_finale consumo_tot 
+
+	append libretto "
+       <tr>
+         <td align=center valign=center height=3%>$esercizio1 / $esercizio2</td>
+         <td align=center>$lett_iniziale&nbsp;</td>
+         <td align=center>$lett_finale&nbsp;</td>
+         <td align=center>$consumo_tot&nbsp;</td>
+       </tr>"
+    }
+        
+}
+
 if {$flag_gest_targa eq "T"} {#gac06: aggiunta if e else e suo contenuto
     set q_sel_dimp_padre "sel_dimp_padre_targa"
 } else {
@@ -12371,6 +13353,206 @@ append libretto "
        </tr>"
 
 }
+
+
+set ls_cons_elet_14_2_padre [db_list_of_lists q "select esercizio1
+                                                      , esercizio2
+                                                      , iter_edit_num(lett_iniziale, 2) as lett_iniziale
+                                                      , iter_edit_num(lett_finale,   2) as lett_finale
+                                                      , iter_edit_num(consumo_tot,   2) as consumo_tot
+                                                   from coimcons_elet
+                                                  where cod_impianto in ('[join $lista_cod_impianti ',']')
+                                                    and cod_impianto != :cod_impianto"];#rom38
+
+if {[llength $ls_cons_elet_14_2_padre] > 0} {#rom38 Aggiunta if e il suo contenuto 
+    foreach cons_elet_14_2_padre $ls_cons_elet_14_2_padre {
+	util_unlist $cons_elet_14_2_padre esercizio1_padre esercizio2_padre lett_iniziale_padre lett_finale_padre consumo_tot_padre
+
+	append libretto "
+       <tr>
+         <td align=center valign=center height=3%>$esercizio1_padre / $esercizio2_padre</td>
+         <td align=center>$lett_iniziale_padre&nbsp;</td>
+         <td align=center>$lett_finale_padre&nbsp;</td>
+         <td align=center>$consumo_tot_padre&nbsp;</td>
+       </tr>"
+    }
+}
+
+
+foreach cod_impianto_14_3 $lista_cod_impianti {#rom27 Aggiunta Scheda 14.3
+    db_1row q "select a.cod_impianto_est as cod_impianto_est_14_3
+                    , c.um as unita_misura_aimp
+                 from coimaimp a
+                 left join coimcomb c on c.cod_combustibile = a.cod_combustibile
+                where cod_impianto = :cod_impianto_14_3"
+    
+    append libretto "
+    <table width=100%>
+          <tr>
+             <td>&nbsp;</td>
+          <tr>
+    </table>"
+
+    append libretto "
+    <!-- PAGE BREAK -->
+    $table_con_header_per_tutte_le_pagine"
+    append libretto "
+    <table width=100% border=1>
+          <tr>
+             <td align=center bgcolor=\"E1E1E1\"><big><b>14. Registrazione dei Consumi nei vari Esercizi</b></big></td>
+          </tr>
+    </table>"
+    
+    append libretto "
+    <table width=100% border=0>
+          <tr>
+             <td colspan=4>&nbsp;</td>
+          </tr>
+       <tr>
+          <td colspan=4>&nbsp;</td>
+       </tr>
+       <tr>
+          <td align=center colspan=4><b>14.3 Consumo di acqua di reintegro nel circuito dell'impianto termico $cod_impianto_est_14_3</b>&nbsp; &nbsp; Unit&agrave; di misura $unita_misura_aimp</td>
+       </tr>
+       <tr>
+          <td colspan=4>&nbsp;</td>
+       </tr>
+    </table>
+<br>"
+
+    append libretto "
+   <table width=100% border=1>
+       <tr>
+         <td align=center valign=center height=3% bgcolor=\"E1E1E1\"><b>Esercizio</b></td>
+         <td align=center valign=center height=3% bgcolor=\"E1E1E1\"><b>Lettura iniziale</b></td>
+         <td align=center valign=center height=3% bgcolor=\"E1E1E1\"><b>Lettura finale</b></td>
+         <td align=center valign=center height=3% bgcolor=\"E1E1E1\"><b>Consumo totale</b></td>
+       </tr>"
+
+    db_foreach sel_14_3 "
+        select cons_acqua_rein_id
+             , esercizio1
+             , esercizio2
+             , iter_edit_num(lett_iniziale,2) as lett_iniziale
+             , iter_edit_num(lett_finale  ,2) as lett_finale
+             , iter_edit_num(consumo_tot  ,2) as consumo_tot
+          from coimcons_acqua_rein
+         where cod_impianto = :cod_impianto_14_3
+    " {#rom27 aggiunta foreach e suo contenuto
+	append libretto "
+       <tr>
+         <td align=center valign=center height=3%>$esercizio1 / $esercizio2</td>
+         <td align=center>$lett_iniziale&nbsp;</td>
+         <td align=center>$lett_finale&nbsp;</td>
+         <td align=center>$consumo_tot&nbsp;</td>
+       </tr>"
+    } if_no_rows {
+	append libretto "
+  <table width=100%>
+    <tr>
+       <td colspan=5>Nessun record trovato.</td>
+    </tr>"
+    }
+
+};#rom27 fine scheda 14.3
+append libretto "</table>";#rom27
+
+foreach cod_impianto_14_4 $lista_cod_impianti {#rom27 Aggiunta Scheda 14.4
+    db_1row q "select a.cod_impianto_est as cod_impianto_est_14_4
+                    , c.um as unita_misura_aimp
+                 from coimaimp a
+                 left join coimcomb c on c.cod_combustibile = a.cod_combustibile
+                where cod_impianto = :cod_impianto_14_4"
+    
+    append libretto "
+    <table width=100%>
+          <tr>
+             <td>&nbsp;</td>
+          <tr>
+    </table>"
+
+    append libretto "
+    <!-- PAGE BREAK -->
+    $table_con_header_per_tutte_le_pagine"
+    append libretto "
+    <table width=100% border=1>
+          <tr>
+             <td align=center bgcolor=\"E1E1E1\"><big><b>14. Registrazione dei Consumi nei vari Esercizi</b></big></td>
+          </tr>
+    </table>"
+    
+    append libretto "
+    <table width=100% border=0>
+          <tr>
+             <td colspan=4>&nbsp;</td>
+          </tr>
+       <tr>
+          <td colspan=4>&nbsp;</td>
+       </tr>
+       <tr>
+          <td align=center colspan=4><b>14.4 Consumo di prodotti chimici per il trattamento acqua del circuito dell'impianto termico $cod_impianto_est_14_4</b></td>
+       </tr>
+       <tr>
+          <td colspan=4>&nbsp;</td>
+       </tr>
+    </table>
+<br>"
+
+    append libretto "
+   <table width=100% border=1>
+       <tr>
+         <td align=center valign=center height=3% bgcolor=\"E1E1E1\"><b>Esercizio</b></td>
+         <td align=center valign=center height=3% bgcolor=\"E1E1E1\"><b>Circuito impianto termico</b></td>
+         <td align=center valign=center height=3% bgcolor=\"E1E1E1\"><b>Circuito ACS</b></td>
+         <td align=center valign=center height=3% bgcolor=\"E1E1E1\"><b>Altri circuiti ausiliari</b></td>
+         <td align=center valign=center height=3% bgcolor=\"E1E1E1\"><b>Nome prodotto</b></td>
+         <td align=center valign=center height=3% bgcolor=\"E1E1E1\"><b>Quantit&agrave; consumata</b></td>
+         <td align=center valign=center height=3% bgcolor=\"E1E1E1\"><b>Unit&agrave; di misura</b></td>
+       </tr>"
+
+    db_foreach sel_14_4 "
+        select cons_prod_chimici_id
+             , coalesce(esercizio1, '') as esercizio1
+             , coalesce(esercizio2, '') as esercizio2
+             , case circ_imp_term 
+               when 't' then '$img_checked'
+               else '$img_unchecked'
+                end as img_circ_imp_term
+             , case circ_acs
+               when 't' then '$img_checked'
+               else '$img_unchecked'
+                end as img_circ_acs
+             , case altri_circ_ausi
+               when 't' then '$img_checked'
+               else '$img_unchecked'
+                end as img_altri_circ_ausi
+             , coalesce(nome_prodotto, '') as nome_prodotto
+             , iter_edit_num(qta_cons, 2) as qta_cons_pretty
+             , coalesce(unita_misura, '') as unita_misura
+          from coimcons_prod_chimici
+         where cod_impianto = :cod_impianto_14_4
+    " {#rom27 aggiunta foreach e suo contenuto
+	append libretto "
+       <tr>
+         <td align=center nowrap>$esercizio1 / $esercizio2</td>
+         <td align=center>$img_circ_imp_term</td>
+         <td align=center>$img_circ_acs</td>
+         <td align=center>$img_altri_circ_ausi</td>
+         <td align=center>$nome_prodotto&nbsp;</td>
+         <td align=center>$qta_cons_pretty&nbsp;</td>
+         <td align=center>$unita_misura&nbsp;</td>
+       </tr>"
+    } if_no_rows {
+	append libretto "
+  <table width=100%>
+    <tr>
+       <td colspan=7>Nessun record trovato.</td>
+    </tr>
+  </table>"
+    }
+};#rom27 fine scheda 14.4
+
+append libretto "</table>";#rom27
 
 #La parte del Libretto relativa ai Soggetti Responsabili non la faccio vedere alle Marche
 if {$coimtgen(regione) ne "MARCHE"} {
@@ -12787,7 +13969,7 @@ if { $coimtgen(regione) ne "MARCHE"} {
 
 set nome_file3_est    $nome_file3;#19/04/2013
 
-
+#rom38 Aggiunta condizione su Palermo
 if {$coimtgen(regione) eq "MARCHE"} {#sim10 if e suo contenuto
 
     set spool_dir_perm     [iter_set_permanenti_dir]
@@ -13414,19 +14596,19 @@ if {![string equal $cod_comb $cod_tele] && ![string equal $cod_comb $cod_pomp]} 
 set stampa_e "";#19/04/2013: devo definire comunque la variabile altrimenti l'adp va in errore (anche se e' commentata anche sull'adp)
 
 set nome_file2_est    $nome_file2;#19/04/2013
-set nome_file2        [iter_temp_file_name $nome_file2]
-set file_html2        "$spool_dir/$nome_file2.html"
+#but03 set nome_file2        [iter_temp_file_name $nome_file2]
+#but03 set file_html2        "$spool_dir/$nome_file2.html"
 set file_pdf2         "$spool_dir/$nome_file2.pdf"
 set file_pdf_url2     "$spool_dir_url/$nome_file2.pdf"
 
-set file_id2   [open $file_html2 w]
-fconfigure $file_id2 -encoding iso8859-1
+#but03 set file_id2   [open $file_html2 w]
+#but03 fconfigure $file_id2 -encoding iso8859-1
 
-puts $file_id2 $stampa2
-close $file_id2
+#but03 puts $file_id2 $stampa2
+#but03 close $file_id2
 
 # lo trasformo in PDF
-iter_crea_pdf [list exec htmldoc --webpage --header ... --footer ... --quiet --bodyfont arial --fontsize 09 --left 1cm --right 1cm --top 1cm --bottom 0.2cm -f $file_pdf2 $file_html2]
+#but03 iter_crea_pdf [list exec htmldoc --webpage --header ... --footer ... --quiet --bodyfont arial --fontsize 09 --left 1cm --right 1cm --top 1cm --bottom 0.2cm -f $file_pdf2 $file_html2]
 
 # 19/04/2013 Nicola
 # Imposto la url per chiamare il programma coimaimp-sch-allega-ed-esponi
@@ -13443,6 +14625,7 @@ if {$sw_stampa_file1 != ""} {
 set url_coimaimp_sch_allega_ed_esponi "coimaimp-sch-allega-ed-esponi?[export_url_vars cod_impianto nome_funz path_file_pdf url_file_pdf nome_file_est]"
 
 #rom04M per la Regione Marche insieme alla stampa del libretto faccio una insert nella coimdocu
+#rom38 Aggiunta condizione per Palermo
 if {$coimtgen(regione) eq "MARCHE"} {#rom04M if e suo contenuto
     ns_unlink $file_html3;#sim01
 

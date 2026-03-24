@@ -8,10 +8,10 @@
        <a href="coimbpos-filter?@link_filter;noquote@" class=func-menu>Ritorna</a>
    </td>
    <td width="25%" nowrap class=func-menu>
-       <a href="coimbpos-scar?@link_scarica;noquote@"  class=func-menu>Scarica</a>
+       <a href="coimbpos-scar?@link_scarica;noquote@"  class=func-menu>Scarica CSV</a>
    </td>
    <td width="25%" nowrap class=func-menu>
-       <a href="coimbpos-layout?@link_stampa;noquote@" class=func-menu>Stampa</a>
+     <a href="coimbpos-layout?@link_stampa;noquote@" class=func-menu>Stampa PDF</a>
    </td>
    <td width="25%" nowrap class=func-menu>
        &nbsp;

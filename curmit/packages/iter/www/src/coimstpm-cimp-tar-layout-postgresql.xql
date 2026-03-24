@@ -55,10 +55,18 @@
                when 'N' then 'Non Attivo'
                else 'Altro'
           end                                               as stat_imp
+        , iter_edit_num(m.importo, 2) as importo_mov --rom01
+        , case m.flag_pagato
+          when 'S' then 'Si'
+          when 'N' then 'No'
+	  when 'R' then 'Rimborsato'
+          else ''  end as flag_pagato_mov            --rom01
+        , iter_edit_data(m.data_pag) as data_pag_mov --rom01
      from coimcimp   a
 left join coimcitt   h  on h.cod_cittadino = a.cod_responsabile
 left join coimtp_pag tp on tp.cod_tipo_pag = a.tipologia_costo
 left join coiminco   i  on i.cod_inco      = a.cod_inco
+left join coimmovi   m  on m.riferimento   = a.cod_cimp and m.data_compet= a.data_controllo--rom01
 	, coimaimp e
         , coimcomu f
         , coimopve c
@@ -76,7 +84,8 @@ left join coiminco   i  on i.cod_inco      = a.cod_inco
       and c.cod_opve        = a.cod_opve
       and g.cod_enve        = c.cod_enve
       and cod_tpes          = tipo_estrazione
- order by comune
+      and a.flag_tracciato <> 'AC' --mic01
+      order by comune
         , nome_ente
         , nome_opve
         , cod_impianto_est
@@ -85,7 +94,7 @@ left join coiminco   i  on i.cod_inco      = a.cod_inco
 
 <fullquery name="sel_stat_ma">
 <querytext>
-select  a.data_controllo as data_controllo
+select  iter_edit_data(a.data_controllo) as data_controllo
       , a.cod_cimp as codice_ma
       , e.cod_impianto_est as cod_impianto_est
       , coalesce(v.descr_topo,'')||' '||coalesce(v.descrizione,'')||
@@ -104,7 +113,14 @@ select  a.data_controllo as data_controllo
       , coalesce (h.cognome,'')||' '||coalesce(h.nome,' ') as nome_resp	
       , coalesce (a.cod_noin, '')    as cod_noin
       , coalesce (n.descr_noin, ' ') as descr_noin	
+      , iter_edit_num(m.importo, 2) as importo_mov --rom01
+      , case m.flag_pagato
+        when 'S' then 'Si'
+        when 'N' then 'No'
+        else ''  end as flag_pagato_mov            --rom01
+      , iter_edit_data(m.data_pag) as data_pag_mov --rom01
    from coimcimp a
+   left outer join coimmovi m on a.cod_cimp = m.riferimento and m.data_compet = a.data_controllo
       , coimaimp e
       , coimviae v
       , coimcomu f
@@ -116,6 +132,7 @@ select  a.data_controllo as data_controllo
     and h.cod_cittadino  = e.cod_responsabile
     and a.cod_noin       = n.cod_noin
     and a.flag_tracciato = 'MA'
+    and a.flag_tracciato <> 'AC' --mic01
        $where_data
        $where_opve
        $where_costo

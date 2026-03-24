@@ -16,6 +16,11 @@ ad_page_contract {
     @                navigazione con navigation bar
 
     @cvs-id          coimscar-docu-gest.tcl
+
+    USER  DATA       MODIFICHE
+    ===== ========== ===========================================================================
+    rom01 28/09/2022 Aggiunta colonna pec del soggetto responsabile su richiesta di Paravan di Ucit.
+
 } {
     {funzione        "I"}
     {caller      "index"}

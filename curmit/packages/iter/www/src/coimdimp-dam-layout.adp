@@ -1,4 +1,7 @@
 <!--
+    gia01 05/11/2021 Rimosso dalla stampa "Allegato 8 (articolo 4, commi 4 e 5, L.R. 19/2015)"
+    gia01            perchè Sandro ha richiesto così
+
     gac01 16/11/2018 Fatte diverse modifiche alla stampa su richiesta della Regione Marche.
   -->
 <br>
@@ -64,6 +67,7 @@
 </if>
 
 <if @pagina_corrente@ eq "1" and @coimtgen.regione@ ne "MARCHE">
+  <!-- gia01
     <table width="100%">
         <tr>
             <td align="right">
@@ -71,6 +75,7 @@
             </td>
         </tr>
     </table>    
+  -->
 </if>
 <br>
 

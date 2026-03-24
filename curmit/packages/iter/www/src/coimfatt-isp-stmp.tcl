@@ -4,6 +4,8 @@ ad_page_contract {
     @creation-date           04/04/2018
     USER   DATA       MODIFICHE
     ====== ========== =======================================================================
+    mat01  17/03/2026 Aggiunta la gestione del db di test.
+
     rom03  15/01/2019 Corretto il modo in cui veniva calcolato num_fatt. Non è il max o il max+1
     rom03             dell'anno in cui ci troviamo(current_date) ma il max o max+1 dell'anno 
     rom03             indicato dall'utente(data_fattura).
@@ -67,9 +69,12 @@ db_foreach sel_movi ""  {
     iter_get_coimtgen
     set dbn_ente_ancona ""
     if {$coimtgen(ente) eq "CANCONA"} {
-	set dbn_ente_ancona "iterpran"
+	set dbn_ente_ancona "iterpran";#mat01
     } elseif {$coimtgen(ente) eq "PAN"} {
-	set dbn_ente_ancona "itercman"
+	set dbn_ente_ancona "itercman";#mat01
+    }
+    if {[string match "*test*" [db_get_database]]} {#mat01 aggiunta if e contenuto
+	set dbn_ente_ancona ""
     }
     
     if {$dbn_ente_ancona ne ""} {

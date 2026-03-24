@@ -15,6 +15,8 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    but01 21/06/2023 Aggiunto la classe ah-jquery-date ai campi:data_inizio, data_fine.
+
     sim01 29/06/2016 Se il manutentore non ha il patentino non puo' inserire impianti con
     sim01            potenza maggiore di 232 KW.
     sim01            Il controllo va fatto sulla potenza gestita dal parametro
@@ -178,6 +180,10 @@ if {![string equal $cod_impianto ""]} {
     set readonly_imp "readonly"
     set disabled_imp "disabled"
 }
+set jq_date "";#but01
+if {$funzione in "M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
 
 form create $form_name \
 -html    $onsubmit_cmd
@@ -228,14 +234,14 @@ element create $form_name data_inizio \
 -label   "Data installazione" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+-html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
 -optional
 
 element create $form_name data_fine \
 -label   "Data installazione" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+-html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
 -optional
 
 element create $form_name causale_fine \

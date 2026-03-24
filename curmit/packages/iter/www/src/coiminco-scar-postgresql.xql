@@ -1,4 +1,16 @@
 <?xml version="1.0"?>
+/*
+    USER  DATA       MODIFICHE
+    ===== ========== =======================================================================
+    but01 15/01/2024 Aguinto la colonna codice fiscale, e ho valorizzato il campo codice impianto
+    but01                 con il codice_impianto_est.
+
+    rom02 12/01/2024 Sandro ha chiesto di aggiungere le colonne stato e motivo annullamento
+    rom02            al file di scarico, va bnee per tutti gli enti.
+
+    rom01 21/07/2022 Su richiesta della Provincia di Salerno aggiunta la colonna flag_blocca_rcee.
+    rom01            Sandro ha detto che va bene per tutti.
+*/
 
 <queryset>
     <rdbms><type>postgresql</type><version>7.1</version></rdbms>
@@ -25,12 +37,22 @@
                coalesce(b.nome, '') as resp
              , c.cap    
              , d.denominazione as comune
-          from coiminco a
+	     , case a.flag_blocca_rcee
+	       when 't' then 'Si'
+	       when 'f' then 'No'
+	       else ''  end as flag_blocca_rcee --rom01 case e contenuto
+	     , i.descr_inst as des_stato        --rom02
+	     , n.descr_noin                     --rom02  
+             , b.cod_fiscale  as cod_fiscale                        --but01
+	     , c.cod_impianto_est as cod_impianto_est                --but01
+              from coiminco a  
 	       inner join coimaimp c on c.cod_impianto  = a.cod_impianto
           left outer join coimcitt b on b.cod_cittadino = c.cod_responsabile
           left outer join coimcomu d on d.cod_comune    = c.cod_comune
           left outer join coimviae e on e.cod_comune    = c.cod_comune
                                     and e.cod_via       = c.cod_via
+          left outer join coiminst i on i.cod_inst      = a.stato    --rom02
+	  left outer join coimnoin n on n.cod_noin      = a.cod_noin --rom02
          where a.cod_cinc        = :cod_cinc
            and a.stato    = '0' 
 	 $where_comb
@@ -71,10 +93,20 @@
                coalesce(b.nome, '') as resp
              , c.cap
              , d.denominazione as comune
+	     , case a.flag_blocca_rcee
+	       when 't' then 'Si'
+	       when 'f' then 'No'
+	       else ''  end as flag_blocca_rcee --rom01 case e contenuto
+             , i.descr_inst as des_stato        --rom02
+	     , n.descr_noin                     --rom02
+	     , b.cod_fiscale  as cod_fiscale                        --but01
+             , c.cod_impianto_est  as cod_impianto_est              --but01
           from coiminco a
 	       inner join coimaimp c on c.cod_impianto    = a.cod_impianto
           left outer join coimcitt b on b.cod_cittadino = c.cod_responsabile
           left outer join coimcomu d on d.cod_comune    = c.cod_comune
+          left outer join coiminst i on i.cod_inst      = a.stato    --rom02
+	  left outer join coimnoin n on n.cod_noin      = a.cod_noin --rom02
          where a.cod_cinc = :cod_cinc
            and a.stato    = '0'    
 	 $where_comb

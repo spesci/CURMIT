@@ -15,6 +15,10 @@ ad_proc iter_cari_rcee_tipo_2 {
     
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    rom02 06/04/2022 La data di scadenza deve essere calcolata in base alla maggiore tra la potenza
+    rom02            frigorifera e la termica, prima veniva settata in base al parametro flag_potenza
+    rom02            della coimtgen e venivano utulizzati dei campi inesistenti sulla coimaimp. 
+
     rom01 19/10/2018 Cambiata la proc richiamata per l'associazione delle targhe da 
     rom01            iter_httpget_wallet a iter_httpget_call_portale perchè dava dei problemi.
 
@@ -1553,15 +1557,18 @@ ad_proc iter_cari_rcee_tipo_2 {
 			
 			######################
 			if {$coimtgen(flag_potenza) eq "pot_utile_nom"} {#sim08 Aggiunta if ed il suo contenuto
-			    set potenza_impianto "potenza_utile_nom"
+			    #rom02set potenza_impianto "potenza_utile_nom"
+			    set potenza_impianto potenza_utile;#rom02
 			} else {
-			    set potenza_impianto "potenza_foc_nom"
+			    #rom02set potenza_impianto "potenza_foc_nom"
+			    set potenza_impianto potenza;#rom02
 			}
 
 			
 			ns_log notice "simone inizio parte rifatta con gacalin"
 			db_1row q "select cod_potenza as cod_potenza_tari
-                                        , :potenza_impianto as potenza_impianto
+                               --rom02  , :potenza_impianto as potenza_impianto
+                                        , greatest(potenza, potenza_utile) as potenza_impianto  --rom02
                                         , cod_responsabile --lo rileggo dall'impianto perche' ho gia' verificato sopra che e' identico a quello inserito nel file  
                                      from coimaimp
                                     where cod_impianto=:cod_impianto_catasto limit 1"

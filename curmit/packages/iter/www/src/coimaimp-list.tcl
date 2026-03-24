@@ -19,6 +19,26 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== =============================================================================
+    ric02 26/11/2024 MEV per regione Marche ordine 63/2022 punti 21 e 32.
+
+    rom11 29/10/2024 Ricevo e uso il filtro ls_cod_aimp se valorizzato.
+
+    rom10 14/06/2024 Valorizzo pack_dir che viene utilizzata sull'adp per fare link allo scarico xml
+
+    rom09 28/03/2024 Aggiunti filtri che arrivano dal cruscotto iniziale.
+
+    rom08 15/11/2023 Aggiunta funzione di cancellazione logica di un impianto per Comune di Salerno.
+
+    ric01 27/06/2023 Sviluppi per regione marche per aggiunta criteri aggiuntivi.
+
+    rom07 13/01/2023 Sviluppo per Palermo Energia: aggiunto filro "Per Soggetto presente nello storico RCEE".
+
+    rom06 05/05/2022 Per un caso segnalato da un ente di Regione Marche il campo f_matricola potrebbe
+    rom06            contenere i caratteri < e > quindi devo trattare il campo come html altrimenti
+    rom06            le proc di controllo di OpenAcs bloccano il programma.
+    
+    rom05 10/10/2021 Aggiunto campo f_pod su richiesta di Regione Marche.
+
     rom04 20/09/2021 Per Regione Marche le potenze da mostrare sono differenti dallo standard e
     rom04            cambia il ragionamento in base alla tipologia di impianto.
 
@@ -81,7 +101,9 @@ ad_page_contract {
     {f_targa              ""}
     {f_resp_cogn          ""} 
     {f_resp_nome          ""} 
-
+    {f_resp_cogn_rcee     ""}
+    {f_resp_nome_rcee     ""}
+    
     {f_comune             ""}
     {f_quartiere          ""}
     {f_cod_via            ""}
@@ -112,8 +134,9 @@ ad_page_contract {
     {f_mod_h              ""}
     {f_dpr_412            ""}
     {f_cod_utenza         ""}
+    {f_pod                ""}
     {f_cod_impianto_old   ""}
-    {f_matricola          ""}
+    {f_matricola:html     ""}
     {conta_flag           ""}
     {f_da_data_verifica   ""}
     {f_a_data_verifica    ""}
@@ -133,6 +156,23 @@ ad_page_contract {
     {f_impianto_modificato   ""}
     {f_soggetto_modificato   ""}
     {f_generatore_sostituito ""}
+
+    {f_ibrido                ""}
+    {f_pagato                ""}
+    {f_tprc                  ""}
+    
+    {f_da_data_scad          ""}
+    {f_a_data_scad           ""}
+    {f_dimp_peric            ""}
+    {f_dimp_da_dt_ins        ""}
+    {f_dimp_a_dt_ins         ""}
+
+    {f_ls_cod_aimp           ""}
+
+    {f_dich_conformita       ""}
+    {f_dfm_manu              ""}
+    {f_dfm_resp_mod          ""}
+    
 }  -properties {
     page_title:onevalue
     context_bar:onevalue
@@ -180,6 +220,7 @@ if {![string is space $nome_funz]} {
     }
 }
 
+set id_ruolo [db_string sel_ruolo "select id_ruolo from coimuten where id_utente = :id_utente"];#rom08
 
 # controllo il parametro di "propagazione" per la navigation bar
 if {[string is space $nome_funz_caller]} {
@@ -227,6 +268,11 @@ set link_filter     [export_ns_set_vars url]
 #[export_url_vars nome_funz]
 set link_scar   [export_ns_set_vars url]
 
+#rom10  Valorizzo pack_dir che viene utilizzata sull'adp per fare link allo scarico xml
+set pack_key  [iter_package_key]
+set pack_dir  [apm_package_url_from_key $pack_key]
+append pack_dir "src"
+
 set url_list_aimp        [list [ad_conn url]?[export_ns_set_vars url]]
 set url_list_aimp        [export_url_vars url_list_aimp]
 
@@ -248,16 +294,20 @@ if {$caller == "index"} {
 			  if {$stato eq "F"} {
 			      set azione_t "<td nowrap></td>"
 			  } else {
-			      set azione_t "<td nowrap><a href=\"$gest_prog?funzione=V&$link&$url_list_aimp\">Selez.</a> | <a href=\"$stor_prog?funzione=V&$link&$url_list_aimp\">Storico</a></td>"
+			      set azione_t "<td nowrap><a href=\"$gest_prog?funzione=V&$link&$url_list_aimp\" class=\"link-button-2\" >Selez.</a> | <a href=\"$stor_prog?funzione=V&$link&$url_list_aimp\" class=\"link-button-2\">Storico</a></td>"
 			  }
 			  return $azione_t ]}
 	} else {
 	    set actions "
-                        <td nowrap><a href=\"$gest_prog?funzione=V&$link&$url_list_aimp\">Selez.</a> | <a href=\"$stor_prog?funzione=V&$link&$url_list_aimp\">Storico</a></td>"
+                        <td nowrap><a href=\"$gest_prog?funzione=V&$link&$url_list_aimp\" class=\"link-button-2\" >Selez.</a> | <a href=\"$stor_prog?funzione=V&$link&$url_list_aimp\" class=\"link-button-2\">Storico</a></td>"
 	}
+    } elseif {[string equal $id_ruolo "admin"] &&
+	      $coimtgen(ente) in [list "CSALERNO"]} {#rom08 Aggiunta elseif e il suo contenuto
+	set actions "<td nowrap><a href=\"$gest_prog?funzione=V&$link&$url_list_aimp\" class=\"link-button-2\" >Selez.</a> &nbsp; <a href=\"$stor_prog?funzione=V&$link&$url_list_aimp\" class=\"link-button-2\">Storico</a> &nbsp; <a href=\"coimaimp-log-del?$link&$url_list_aimp\" class=\"link-button-2\" title=\"Cancella l'impianto\" onClick=\"return(confirm('Confermi la cancellazione?'));\">Cancella</a></td>"
+	
     } else {;#gab02 aggiunta else
 	set actions "
-                    <td nowrap><a href=\"$gest_prog?funzione=V&$link&$url_list_aimp\">Selez.</a> | <a href=\"$stor_prog?funzione=V&$link&$url_list_aimp\">Storico</a></td>"	
+                    <td nowrap><a href=\"$gest_prog?funzione=V&$link&$url_list_aimp\" class=\"link-button-2\" >Selez.</a> &nbsp; <a href=\"$stor_prog?funzione=V&$link&$url_list_aimp\" class=\"link-button-2\">Storico</a></td>"	
     }
     set js_function ""
 } else { 
@@ -585,6 +635,24 @@ if {![string equal $f_mod_h ""]} {
 } else {
     set where_mod_h ""
 }
+
+if {![string equal $f_da_data_scad ""] || ![string equal $f_a_data_scad ""]} {#rom09 if, else e contenuto
+    set where_data_scad "and a.data_scad_dich between :f_da_data_scad and :f_a_data_scad"
+} else {
+    set where_data_scad ""
+}
+
+set where_dimp_peric ""
+if {[string equal $f_dimp_peric "t"]} {#rom09 if e contenuto
+    set where_dimp_peric "and exists (select 1
+                                        from coimdimp dimpp
+                                       where a.cod_impianto = dimpp.cod_impianto
+                                         and dimpp.data_ins between :f_dimp_da_dt_ins and :f_dimp_a_dt_ins
+                                         and ( dimpp.prescrizioni is not null
+                                            or dimpp.flag_status      = 'N')
+                                     )"
+}
+
 
 if {![string equal $f_quartiere ""]} {
     set where_quartiere "and a.cod_qua = :f_quartiere"
@@ -950,6 +1018,81 @@ if {$conta_cout > 0} {
 
 # sf fine
 
+
+if {![string equal $f_ls_cod_aimp ""]} {#rom11 if e contenuto
+    set where_ls_cod_aimp " and a.cod_impianto in ('[join $f_ls_cod_aimp ',']')"
+} else {
+    set where_ls_cod_aimp ""
+}
+
+#ric02 inizio
+set where_dich_conformita ""
+set where_dfm_manu ""
+set where_dfm_resp_mod ""
+if {$coimtgen(regione) eq "MARCHE"} {
+
+    #ric02 imposto la condizione SQL per la dichiarazione di conformita sull'ultimo RCEE
+    if {![string equal $f_dich_conformita ""]} {
+	set  where_dich_conformita "  and a.cod_impianto in (select dimp2.cod_impianto
+                                                               from 
+                                                                    (select max(data_controllo) as max_dt_dimp2
+                                                                          , cod_impianto as cod_impianto_dimp2
+                                                                       from coimdimp max_dimp
+                                                                   group by cod_impianto) as max_dimp2
+                                                         
+                                                         inner join coimdimp dimp2 on dimp2.cod_impianto   = max_dimp2.cod_impianto_dimp2
+                                                                                  and dimp2.data_controllo = max_dimp2.max_dt_dimp2
+                                                              
+                                                              where dimp2.conformita = :f_dich_conformita
+                                                                and dimp2.flag_tracciato in ('R1', 'R2', 'R3', 'R4')) "
+    }  
+
+    #ric02 imposto la condizione SQL per la dfm del manutentore
+    if {![string equal $f_dfm_manu ""]} {
+	if {![string is space $cod_manutentore]} {
+	    if {$f_dfm_manu eq "S"} {
+		set where_dfm_manu " and exists (select 1
+                                                   from coimdope_aimp dope
+                                                  where dope.cod_impianto    = a.cod_impianto
+                                                    and dope.cod_manutentore = :cod_manutentore 
+                                                  limit 1)"	    
+	    } else {
+		set where_dfm_manu " and not exists (select 1
+                                                       from coimdope_aimp dope
+                                                      where dope.cod_impianto    = a.cod_impianto
+                                                        and dope.cod_manutentore = :cod_manutentore
+                                                      limit 1)"
+	    }	
+	}
+    }
+
+    #ric02 imposto la condizione SQL per la dfm inserita se cambiato il responsabile
+    if {![string equal $f_dfm_resp_mod ""]} {
+	if {![string is space $cod_manutentore]} {
+	    if {$f_dfm_resp_mod eq "S"} {
+		set where_dfm_resp_mod " and exists (select 1
+                                                       from coimdope_aimp dope
+                                                      where dope.cod_impianto    = a.cod_impianto
+                                                        and dope.cod_manutentore = :cod_manutentore
+                                                        and dope.cod_responsabile in (select cod_responsabile 
+                                                                                        from coimaimp aimp
+                                                                                       where aimp.cod_impianto = a.cod_impianto)
+                                                      limit 1)"
+	    } else {
+		set where_dfm_resp_mod " and not exists (select 1
+                                                           from coimdope_aimp dope
+                                                          where dope.cod_impianto    = a.cod_impianto
+                                                            and dope.cod_manutentore = :cod_manutentore
+                                                            and dope.cod_responsabile in (select cod_responsabile
+                                                                                            from coimaimp aimp
+                                                                                           where aimp.cod_impianto = a.cod_impianto)
+                                                           limit 1)"
+	    }
+	}
+    }
+} 
+#ric02 fine
+
 # stabilisco l'ordinamento ed uso una inner join al posto di una outer join
 # sulle tabelle dove uso un filtro (Ottimizzazione solo per postgres)
 set citt_join_pos "left outer join"
@@ -984,10 +1127,92 @@ if {![string equal $f_cod_impianto_old ""]} {
 }
 if {![string equal $f_cod_utenza ""]} {
     #san01 set where_cod_utenza " and a.cod_amag = upper(:f_cod_utenza)"
-    set where_cod_utenza " and a.pdr = upper(:f_cod_utenza)";#san01
+    #rom05set where_cod_utenza " and a.pdr = upper(:f_cod_utenza)";#san01
+    set where_cod_utenza " and upper(a.pdr) = upper(:f_cod_utenza)";#rom05
 } else {
     set where_cod_utenza ""
 }
+
+if {![string equal $f_pod ""]} {#rom05 Aggiunte if, else e loro contenuti
+    set where_pod " and upper(a.pod) = upper(:f_pod)"
+} else {
+    set where_pod ""
+}
+
+set where_sogg_rcee "";#rom07
+set where_resp_rcee "";#rom07
+if {$coimtgen(ente) eq "PPA"} {#rom07 Aggiunta if e il suo contenuto
+
+
+    if {[string equal $f_resp_nome_rcee ""]} {
+	set where_nome_rcee ""
+    } else {
+	set f_resp_nome_rcee_1 [iter_search_word $f_resp_nome_rcee]
+	set where_nome_rcee  " and rcee.nome like upper(:f_resp_nome_rcee_1)"
+    }
+
+    if {[string equal $f_resp_cogn_rcee ""]} {
+	set where_cogn_rcee ""
+    } else {
+	set f_resp_cogn_rcee_1 [iter_search_word $f_resp_cogn_rcee]
+	set where_cogn_rcee  " and rcee.cognome like upper(:f_resp_cogn_rcee_1)"
+    }
+
+    if {$where_cogn_rcee ne "" || $where_nome_rcee ne ""} {
+
+	set where_resp_rcee " and exists (select 1 
+                                            from coimdimp dimp
+                                               , coimcitt rcee
+                                           where dimp.cod_responsabile = rcee.cod_cittadino 
+                                             and dimp.cod_impianto = a.cod_impianto 
+                                             $where_nome_rcee 
+                                             $where_cogn_rcee 
+                                           limit 1) "
+
+    }
+
+}
+
+#ric01 inizio
+if {[string equal $f_ibrido ""]} {
+    set where_ibrido ""
+} else {
+    set where_ibrido  " and a.flag_ibrido = :f_ibrido"
+}
+
+
+set where_dimp ""
+set where_pagato ""
+set where_tprc ""
+
+if {![string equal $f_pagato ""] || ![string equal $f_tprc ""]} { 
+
+    
+    if {![string equal $f_pagato ""]} {
+	set where_pagato  " and dimp.flag_pagato = :f_pagato"
+    }
+    
+    if {![string equal $f_tprc ""]} {   
+	set where_tprc  " and dimp.cod_tprc = :f_tprc"
+    }
+
+    set where_dimp "
+      and a.cod_impianto in (
+      select cod_impianto_dimp
+        from (select max(data_controllo) as max_dt_dimp
+                       , cod_impianto as cod_impianto_dimp  
+                    from coimdimp
+                group by cod_impianto) as max_dimp
+      inner join coimdimp dimp
+              on dimp.cod_impianto=max_dimp.cod_impianto_dimp
+             and max_dimp.max_dt_dimp = dimp.data_controllo
+      where 1=1
+         $where_pagato
+         $where_tprc)"
+
+}
+    
+#ric01 fine
 
 # imposto l'ordinamento della query e la condizione per la prossima pagina
 switch $ordine {

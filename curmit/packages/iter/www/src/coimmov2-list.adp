@@ -8,10 +8,10 @@
        <a href="coimmov2-filter?@link_filter;noquote@" class=func-menu>Ritorna</a>
    </td>
    <td width="25%" nowrap class=func-menu>
-       <a href="coimmov2-scar?@link_scar;noquote@" class=func-menu>Scarica</a>
+       <a href="coimmov2-scar?@link_scar;noquote@" class=func-menu>Scarica CSV</a>
    </td>
    <td width="25%" nowrap class=func-menu>
-       <a target="Stampa movimenti" href="coimmov2-layout?@link_stp;noquote@" class=func-menu>Stampa</a>
+       <a target="Stampa movimenti" href="coimmov2-layout?@link_stp;noquote@" class=func-menu>Stampa PDF</a>
    </td>
    <td width="25%" nowrap class=func-menu>
     &nbsp;

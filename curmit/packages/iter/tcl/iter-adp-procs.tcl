@@ -6,6 +6,17 @@ ad_library {
 
     USER  DATA       MODIFICHE
     ===== ========== ==========================================================================
+    rom07 24/11/2023 Modificata la proc iter_links_form per fare in modo che anche gli ispettori
+    rom07            possano vedere il link Pagamenti. Fatto su richiesta di Armena Sviluppo per
+    rom07            Citta' Metropolittana di Napoli.
+
+    mic01 20/01/2023 Modificate label da "Rapp. Ispezione" a "Rapp. Ispezione/Accertamento".
+
+    rom06 24/01/2022 Modificata la proc iter_links_form per fare in modo che anche gli ispettori
+    rom06            possano vedere il link Documenti. Fatto su richiesta della Provincia di Salerno
+    rom06            ma Sandro ha detto che va bene per tutti gli altri enti.
+    rom06bis         Il link e' stato aggiunto per gli utenti opve e enve.
+
     rom05 12/01/2021 Le particolarita' della Provincia di Salerno da ora sono per tutta la 
     rom05            Regione Campania.
 
@@ -615,7 +626,7 @@ ad_proc iter_links_form {
 
     if {$prog == "coimaimp-gest"} {
 	set coimaimpgest "<td width=\"12.5%\" nowrap class=func-sel-yellow>
-              <a href=\"$pack_dir/coimaimp-gest?[export_url_vars cod_impianto url_list_aimp nome_funz_caller url_aimp]&nome_funz=impianti\" class=func-menu-link-yellow>Scheda 1 <br> Dati Tecnici</a>
+              <a href=\"$pack_dir/coimaimp-gest?[export_url_vars cod_impianto url_list_aimp nome_funz_caller url_aimp]&nome_funz=impianti\" class=func-sel-yellow>Scheda 1 <br> Dati Tecnici</a>
             </td>"
     } else {
 	set coimaimpgest "<td width=\"12.5%\" nowrap class=func-menu-yellow>
@@ -627,7 +638,7 @@ ad_proc iter_links_form {
     if {$prog == "coimaimp-altre-schede-list"} {
 
 	set coimaimp_altreschede "<td width=\"12.5%\" nowrap class=func-sel-yellow colspan=1>
-              <a href=\"$pack_dir/coimaimp-altre-schede-list?[export_url_vars cod_impianto url_list_aimp url_aimp]&nome_funz=impianti&nome_funz_caller=impianti\" class=func-menu-link-yellow>Altre schede libretto</a>
+              <a href=\"$pack_dir/coimaimp-altre-schede-list?[export_url_vars cod_impianto url_list_aimp url_aimp]&nome_funz=impianti&nome_funz_caller=impianti\" class=func-sel-yellow>Altre schede libretto</a>
               </td>"
     } else {
 	set coimaimp_altreschede "<td width=\"12.5%\" nowrap class=func-menu-yellow colspan=1>
@@ -638,7 +649,7 @@ ad_proc iter_links_form {
     if {$uten == "manu"} {
 	if {$prog == "coimgage-isrt"} {
 	    set coimgage "<td width=\"12.5%\" nowrap class=func-sel-yellow>
-                      <a href=\"$pack_dir/coimgage-isrt?$link_gage\" class=func-menu-link-yellow>Gestione Agenda</a></td>"
+                      <a href=\"$pack_dir/coimgage-isrt?$link_gage\" class=func-sel-yellow>Gestione Agenda</a></td>"
 	} else {
 	    set coimgage "<td width=\"12.5%\" nowrap class=func-menu-yellow>
                   <a href=\"$pack_dir/coimgage-isrt?$link_gage\" class=func-menu-link-yellow>Gestione Agenda</a></td>"
@@ -653,7 +664,7 @@ ad_proc iter_links_form {
     ||  $prog == "coimrift-list"
     } {
         set coimaimptecn "<td width=\"12.5%\" nowrap class=func-sel-yellow>
-         <a href=\"$pack_dir/coimaimp-tecn?&$link_tecn\" class=func-menu-link-yellow>Ditte/Tecnici</a>
+         <a href=\"$pack_dir/coimaimp-tecn?&$link_tecn\" class=func-sel-yellow>Ditte/Tecnici</a>
       </td>"
     } else {
         set coimaimptecn "<td width=\"12.5%\" nowrap class=func-menu-yellow>
@@ -664,7 +675,7 @@ ad_proc iter_links_form {
     ||  $prog == "coimrifs-list"
     } {
 	set coimaimpsogg "<td width=\"12.5%\" nowrap class=func-sel-yellow>
-         <a href=\"$pack_dir/coimaimp-sogg?&$link_sogg\" class=func-menu-link-yellow>Scheda 1.6 <br> Soggetti resp.</a>         </td>"
+         <a href=\"$pack_dir/coimaimp-sogg?&$link_sogg\" class=func-sel-yellow>Scheda 1.6 <br> Soggetti resp.</a>         </td>"
     } else {
 	set coimaimpsogg "<td width=\"12.5%\" nowrap class=func-menu-yellow>
          <a href=\"$pack_dir/coimaimp-sogg?&$link_sogg\" class=func-menu-link-yellow>Scheda 1.6 <br> Soggetti resp.</a>         </td>"
@@ -831,11 +842,11 @@ ad_proc iter_links_form {
 	&&  $extra_par == "RV")
     } {
 	set coimcimp "<td width=\"12.5%\" nowrap class=func-sel-yellow>
-         <a href=\"$pack_dir/coimcimp-list?&$link_cimp\" class=func-sel-yellow>Scheda 13 <br> Rapp. Ispezione</a>
+         <a href=\"$pack_dir/coimcimp-list?&$link_cimp\" class=func-sel-yellow>Scheda 13 <br> Rapp. Ispezione/Accertamento</a>
       </td>"
     } else {
 	set coimcimp "<td width=\"12.5%\" nowrap class=func-menu-yellow>
-         <a href=\"$pack_dir/coimcimp-list?&$link_cimp\" class=func-menu-link-yellow>Scheda 13 <br> Rapp. Ispezione</a>
+         <a href=\"$pack_dir/coimcimp-list?&$link_cimp\" class=func-menu-link-yellow>Scheda 13 <br> Rapp. Ispezione/Accertamento</a>
       </td>"
     }
 
@@ -1000,6 +1011,8 @@ ad_proc iter_links_form {
                      $coimdimp
                      $coimtodo
                      $coimaimptecn
+                     $coimdocu <!--rom06bis -->
+		     <if @coimtgen.ente@ eq \"PNA\">$coimmovi</if> <!-- rom07 -->
 <!--sim                    <td colspan=7 nowrap class=func-menu>&nbsp;</td> -->
                  </tr>
                  </table>
@@ -1015,6 +1028,8 @@ ad_proc iter_links_form {
                      $coimdimp
                      $coimtodo
                      $coimaimptecn
+                     $coimdocu <!--rom06 -->
+		     <if @coimtgen.ente@ eq \"PNA\">$coimmovi</if> <!-- rom07 -->
 <!--sim                    <td colspan=7 nowrap class=func-menu>&nbsp;</td> -->
                  </tr>
                  </table>
@@ -1122,6 +1137,8 @@ ad_proc iter_links_form {
                  <tr>
                      $coimtodo
                      $coimaimptecn
+                     $coimdocu <!--rom06bis -->
+		     <if @coimtgen.ente@ eq \"PNA\">$coimmovi</if> <!-- rom07 -->
                      $coimsche
 <!--sim                    <td colspan=7 nowrap class=func-menu>&nbsp;</td> -->
                  </tr>
@@ -1143,6 +1160,8 @@ ad_proc iter_links_form {
                  <tr>
                      $coimtodo
                      $coimaimptecn
+                     $coimdocu <!--rom06 -->
+		     <if @coimtgen.ente@ eq \"PNA\">$coimmovi</if> <!-- rom07 -->
                      $coimsche
 <!--sim                    <td colspan=7 nowrap class=func-menu>&nbsp;</td> -->
                  </tr>
@@ -2173,9 +2192,9 @@ ad_proc iter_link_inco {
 	#    set links_cimp "$pack_dir/coimcimp-ins-list?[export_url_vars cod_inco cod_impianto stato esito nome_funz_caller url_list_aimp url_aimp extra_par_inco]&nome_funz=[iter_get_nomefunz coimcimp-ins-list]&flag_inco=S"
 	#}
 	set link_cimp "
-        <a href=\"$links_cimp\" class=$func_cimp>Rapp. Ispezione</a>"
+        <a href=\"$links_cimp\" class=$func_cimp>Rapp. Ispezione/Accertamento</a>"
     } else {
-        set link_cimp "Rapp. Ispezione"
+        set link_cimp "Rapp. Ispezione/Accertamento"
     }
 
     # Stampa esito: abilitato con le funzioni di effettuazione,    

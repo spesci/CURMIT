@@ -8,6 +8,11 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    mic01 20/05/2022 Aggiunta if e redirect per il tracciato AC
+    
+    rom02 18/02/2022 Gestito il nuovo rapporto di ispezione FR per gli impianti del freddo
+    rom02            richiesto da Regione Marche.
+
     rom01 04/02/2021 Corretto errore presente quando si settava la directory presonalizzata
     rom01            per la stampa dei Comuni con lo spazio nel nome Es: CIVITANOVA MARCHE.
 
@@ -66,13 +71,21 @@ if {[db_0or1row sel_flag_tracciato_cimp ""] == 0} {
     iter_return_complaint "Rapporto di ispezione non trovato"
     return
 }
-#sim01 Aggiunto RI
 
+if {$flag_tracciato == "AC"} {#mic01 aggiunta if e suo contenuto
+    set directory "src"
+}
+
+#sim01 Aggiunto RI
+#rom01 aggiunto redirect per il tracciato FR
+#mic01 aggiunto redirect per il tracciato AC
 switch $flag_tracciato {
     "AA" {set return_url $pack_dir/$directory/coimcimp-a-layout?$link}
     "AB" {set return_url $pack_dir/$directory/coimcimp-b-layout?$link}
     "RI" {set return_url $pack_dir/$directory/coimcimp-ri-layout?$link}
     "RE" {set return_url $pack_dir/$directory/coimcimp-re-layout?$link}
+    "FR" {set return_url $pack_dir/$directory/coimcimp-fr-layout?$link}
+    "AC" {set return_url $pack_dir/$directory/coimcimp-ac-layout?$link}
  default {set return_url $pack_dir/$directory/coimcimp-a-layout?$link}
 }
 

@@ -14,6 +14,7 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    but01 20/06/2023 Aggiunto la classe ah-jquery-date ai campi f_data_da, f_data_a, f_data_controllo_iniz, f_data_controllo_fine.
     rom01 21/10/2020 Su segnalazione di Salerno modificato page_title per renderlo
     rom01            uguale al nome del menu', Sandro ha detto che va bene per tutti.
 
@@ -80,19 +81,19 @@ set onsubmit_cmd ""
 
 form create $form_name \
     -html    $onsubmit_cmd
-
+#but01 Aggiunto la classe ah-jquery-date ai campi f_data_da, f_data_a, f_data_controllo_iniz, f_data_controllo_fine. 
 element create $form_name f_data_da \
     -label   "Da data" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 class form_element" \
+    -html    "size 10 maxlength 10 class form_element class ah-jquery-date" \
     -optional
 
 element create $form_name f_data_a \
     -label   "A data" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 class form_element" \
+    -html    "size 10 maxlength 10 class form_element class ah-jquery-date" \
     -optional
 
 #sim01 per distinguere tra potenze del freddo e del caldo aggiungo flag_tipo_impianto||'-'|| e l'ordinamento per descr_potenza. Prima era [iter_selbox_from_table coimpote cod_potenza descr_potenza]
@@ -120,7 +121,7 @@ if {[string equal $cod_manutentore ""]} {
 } else {
     set readonly_fld2 "readonly"
     set cerca_manu    ""
-} 
+}
 
 element create $form_name cognome_manu \
     -label   "Cognome manutentore" \
@@ -135,19 +136,19 @@ element create $form_name nome_manu \
     -datatype text \
     -html    "size 20 maxlength 40 $readonly_fld2 {} class form_element" \
     -optional
-
+ 
 element create $form_name f_data_controllo_iniz \
     -label   "Da data controllo" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10  class form_element" \
+    -html    "size 10 maxlength 10  class form_element class ah-jquery-date" \
     -optional
 
 element create $form_name f_data_controllo_fine \
     -label   "A data controllo" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10  class form_element" \
+    -html    "size 10 maxlength 10  class form_element class ah-jquery-date" \
     -optional
 
 if {[string equal $coimtgen(ente) "PGO"]

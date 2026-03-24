@@ -23,7 +23,7 @@
            </if>
        </else>
        <td width="25%" nowrap class=func-menu>
-          <a href="coimaimp-list-csv?@link_scar;noquote@"  class=func-menu>Scarica</a>
+          <a href="coimaimp-list-csv?@link_scar;noquote@"  class=func-menu>Scarica CSV</a>
        </td>
      </tr>
      </table>

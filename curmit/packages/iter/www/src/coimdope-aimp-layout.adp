@@ -1,6 +1,11 @@
 <!--
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================================================
+    mat01 17/03/2026 Aggiunta la gestione delle deleghe e il tecnico.
+    
+    gia01 05/11/2021 Rimosso dalla stampa la dicitura "allegato ... (articolo 4, comma 1, L.R. 19/2015)." Perchè Sandro ha
+    gia01            richiesto non apparisse.
+
     rom03 06/07/2020 Corretto il nome di alcune variabili che facevano andare in errore la stampa se non si era su
     rom03            Regione Marche.
 
@@ -78,6 +83,7 @@
 
 <!--rom01 aggiunta condizione su rgione "MARCHE"-->
 <if @pagina_corrente@ eq "1" and @coimtgen.regione@ ne "MARCHE">
+<!--gia01
     <table width="100%">
         <tr>
             <td align="right">
@@ -85,6 +91,7 @@
             </td>
         </tr>
     </table>    
+ -->
 </if>
 <br>
 <!--rom01 spostata ad inizio pagina
@@ -155,6 +162,10 @@
             <b>E-mail</b> @email@
         </if>
     </p>
+    <if @nome_op@ ne "" or @cognome_op@ ne ""><p><b>Tecnico</b> @nome_op@ @cognome_op@</p></if><!--mat01 aggiunto if e contenuto-->
+    <if @nome_manu_dele@ ne "" or @cognome_manu_dele@ ne ""><p><b>Ditta delegante</b> @nome_manu_dele@ @cognome_manu_dele@</p></if><!--mat01 aggiunto if e contenuto-->
+    <if @cognome_op_dele@ ne "" or @nome_op_dele@ ne ""><p><b>Tecnico che ha effettuato il controllo su delega</b> @nome_op_dele@ @cognome_op_dele@</p></if><!--mat01 aggiunto if e contenuto-->
+
     <p><b>Iscritta alla CCIAA di</b> @localita_reg@ <b>al numero</b> @reg_imprese@</p>
     <p>
         <b>Abilitata ad operare per gli impianti di cui alle lettere:</b><br>

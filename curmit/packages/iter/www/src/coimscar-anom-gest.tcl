@@ -88,6 +88,7 @@ lappend head_cols "MANUTENTORE"
 lappend head_cols "RESPONSABILE"
 lappend head_cols "IND.RESPONSABILE"
 lappend head_cols "UBIC.IMPIANTO"
+lappend head_cols "UBIC.COMUNE"
 lappend head_cols "COD.ANOM."
 lappend head_cols "DESC.ANOM."
 lappend head_cols "CL.ANOM."
@@ -106,7 +107,8 @@ lappend file_cols "data_dich"
 lappend file_cols "manutentore"
 lappend file_cols "responsabile"
 lappend file_cols "ind_resp"
-lappend file_cols "ubic"          
+lappend file_cols "ubic"      
+lappend file_cols "denominazione"      
 lappend file_cols "cod_anom" 
 lappend file_cols "descr_tano"     
 lappend file_cols "desc_anom"
@@ -121,6 +123,7 @@ db_foreach query "select a.cod_impianto_est as impianto
                         ,d.cognome || ' ' || coalesce(d.nome,'') as responsabile
                         ,coalesce(d.indirizzo,'') || ' ' || coalesce(d.cap, '') || ' '|| coalesce(d.comune,'') as ind_resp
                         ,coalesce(g.descr_topo, '') || ' '||coalesce(g.descrizione, '')||', '||coalesce(a.numero,'') as ubic
+                        ,l.denominazione
                         ,e.cod_tanom as cod_anom
                         ,f.descr_tano 
                        ,i.clas_funz||0 as desc_anom
@@ -136,6 +139,7 @@ db_foreach query "select a.cod_impianto_est as impianto
                        ,coimviae g
                        ,coimgend h
                        ,coim_d_clas i
+                       ,coimcomu l
                   where b.cod_impianto = a.cod_impianto
                     and c.cod_manutentore = b.cod_manutentore
                     and d.cod_cittadino = a.cod_responsabile
@@ -144,6 +148,7 @@ db_foreach query "select a.cod_impianto_est as impianto
                     and a.cod_via = g.cod_via
                     and h.cod_impianto = a.cod_impianto
                     and h.gen_prog = b.gen_prog 
+                    and l.cod_comune = g.cod_comune
                     and i.clas_funz = f.clas_funz
                     and data_controllo between :f_data_inizio and :f_data_fine
                    $where_manutentore

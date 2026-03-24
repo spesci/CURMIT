@@ -9,6 +9,12 @@ ad_page_contract {
 
     USER   DATA       MODIFICHE
     ====== ========== =======================================================================
+    rom02  13/02/2023 Aggiunti nuovi campi data e numero accertamento su richiesta di Palermo.
+    rom02             Estraggo anche il tipo soggetto della sanzione.
+    rom02             Sandro ha detto che vanno bene per tutti.
+
+    rom01  09/02/2023 Aggiunti nuovo campi nell'estrazione csv su richiesta di Sandro per Palermo.
+
     sim01  18/03/2020 Gestito i parametri f_data_compet_da e f_data_compet_a
 
     san01  30/08/2017 Gestito il nuovo campo data_incasso
@@ -130,7 +136,9 @@ set filout [open [iter_set_spool_dir]/estrazione-movimenti.csv w]
 
 #san01 puts $filout "Cod. Movimento;Causale Pagamento;Codice Impianto;Import;Importo Pagato;Data;Data Scadenza;Data Pagamento;Tipo Pagamento;Note;Pagato;Cognome;Nome;Indirizzo;Cap;Comune"
 
-puts $filout "Cod. Movimento;Causale Pagamento;Codice Impianto;Import;Importo Pagato;Data;Data Scadenza;Data Pagamento;Data Incasso;Tipo Pagamento;Note;Pagato;Cognome;Nome;Indirizzo;Cap;Comune";#san01
+#rom01puts $filout "Cod. Movimento;Causale Pagamento;Codice Impianto;Import;Importo Pagato;Data;Data Scadenza;Data Pagamento;Data Incasso;Tipo Pagamento;Note;Pagato;Cognome;Nome;Indirizzo;Cap;Comune";#san01
+#rom02puts $filout "Cod. Movimento;Causale Pagamento;Codice Impianto;Import;Importo Pagato;Data;Data Scadenza;Data Pagamento;Data Incasso;Tipo Pagamento;Note;Pagato;Sanzione;Importo minimo;Importo massimo;Cognome responsabile;Nome responsabile;Indirizzo responsabile;Cap responsabile;Comune responsabile;Cod.fisc. responsabile;Cognome manutentore;Nome manutentore;Indirizzo manutentore;Cap manutentore;Comune manutentore;P.IVA manutentore;Data ispezione;Num. verbale";#rom01
+puts $filout "Cod. Movimento;Causale Pagamento;Codice Impianto;Import;Importo Pagato;Data;Data Scadenza;Data Pagamento;Data Incasso;Tipo Pagamento;Note;Pagato;Sanzione;Soggetto;Importo minimo;Importo massimo;Cognome responsabile;Nome responsabile;Indirizzo responsabile;Cap responsabile;Comune responsabile;Cod.fisc. responsabile;Cognome manutentore;Nome manutentore;Indirizzo manutentore;Cap manutentore;Comune manutentore;P.IVA manutentore;Data ispezione;Num. verbale;Data accertamento;Numero accertamento";#rom02
 
 set lista_cod ""
 db_foreach sel_movi "" {
@@ -140,7 +148,9 @@ db_foreach sel_movi "" {
 
     #san01 puts $filout "$cod_movi;$desc_movi;$cod_impianto_est;$importo_edit;$importo_pag_edit;$data_compet;$data_scad;$data_pag;$desc_pag;$nota;$flag_pagato;$cognome;$nome;$indirizzo;$cap;$comune"
 
-    puts $filout "$cod_movi;$desc_movi;$cod_impianto_est;$importo_edit;$importo_pag_edit;$data_compet;$data_scad;$data_pag;$data_incasso;$desc_pag;$nota;$flag_pagato;$cognome;$nome;$indirizzo;$cap;$comune";#san01
+    #rom01puts $filout "$cod_movi;$desc_movi;$cod_impianto_est;$importo_edit;$importo_pag_edit;$data_compet;$data_scad;$data_pag;$data_incasso;$desc_pag;$nota;$flag_pagato;$cognome;$nome;$indirizzo;$cap;$comune";#san01
+    #rom02puts $filout "$cod_movi;$desc_movi;$cod_impianto_est;$importo_edit;$importo_pag_edit;$data_compet;$data_scad;$data_pag;$data_incasso;$desc_pag;$nota;$flag_pagato;$sanzione;$importo_min;$importo_max;$cognome;$nome;$indirizzo;$cap;$comune;$codice_fiscale;$cognome_manu;$nome_manu;$indirizzo_manu;$cap_manu;$comune_manu;$codice_piva_manu;$last_data_controllo_ispe;$last_verb_n_ispe";#rom01
+    puts $filout "$cod_movi;$desc_movi;$cod_impianto_est;$importo_edit;$importo_pag_edit;$data_compet;$data_scad;$data_pag;$data_incasso;$desc_pag;$nota;$flag_pagato;$sanzione;$tipo_soggetto_edit;$importo_min;$importo_max;$cognome;$nome;$indirizzo;$cap;$comune;$codice_fiscale;$cognome_manu;$nome_manu;$indirizzo_manu;$cap_manu;$comune_manu;$codice_piva_manu;$last_data_controllo_ispe;$last_verb_n_ispe;$data_accertamento;$numero_accertamento";#rom02
     
 }
 

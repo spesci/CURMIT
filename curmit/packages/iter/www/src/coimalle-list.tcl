@@ -1,6 +1,11 @@
 ad_page_contract {
     @autore oasi
     @data gennaio 2012
+
+    USER  DATA       MODIFICHE
+    ===== ========== =======================================================================
+    but01 14/07/2023 Aggiunta class"link-button-2" nel actions"vedi"
+
 } { 
     {search_word ""}
 }
@@ -16,7 +21,7 @@ set id_utente [lindex [iter_check_login $lvl "coimalle"] 1]
 set context_bar [iter_context_bar -nome_funz "coimalle"]
 set js_function ""
 set link "\[export_url_vars alle_id\]"
-set actions "<td nowrap><a href=\"coimalle-view?funzione=V&$link\" target=stampa>Vedi</a></td>"
+set actions "<td nowrap><a href=\"coimalle-view?funzione=V&$link\" class=\" link-button-2\" target=stampa>Vedi</a></td>"
 
 # imposto la struttura della tabella
 set table_def [list [list actions "Azione" no_sort $actions] \

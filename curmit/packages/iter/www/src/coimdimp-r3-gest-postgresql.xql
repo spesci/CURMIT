@@ -3,6 +3,10 @@
 <!--
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    mat01 28/11/2025 Aggiunto sel_aimp_old_marche
+
+    ric01 03/10/2025 Aggiunto lettura data_controllo per gestione storico ditta (Punto 4 MEV).
+
     rom01 01/03/2019 Aggiunto campo cont_rend
 
     gac02 16/01/2019 Aggiunti alcuni campi da far vedere in sola visualizzazione per regione
@@ -566,6 +570,7 @@
                   , a.cod_tprc    --sim43
 		  , a.flag_pagato as flag_pagato_dimp --gac01
 		  , a.cont_rend --rom01
+		  , a.data_controllo as data_controllo_st --ric01
                from coimdimp$stn a
                left outer join coimmanu b on b.cod_manutentore  = a.cod_manutentore
                left outer join coimcitt c on c.cod_cittadino    = a.cod_responsabile
@@ -766,6 +771,46 @@
                from coimcitt
               where cognome   $eq_cognome
                 and nome      $eq_nome
+       </querytext>
+    </fullquery>
+    
+    <fullquery name="sel_aimp_old_marche"> 
+       <querytext>
+       select b.cod_manutentore    as cod_manutentore_old --rom05
+    --rom05 , a.cod_manutentore    as cod_manutentore_old
+            , a.cod_responsabile   as cod_responsabile_old
+            , a.cod_occupante      as cod_occupante_old
+            , a.cod_proprietario   as cod_proprietario_old
+            , a.cod_intestatario   as cod_int_contr_old
+            , a.cod_intestatario   as cod_intestatario_old
+            , a.cod_amministratore as cod_amministratore_old
+	    , a.flag_resp          as flag_resp_old
+	    , a.cod_potenza        as cod_potenza_old
+            , a.$nome_col_aimp_potenza  as potenza_old
+            , a.flag_dichiarato
+            , a.data_installaz
+            , a.note               as note_aimp
+            , b.cognome            as cognome_manu_old
+            , b.nome               as nome_manu_old
+            , c.cognome            as cognome_resp_old
+            , c.nome               as nome_resp_old
+            , d.cognome            as cognome_occu_old
+            , d.nome               as nome_occu_old
+            , e.cognome            as cognome_prop_old
+            , e.nome               as nome_prop_old
+            , f.cognome            as cognome_contr_old
+            , f.nome               as nome_contr_old
+            , c.cod_fiscale        as cod_fiscale_resp_old
+            , a.data_prima_dich    as dt_prima_dich
+            from coimaimp a
+	    left join coimmanu b on b.cod_manutentore = case when :cod_manu is null then a.cod_manutentore
+	                                                     else :cod_manu end
+	 left outer join coimcitt c on c.cod_cittadino   = a.cod_responsabile
+	 left outer join coimcitt d on d.cod_cittadino   = a.cod_occupante
+	 left outer join coimcitt e on e.cod_cittadino   = a.cod_proprietario
+	 left outer join coimcitt f on f.cod_cittadino   = a.cod_intestatario
+         where a.cod_impianto = :cod_impianto
+	 limit 1
        </querytext>
     </fullquery>
 

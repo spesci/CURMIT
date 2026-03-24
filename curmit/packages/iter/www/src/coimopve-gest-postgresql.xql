@@ -1,5 +1,15 @@
 <?xml version="1.0"?>
+<!--
+    USER  DATA       MODIFICHE
+    ===== ========== ============================================================================================
+    but01 29/03/2024  Modificato la query "sel_opve_check" nel qui poter inserire lo stesso operatore su un ente
+    but01            verificatore diverso e non nell ostessa ente.  
 
+    rom02 15/09/2021 Modifiche per targatura Ispettori: Aggiunto il campo cod_portale, va valorizzato con lo stesso
+    rom02            valore dell'omonimo campo del portale (iter_inspectors) dopo che viene registrato l'ispettore.
+
+    rom01 13/09/2018 Aggiunto campo email
+-->
 
 <queryset>
     <rdbms><type>postgresql</type><version>7.1</version></rdbms>
@@ -79,6 +89,7 @@
 		     , data_ins
 		     , utente
                      , codice_fiscale
+                     , cod_portale --rom02
                      , note
 		     , email --rom01
                      , cod_listino)
@@ -95,6 +106,7 @@
 		     ,current_date
 		     ,:id_utente
                      ,:codice_fiscale
+                     ,:cod_portale --rom02
                      ,:note
 		     ,:email --rom01
                      ,:cod_listino)
@@ -114,6 +126,7 @@
 		     , data_mod  = current_date
 		     , utente    = :id_utente
                      , codice_fiscale = :codice_fiscale
+                     , cod_portale    = :cod_portale --rom02
                      , note      = :note
 		     , email     = :email --rom01 
                      , cod_listino = :cod_listino
@@ -141,6 +154,7 @@
 		  , cellulare
 		  , recapito
                   , codice_fiscale
+                  , cod_portale --rom02
                   , note
 		  , email --rom01
                   , cod_listino
@@ -156,6 +170,7 @@
          where upper(cognome)   = upper(:cognome)
            and upper(nome)      = upper(:nome)
            and upper(matricola) = upper(:matricola)
+	   and cod_enve         = :cod_enve   --but01
        </querytext>
     </fullquery>
 

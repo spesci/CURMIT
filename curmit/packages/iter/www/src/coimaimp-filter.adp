@@ -1,6 +1,14 @@
 <!--
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    ric02 25/11/2024 MEV Regione Marche ordine 00061/2022 riga 3.
+
+    ric01 09/06/2023 Aggiunti nuovi criteri aggiuntivi per estrazione impianti solo per regione Marche.
+
+    rom05 13/01/2023 Aggiunto nuovo campo di ricerca Per Soggetto presente nello storico RCEE solo per Palermo.
+
+    rom04 10/01/2022 Aggiunto nuovo campo di ricerca POD su segnealazione di Regione Marche.
+
     rom03 08/03/2019 La Regione Marche ha richiesto la modifica dei filtri di ricerca di un Impianto.
 
     rom02 19/07/2018 Su richiesta di Sandro aggiunto botton per sbiancare i filtri inseriti.
@@ -37,7 +45,7 @@
 		      <table border=0>
 			<tr>
 			  <td>&nbsp;</td>
-			  <td valign=top align=left class=form_title colspan=1 >
+			  <td valign=top align=left class=form_title colspan=1 nowrap>
 			    <b>CRITERI PRINCIPALI</b>
 			  </td>
 			  <td>&nbsp;</td>
@@ -101,6 +109,15 @@
 			      </formerror>
 			  </td>
 			</tr>
+			<tr><!-- rom04 -->
+			<td>&nbsp;</td>
+			<td valign=top align=right class=form_title>POD</td>
+                        <td valign=top><formwidget id="f_pod">
+			  <formerror  id="f_pod"><br>
+			    <span class="errori">@formerror.f_pod;noquote@</span>
+			  </formerror>
+			</td>
+			</tr>
 			<tr><!-- sim01 -->
 			<!-- sim02 aggiunto if, else e contenuto dell'else -->
 			<if @flag_gest_targa@ eq "F">                          
@@ -159,6 +176,30 @@
 			      </formerror>
 			  </td>
 			</tr>
+			<if @coimtgen.ente@ eq "PPA" and @cod_manutentore@ eq ""><!-- rom05 Aggiunta if e contenuto  -->
+                          <tr>
+                            <td valign=top align=left class=form_title colspan=5><b>Ricerca per soggetto presente nello storico RCEE</b></td>
+			  </tr>
+			  <tr>
+			    <td>&nbsp;</td>
+                            <td valign=top align=right class=form_title>Cognome</td>
+                            <td valign=top><formwidget id="f_resp_cogn_rcee">
+                              <formerror  id="f_resp_cogn_rcee"><br>
+                                <span class="errori">@formerror.f_resp_cogn_rcee;noquote@</span>
+                              </formerror>
+                            </td>   
+                          </tr>
+			  <tr>
+			    <td>&nbsp;</td>
+                            <td valign=top align=right class=form_title>Nome</td>
+                            <td valign=top><formwidget id="f_resp_nome_rcee">
+                              <formerror  id="f_resp_nome_rcee"><br>
+                                <span class="errori">@formerror.f_resp_nome_rcee;noquote@</span>
+                              </formerror>
+                            </td>   
+                          </tr>
+
+			</if>
 			<tr><td>&nbsp;</td></tr>
 			<tr>
 			  <td valign=top nowrap align=right class=form_title>
@@ -305,6 +346,35 @@
 			      </formerror>
 			  </td>
 			</tr>
+
+		<if @coimtgen.regione@ eq "MARCHE"> <!-- ric02 aggiunta if e suo contenuto -->
+			<if @sw_manu@> <!-- ric02 aggiunta if e suo contenuto -->
+			    <tr>
+			    <td>&nbsp;</td>
+			    <td>&nbsp;</td>
+			    <td>&nbsp;</td>			    
+			   	<td valign=top align=right class=form_title>DFM presente</td>
+                             	<td valign=top><formwidget id="f_dfm_manu">
+                                    <formerror  id="f_dfm_manu"><br>
+                                     <span class="errori">@formerror.f_dfm_manu;noquote@</span>
+                                    </formerror>
+                             	</td>
+			    </tr>
+
+			    <tr>
+			    <td>&nbsp;</td>
+			    <td>&nbsp;</td>
+			    <td>&nbsp;</td>
+			       	<td valign=top align=right class=form_title>DFM presente per cambio Responsabile</td>
+                             	<td valign=top><formwidget id="f_dfm_resp_mod">
+                                    <formerror  id="f_dfm_resp_mod"><br>
+                                     <span class="errori">@formerror.f_dfm_resp_mod;noquote@</span>
+                                    </formerror>
+                             	</td>
+
+			    </tr>
+		      </if>
+		</if>
 			<tr><td>&nbsp;</td></tr>
 			<tr>
 			  <td valign=top align=lfet class=form_title colspan=5>
@@ -347,6 +417,15 @@
 				<span class="errori">@formerror.f_impianto_inserito;noquote@</span>
 			      </formerror>
 			  </td>
+			  
+	<if @coimtgen.regione@ eq "MARCHE"> <!-- ric01 aggiunta if e suo contenuto -->
+			  <td valign=top align=right class=form_title>Impianti collegati</td>
+			  <td valign=top><formwidget id="f_ibrido">
+			      <formerror  id="f_ibrido"><br>
+			      	<span class="errori">@formerror.f_ibrido;noquote@</span>
+			      </formerror>
+			  </td>				
+	</if>	
 			</tr>
 			<tr>
 			  <td>&nbsp;</td>
@@ -356,7 +435,16 @@
 				<span class="errori">@formerror.f_impianto_modificato;noquote@</span>
 			      </formerror>
 			  </td>
-			</tr>
+			  
+	<if @coimtgen.regione@ eq "MARCHE"> <!-- ric01 aggiunta if e suo contenuto -->
+		           <td valign=top align=right class=form_title>Segno identificativo pagato</td>
+			   <td valign=top><formwidget id="f_pagato">
+			        <formerror  id="f_pagato"><br>
+				   <span class="errori">@formerror.f_pagato;noquote@</span>
+				</formerror>				     
+		           </td>
+	</if>
+			  </tr>
 			<tr>
 			  <td>&nbsp;</td>
 			  <td valign=top align=right class=form_title>Soggetti modificati</td>
@@ -365,6 +453,16 @@
 				<span class="errori">@f_soggetto_modificato;noquote@</span>
 			      </formerror>
 			  </td>
+
+	<if @coimtgen.regione@ eq "MARCHE"> <!-- ric02 aggiunta if e suo contenuto -->
+                         <td valign=top align=right class=form_title>Dichiarazione conformità</td>
+	                 <td valign=top><formwidget id="f_dich_conformita">
+	                     <formerror  id="f_dich_conformita"><br>
+		                   <span class="errori">@formerror.f_dich_conformita;noquote@</span>
+		             </formerror>
+		         </td>
+	</if>
+
 			</tr>
 			<tr>
 			  <td>&nbsp;</td>
@@ -374,6 +472,14 @@
 				<span class="errori">@f_generatore_sostituito;noquote@</span>
 			      </formerror>
 			  </td>
+	  	<if @coimtgen.regione@ eq "MARCHE"> <!-- ric01 aggiunta if e suo contenuto -->
+                         <td valign=top align=right class=form_title>Motivo compilazione RCEE</td>
+	                 <td valign=top><formwidget id="f_tprc">
+	                     <formerror  id="f_tprc"><br>
+		                   <span class="errori">@formerror.f_tprc;noquote@</span>
+		             </formerror>
+		         </td>
+		 </if>
 			</tr>
 			<tr>
 			  <if @id_ruolo@ eq admin or @id_ruolo@ eq cait>

@@ -1,6 +1,10 @@
 <!--
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    rom08 27/11/2023 Napoli non ha mai il pod obbligatorio quindi non deve vedere l'asterisco rosso.
+
+    rom07 14/12/2022 Palermo non ha mai il pod obbligatorio quindi non deve vedere l'asterisco rosso.
+
     rom06 12/01/2021 Le particolarità della Provincia di Salerno vengono ora messe sotto 
     rom06            la condizione su tutta la Regione Campania.
 
@@ -536,6 +540,10 @@
 <tr><td valign=top align=right class=form_title>POD
 <if @coimtgen.regione@ eq "CAMPANIA" and @cod_manutentore;noquote@ eq "">
 </if>
+<elseif @coimtgen.ente@ eq "PPA"><!--rom07 Aggiunta elseif e il contenuto-->
+</elseif>
+<elseif @coimtgen.ente@ eq "PNA"><!--rom08 Aggiunta elseif e il contenuto-->
+</elseif>
 <else> 
 <font color=red>*</font><!--rom05 aggiunto *-->
 </else>

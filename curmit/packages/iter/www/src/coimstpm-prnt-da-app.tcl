@@ -14,6 +14,24 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    ric04 04/06/2024 Corretto where che andava in errore perchè uguagliati varchar = numeric.
+
+    ric03 31/05/2024 Come richiesto da Sandro: se dall'incontro non risalgo al rapporto di ispezione
+    ric03            imposto come where_inco_cimp la where sull'ultimo rapporto.
+
+    ric02 14/07/2023 Il programma, se lanciato con un numero di avvisi elevato, andava in timeout
+    ric02            tale comportamento non avviene in ambiente di dev e ipotizziamo sia dovuto 
+    ric02            ad una versione diversa di naviserver.
+    ric02            Per il momento testiamo la modifica in produzione e non committiamo. Cancellare questa riga in fase di commmit.
+
+    but01 08/01/2024 Aggiunto nuova variable indirizzo_resp_aln2 per modifica della stampa Avviso di ispezione
+    
+    rom03 22/05/2023 Reso standard una modifica fatta per il Comune di Pesaro.
+
+    ric01 18/11/2022 Palermo salva i documenti sul file system e non sul db come Regione Marche.
+    ric01            Inoltre abbiamo uniformato la stampa totale e la stampa singola andando ad indicare
+    ric01            sul totale il parametro size.
+
     sim02 30/03/2021 Corretto errore sulla Regione Marche per cui i file dei singoli impianti
     sim02            venivano sovrascritti e veniva tenuto solo l'ultimo preso in esame.
     sim02            Corretto errore sul nome del file allegato per cui l'allegato non veniva
@@ -177,7 +195,7 @@ element create $form_name protocollo_dt \
     -label   "Data protocollo" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 class form_element" \
+    -html    "size 10 maxlength 10 class form_element class ah-jquery-date" \
     -optional
 
 if {$campo1 != ""} {
@@ -410,7 +428,7 @@ if {[form is_valid $form_name]} {
 	    set protocollo_dt [iter_edit_date $prot_dt]
 	}
     }
-    
+
     if {[string equal $swc_formato ""]} {
         element::set_error $form_name swc_formato "Inserire Formato"
         incr error_num
@@ -466,7 +484,7 @@ if {[form is_valid $form_name]} {
     
     # Data del giorno
     set oggi [iter_edit_date [iter_set_sysdate]]
-
+    
     if {[string equal $cod_inco ""]} {
 
 	if {![string equal $ls_cod_inco ""]} {#rom01 if else e loro contenuto
@@ -655,9 +673,9 @@ if {[form is_valid $form_name]} {
 	    set where_enve ""
 	}
 	set where_inco ""
-	
+
 	db_1row sel_cinc ""
-	
+
 	switch $flag_scaduto {
 	    "S" {set where_dich " and (b.data_scad_dich <= current_date
 	                               or b.data_scad_dich is null)"}
@@ -930,9 +948,23 @@ if {[form is_valid $form_name]} {
                                    from coimcimp
                                   where cod_impianto = :cod_impianto)::varchar"
 	} else {
-	    set where_cimp_inco "and a.cod_inco = :cod_inco and a.cod_cimp = (select max(to_number(cod_cimp, '99999999')) 
+
+	    #ric03 se non trovo il rapporto di ispezione dall'incontro prendo l'ultimo rapporto 
+	    if {[db_0or1row q "select to_number(cod_cimp, '99999999') as max_cimp_inco
+	       		      	 from coimcimp a
+				where a.cod_inco   = :cod_inco 
+                                  and cod_impianto = :cod_impianto
+                             order by to_number(cod_cimp, '99999999') desc
+                                limit 1"]} {
+		
+		set where_cimp_inco "and a.cod_cimp = :max_cimp_inco"
+
+	    }  else {
+
+		set where_cimp_inco "and a.cod_cimp = (select max(to_number(cod_cimp, '99999999'))
                                    from coimcimp
-                                  where cod_impianto = :cod_impianto and cod_inco = :cod_inco)::varchar"
+                                  where cod_impianto = :cod_impianto)::varchar"
+	    }
 	}
 
 	if {[db_0or1row sel_cimp {}] == 0} {
@@ -996,7 +1028,7 @@ if {![db_0or1row query "
 	if {[string equal $cod_inco ""]} {
 	    set where_codice_inco "where cod_inco = (select max(to_number(cod_inco, '99999999'))
                                  from coiminco
-                                where cod_impianto = :cod_impianto)"
+                                where cod_impianto = :cod_impianto)::varchar";#ric04 aggiunto ::varchar
 	} else {
 	    set where_codice_inco "where cod_inco = :cod_inco"
 	    #sim01 vado a bloccare l'inserimento degli rcee
@@ -1105,7 +1137,12 @@ if {![db_0or1row query "
 	if {$flag_ente == "P"} {
 	    set logo_img "[string tolower $flag_ente]r[string tolower $sigla_prov]-stp.gif"
 	} else {
-	    set logo_img "[string tolower $flag_ente][string tolower $denom_comune]-stp.gif"
+	    
+	    if {$coimtgen(ente) eq "CPESARO"} {#rom03 Aggiunta if e il suo contenuto
+		set logo_img "[string tolower $flag_ente][string tolower $denom_comune]-stp.jpg"
+	    } else {#rom03 Aggiunta else ma non il suo contenuto
+		set logo_img "[string tolower $flag_ente][string tolower $denom_comune]-stp.gif"
+	    };#rom03
 	}
 	
 	set logo "
@@ -1156,6 +1193,30 @@ if {![db_0or1row query "
 	                 <td>$cap_resp $localita_resp $comune_resp ($provincia_resp)</td>
 	              </tr>
 	           </table>"
+#but01 aggiunto indirizzo_resp_aln2 per la nuova modifica della stampa Avviso di ispezione
+
+set indirizzo_resp_aln2 "
+           <table width=100%>
+              <tr>
+                 <td width=60%>&nbsp;</td>
+                 <td width=40%>Egr.Sig.re/ra</td>
+              </tr>
+              <tr>
+                 <td>&nbsp;</td>
+                 <td><b>$nome_resp</b></td>
+              </tr>
+              <tr>
+                 <td>&nbsp;</td>
+                 <td><b>$indirizzo_resp</b></td>
+              </tr>
+              <tr>
+                 <td>&nbsp;</td>
+                 <td>Is.-Fab.-Sc.-P.-Int.-</td></tr>
+               <tr>
+                <td>&nbsp;</td>
+                 <td><b>$cap_resp $localita_resp $comune_resp ($provincia_resp)</b></td>
+                </tr>
+           </table>"
 	
 	set indirizzo_sindaco "
 	           <table width=\"100%\">
@@ -1839,7 +1900,9 @@ if {![db_0or1row query "
 
 	# lo trasformo in PDF
 #Sandro 18/07/2014 iter_crea_pdf [list exec htmldoc --webpage --header ... --footer ... --quiet --size $formato --bodyfont arial --fontsize 11 --textfont times --$orientamento --top 0cm --bottom 0cm --left 2cm --right 2cm -f $file_pdf $file_html]
-	iter_crea_pdf [list exec htmldoc --webpage --header ... --footer ... --quiet --size $formato --bodyfont times --fontsize 11 --$orientamento --top 0cm --bottom 0cm --left 0.5cm --right 0.5cm -f $file_pdf $file_html];#Sandro 18/07/2014
+
+#but01 22/12/2023 iter_crea_pdf [list exec htmldoc --webpage --header ... --footer ... --quiet --size $formato --bodyfont times --fontsize 11 --$orientamento --top 0cm --bottom 0cm --left 0.5cm --right 0.5cm -f $file_pdf $file_html];#Sandro 18/07/2014
+iter_crea_pdf [list exec htmldoc --webpage --header ... --footer ... --quiet --size $formato --bodyfont times --fontsize 11 --$orientamento --top $margine_alto --bottom $margine_basso --left $margine_sinistro --right $margine_destro -f $file_pdf $file_html];#but01
 	if {$ctr == 0} {
 	    puts $file_id2 $testo_docu
 	} else {
@@ -1887,7 +1950,8 @@ if {![db_0or1row query "
 		    }
 		}
 
-		if {$coimtgen(regione) eq "MARCHE"} {
+		#ric01 Aggiunta condizione su Palermo.
+		if {$coimtgen(regione) eq "MARCHE" || $coimtgen(ente) eq "PPA"} {
 
 		    db_dml q "update coimdocu
 		  	         set tipo_contenuto = :tipo_contenuto
@@ -1923,9 +1987,9 @@ if {![db_0or1row query "
 	}
 	### fine inseriemnto in documenti
 	
-	ns_unlink $file_html
+#ric02	ns_unlink $file_html
 #sim	ns_unlink $file_pdf
-
+file delete $file_html;#ric02
 	incr ctr
 
 	if {$flag_prot eq "S"} {  
@@ -1941,7 +2005,11 @@ if {![db_0or1row query "
 
     # lo trasformo in PDF
     #Sandro 18/07/2014 iter_crea_pdf [list exec htmldoc --webpage --header ... --footer ... --quiet --bodyfont times --left 1cm --right 1cm --top 0cm --bottom 0cm -f $file_pdf2 $file_html2]
-    iter_crea_pdf [list exec htmldoc --webpage --header ... --footer ... --quiet --bodyfont times --left 0.5cm --right 0.5cm --top 0cm --bottom 0cm -f $file_pdf2 $file_html2];#Sandro 18/07/2014
+
+    #ric01 iter_crea_pdf [list exec htmldoc --webpage --header ... --footer ... --quiet --bodyfont times --left 0.5cm --right 0.5cm --top 0cm --bottom 0cm -f $file_pdf2 $file_html2];#Sandro 18/07/2014
+#but01 iter_crea_pdf [list exec htmldoc --webpage --header ... --footer ... --quiet --size $formato --bodyfont times --top 0cm --bottom 0cm --left 0.5cm --right 0.5cm -f $file_pdf2 $file_html2];#ric01
+iter_crea_pdf [list exec htmldoc --webpage --header ... --footer ... --quiet --size $formato --bodyfont times --top $margine_alto --bottom $margine_basso --left $margine_sinistro --right $margine_destro -f $file_pdf2 $file_html2];#but01
+#ns_log notice "simone file_pdf=$file_pdf file_pdf2=$file_pdf2"
 
 if {$nome_funz_caller eq "estr-mail"} {#rom01 if e suo contenuto
 

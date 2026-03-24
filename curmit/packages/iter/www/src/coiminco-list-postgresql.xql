@@ -53,8 +53,9 @@
               , i.descr_inst    as desc_stato
               , d.denominazione as comune
               , coalesce(e.descr_topo,'')||' '||coalesce(e.descrizione,'')||' '||coalesce(c.numero,'') as indirizzo_ext
-              , coalesce(b.cognome, '')||' '||coalesce(b.nome, '') as resp
-              , coalesce(e.descrizione,'') as indirizzo
+              --mat01 , coalesce(b.cognome, '')||' '||coalesce(b.nome, '') as resp
+              , $subquery_resp --mat01  
+	      , coalesce(e.descrizione,'') as indirizzo
               , lpad(c.numero, 8, '0') as numero
               , b.cognome
               , b.nome
@@ -109,8 +110,9 @@ left outer join coimviae e on e.cod_comune    = c.cod_comune
               , i.descr_inst    as desc_stato
               , d.denominazione as comune
               , coalesce(c.toponimo,'')||' '||coalesce(c.indirizzo,'')||' '||coalesce(c.numero,'') as indirizzo_ext
-              , coalesce(b.cognome, '')||' '||coalesce(b.nome, '') as resp
-              , coalesce(c.indirizzo,'') as indirizzo
+              --mat01 , coalesce(b.cognome, '')||' '||coalesce(b.nome, '') as resp
+              , $subquery_resp --mat01
+	      , coalesce(c.indirizzo,'') as indirizzo
               , lpad(c.numero, 8, '0') as numero
               , b.cognome
               , b.nome

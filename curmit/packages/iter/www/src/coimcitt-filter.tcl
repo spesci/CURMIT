@@ -14,6 +14,8 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== =============================================================================
+    rom01 12/09/2022 Aggiunto filtro per p_iva.
+
     sim01 25/07/2019 In molti punti degli rcee la coimcitt-filter veniva richiamata senza il suo nome_funz
     sim01            Ho fatto in modo che gli venga quindi passato nel caso in cui non sia valorizzato
 
@@ -26,6 +28,7 @@ ad_page_contract {
    {f_cognome         ""}
    {f_nome            ""}
    {f_cod_fiscale     ""}
+   {f_cod_piva        ""}
    {f_cod_cittadino   ""}
    {f_comune          ""}
    {f_stato_citt      "A"}
@@ -100,6 +103,13 @@ element create $form_name f_cod_fiscale \
 -html    "size 16 maxlength 16 $readonly_fld {} class form_element" \
 -optional
 
+element create $form_name f_cod_piva \
+-label   "P.Iva" \
+-widget   text \
+-datatype text \
+-html    "size 16 maxlength 16 $readonly_fld {} class form_element" \
+-optional
+
 element create $form_name f_comune \
 -label   "Comune" \
 -widget   text \
@@ -137,6 +147,7 @@ if {[form is_request $form_name]} {
     element set_properties $form_name f_cognome          -value $f_cognome
     element set_properties $form_name f_nome             -value $f_nome  
     element set_properties $form_name f_cod_fiscale      -value $f_cod_fiscale
+    element set_properties $form_name f_cod_piva            -value $f_cod_piva;#rom01
     element set_properties $form_name f_cod_cittadino    -value $f_cod_cittadino
     element set_properties $form_name f_comune           -value $f_comune
     element set_properties $form_name f_stato_citt       -value $f_stato_citt
@@ -154,6 +165,7 @@ if {[form is_valid $form_name]} {
     set f_cognome       [string trim [element::get_value $form_name f_cognome]]
     set f_nome          [string trim [element::get_value $form_name f_nome]]
     set f_cod_fiscale   [string trim [element::get_value $form_name f_cod_fiscale]]
+    set f_cod_piva         [string trim [element::get_value $form_name f_cod_piva]];#rom01
     set f_comune        [string trim [element::get_value $form_name f_comune]]
     set f_stato_citt    [string trim [element::get_value $form_name f_stato_citt]]
     set flag_ammi       [element::get_value $form_name flag_ammi]
@@ -166,6 +178,11 @@ if {[form is_valid $form_name]} {
     if {![string equal $f_cod_fiscale ""]} {
         incr ctr_filter
         set first_element "f_cod_fiscale"
+    }
+
+    if {![string equal $f_cod_piva ""]} {#rom01 Aggiunta if e il suo contenuto
+	incr ctr_filter
+	set first_element "f_cod_piva"
     }
 
     if {(![string equal $f_cognome ""]
@@ -209,7 +226,8 @@ if {[form is_valid $form_name]} {
 	set nome_funz "cittadini"
     }
 
-    set link_list [export_url_vars caller nome_funz receiving_element f_cod_cittadino f_cognome f_nome f_cod_fiscale f_comune f_stato_citt flag_ammi]
+    #rom01 Aggiunto f_cod_piva
+    set link_list [export_url_vars caller nome_funz receiving_element f_cod_cittadino f_cognome f_nome f_cod_fiscale f_cod_piva f_comune f_stato_citt flag_ammi]
 
     set return_url "coimcitt-list?$link_list"
 

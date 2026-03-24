@@ -1,6 +1,15 @@
+<!DOCTYPE html>
 <!--
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    mat01 09/10/2025 Impostato readonly il campo stato per i manutentori
+
+    rom04 07/06/2023 MEV "Impianti condominiali con pompa di calore": Resi visibili i campi Unita'
+    rom04            immobiliari servite e Tipologia impianto.
+
+    mic01 23/06/2022 Integrata la nota che fa riferimento al volume lordo raffrescato/riscaldato,
+    	  	     come richiesto da Regione Marche.
+
     rom03 26/02/2019 Aggiunto * sul proprietaro che e' diventato un campo obbligatorio.
     
     gac02 18/12/2018 Aggiunti campi data_installaz e anno_costruzione
@@ -27,7 +36,7 @@
 <!-- inizio sezione 1.6 -->
 
 <center>
-<formtemplate id="@form_name;noquote@">
+<formtemplate id="@form_name@">
 <formwidget   id="funzione">
 <formwidget   id="caller">
 <formwidget   id="nome_funz">
@@ -250,7 +259,7 @@
     </td>
 </tr>
 -->
-<if @flag_tipo_impianto@ ne "F">
+<!-- rom04 Tolta if  @flag_tipo_impianto@ ne "F"-->
 <tr>
     <td valign=top align=right nowrap class=form_title>Tipologia impianto <font color=red>*</font></td>
     <td valign=top><formwidget id="cod_tpim">
@@ -265,7 +274,6 @@
         </formerror>
     </td>
 </tr>
-</if>
 <tr>
   <!--non vogliono più vedere il campo
   <td valign=top align=right class=form_title>Data di costruzione dell'impianto<font color=red>*</font></td><!--gac0
@@ -301,7 +309,7 @@
 </tr>
 <tr>
   <td>&nbsp;</td>
-  <td valign=top colspan=5><i>Riportare il volume lordo @nota_volimetria_risc;noquote@ dell'intero sistema edificio-impianto (non solo quello relativo al presente impianto)</i>
+  <td valign=top colspan=5><i>Riportare il volume lordo @nota_volimetria_risc;noquote@ dell'intero sistema edificio-impianto (non solo quello relativo al presente impianto).<br> N.B.: se ci sono più impianti nello stesso libretto, il dato va inserito in un solo codice impianto.</i><!-- mic01 Integrata nota come richiesto da Giuliodori.-->
   </td>
   </tr>
 <tr>
@@ -318,21 +326,41 @@
         </formerror>
     </td>
 </tr>
-<tr>
+<if @cod_manutentore@ eq ""><!-- mat01 Aggiunta if ma non il contenuto -->
+  <tr>
     <td valign=top align=right class=form_title>Stato</td>
-    <td valign=top>
-         <table width=100%>
-             <tr>
-               <td valign=top width=14% bgcolor=@color;noquote@ bordercolor=000000>&nbsp;</td>
-               <td valign=top width=80%><formwidget id="stato">
-               <formerror  id="stato"><br>
-               <span class="errori">@formerror.stato;noquote@</span>
-               </formerror>
-               </td>
-            </tr>
-        </table>
+    <td valign=top colspan=3>
+      <table width=100%>
+        <tr>
+          <td valign=top width=5% bgcolor=@color;noquote@ bordercolor=000000>&nbsp;</td>
+          <td valign=top width=95%><formwidget id="stato">
+              <formerror  id="stato"><br>
+		<span class="errori">@formerror.stato;noquote@</span>
+              </formerror>
+          </td>
+        </tr>
+      </table>
     </td>
-</tr>
+  </tr>
+</if>
+<else><!-- mat01 Aggiunta else e il suo contenuto -->
+  <tr>
+    <td valign=top align=right class=form_title>Stato</td>
+    <td valign=top colspan=3>
+      <table width=100%>
+        <tr>
+          <td valign="top" width="5%" bgcolor=@color;noquote@ bordercolor=000000>&nbsp;</td>
+          <td valign="top" width="95%" ><formwidget id="stato_edit">
+              <formerror  id="stato_edit"><br>
+		<span class="errori">@formerror.stato_edit;noquote@</span>
+              </formerror>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</else>
+
 <tr><td colspan=6 class=fotm_title align=left><b>@label_intestatario;noquote@</b></td></tr>
 <tr>
     <td valign=top align=right nowrap class=form_title>Nome</td>

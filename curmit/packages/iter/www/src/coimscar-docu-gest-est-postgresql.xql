@@ -1,4 +1,14 @@
 <?xml version="1.0"?>
+<!-- 
+    USER  DATA       MODIFICHE
+    ===== ========== ===========================================================================
+    but01 27/11/2024 Vado in left join sulla coimdocu perchè ci sono casi in cui non esiste il documento.
+
+    rom02 10/10/2024 Aggiunte colonne cod_fiscale e data_nas del soggettoresponsabile su richiesta
+    rom02            di Palermo Energia.
+
+    rom01 28/09/2022 Aggiunta colonna pec del soggetto responsabile su richiesta di Paravan di Ucit.
+-->
 
 <queryset>
     <rdbms><type>postgresql</type><version>7.1</version></rdbms>
@@ -24,10 +34,14 @@
                , g.cap as capresp
                , g.provincia as provresp
                , coalesce(g.cognome, '')||' '||coalesce(g.nome, '') as nom_resp
+               , coalesce(g.pec, '') as pec_resp --rom01
+               , coalesce(g.cod_fiscale,'') as cod_fiscale_resp  -- rom02 
+               , iter_edit_data(g.data_nas) as data_nas_resp     -- rom02
                , d.flag_resp        -- 13/11/2013
                , d.cod_responsabile -- 13/11/2013
             from coimdocu a
-      inner join coiminco b on a.cod_documento = b.cod_documento_01
+ --but01   inner join coiminco b on a.cod_documento = b.cod_documento_01
+ left outer join coiminco b on a.cod_documento = b.cod_documento_01 --but01
  left outer join coimopve c on c.cod_opve      = b.cod_opve
       inner join coimaimp d on d.cod_impianto  = a.cod_impianto
  left outer join coimviae e on e.cod_via       = d.cod_via
@@ -56,10 +70,14 @@
                , coalesce(g.localita, '')||' '||coalesce(g.comune, '') as locaresp
                , g.cap as capresp
                , coalesce(g.cognome, '')||' '||coalesce(g.nome, '') as nom_resp
+               , coalesce(g.pec, '') as pec_resp --rom01
+               , coalesce(g.cod_fiscale,'') as cod_fiscale_resp  -- rom02 
+               , iter_edit_data(g.data_nas) as data_nas_resp     -- rom02
                , d.flag_resp        -- 13/11/2013
                , d.cod_responsabile -- 13/11/2013
             from coimdocu a
-      inner join coiminco b on a.cod_documento = b.cod_documento_01
+   --but01 inner join coiminco b on a.cod_documento = b.cod_documento_01
+ left outer join coiminco b on a.cod_documento = b.cod_documento_01 --but01
  left outer join coimopve c on c.cod_opve      = b.cod_opve
       inner join coimaimp d on d.cod_impianto  = a.cod_impianto
  left outer join coimcomu f on f.cod_comune    = d.cod_comune

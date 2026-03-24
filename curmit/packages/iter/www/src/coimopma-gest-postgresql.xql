@@ -2,6 +2,8 @@
 <!--
     USER  DATA       MODIFICHE
     ===== ========== =========================================================================
+    but01 01/10/2024 Gestiti nuovo campo email_operator.
+    
     gac01 19/02/2018 Gestiti nuovi campi patentino e patentino_fgas
 -->
 <queryset>
@@ -35,6 +37,7 @@
                      , patentino_fgas         --gac01
                      , note
                      , flag_portafoglio_admin --sim01
+		     , email_operator         --but01
                      )
                 values 
                      (:cod_opma
@@ -53,6 +56,7 @@
 		     ,:patentino_fgas         --gac01
                      ,:note
                      ,:flag_portafoglio_admin --sim01
+		     ,:email_operator         --but01
                      );
        </querytext>
     </partialquery>
@@ -74,6 +78,7 @@
 		     , patentino_fgas = :patentino_fgas        --gac01
                      , note        = :note
                      , flag_portafoglio_admin = :flag_portafoglio_admin --sim01
+		     , email_operator       = :email_operator      --but01
                  where cod_opma  = :cod_opma
        </querytext>
     </partialquery>
@@ -102,6 +107,7 @@
                   , patentino_fgas         --gac01
                   , note
                   , flag_portafoglio_admin --sim01
+		  , email_operator          --but01
                from coimopma
               where cod_opma = :cod_opma
        </querytext>

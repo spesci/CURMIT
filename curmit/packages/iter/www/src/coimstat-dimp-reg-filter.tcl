@@ -11,6 +11,11 @@ ad_page_contract {
     @param nome_funz_caller identifica l'entrata di menu, serve per la 
                      navigazione con navigation bar
     @cvs-id          coimstat-aimp-gest.tcl
+
+    USER  DATA       MODIFICHE
+    ===== ========== =======================================================================
+    but01 20/06/2023 Aggiunto la classe ah-jquery-date ai campi f_data_inizio, f_data_fine.
+
 } {
     {funzione        "I"}
     {caller      "index"}
@@ -59,21 +64,26 @@ set readonly_fld "readonly"
 set disabled_fld "disabled"
 set onsubmit_cmd ""
 
+set jq_date "";#but01
+if {$funzione in "M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
+
 form create $form_name \
 -html    $onsubmit_cmd
-
+#but01 Aggiunto la classe ah-jquery-date ai campi f_data_inizio, f_data_fine
 element create $form_name f_data_inizio \
 -label   "Data inizio " \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 class form_element" \
+-html    "size 10 maxlength 10 class form_element $jq_date" \
 -optional
 
 element create $form_name f_data_fine \
 -label   "Data fine " \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 class form_element" \
+-html    "size 10 maxlength 10 class form_element $jq_date" \
 -optional
 
 element create $form_name funzione    -widget hidden -datatype text -optional

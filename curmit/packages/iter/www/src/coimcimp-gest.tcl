@@ -15,6 +15,11 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    mic01 18/05/2022 Aggiunte condizioni e redirect per il tracciato AC
+    
+    rom01 03/02/2022 Gestito il nuovo rapporto di ispezione FR per gli impianti del freddo
+    rom01            richiesto da Regione Marche.
+
     san01 12/08/2016 Gestito il nuovo rapporto di ispezione RE usato solo da A.F.E.
 
     sim01 15/04/2015 Gestito il nuovo rapporto di ispezione RI
@@ -75,15 +80,21 @@ switch $flag_ente {
 }
 
 if {$funzione == "I"} {
-
-    if {$flag_tracciato != "MA"} {
-	append pack_dir "srcpers"
-    } else {
+    if {$flag_tracciato == "AC"} {#mic01 aggiunta if per il tracciato AC e suo contenuto
 	append pack_dir "src"
 	set directory   ""
-    }
+    } else {#mic01 Aggiunta else ma non il contenuto
+	if {$flag_tracciato != "MA"} {
+	    append pack_dir "srcpers"
+	} else {
+	    append pack_dir "src"
+	    set directory   ""
+	}
+    };#mic01
 
-    if {$flag_tracciato != "MA" && $flag_tracciato != "RI" && $flag_tracciato != "RE"} {#sim01
+    #rom01 Aggiunta condizione flag_tracciato != "FR"
+    #mic01 aggiunta if per il tracciato AC
+    if {$flag_tracciato != "MA" && $flag_tracciato != "RI" && $flag_tracciato != "RE" && $flag_tracciato != "FR" && $flag_tracciato != "AC"} {#sim01
 	db_1row sel_aimp_pote ""
 	if {$potenza >=  35} {
 	    # Allegato B
@@ -97,13 +108,17 @@ if {$funzione == "I"} {
     set link         [export_ns_set_vars "url" "flag_tracciato"]
     append link "&flag_tracciato=$flag_tracciato"
     #sim01 aggiunto redirect per il tracciato RI
+    #rom01 aggiunto redirect per il tracciato FR
+    #mic01 aggiunto redirect per il tracciato AC
     switch $flag_tracciato {
 	"MA" {set return_url $pack_dir/$directory/coimcimp-manc-gest?$link}
         "AA" {set return_url $pack_dir/$directory/coimcimp-a-gest?$link}
 	"AB" {set return_url $pack_dir/$directory/coimcimp-b-gest?$link}
 	"RI" {set return_url $pack_dir/$directory/coimcimp-ri-gest?$link}
         "RE" {set return_url $pack_dir/$directory/coimcimp-re-gest?$link}
-     default {set return_url $pack_dir/$directory/coimcimp-a-gest?$link}
+	"FR" {set return_url $pack_dir/$directory/coimcimp-fr-gest?$link}
+	"AC" {set return_url $pack_dir/$directory/coimcimp-ac-gest?$link} 
+	default {set return_url $pack_dir/$directory/coimcimp-a-gest?$link}
     }
 
 } else {
@@ -112,20 +127,30 @@ if {$funzione == "I"} {
 	iter_return_complaint "Rapporto di ispezione non trovato"
         return
     }
-    if {$flag_tracciato != "MA"} {
-	append pack_dir "srcpers"
-    } else {
+    if {$flag_tracciato == "AC"} {#mic01 aggiunta if per il tracciato AC e suo contenuto
+
 	append pack_dir "src"
 	set directory   ""
-    }
+    } else {#mic01 Aggiunta else ma non il suo contenuto
+	if {$flag_tracciato != "MA"} {
+	    append pack_dir "srcpers"
+	} else {
+	    append pack_dir "src"
+	    set directory   ""
+	}
+    };#mic01
 
     #sim01 aggiunto redirect per il tracciato RI
+    #rom01 aggiunto redirect per il tracciato FR
+    #mic01 aggiunto redirect per il tracciato AC
     switch $flag_tracciato {
 	"AA" {set return_url $pack_dir/$directory/coimcimp-a-gest?$link}
 	"AB" {set return_url $pack_dir/$directory/coimcimp-b-gest?$link}
 	"MA" {set return_url $pack_dir/$directory/coimcimp-manc-gest?$link}
 	"RI" {set return_url $pack_dir/$directory/coimcimp-ri-gest?$link}
         "RE" {set return_url $pack_dir/$directory/coimcimp-re-gest?$link}
+	"FR" {set return_url $pack_dir/$directory/coimcimp-fr-gest?$link}
+	"AC" {set return_url $pack_dir/$directory/coimcimp-ac-gest?$link}
      default {set return_url $pack_dir/$directory/coimcimp-a-gest?$link}
     }
 }

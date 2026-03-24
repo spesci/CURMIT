@@ -14,6 +14,9 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    but01 10/07/2023 Aggiunto la classe ah-jquery-date al campo data_scad
+
+
 } {
     {funzione        "V"}
     {caller      "index"}
@@ -109,6 +112,11 @@ set onsubmit_cmd ""
 set readonly_key \{\}
 set readonly_fld \{\}
 set disabled_fld \{\}
+ set jq_date "";#but01
+if {$funzione in "V M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
+
 
 form create $form_name \
 -html    $onsubmit_cmd
@@ -152,7 +160,7 @@ element create $form_name data_scad \
 -label   "Data Scadenza" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 class form_element" \
+-html    "size 10 maxlength 10 class form_element $jq_date" \
 -optional
 
 

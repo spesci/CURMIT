@@ -16,6 +16,18 @@ ad_page_contract {
                              separati da '|' ed impostarli come segue:
 
     @cvs-id coimboll-list.tcl 
+
+    USER  DATA       MODIFICHE
+    ===== ========== ===========================================================================
+     but01 14/07/2023 Aggiunta class"link-button-2" nel actions"Selez"
+    rom02 02/12/2020 Modifico le if sulle Provincie di UCIT mettendo la condizione sulla Regione
+    rom02            Friuli  perche' il Comune di Trieste passera' sotto UCIT da inizio 2021.
+
+    rom01 17/03/2020 Aggiunto il parametro call_manu. Se il parameto vale f allora devo
+    rom01            escludere dalla lista i record che sono associati al manutenore fittizio.
+    rom01            Al contrario, se il parametro vale t allora devo visualizzare solo i record
+    rom01            associati al manutentore fittizio. Tutto viene fatto solo per UCIT.
+
 } { 
     {search_word       ""}
     {rows_per_page     ""}
@@ -27,6 +39,7 @@ ad_page_contract {
 
     {url_manu          ""}
     {cod_bollini       ""}
+    {call_manu        "f"}
 }  -properties {
     page_title:onevalue
     context_bar:onevalue
@@ -51,6 +64,8 @@ if {![string is space $nome_funz]} {
     }
 }
 
+iter_get_coimtgen ;#rom01
+
 # controllo il parametro di "propagazione" per la navigation bar
 if {[string is space $nome_funz_caller]} {
     set nome_funz_caller $nome_funz
@@ -59,7 +74,12 @@ if {[string is space $nome_funz_caller]} {
 # leggo bollini
 db_1row sel_boll ""
 
-set page_title "Traferimenti Bollini di $manutentore, da $matricola_da a $matricola_a, consegnati il $data_consegna_edit"
+if {[string equal $call_manu "t"]} {#rom01 aggiunta if e suo contenuto, aggiunta else ma non contenuto
+    set page_title "Bollini resi di $manutentore, da $matricola_da a $matricola_a, consegnati il $data_consegna_edit"
+} else {
+    set page_title "Trasferimento Bollini di $manutentore, da $matricola_da a $matricola_a, consegnati il $data_consegna_edit"
+}
+
 
 if {$caller == "index"} {
     set context_bar [iter_context_bar -nome_funz $nome_funz_caller]
@@ -79,14 +99,20 @@ set extra_par       [list rows_per_page     $rows_per_page \
 
 set rows_per_page   [iter_set_rows_per_page $rows_per_page $id_utente]
 set rows_per_page 999999
-set link_aggiungi  "<a href=\"$gest_prog?funzione=I&[export_url_vars cod_bollini caller nome_funz extra_par nome_funz_caller]\">Aggiungi trasferimento</a>"
+#rom01set link_aggiungi  "<a href=\"$gest_prog?funzione=I&[export_url_vars cod_bollini caller nome_funz extra_par nome_funz_caller]\">Aggiungi trasferimento</a>"
+if {[string equal $call_manu "t"]} {#rom01 aggiunte if, else e loro contenuto
+    set link_aggiungi_title "Aggiungi Bollini Resi"
+} else {
+    set link_aggiungi_title "Aggiungi trasferimento"
+}
+set link_aggiungi  "<a href=\"$gest_prog?funzione=I&[export_url_vars cod_bollini caller nome_funz extra_par nome_funz_caller call_manu]\">$link_aggiungi_title</a>";#rom01
 
 set link_righe      [iter_rows_per_page     $rows_per_page]
 
 if {$caller == "index"} {
     set link    "\[export_url_vars cod_boap cod_bollini nome_funz extra_par nome_funz_caller\]"
     set actions "
-    <td nowrap><a href=\"$gest_prog?funzione=V&$link\">Selez.</a></td>"
+    <td nowrap><a href=\"$gest_prog?funzione=V&$link&call_manu=$call_manu\" class=\" link-button-2\">Selez.</a></td>"
     set js_function ""
 } else { 
     set actions [iter_select [list column_name .... ]]
@@ -122,6 +148,15 @@ if {![string is space $last_order]} {
     set where_last ""
 }
 
+set where_a_cod_manutentore "";#rom01
+#rom02if {$coimtgen(ente) eq "PUD" || $coimtgen(ente) eq "PTS" || $coimtgen(ente) eq "PGO" || $coimtgen(ente) eq "PPN"} {}#rom01 aggiunta if e suo contenuto
+if {$coimtgen(regione) eq "FRIULI-VENEZIA GIULIA"} {#rom02 Aggiunta if ma non il contenuto
+    if {[string equal $call_manu "t"]} {
+	set where_a_cod_manutentore "and a.cod_manutentore_a = 'MAXXXXXX'"
+    } else {
+	set where_a_cod_manutentore "and a.cod_manutentore_a != 'MAXXXXXX'"
+    }
+}
 
 set sql_query [db_map sel_boap]
 

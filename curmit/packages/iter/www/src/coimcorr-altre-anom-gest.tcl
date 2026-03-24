@@ -13,6 +13,8 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== ============================================================================================
+    rom01 13/09/2022 Modifiche per caricamento massivo tramite xml
+
     sim01 06/05/2019 In base al parametro tabella_caricamento_rcee_tipo_1 vedo se usare il vecchio tracciato del
     sim01            caricamento o il nuovo semplificato
     
@@ -65,6 +67,25 @@ if {$tipo_modello == "R"} {
     }
     
     set pot_nom				"potenza_nom_foc_gen"
+}
+
+if {$tipo_modello == "X"} {#rom01 Aggiunta if e il suo contenuto
+    append nome_tab_anom        [string range $nome_tabella 11 end]
+
+    set tabella_caricamento_rcee_tipo_1 [parameter::get_from_package_key -package_key iter -parameter tabella_caricamento_rcee_tipo_1]
+
+    if {$nome_funz eq "cari-rcee-xml-tipo-2"} {
+	set modello "rcee2"
+    } else {
+
+	if {$tabella_caricamento_rcee_tipo_1 eq "rce1"} {
+	    set modello "rce1"
+	} else {
+	    set modello                         "rcee1"
+	}
+    }
+
+    set pot_nom                         "potenza_nom_foc_gen"
 }
 
 # Controlla lo user

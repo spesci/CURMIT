@@ -7,6 +7,28 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    rom07 04/02/2026 Aggiunta condizione per Regione Marche su ordinamento lista.
+
+    mat01 28/03/2025 Aggiornate le query per udine quando l'impianto è del freddo
+
+    ric03 26/11/2024 MEV per regione Marche ordine 63/2022 punti 21 e 32.
+
+    rom06 07/05/2024 Aggiunti filtri per cruscotto pagina iniziale
+    
+    rom05 16/04/2024 Aggiunti campi tipo pompa di calore per il freddo e combustibile su richiesta di Ucit.
+    rom05            Sandro ha detto che va bene per tutti gli enti.
+
+    ric02 09/06/2023 Ticket 'anomalia scarica csv'. Rinominate colonne, calcolo potenza maggiore.
+    
+    ric01 08/06/2023 Sviluppi per regione marche per aggiunta criteri aggiuntivi.   
+
+    rom04 17/01/2023 Sviluppo per Palermo Energia: aggiunto filro "Per Soggetto presente nello storico RCEE".
+
+    mic01 13/05/2022 Corretta anomalia, l'estrazione del file csv non teneva conto del filtro
+    mic01            per targa o cod_impianto_princ.
+
+    rom03 10/01/2021 Aggiunto filtro f_pod
+
     rom02 20/09/2021 Riportata correzione fatta in coimaimp-list: Per Regione Marche le potenze
     rom02            da mostrare sono differenti dallo standard e cambia il ragionamento
     rom02            in base alla tipologia di impianto.
@@ -29,8 +51,12 @@ ad_page_contract {
     {last_cod_impianto    ""}
 
     {f_cod_impianto_est   ""}
+    {f_cod_impianto_princ ""}
+    {f_targa              ""}
     {f_resp_cogn          ""} 
     {f_resp_nome          ""} 
+    {f_resp_cogn_rcee     ""}
+    {f_resp_nome_rcee     ""}
 
     {f_comune             ""}
     {f_quartiere          ""}
@@ -63,6 +89,7 @@ ad_page_contract {
     {f_mod_h              ""}
     {f_dpr_412            ""}
     {f_cod_utenza         ""}
+    {f_pod                ""}
     {f_cod_impianto_old   ""}
     {conta_flag           ""}
     {f_riferimento        ""}
@@ -84,7 +111,17 @@ ad_page_contract {
     {f_impianto_modificato   ""}
     {f_soggetto_modificato   ""}
     {f_generatore_sostituito ""}
-    
+    {f_ibrido                ""}
+    {f_pagato                ""}
+    {f_tprc                  ""}
+
+    {f_da_data_scad ""}
+    {f_a_data_scad  ""}
+
+    {f_dich_conformita  ""}
+    {f_dfm_manu         ""}
+    {f_dfm_resp_mod     ""}
+
 }
 
 # Imposto variabili tipiche di ogni funzione
@@ -95,6 +132,7 @@ iter_get_coimtgen
 set flag_viario       $coimtgen(flag_viario)
 set valid_mod_h       $coimtgen(valid_mod_h)
 set mesi_evidenza_mod $coimtgen(mesi_evidenza_mod)
+set flag_gest_targa   $coimtgen(flag_gest_targa);#mic01
 
 # imposto filtro
 
@@ -124,6 +162,18 @@ if {![string equal $f_cod_impianto_est ""]} {
     set where_codimp_est ""
 }
 
+if {![string equal $f_cod_impianto_princ ""]} {#mic01 Aggiunte if, else e loro contenuto
+    set where_codimp_princ " and h.cod_impianto_est = upper(:f_cod_impianto_princ)"
+} else {
+    set where_codimp_princ ""
+}
+
+if {![string equal $f_targa ""]} {#mic01: Aggiunte if, else e loro contenuto
+    set where_targa " and upper(a.targa) = upper(:f_targa)"
+} else {
+    set where_targa ""
+}
+
 if {![string equal $f_mod_h ""]} {
     # se valorizzato con 1 seleziono gli impianti senza modello H
     # se valorizzato con 2 seleziono gli impianti con mod h scaduti
@@ -142,6 +192,12 @@ if {![string equal $f_mod_h ""]} {
     }
 } else {
     set where_mod_h ""
+}
+
+if {![string equal $f_da_data_scad ""] || ![string equal $f_a_data_scad ""]} {#rom06 if, else e contenuto
+    set where_data_scad "and a.data_scad_dich between :f_da_data_scad and :f_a_data_scad"
+} else {
+    set where_data_scad ""
 }
 
 if {![string equal $f_quartiere ""]} {
@@ -357,6 +413,18 @@ if {![string equal $f_potenza_da ""]
        end
     ) between :f_potenza_da and :f_potenza_a"
 
+    } elseif {$coimtgen(regione) eq "FRIULI-VENEZIA GIULIA"} { #mat01 aggiunto elseif e contenuto
+
+        set where_pot "
+        and (
+             case when a.flag_tipo_impianto = 'F'
+             then (select greatest( cimp2.potenza_utile,cimp2.potenza) as potenza
+                   from coimaimp cimp2
+                    where cimp2.cod_impianto = a.cod_impianto)
+             else $colonna_potenza
+             end
+          ) between :f_potenza_da and :f_potenza_a
+       "
     } else {#rom02 Aggiunta else ma non il suo contenuto
 	
 	set where_pot "and $colonna_potenza between :f_potenza_da
@@ -512,7 +580,9 @@ if {![string equal $f_cod_impianto_est ""]} {
 	&& [string equal $f_desc_via  ""])
     } {
 	set ordine        "nome"
-        set citt_join_pos "inner join"
+        #ric03  set citt_join_pos "inner join"
+	#Faccio lo stesso join che fa la lista
+	set citt_join_pos "left outer join";#ric03
         set citt_join_ora ""
     } else {
 	set ordine "via"
@@ -531,9 +601,48 @@ if {![string equal $f_cod_impianto_old ""]} {
 }
 if {![string equal $f_cod_utenza ""]} {
     #san01 where_cod_utenza " and a.cod_amag = upper(:f_cod_utenza)"
-    set where_cod_utenza " and a.pdr = upper(:f_cod_utenza)";#san01
+    #rom03set where_cod_utenza " and a.pdr = upper(:f_cod_utenza)";#san01
+    set where_cod_utenza " and upper(a.pdr) = upper(:f_cod_utenza)";#rom03
 } else {
     set where_cod_utenza ""
+}
+
+if {![string equal $f_pod ""]} {#rom03 Aggiunte if, else e loro contenuti
+    set where_pod " and upper(a.pod) = upper(:f_pod)"
+} else {
+    set where_pod ""
+}
+
+set where_sogg_rcee "";#rom04
+set where_resp_rcee "";#rom04
+if {$coimtgen(ente) eq "PPA"} {#rom04 Aggiunta if e il suo contenuto
+
+
+    if {[string equal $f_resp_nome_rcee ""]} {
+	set where_nome_rcee ""
+    } else {
+	set f_resp_nome_rcee_1 [iter_search_word $f_resp_nome_rcee]
+	set where_nome_rcee  " and rcee.nome like upper(:f_resp_nome_rcee_1)"
+    }
+
+    if {[string equal $f_resp_cogn_rcee ""]} {
+	set where_cogn_rcee ""
+    } else {
+	set f_resp_cogn_rcee_1 [iter_search_word $f_resp_cogn_rcee]
+	set where_cogn_rcee  " and rcee.cognome like upper(:f_resp_cogn_rcee_1)"
+    }
+
+    if {$where_cogn_rcee ne "" || $where_nome_rcee ne ""} {
+
+	set where_resp_rcee " and exists (select 1 
+                                            from coimdimp dimp
+                                               , coimcitt rcee
+                                           where dimp.cod_responsabile = rcee.cod_cittadino 
+                                             and dimp.cod_impianto = a.cod_impianto 
+                                             $where_nome_rcee 
+                                             $where_cogn_rcee 
+                                           limit 1) "
+    }
 }
 
 #inizio dpr74
@@ -544,6 +653,113 @@ if {![string equal $f_flag_tipo_impianto ""]} {
 }
 #fine dpr74
 
+#ric01 inizio
+if {[string equal $f_ibrido ""]} {
+    set where_ibrido ""
+} else {
+    set where_ibrido  " and a.flag_ibrido = :f_ibrido"
+}
+
+set where_dimp ""
+set where_pagato ""
+set where_tprc ""
+
+if {![string equal $f_pagato ""] || ![string equal $f_tprc ""]} { 
+    
+    if {![string equal $f_pagato ""]} {
+	set where_pagato  " and dimp.flag_pagato = :f_pagato"
+    }
+    
+    if {![string equal $f_tprc ""]} {   
+	set where_tprc  " and dimp.cod_tprc = :f_tprc"
+    }
+
+    set where_dimp "
+      and a.cod_impianto in (
+      select cod_impianto_dimp
+        from (select max(data_controllo) as max_dt_dimp
+                       , cod_impianto as cod_impianto_dimp  
+                    from coimdimp
+                group by cod_impianto) as max_dimp
+      inner join coimdimp dimp
+              on dimp.cod_impianto=max_dimp.cod_impianto_dimp
+             and max_dimp.max_dt_dimp = dimp.data_controllo
+      where 1=1
+         $where_pagato
+         $where_tprc)"
+
+}
+
+#ric01 fine
+
+#ric03 inizio
+#ric03 imposto la condizione SQL per la dichiarazione di conformita sull'ultimo RCEE
+set where_dich_conformita ""
+set where_dfm_manu ""
+set where_dfm_resp_mod ""
+if {$coimtgen(regione) eq "MARCHE"} {
+    if {![string equal $f_dich_conformita ""]} {
+	set  where_dich_conformita "  and a.cod_impianto in (select dimp2.cod_impianto
+                                                               from
+                                                                    (select max(data_controllo) as max_dt_dimp2
+                                                                          , cod_impianto as cod_impianto_dimp2
+                                                                       from coimdimp max_dimp
+                                                                   group by cod_impianto) as max_dimp2
+
+                                                         inner join coimdimp dimp2 on dimp2.cod_impianto   = max_dimp2.cod_impianto_dimp2
+                                                                                  and dimp2.data_controllo = max_dimp2.max_dt_dimp2
+
+                                                              where dimp2.conformita = :f_dich_conformita
+                                                                and dimp2.flag_tracciato in ('R1', 'R2', 'R3', 'R4')) "
+    }  
+    
+    #ric03 imposto la condizione SQL per la dfm del manutentore
+    if {![string equal $f_dfm_manu ""]} {
+	if {![string is space $cod_manutentore]} {
+	    if {$f_dfm_manu eq "S"} {
+		set where_dfm_manu " and exists (select 1
+                                                   from coimdope_aimp dope
+                                                   where dope.cod_impianto    = a.cod_impianto
+                                                     and dope.cod_manutentore = :cod_manutentore           
+                                                   limit 1)"	    
+	    } else {
+		set where_dfm_manu " and not exists (select 1
+                                                       from coimdope_aimp dope
+                                                      where dope.cod_impianto    = a.cod_impianto
+                                                        and dope.cod_manutentore = :cod_manutentore
+                                                      limit 1)"
+	    }	
+	}
+    }
+
+    #ric03 imposto la condizione SQL per la dfm inserita se cambiato il responsabile
+    if {![string equal $f_dfm_resp_mod ""]} {
+	if {![string is space $cod_manutentore]} {
+	    if {$f_dfm_resp_mod eq "S"} {
+		set where_dfm_resp_mod " and exists (select 1
+                                                       from coimdope_aimp dope
+                                                      where dope.cod_impianto    = a.cod_impianto
+                                                        and dope.cod_manutentore = :cod_manutentore
+                                                        and dope.cod_responsabile in (select cod_responsabile 
+                                                                                        from coimaimp aimp
+                                                                                       where aimp.cod_impianto = a.cod_impianto)
+                                                      limit 1)"
+	    } else {
+		set where_dfm_resp_mod " and not exists (select 1
+                                                           from coimdope_aimp dope
+                                                          where dope.cod_impianto    = a.cod_impianto
+                                                            and dope.cod_manutentore = :cod_manutentore
+                                                            and dope.cod_responsabile in (select cod_responsabile
+                                                                                            from coimaimp aimp
+                                                                                           where aimp.cod_impianto = a.cod_impianto)
+                                                           limit 1)"
+	    }
+	}
+    }
+
+} 
+#ric03 fine
+
 # imposto l'ordinamento della query e la condizione per la prossima pagina
 switch $ordine {
     "via" {
@@ -552,10 +768,16 @@ switch $ordine {
 	    "F" {set col_via "a.indirizzo" }
 	}
 
-        set ordinamento "order by $col_via
+	if {$coimtgen(regione) eq "MARCHE"} {#rom07 Aggiunta if e contenuto
+	    set ordinamento "order by $col_via
+                                , a.numero
+                                , a.cod_impianto_est"
+	} else {#rom07 Aggiunta else e contenuto
+	    set ordinamento "order by $col_via
                                 , $col_numero
                                 , a.cod_impianto_est"
-
+	};#rom07
+	    
 	if {![string equal $last_cod_impianto ""]} {
 	    set via              [lindex $last_cod_impianto 0]
 	    set numero           [lindex $last_cod_impianto 1]
@@ -647,7 +869,16 @@ fconfigure $file_id -encoding iso8859-1
 
 set     head_cols ""
 lappend head_cols "Codice"
-lappend head_cols "Targa";#san02
+
+if {$flag_gest_targa eq "T"} {#mic01 Aggiunta if ma non il contenuto
+
+    lappend head_cols "Targa";#san02
+  
+} else {#mic01 Aggiunto else e il suo contenuto
+
+    lappend head_cols "Cod. imp. princ."
+}
+
 lappend head_cols "POD";#san02
 lappend head_cols "PDR";#san02
 lappend head_cols "Responsabile"
@@ -659,9 +890,13 @@ lappend head_cols "Codice Fiscale/Partita Iva"
 lappend head_cols "Comune Ubic"
 lappend head_cols "Indirizzo Ubic."
 lappend head_cols "CAP Ubic"
-lappend head_cols "Potenza Nom"
-lappend head_cols "Potenza Utile"
+#ric02 lappend head_cols "Potenza Nom"
+#ric02 lappend head_cols "Potenza Utile"
+lappend head_cols "Combustibile";#rom05
+lappend head_cols "Potenza massima nominale";#ric02
+lappend head_cols "Potenza nominale utile" ;#ric02
 lappend head_cols "Matr. 1° gen."
+lappend head_cols "Sist.az. 1° gen.";#rom05
 lappend head_cols "Data RCEE."
 lappend head_cols "Data Scad.RCEE."
 lappend head_cols "Data Pross.Manut."
@@ -687,7 +922,16 @@ lappend head_cols "Comune";#Sandro 12 03 2019
 # imposto il tracciato record del file csv
 set     file_cols ""
 lappend file_cols "cod_impianto_est"
-lappend file_cols "targa";#san02
+
+if {$flag_gest_targa eq "T"} {#mic01 Aggiunta if ma non il contenuto
+
+    lappend file_cols "targa";#san02
+  
+} else {#mic01 Aggiunto else e il suo contenuto
+
+    lappend file_cols "cod_impianto_princ";#san02
+}
+
 lappend file_cols "pod";#san02
 lappend file_cols "pdr";#san02
 lappend file_cols "resp"
@@ -699,9 +943,11 @@ lappend file_cols "cod_fiscale"
 lappend file_cols "comune"
 lappend file_cols "indir"
 lappend file_cols "cap"
+lappend file_cols "desc_comb_aimp";#rom05
 lappend file_cols "potenza"
 lappend file_cols "potenza_u"
 lappend file_cols "matricola_gen1"
+lappend file_cols "sist_azio_gen1";#rom05
 lappend file_cols "data_ultima_dich"
 lappend file_cols "data_scadenza"
 lappend file_cols "prox_manut"
@@ -749,7 +995,7 @@ db_foreach sel_aimp $sel_aimp {
 	lappend file_col_list [set $column_name]
     }
     iter_put_csv $file_id file_col_list
-    
+
 } if_no_rows {
     set msg_err      "Nessun impianto selezionato con i criteri utilizzati"
     set msg_err_list [list $msg_err]

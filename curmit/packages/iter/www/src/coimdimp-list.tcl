@@ -21,6 +21,41 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    rom17 26/09/2024 Apef di Frosinone deve vedere i link per gli rcee con Ravvedimento Operoso
+    rom17            e devono poter inserire le DFM. Gli utenti dell'ente di Apef dvedono il nowallet.
+
+    rom16 31/10/2024 Per l'ambiente demo aggiunto dfm, modificata visualizzazione link_aggiungi.
+
+    rom15 01/03/2024 Solo per Terra di Lavoro di Caserta aggiunti link per rcee con Ravvedimento Operoso.
+
+    but02  15/02/2024 Agguinto la condizione solo per gli impianti del freddo non possiamo
+    but02             vedere il link di "Dichiarazione di Avvenuta manutenzione (DAM)"
+
+    rom14 21/11/2023 Provincia di Rieti deve poter inserire le DFM
+
+    rom13 26/09/2023 La somma delle potenze dei generatori deve tenere in considerazione tutti i generatori
+    rom13            attivi e non solo quelli con potenza nominale maggiore di 10 kW.
+
+    but01 14/07/2023 Aggiunta classe "link-button-2" nel actions "Selez","Mod.Gen", "Allega scansione"
+    but01            ,"Vedi scansione","Elimina scansione","Ins. mod. sost","Richiedi storno","Rifiuta storno".
+
+    rom12 26/04/2023 Aggiunto controllchiesto da Regione Marche ma valido per tutti gli enti:
+    rom12            se si e' loggati come operatore di una ditta e questa non risulta associata
+    rom12            come manutentore e/o installatore tolgo tutti i possibili link.
+
+    rom11 01/02/2023 Riportati alcune modifiche fatte su Ucit sul vecchio cvs:
+    rom11            Su segnalazione di Belluzzo per gli impianti del freddo non faccio piu'
+    rom11            vedere il link del nowallet. Sandro ha detto che va bene per tutti.
+    rom11            Su richiesta di Chiara Pavaran di UCIT per la regione Friuli non mostro
+    rom11            piu' la funzione "Ins. mod. sost." che era visibile solo ai manutentori.
+    rom11            Su richiesta di Belluzzo, per la regione Friuli non faccio piu'
+    rom11            visualizzare il link "Richiedi storno".
+
+    rom10 04/11/2022 Palermo ha il nowallet sia per il caldo che per il freddo.
+
+    rom09 17/03/2022 16/03/2022 MEV Regione Marche punto 6. Stampa RCEE precompilato senza dati del
+    rom09            Controllo del rendimento di combustione.    
+
     rom08 08/07/2020 Sandro ha detto che gli utenti non manutentori della Basilicata devono
     rom08            vedere il no wallet come per la Regione Marche: 
     rom08            sia per gli impianti del caldo che per gli impianti del freddo.
@@ -180,6 +215,8 @@ set ruolo [db_string query "select id_ruolo from coimuten where id_utente = :id_
 set link_tab [iter_links_form $cod_impianto $nome_funz_caller $url_list_aimp $url_aimp]
 set dett_tab [iter_tab_form $cod_impianto]
 
+set db_name [parameter::get_from_package_key -package_key iter -parameter dbname_portale -default ""];#rom16
+
 # controllo il parametro di "propagazione" per la navigation bar
 if {[string is space $nome_funz_caller]} {
     set nome_funz_caller $nome_funz
@@ -239,8 +276,7 @@ if {$flag_tipo_impianto == "R"} {#dpr
 	if {($coimtgen(ente) eq "PTS" || $coimtgen(ente) eq "PPN") && $cod_manu eq ""} {#rom02 aggiunta if e suo contenuto
 	    set link_aggiungi "$link_inserisci_modello_f
                            $link_aggiungi"
-	}
-	
+	}	
 	set flag_sup "S"
     } else {
 	#sim05 aggiunto condizione su PLI
@@ -328,8 +364,8 @@ if {$coimtgen(regione) eq "MARCHE" || $coimtgen(regione) eq "BASILICATA"} {#nic0
              from coimgend a
              inner join coimaimp f      on f.cod_impianto      = a.cod_impianto
             where a.cod_impianto = :cod_impianto
-              and case when f.flag_tipo_impianto = 'F' then a.pot_utile_nom_freddo
-                      else a.pot_utile_nom end >10
+--rom13       and case when f.flag_tipo_impianto = 'F' then a.pot_utile_nom_freddo
+--rom13               else a.pot_utile_nom end >10
               and f.stato='A'
               and a.flag_attivo='S'
 --sim12            union all
@@ -349,7 +385,8 @@ if {$coimtgen(regione) eq "MARCHE" || $coimtgen(regione) eq "BASILICATA"} {#nic0
     set tipologia_generatore [db_string  q "select  tipologia_generatore from coimaimp where cod_impianto = :cod_impianto"];#gac04
     set tipo [db_string q "select a.tipo from coimcomb a, coimaimp b where b.cod_impianto = :cod_impianto and a.cod_combustibile = b.cod_combustibile" -default ""];#gac04
 
-    if {$tipo eq "G" && $tipologia_generatore ne "PCALO" && $potenza <= "100" && $potenza >= "10"} {#gac04 aggiunta if 
+    #but02 Aggiunta condizione su flag_tipo_impianto ne "F"
+    if {$tipo eq "G" && $tipologia_generatore ne "PCALO" && $potenza <= "100" && $potenza >= "10" && $flag_tipo_impianto ne "F"} {#gac04 aggiunta if 
 	#gac02   append link_aggiungi "<br>o Aggiungi una <a href=\"$gest_prog?funzione=I&flag_tracciato=DA&[export_url_vars last_cod_dimp caller url_list_aimp url_aimp cod_impianto nome_funz extra_par nome_funz_caller flag_tracciato]\">Dich. di Avvenuta manutenzione</a>"
 	append link_aggiungi "<br>o Aggiungi una <a href=\"$gest_prog?funzione=I&flag_tracciato=DA&[export_url_vars last_cod_dimp caller url_lis_aimp url_aimp cod_impianto nome_funz extra_par nome_funz_caller flag_tracciato]\">Dichiarazione di Avvenuta manutenzione (DAM)</a>";#gac02
     }
@@ -357,7 +394,10 @@ if {$coimtgen(regione) eq "MARCHE" || $coimtgen(regione) eq "BASILICATA"} {#nic0
 
 # ant01: aggiungo il link alle dichiarazioni di frequenza.
 # rom07: aggiunta condizione per la Basilicata.
-if {$coimtgen(regione) eq "MARCHE" || $coimtgen(regione) eq "BASILICATA"} {#ant01: aggiunta if e suo contenuto
+#rom14: Aggiunta condizione per Provincia di Rieti
+#rom16: Aggiunta condizione per "iter2019-portal-dev"
+#rom17: Modificata condizione di rom14 per aggiungere anche Provincia di Frosinone
+if {$coimtgen(regione) eq "MARCHE" || $coimtgen(regione) eq "BASILICATA" || $coimtgen(ente) in [list "PRI" "PFR"] || $db_name eq "iter2019-portal-dev"} {#ant01: aggiunta if e suo contenuto
     set sw_dichiarazioni_frequenza "t"
 } else {
     set sw_dichiarazioni_frequenza "f"
@@ -388,18 +428,25 @@ if {$sw_dichiarazioni_frequenza eq "t"} {#ant01: aggiunta if e suo contenuto
 }
 
 if {$coimtgen(regione) eq "MARCHE"} {#rom04 aggiunta if e suo contenuto
+
+    set is_only_print_p "t";#rom09
+    
     switch $flag_tipo_impianto {
 	R {
 	    append link_aggiungi "<br> o Stampa/scarica il <a href=\"Info-aggiuntive-1bis_4.1bis-REE-Tipo-1.pdf\" target=\"_blank\"> modulo di rilevazione dati per la compilazione delle schede 1.bis e 4.1bis</a>"
+	    append link_aggiungi "<br> o Stampa il <a href=\"coimdimp-rct-layout?[export_url_vars flag_tracciato last_cod_dimp caller url_list_aimp url_aimp cod_impianto is_only_print_p nome_funz extra_par nome_funz_caller]\"> modello RCEE precompilato senza dati del Controllo del rendimento di combustione</a>";#rom09
 	}
 	F {
 	    append link_aggiungi "<br> o Stampa/scarica il <a href=\"Info-aggiuntive-1bis_4.4bis-REE-Tipo-2.pdf\" target=\"_blank\"> modulo di rilevazione dati per la compilazione delle schede 1.bis e 4.4bis</a>"
+	    append link_aggiungi "<br> o Stampa il <a href=\"coimdimp-fr-layout?[export_url_vars flag_tracciato last_cod_dimp caller url_list_aimp url_aimp cod_impianto is_only_print_p nome_funz extra_par nome_funz_caller]\"> modello RCEE precompilato senza dati del Controllo del rendimento di combustione</a>";#rom09
 	}
 	T {
 	    append link_aggiungi "<br> o Stampa/scarica il <a href=\"Info-aggiuntive-1bis_4.5bis-REE-Tipo-3.pdf\" target=\"_blank\"> modulo di rilevazione dati per la compilazione delle schede 1.bis e 4.5bis</a>"
+	    append link_aggiungi "<br> o Stampa il <a href=\"coimdimp-r3-layout?[export_url_vars flag_tracciato last_cod_dimp caller url_list_aimp url_aimp cod_impianto is_only_print_p nome_funz extra_par nome_funz_caller]\"> modello RCEE precompilato senza dati del Controllo del rendimento di combustione</a>";#rom09
 	}
 	C {
 	    append link_aggiungi "<br> o Stampa/scarica il <a href=\"Info-aggiuntive-1bis_4.6bis-REE-Tipo-4.pdf\" target=\"_blank\"> modulo di rilevazione dati per la compilazione delle schede 1.bis e 4.6bis</a>"
+	    append link_aggiungi "<br> o Stampa il <a href=\"coimdimp-r4-layout?[export_url_vars flag_tracciato last_cod_dimp caller url_list_aimp url_aimp cod_impianto is_only_print_p nome_funz extra_par nome_funz_caller]\"> modello RCEE precompilato senza dati del Controllo del rendimento di combustione</a>";#rom09
 	}
     }
 };#rom04
@@ -415,24 +462,45 @@ set cod_manu [iter_check_uten_manu $id_utente];#sim04
 #sim aggiunto condizione sulle marche
 #rom06 sostiuito $coimtgen(ente) eq "PSA" con $coimtgen(regione) eq "CAMPANIA" 
 #rom08 aggiunta condizione sulla Basilicata
+#rom10 aggiunta condizione su Palermo
+#rom11 Sostituite le varie condizioni degli enti di Ucit con un'unica condizione su tutta Regione
+#rom14: Aggiunta condizione per Provincia di Rieti
+#rom17: Aggiunta condizione per Provincia di Frosinone
 if {($coimtgen(ente) eq "PRC" && $cod_manu eq "") ||
-        $coimtgen(ente) eq "PUD" ||
-        $coimtgen(ente) eq "PGO" ||
-        $coimtgen(ente) eq "PTS" ||
-        $coimtgen(ente) eq "PPN" ||
+    ($coimtgen(regione) eq "FRIULI-VENEZIA GIULIA" && $flag_tipo_impianto == "R") ||
     ($coimtgen(ente) eq "PTA" && $cod_manu eq "") ||
     ($coimtgen(regione) eq "CAMPANIA" && $cod_manu eq "" && $flag_tipo_impianto == "R") ||
     ($coimtgen(regione) eq "MARCHE" && $cod_manu eq "" && $flag_tipo_impianto == "R") ||
-    ($coimtgen(regione) eq "BASILICATA" && $cod_manu eq "" && $flag_tipo_impianto == "R")} {;#sim03
+    ($coimtgen(regione) eq "BASILICATA" && $cod_manu eq "" && $flag_tipo_impianto == "R") ||
+    ($coimtgen(ente) eq "PPA"  && $cod_manu eq "" && $flag_tipo_impianto == "R") ||
+    ($coimtgen(ente) eq "PRI" && $cod_manu eq "" && $flag_tipo_impianto == "R") ||
+    ($coimtgen(ente) eq "PFR" && $cod_manu eq "" && $flag_tipo_impianto == "R")} {;#sim03
     append link_aggiungi "<br> o Aggiungi un <a href=\"$gest_prog?funzione=I&flag_tracciato=NW&[export_url_vars last_cod_dimp caller url_list_aimp url_aimp cod_impianto nome_funz extra_par nome_funz_caller flag_tracciato]\">RCEE senza bollino virtuale</a>"
+}
+
+if {$coimtgen(ente) in [list "PCE" "PFR"] && $flag_tipo_impianto == "R"} {#rom15 Aggiunta if e il suo contenuto
+
+    append link_aggiungi "<br> o Aggiungi un <a href=\"$gest_prog?funzione=I&flag_tracciato=O1&[export_url_vars last_cod_dimp caller url_list_aimp url_aimp cod_impianto nome_funz extra_par nome_funz_caller flag_tracciato]\">RCEE con Ravvedimento Operoso</a>"
+
 }
 
 #rom06 Sostiuitte condizioni su regione Marche ed ente PSA 
 #rom06 con $coimtgen(regione) in [list "MARCHE" "CAMPANIA"]
 #rom08 aggiunta condizione sulla Basilicata
-if {$coimtgen(regione) in [list "MARCHE" "CAMPANIA" "BASILICATA"] && $cod_manu eq "" && $flag_tipo_impianto == "F"} {;#sim13 if e suo contenuto
+#rom10 aggiunta condizione su Palermo
+#rom14: Aggiunta condizione per Provincia di Rieti
+#rom17: Aggiunta condizione per Provincia di Frosinone
+if {($coimtgen(regione) in [list "MARCHE" "CAMPANIA" "BASILICATA"] || $coimtgen(ente) in [list "PPA" "PRI" "PFR"]) && $cod_manu eq "" && $flag_tipo_impianto == "F"} {;#sim13 if e suo contenuto
     append link_aggiungi "<br> o Aggiungi un <a href=\"$gest_prog?funzione=I&flag_tracciato=NF&[export_url_vars last_cod_dimp caller url_list_aimp url_aimp cod_impianto nome_funz extra_par nome_funz_caller flag_tracciato]\">RCEE senza bollino virtuale</a>"
 }
+
+if {$coimtgen(ente) in [list "PCE" "PFR"] && $flag_tipo_impianto == "F"} {#rom15 Aggiunta if e il suo contenuto
+
+    append link_aggiungi "<br> o Aggiungi un <a href=\"$gest_prog?funzione=I&flag_tracciato=O2&[export_url_vars last_cod_dimp caller url_list_aimp url_aimp cod_impianto nome_funz extra_par nome_funz_caller flag_tracciato]\">RCEE con Ravvedimento Operoso</a>"
+
+}
+
+
 set rows_per_page   [iter_set_rows_per_page $rows_per_page $id_utente]
 set link_righe      [iter_rows_per_page     $rows_per_page]
 
@@ -444,26 +512,26 @@ set link_scansionati  "\[export_url_vars cod_dimp  cod_impianto url_list_aimp ur
 if {$potenza >= 35} {
     if {[string range $id_utente 0 1] eq "MA"} {
 	set actions "
- <td nowrap><a href=\"$gest_prog?funzione=V&flag_tracciato=F&$link\">Selez.</a></td>"
+ <td nowrap><a href=\"$gest_prog?funzione=V&flag_tracciato=F&$link\" class=\"link-button-2\">Selez.</a></td>"
     } else {
-	if {$coimtgen(regione) ne "MARCHE"} {
+	if {$coimtgen(regione) ne "MARCHE"} {#but01
 	    set actions "
- <td nowrap><a href=\"$gest_prog?funzione=V&flag_tracciato=F&$link\">Selez.</a> - <a href=\"coimdimp-gen-chg?$link\">Mod.Gen.</a></td>"
+ <td nowrap><a href=\"$gest_prog?funzione=V&flag_tracciato=F&$link\" class=\"link-button-2\">Selez.</a> - <a href=\"coimdimp-gen-chg?$link\" class=\"link-button-2\">Mod.Gen.</a></td>"
 	} else {
 	    set actions "
-<td nowrap><a href=\"$gest_prog?funzione=V&flag_tracciato=F&$link\">Selez.</a></td>"
+<td nowrap><a href=\"$gest_prog?funzione=V&flag_tracciato=F&$link\" class=\"link-button-2\">Selez.</a></td>"
     }
     }
 } else {
     if {[string range $id_utente 0 1] eq "MA"} {
 	set actions "
- <td nowrap><a href=\"$gest_prog?funzione=V&flag_tracciato=G&$link\">Selez.</a></td>"
+ <td nowrap><a href=\"$gest_prog?funzione=V&flag_tracciato=G&$link\" class=\"link-button-2\">Selez.</a></td>"
     } else {
         if {$coimtgen(regione) ne "MARCHE"} {
 	    set actions "
- <td nowrap><a href=\"$gest_prog?funzione=V&flag_tracciato=G&$link\">Selez.</a> - <a href=\"coimdimp-gen-chg?$link\">Mod.Gen.</a></td>"
+ <td nowrap><a href=\"$gest_prog?funzione=V&flag_tracciato=G&$link\" class=\"link-button-2\">Selez.</a> - <a href=\"coimdimp-gen-chg?$link\" class=\"link-button-2\">Mod.Gen.</a></td>"
 	} else {            set actions "
- <td nowrap><a href=\"$gest_prog?funzione=V&flag_tracciato=G&$link\">Selez.</a></td>"
+ <td nowrap><a href=\"$gest_prog?funzione=V&flag_tracciato=G&$link\" class=\"link-button-2\">Selez.</a></td>"
 	}
     }
 }
@@ -474,18 +542,18 @@ set js_function ""
 
 set azioni_aggiuntive "
 <td align=center><table cellpadding=0 cellspacing=0 border=0><tr>
-    <td align=center><a href=\"coimdimp-alle-ins?tabella=coimdimp&$link_scansionati\">Allega scansione</a></td>
-    <td align=center>&nbsp;<a href=\"coimdimp-alle-view?tabella=coimdimp&$link_scansionati\">Vedi scansione</a></td>
-    <td align=center>&nbsp;<a href=\"coimdimp-alle-delete?tabella=coimdimp&$link_scansionati\"onClick=\"javascript:return(confirm('Confermi eliminazione scansionato allegato?'))\">Elimina scansione</a></td>"
-
+    <td align=center nowrap><a href=\"coimdimp-alle-ins?tabella=coimdimp&$link_scansionati\" class=\"link-button-2\">Allega scansione</a></td>
+    <td align=center nowrap>&nbsp;<a href=\"coimdimp-alle-view?tabella=coimdimp&$link_scansionati\" class=\"link-button-2\">Vedi scansione</a></td>
+    <td align=center nowrap>&nbsp;<a href=\"coimdimp-alle-delete?tabella=coimdimp&$link_scansionati\"onClick=\"javascript:return(confirm('Confermi eliminazione scansionato allegato?'))\" class=\"link-button-2\">Elimina scansione</a></td>"
 if {$flag_portafoglio == "T"} {
 
     if {$ruolo eq "manutentore"} {;#sim02
-
-	append azioni_aggiuntive "
-    <td align=center>&nbsp;<a href=\"$gest_prog_2?funzione=M&$link&tabella=stn\"onClick=\"javascript:return(confirm('Confermi accesso alla gestione di una dichiarazione sostitutiva che storni la presente?'))\">Ins. mod. sost.</a></td>
-    <td align=center>&nbsp;<a href=\"coimdimp-ricmot-storno?$link\"onClick=\"javascript:return(confirm('Confermi richiesta?'))\">Richiedi storno</a></td>
+	if {$coimtgen(regione) ne "FRIULI-VENEZIA GIULIA"} {#rom11 Aggiunta if ma non il suo contenuto
+	    append azioni_aggiuntive "
+    <td align=center>&nbsp;<a href=\"$gest_prog_2?funzione=M&$link&tabella=stn\"onClick=\"javascript:return(confirm('Confermi accesso alla gestione di una dichiarazione sostitutiva che storni la presente?'))\" class=\"link-button-2\">Ins. mod. sost.</a></td>
+    <td align=center>&nbsp;<a href=\"coimdimp-ricmot-storno?$link\"onClick=\"javascript:return(confirm('Confermi richiesta?'))\" class=\"link-button-2\">Richiedi storno</a></td>
 "
+	};#rom11
     };#sim02
 
     if {$ruolo != "manutentore" && $ruolo != "ammin"} {
@@ -494,7 +562,7 @@ if {$flag_portafoglio == "T"} {
         #sim02 <td align=center>&nbsp;<a href=\"coimdimp-acc-storno?$link\"onClick=\"javascript:return(confirm('Confermi accettazione storno?'))\">Accetta storno</a></td>"
         
 	append azioni_aggiuntive "
-        <td align=center>&nbsp;<a href=\"coimdimp-rif-storno?$link\"onClick=\"javascript:return(confirm('Confermi rifiuto storno?'))\">Rifiuta storno</a></td>
+        <td align=center nowrap>&nbsp;<a href=\"coimdimp-rif-storno?$link\"onClick=\"javascript:return(confirm('Confermi rifiuto storno?'))\" class=\"link-button-2\">Rifiuta storno</a></td>
         "
     }
 }
@@ -573,15 +641,27 @@ if {$ctr_rec == $rows_per_page} {
     append link_altre_pagine " o alla <a href=\"$curr_prog?$url_vars\">pagina successiva</a>"
 }
 
+if {$cod_manu ne ""} {#rom12 Aggiunta if e il suo contenuto
+    if {![db_0or1row q "select 1
+                          from coimaimp
+                         where cod_impianto = :cod_impianto
+                           and ( cod_manutentore  = :cod_manu
+                              or cod_installatore = :cod_manu)"]} {
+	set link_aggiungi ""
+    }
+}
+
+
 # creo testata della lista
+#rom16 tolto link_aggiungi e sostituito con ""
 set list_head [iter_list_head  $form_di_ricerca $col_di_ricerca \
-              $link_aggiungi $link_altre_pagine $link_righe "Righe per pagina"]
+              "" $link_altre_pagine $link_righe "Righe per pagina"]
 
 
 if {$flag_sup == "S"} {
     ##lista allegati
     set link    "\[export_url_vars cod_nove cod_impianto url_list_aimp url_aimp nome_funz nome_funz_caller extra_par \]"
-    set actions2 "<td nowrap><a href=\"coimnove-gest?funzione=V&$link\">Selez.</a></td>"
+    set actions2 "<td nowrap><a href=\"coimnove-gest?funzione=V&$link\" class=\"link-button-2\">Selez.</a></td>"
     set js_function ""
     
     # imposto la struttura della tabella
@@ -599,7 +679,7 @@ if {$flag_sup == "S"} {
 
     ##lista allegati
     set link    "\[export_url_vars cod_noveb cod_impianto url_list_aimp url_aimp nome_funz nome_funz_caller extra_par \]"
-    set actions3 "<td nowrap><a href=\"coimnoveb-gest?funzione=V&$link\">Selez.</a></td>"
+    set actions3 "<td nowrap><a href=\"coimnoveb-gest?funzione=V&$link\" class=\"link-button-2\">Selez.</a></td>"
     set js_function ""
     
     # imposto la struttura della tabella
@@ -628,7 +708,7 @@ if {$coimtgen(regione) eq "MARCHE" && $flag_sup == "S"} {#sim14 if e suo contenu
     
     ##lista allegati 284
     set link    "\[export_url_vars cod_noveb cod_impianto url_list_aimp url_aimp nome_funz nome_funz_caller extra_par \]"
-    set actions_284 "<td nowrap><a href=\"coimnove-284-gest?funzione=V&$link\">Selez.</a></td>"
+    set actions_284 "<td nowrap><a href=\"coimnove-284-gest?funzione=V&$link\" class=\"link-button-2\">Selez.</a></td>"
         
     # imposto la struttura della tabella
     set table_def_284 [list \
@@ -656,7 +736,7 @@ if {$coimtgen(regione) eq "MARCHE" && $flag_sup == "S"} {#sim14 if e suo contenu
 
     ##lista allegati 286
     set link    "\[export_url_vars cod_noveb cod_impianto url_list_aimp url_aimp nome_funz nome_funz_caller extra_par \]"
-    set actions_286 "<td nowrap><a href=\"coimnove-286-gest?funzione=V&$link\">Selez.</a></td>"
+    set actions_286 "<td nowrap><a href=\"coimnove-286-gest?funzione=V&$link\" class=\"link-button-2\">Selez.</a></td>"
         
     # imposto la struttura della tabella
     set table_def_286 [list \
@@ -690,7 +770,7 @@ if {$coimtgen(regione) eq "MARCHE" && $flag_sup == "S"} {#sim14 if e suo contenu
 if {$sw_dichiarazioni_frequenza eq "t"} {#ant01: aggiunta if ed il suo contenuto
     # Lista delle dichiarazioni di frequenza ed elenco operazioni di controllo
     set link "\[export_url_vars cod_dope_aimp cod_impianto url_list_aimp url_aimp last_cod_dimp nome_funz nome_funz_caller extra_par \]"
-    set actions4 "<td nowrap><a href=\"coimdope-aimp-gest?funzione=V&$link\">Selez.</a></td>"
+    set actions4 "<td nowrap><a href=\"coimdope-aimp-gest?funzione=V&$link\" class=\"link-button-2\">Selez.</a></td>"
     
     set table_def4 [list \
 			[list actions        "Azioni"       no_sort $actions4] \

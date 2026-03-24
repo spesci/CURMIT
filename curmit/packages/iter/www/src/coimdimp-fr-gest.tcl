@@ -20,6 +20,125 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== ==================================================================================
+    mat02 28/11/2025 Per il momento aggiunto alle Marche una query sel_aimp_old personalizzata.
+    mat02            Reso readonly i campi cognome_manu e nome_manu per i manutentori.
+    
+    rom40 19/11/2025 Dopo videocall tra Sandro e Regione del 18/11 si e deciso che per gli rcee di prima accensione e
+    rom40            sostituzione inseriti dalle ditte di manutenzione su delega degli installatori (Punto 40 MEV Regione Marche)
+    rom40            l'operatore da scegliere non deve essere uno della ditta di installazione ma uno della ditta di manutenzione.
+
+    rom39 24/10/2025 Su Regione Friuli nessun utente deve poter modificare la data_scadenza_autocert.
+
+    ric04 03/10/2025 Aggiunta lettura storico ditta di manutenzione (Punto 4 MEV Regione Marche).
+
+    ric03 01/10/2025  Aggiunta gestione ditta delegata (Punto 40 MEV Regione Marche).
+
+    rom38 01/09/2025 Modificato intervento di but02 su classe ah-jquery-date, per i campi data_controllo e data_scadenza_autocert
+
+    mat01 27/01/2025 Corretto problema sul refresh della pagina riscontrato dopo aggiornamento a
+    mat01            OpenACS 5.10.
+
+    rom37 14/01/2025 Modificato intervento di but06: per andare a popolare il campo a tendina sul motivo
+    rom37            di compilazione di RCEE devo guardare la maggiore tra la potenza in riscaldamento e
+    rom37            raffrescamento.
+
+    but06 29/11/2024 MEV63:  Per la potenza < 12kw ho modificato la lista di motivo di compilazione di RCEE,
+    but06            e il valore della data di scadenza solo per regione marche.
+    
+    rom36 24/09/2024 Settate le scadenze per Provincia di Frosinone. Sandro ha detto che Frosinone deve visualizzare il
+    rom36            codice bollino con il vallore dell'id cod_dimp come già fatto per Napoli. Palermo, Rieti e Caserta.
+
+    but05 18/10/2024 Aggiunto il controllo su flag_pagato nella modifica per nn cambiare il valore del campo.
+
+    but04 22/07/2024 Aggiunto il pop-up bonifica campagna.
+
+    rom35 06/08/2024 Gestite nuove particolarità di Benevento con cambio regolamentare.
+
+    rom34 17/06/2024 Caserta ha chiesto di rendere esenti gli rcee sui secondi generatori.
+
+    rom33 11/04/2024 Caserta ha chiesto di visualizzare il codice bollino con il vallore dell'id cod_dimp come gia'
+    rom33            fatto anche per Napoli. Palermo e Rieti.
+
+    rom32 24/06/2024 Modificate le scadenze per Comune di Benevento.
+
+    but03 26/04/2023 Modificato "Controllo del rendimento di combustione" con "Verifica energetica" e l'ultima
+    but03            lettera nelle opzioni proposte per tale campo, mettendo la "A" finale al posto della "O".
+    
+    rom31 04/12/2023 Rieti ha chiesto di valorizzare il codice bollino con il valore dell'id cod_dimp
+    rom31            come gia' fatto per Napoli e Palermo.
+
+    ric02 15/11/2023 Settate le scadenze per Provincia di Rieti.
+
+    rom30 19/12/2023 Solo per Napoli, su richiesta di Armena Sviluppo aggiunto un riquadro di warning per
+    rom30            la mancata scansione dell'rcee da allegare.
+
+    rom29 19/10/2023 Sandro ha chiesto di riportare la modifica di rom20 fatta per Palermo anche per Napoli:
+    rom29            il codice bollino sara' valorizzato con il valore dell'id cod_dimp.
+
+    rom28 09/08/2023 Settate le scadenze per la Citta' Metropolitana di Napoli.
+
+    but02 25/07/2023  Aggiunto la "class ah-jquery-date" per tutti i campi data. 
+
+    but01 24/07/2023 Tutti gli enti potrebbero avere le potenze in riscaldamento uguali a 0 kW quindi
+    but01            ho commentato i relativi controlli che veniva gia' saltato per Marche e Friuli.
+
+    rom27 19/07/2023 Udine e Gorizia non facevano il controllo sul codice fiscale, ora la if e' su tutta regione Fiuli.
+
+    rom26 30/06/2023 Tutti gli enti potrebbero avere le potenze in riscaldamento uguali a 0 kW quindi
+    rom26            ho commentato i relativi controlli che veniva gia' saltato per le Marche.
+
+    rom25 17/05/2023 Committate modifiche per Palermo sul numero di giorni.
+
+    rom24 01/02/2023 Paravan ha richiesto che per Regione Friuli siano sempre attive le funzioni di modifica e stampa degli rcee.
+    rom24            Per regione Friuli il flag_pagato va messo sempre a Si. 
+
+    rom23 18/01/2023 Salerno ha richiesto che la tariffa sia calcolata non in base alla data in cui ci si trova ma
+    rom23            in base alla data dell'rcee. Sandro ha detto che va bene per tutti gli enti tranne le Marche.
+
+    rom22 12/01/2023 Settate le scadenze per Benevento.
+
+    ric01 22/12/2022 Aggiunta if per controllo su Cod.Fisc. o P.IVA a seconda della natura giuridica del responsabile.
+
+    rom21 01/08/2022 Modifiche per allineamento enti Ucit al nuovo cvs:
+    rom21            Segnalazione di Ucit: La data di scadenza deve essere calcolata in base alla maggiore
+    rom21            tra la potenza nominale in riscaldamento e in raffrescamento dell'impianto.
+    rom21            UCIT ha richiesto che la potenza utile di raffrescamento non sia piu' visualizzata.
+    rom21            Al suo posto va visualizzata la potenza frigorifera nominale.
+    rom21            UCIT ha richiesto che per gli impianti del freddo non sia possibile inserire RCEE se
+    rom21            la potenza utile del singolo generatore e' minore o uguale a 12 Kw.
+    rom21            Le particolarita' e le modifiche fatte per i vari enti di UCIT le vado a mettere
+    rom21            in un'unica condizione sulla Regione Friuli.
+
+    rom20 06/12/2022 Implementazione per Palermo richiesta con mail "Implementazioni" di Sandro del 01/12/2022, riporto testo:
+    rom20            Inserimento di un codice bollino nell'apposito campo del Rapporto di controllo. Tale codice sarà uguale a
+    rom20            quello del  campo  progressivo inserimento. Per gli impianti con piu' generatori il codice bollino sarà
+    rom20            rilasciato solo sul primo generatore dove è presente il contributo.
+    rom20            Tale implementazionzione riguarda tutte le tipologie di RCEE e le stampe. Il numero di bollino potrà essere
+    rom20            rilasciato solo al momento dell'inserimento. L'implementazione sara' visibile solo per Palermo.
+    
+    rom19 07/10/2022 Settate le scadenze per la citta' metropolitana di Palermo.
+    rom19            Gli rcee sul secondo generatore sono esenti su Palermo. Per Palermo il flag_pagato va messo sempre a Si.
+    rom19            Con Sandro si e' deciso di fare le if solo per Palemo e non per tutta la Regione Sicilia
+    rom19            perche' la citta' metropolitana ha particolarita' proprie.
+
+    rom18 21/09/2022 Modificato intervento di rom15, la tariffa per le pompe di calore va dimezzata solo
+    rom18            per il Comune di Salerno e non per tutta Regione Campania.
+
+    rom17 16/05/2022 Modificate le scadenze per Regione Marche su richiesta di Giuliodori fatta per mail
+    rom17            "calcolo scadenze pompe di calore" il 21/04/2022.
+
+    sim40 17/01/2022 Corretto errore in caso di RCEE su secondo generatore che deve essere esente
+
+    rom16 20/12/2021 Modificato intervento di rom14, Regione Basilicata ha cambiato le scadenze.
+
+    rom15 12/11/2021 In caso di una pompa di calore con sistema di azionamento elettrico o fiamma diretta
+    rom15            se la potenza e' > di 100 Kw e minore di 350 Kw, oppure, >= 350 Kw allora la tariffa 
+    rom15            deve essere dimezzata.
+
+    gia01 05/11/2021 Commentati i controlli sulle anomalie
+
+    rom14 13/05/2021 Settate le scadenze per Regione Basilicata.
+
     sim39 04/08/2021 Corretto modifica gac06 che impediva di editare correttamente dei campi (es. rct_dur_acqua)
     
     rom13 03/08/2021 Regione Marche ha chiesto che non sia piu' attivo il controllo che impediva di
@@ -258,6 +377,12 @@ ad_page_contract {
     {cod_tprc             ""}
     {is_warning_p         "f"}
     {is_only_view         "f"}
+
+    {cod_manu_dele          ""}
+    {rag_sociale_delegato   ""}
+    {cod_opma_dele          ""}
+    {nome_opma_delegato     ""}
+    {cognome_opma_delegato  ""}
 } -properties {
     page_title:onevalue
     context_bar:onevalue
@@ -304,9 +429,51 @@ if {$funzione ne "I"} {
     set menu 1
 }
 
+iter_get_coimtgen;#rom24
+
+if {$coimtgen(regione) eq "FRIULI-VENEZIA GIULIA"} {#rom24 Aggiunta if e il suo contenuto
+    set menu 1
+    set is_only_view "f"
+}
+
 if {$is_only_view} {#gac10 aggiunta if e suo contenuto
     set menu 0
     set funzione V
+}
+
+set warning_scansione_mancante "";#rom30
+if {$coimtgen(ente) eq "PNA"} {#rom30 Aggiunta if e il suo contenuto
+    if {$funzione eq "I"} {
+	set warning_scansione_mancante "
+<tr>
+  <td>
+<table width=70% class=warning_scansione_mancante>
+  <tr>
+    <td><b>Dopo l'inserimento dell'RCEE va aggiunta la scansione di quest'ultimo con la funzione Allega scansione disponibile sulla lista degli RCEE.</b></td>
+  </tr>
+</table>
+  </td>
+</tr>
+"
+    } else {
+	if {![db_0or1row q "select 1
+                              from coimallegati
+                             where tabella = 'coimdimp'
+                               and codice  = :cod_dimp"]} {
+
+	    set warning_scansione_mancante "
+<tr>
+  <td>
+<table width=70% class=warning_scansione_mancante>
+  <tr>
+    <td><b>&Egrave; necessario inserire la scansione dell'RCEE con la funzione Allega scansione disponibile sulla lista degli RCEE.</b></td>
+  </tr>
+</table>
+  </td>
+</tr>
+"
+	}
+    }
 }
 
 set flag_errore_data_controllo "f";#sim15
@@ -355,7 +522,7 @@ db_1row query "select id_settore
                  from coimuten
                 where id_utente = :id_utente";#sim23
 
-iter_get_coimtgen
+#rom24 spostato in alto iter_get_coimtgen
 set flag_ente        $coimtgen(flag_ente)         
 set sigla_prov       $coimtgen(sigla_prov)
 set cod_comu         $coimtgen(cod_comu)
@@ -406,6 +573,24 @@ set controllo_tariffa {#sim07
 	set flag_errore_data_controllo "t"
     }
 
+    if {$coimtgen(ente) ne "MARCHE"} {#rom22 Aggiunte if, else e il loro contenuto
+	
+	if {$flag_errore_data_controllo eq "f" && $data_controllo ne "" && [iter_check_date $data_controllo] != 0} {
+	    
+	    set data_controllo_tariffa [iter_check_date $data_controllo]
+	    
+	} else {
+	    
+	    set data_controllo_tariffa [iter_set_sysdate]
+	    
+	}
+	
+    } else {
+	
+	set data_controllo_tariffa [iter_set_sysdate]
+	
+    }
+
     if {[db_0or1row sel_tari ""] == 0} {
 	set tariffa ""
 	set flag_tariffa_impianti_vecchi "";#sim07
@@ -447,6 +632,75 @@ set controllo_tariffa {#sim07
     } else {
 	set rcee_su_secondo_gen "f"
     }
+    
+    
+    #rom18if {$coimtgen(regione) eq "CAMPANIA"} {}#rom15 Aggiunta if e suo contenuto
+    if {$coimtgen(ente) eq "CSALERNO"} {#rom18 Aggiunta if ma non il suo contenuto
+	db_1row q "select cod_tpco as cod_tpco_per_tari
+                     from coimgend
+                    where gen_prog =:gen_prog
+                      and cod_impianto=:cod_impianto"
+
+	# Per pompe di calore a compresisone di vapore ad azionamento elettrico (cod_tpco 2)
+	# e/o ad assorbimento a fiamma diretta (cod_tpco 1):
+	# Con potenza impianto maggiore di 100 Kw e minore di 350 Kw, oppure,
+	# con potenza impianto maggiore o uguale a 350 Kw la tariffa va dimezzata.
+	if {$cod_tpco_per_tari in [list "1" "2"]} {
+	    if {$potenza_old > 100.00} {
+		set tariffa [expr [iter_check_num $tariffa 2] / 2.00]
+		set tariffa [iter_edit_num $tariffa 2]
+	    }
+	} 
+	
+    }
+
+    if {$coimtgen(ente) eq "PNA"} {#rom28 Aggiunta if e il suo contenuto
+	# Per pompe di calore a compresisone di vapore ad azionamento elettrico (cod_tpco 2)
+        # e/o ad assorbimento a fiamma diretta (cod_tpco 1):
+        # Con potenza impianto maggiore di 100 Kw e minore di 350 Kw, oppure,
+        # con potenza impianto maggiore o uguale a 350 Kw la tariffa va dimezzata.
+	db_1row q "select cod_tpco as cod_tpco_per_tari
+                     from coimgend
+                    where gen_prog =:gen_prog
+                      and cod_impianto=:cod_impianto"
+
+	if {$cod_tpco_per_tari in [list "1" "2"]} {
+            if {$potenza_old > 100.00} {
+                set tariffa [expr [iter_check_num $tariffa 2] / 2.00]
+                set tariffa [iter_edit_num $tariffa 2]
+            }
+        }
+	# Per pompe di calore ad assorbimento alimentate con energia termica (cod_tpco 3)
+	# la tariffa va sempre dimezzata a prescindere dalla fascia di potenza.
+	if {$cod_tpco_per_tari in [list "3"]} {
+	    set tariffa [expr [iter_check_num $tariffa 2] / 2.00]
+	    set tariffa [iter_edit_num $tariffa 2]
+	}
+    }
+
+    if {$coimtgen(ente) eq "CBENEVENTO"} {#rom35 Aggiunta if e il suo contenuto
+	# Per pompe di calore a compresisone di vapore ad azionamento elettrico
+        # e/o ad assorbimento a fiamma diretta (cod_tpco 1):
+        # Con potenza impianto maggiore di 100 Kw e minore o uguale di 350 Kw, oppure,
+        # con potenza impianto maggiore di 350 Kw la tariffa va dimezzata.
+	db_1row q "select cod_tpco as cod_tpco_per_tari
+                     from coimgend
+                    where gen_prog =:gen_prog
+                      and cod_impianto=:cod_impianto"
+
+	if {$cod_tpco_per_tari in [list "1"]} {
+            if {$potenza_old > 100.00} {
+                set tariffa [expr [iter_check_num $tariffa 2] / 2.00]
+                set tariffa [iter_edit_num $tariffa 2]
+            }
+        }
+	# Per pompe di calore ad assorbimento alimentate con energia termica (cod_tpco 3)
+	# la tariffa va sempre dimezzata a prescindere dalla fascia di potenza.
+	if {$cod_tpco_per_tari in [list "3"]} {
+	    set tariffa [expr [iter_check_num $tariffa 2] / 2.00]
+	    set tariffa [iter_edit_num $tariffa 2]
+	}
+    }
 
     #sim15 aggiunto condizione su rcee_su_secondo_gen
     if {($coimtgen(regione) eq "CALABRIA") && ($flag_status eq "N" || $rcee_su_secondo_gen eq "t") } {#sim19 if else e loro contenuto
@@ -464,11 +718,23 @@ set controllo_tariffa {#sim07
     } elseif {($coimtgen(ente) eq "PBT") && ($rcee_su_secondo_gen eq "t")} {#sim30
 	set tariffa 15
 	set esente "f"
+    } elseif {$coimtgen(ente) eq "CBENEVENTO" && $rcee_su_secondo_gen eq "t"} {#rom22 aggiunta elseif e suo contenuto
+
+	set tariffa 0
+        set esente "t"
+    } elseif {$coimtgen(ente) eq "PCE" && $rcee_su_secondo_gen eq "t"} {#rom34 aggiunta elseif e suo contenuto
+
+        set tariffa 0
+        set esente "t"
+	
     } elseif {$coimtgen(regione) eq "CAMPANIA" && $rcee_su_secondo_gen eq "t"} {#rom09 aggiunta elseif e suo contenuto
 	
         set tariffa 16
         set esente "f"
 	
+    } elseif {$coimtgen(ente) eq "PPA" && $rcee_su_secondo_gen eq "t"} {#rom19 Aggiunta elseif e il suo contenuto
+	set tariffa 0
+	set esente "t"	
     } else {
 	set esente "f"
     }
@@ -481,7 +747,7 @@ set controllo_tariffa {#sim07
     if {$esente eq "t"} {
 	set tariffa 0
     }
-
+    
 }
 
 
@@ -538,16 +804,16 @@ set pot_ter_nom_tot_max [db_string q "select iter_edit_num(potenza,2) from coima
 # agg dob cind
 db_1row sel_mod_gend "select flag_mod_gend,flag_cind from coimtgen"
 
-set titolo "RCEE Tipo 2"
+set titolo "RCEE tipo 2"
 switch $funzione {
-    M {set button_label "Conferma Modifica"
+    M {set button_label "Conferma modifica"
 	set page_title   "Modifica $titolo"}
-    D {set button_label "Conferma Cancellazione"
-	set page_title   "Cancellazione $titolo"}
-    I {set button_label "Conferma Inserimento"
-	set page_title   "Inserimento $titolo"}
+    D {set button_label "Conferma cancellazione"
+	set page_title   "Cancella $titolo"}
+    I {set button_label "Conferma inserimento"
+	set page_title   "Inserisci $titolo"}
     V {set button_label "Torna alla lista"
-	set page_title   "Visualizzazione $titolo"}
+	set page_title   "Visualizza $titolo"}
 }
 
 db_1row sel_tgen_portafoglio "select flag_portafoglio from coimtgen"
@@ -576,6 +842,15 @@ switch $funzione {
         set disabled_fld \{\}
     }
 }
+set jq_date "";#but02
+if {$funzione in "M I S"} {#but02 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
+
+set jq_date_campi_dt "";#rom38
+if {$funzione in "I"} {#rom38 Aggiunta if e contenuto
+    set jq_date_campi_dt "class ah-jquery-date"
+}
 
 if {$funzione_stn eq "I"} {
     set readonly_key \{\}
@@ -584,21 +859,34 @@ if {$funzione_stn eq "I"} {
     set disabled_flag_pagato_fld \{\}
 }
 
+set cod_manu [iter_check_uten_manu $id_utente];#mat02
+
+if {[string equal $cod_manu ""]} {#mat02 aggiunta if-else e contenuto
+
+    set readonly_manu $readonly_fld
+    
+} else {
+
+    set readonly_manu "readonly"
+}
+
+#mat02 sostituito readonly_fld con readonly_manu in cognome_manu e nome_manu
 form create $form_name \
     -html    $onsubmit_cmd
+
 
 element create $form_name cognome_manu \
     -label   "Cognome manutentore" \
     -widget   text \
     -datatype text \
-    -html    "size 15 maxlength 100 $readonly_fld {} class form_element" \
+    -html    "size 15 maxlength 100 $readonly_manu {} class form_element" \
     -optional
 
 element create $form_name nome_manu \
     -label   "Nome manutentore" \
     -widget   text \
     -datatype text \
-    -html    "size 15 maxlength 100 $readonly_fld {} class form_element" \
+    -html    "size 15 maxlength 100 $readonly_manu {} class form_element" \
     -optional
 
 element create $form_name cognome_opma \
@@ -615,7 +903,7 @@ element create $form_name nome_opma \
     -html    "size 15 maxlength 100 $readonly_fld {} class form_element" \
     -optional
 
-set cod_manu [iter_check_uten_manu $id_utente]
+#mat02 set cod_manu [iter_check_uten_manu $id_utente]
 
 if {($funzione == "I" || $funzione == "M") && [string equal $cod_manu ""]} { 
     if {$flag_portafoglio == "T"} {
@@ -672,6 +960,13 @@ if {$funzione == "I" || $funzione == "M"} {
 if {$coimtgen(regione) eq "MARCHE"} {
     #regione marche non può cambiare i soggetti dal RCEE. deve farlo sempre dalla schermata della scheda 1.6 Soggetti che operano sull'impianto
     set cerca_resp ""
+}
+
+set modif_cind "";#but04
+if {$funzione == "V"} {#but04 aggiunto if e suo contenuto
+    set cod_cind_dimp [db_string query "select max(cod_cind) from coimdimp where cod_dimp = :cod_dimp " -default ""]
+    set link_gest [export_url_vars flag_tracciato cod_dimp last_cod_dimp nome_funz nome_funz_caller extra_par caller cod_impianto url_list_aimp url_aimp url_gage flag_no_link cod_opma data_ins cod_cind_dimp]
+    set modif_cind [export_vars -base "coimdimp-bon-cind?$link_gest"]
 }
 
 element create $form_name cognome_prop \
@@ -1083,12 +1378,12 @@ if {$flag_mod_gend == "S"} {
 	-datatype text \
 	-html    "$disabled_fld {} class form_element" \
 	-optional
-
+#but02
     element create $form_name data_insta \
 	-label   "Data installazione" \
 	-widget   text \
 	-datatype text \
-	-html    "size 15 maxlength 100 $readonly_fld {} class form_element" \
+	-html    "size 15 maxlength 100 $readonly_fld {} class form_element $jq_date" \
 	-optional
 
     element create $form_name destinazione \
@@ -1106,12 +1401,12 @@ if {$flag_mod_gend == "S"} {
 #sim19	-datatype text \
 #sim19	-html    "$disabled_fld {} class form_element" \
 #sim19	-optional
-    
+#but02    
     element create $form_name data_costruz_gen \
 	-label   "Data costruzione generatore" \
 	-widget   text \
 	-datatype text \
-	-html    "size 10 $readonly_fld {} class form_element" \
+	-html    "size 10 $readonly_fld {} class form_element $jq_date" \
 	-optional
     
     element create $form_name marc_effic_energ \
@@ -1133,7 +1428,7 @@ if {$flag_mod_gend == "S"} {
 	element create $form_name pot_focolare_nom \
 	    -label   "potenza_focolare" \
 	    -widget   text \
-	    datatype text \
+	    -datatype text \
 	    -html    "size 10 $readonly_fld {} class form_element" \
 	    -optional
 	
@@ -1155,7 +1450,7 @@ if {$flag_mod_gend == "S"} {
 	    -label   "pot_focolare_lib" \
 	    -widget   text \
 	    -datatype text \
-	    -html    "size 10 readonly {} class form_element" \
+	    -html    "size 10 readonly_fld {} class form_element" \
 	    -optional;#sim29
 
 	element create $form_name num_circuiti -widget hidden -datatype text -optional;#gac06
@@ -1368,12 +1663,12 @@ if {$flag_mod_gend == "S"} {
 	-datatype text \
 	-html    "disabled {} class form_element" \
 	-optional
-    
+#but02    
     element create $form_name data_insta \
 	-label   "Data installazione" \
 	-widget   text \
 	-datatype text \
-	-html    "size 15 maxlength 100 readonly {} class form_element" \
+	-html    "size 15 maxlength 100 readonly {} class form_element $jq_date" \
 	-optional
     
     element create $form_name destinazione \
@@ -1390,12 +1685,12 @@ if {$flag_mod_gend == "S"} {
 #sim19	-datatype text \
 #sim19	-html    "disabled {} class form_element" \
 #sim19	-optional
-    
+#but02    
     element create $form_name data_costruz_gen \
 	-label   "Data costruzione generatore" \
 	-widget   text \
 	-datatype text \
-	-html    "size 10 readonly {} class form_element" \
+	-html    "size 10 readonly {} class form_element $jq_date" \
 	-optional
     
     element create $form_name marc_effic_energ \
@@ -2153,11 +2448,11 @@ element create $form_name eff_evac_fum \
     -datatype text \
     -html    "$disabled_fld {} class form_element" \
     -optional
-
+#but03 modificato il label Controllo rendimento con VERIFICA ENERGETICA
 #gac06 cont_rend non deve essere modificabile come richiesto da regione marche
 if {$coimtgen(regione) eq "MARCHE"} {#gac06 aggiunta if else e contenuto di if
     element create $form_name cont_rend_gen \
-	-label   "Controllo rendimento" \
+	-label   "Verifica energetica" \
 	-widget   text \
 	-datatype text \
 	-html    "readonly {} class form_element" \
@@ -2167,9 +2462,9 @@ if {$coimtgen(regione) eq "MARCHE"} {#gac06 aggiunta if else e contenuto di if
 
 } else {
     element create $form_name cont_rend \
-	-label   "Controllo rendimento" \
+	-label   "Verifica energetica" \
 	-widget   select \
-	-options  {{{Non effettuato} N} {Effettuato S} {{} {}}} \
+	-options  {{{Non effettuata} N} {Effettuata S} {{} {}}} \
 	-datatype text \
 	-html    "$disabled_fld {} class form_element" \
 	-optional
@@ -2307,14 +2602,14 @@ element create $form_name data_utile_inter \
     -label   "Data utile intervento" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element  $jq_date" \
     -optional
 
 element create $form_name data_controllo \
     -label   "Data controllo" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_key {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_key {} class form_element $jq_date_campi_dt" \
     -optional
 
 #gac05 aggiunto per regione marche
@@ -2323,7 +2618,7 @@ if {$coimtgen(regione) eq "MARCHE"} {
 	-label   "data_ultima_manu" \
 	-widget   text \
 	-datatype text \
-	-html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+	-html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
 	-optional
 } else {
     element create $form_name data_ultima_manu -widget hidden -datatype text -optional
@@ -2340,7 +2635,7 @@ element create $form_name data_prot \
     -label   "Data protocollo" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name saldo_manu \
@@ -2391,12 +2686,12 @@ element create $form_name costo \
     -datatype text \
     -html    "size 10 maxlength 10 $readonly_costo {} class form_element" \
     -optional
-
+#but02
 element create $form_name data_prox_manut \
     -label   "Data prossima Manutenzione" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional;#gab01
 
 if {$flag_portafoglio == "T"} {
@@ -2447,11 +2742,22 @@ if {$coimtgen(regione) ne "MARCHE"} {#gac05
 }
 #modificato flag_pagato per regione marche
 #if {$coimtgen(regione) eq "MARCHE"} {#gac05 aggiunta if e suo contenuto
-    set onchange_flag_pagato "onChange document.$form_name.__refreshing_p.value='1';document.$form_name.changed_field.value='flag_pagato';document.$form_name.submit.click()"
-    element create $form_name flag_pagato \
+set onchange_flag_pagato "onChange document.$form_name.__refreshing_p.value='1';document.$form_name.changed_field.value='flag_pagato';document.$form_name.submit.click()"
+
+if {$coimtgen(ente) eq "PPA"} {#rom19 Aggiunte if, else e loro contenuto
+    set options_fl_pagato [list "{} {}" "S&igrave; S"]
+    # {{{} {}} {S&igrave; S}}
+} elseif {$flag_combo_tipibol eq "T" && $coimtgen(regione) eq "FRIULI-VENEZIA GIULIA"} {#rom24 Aggiunta elseif e il suo contenuto
+    set options_fl_pagato [list "S&igrave; S"]
+} else {
+    set options_fl_pagato [list "{} {}" "S&igrave; S" "{No, perchè non dovuto} N" "{No, per rifiuto del responsabile d'impianto a corrispondere il contributo} C"]
+    #{{{} {}} {S&igrave; S} {"No, perchè non dovuto" N} {"No, per rifiuto del responsabile d'impianto a corrispondere il contributo" C}}
+}
+
+element create $form_name flag_pagato \
 	-label   "Pagato" \
 	-widget   select \
-	-options  {{{} {}} {S&igrave; S} {"No, perchè non dovuto" "N"} {"No, per rifiuto da parte del responsabile d'impianto a corrispondere il contributo." "C"} } \
+	-options  $options_fl_pagato \
 	-datatype text \
 	-html    "$disabled_flag_pagato_fld {} class form_element $onchange_flag_pagato" \
 	-optional
@@ -2464,12 +2770,12 @@ if {$coimtgen(regione) ne "MARCHE"} {#gac05
 #	-html    "$disabled_fld {} class form_element" \
 #	-optional
 #}
-
+#but02
 element create $form_name data_scad_pagamento \
     -label   "Data scadenza pagamento" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name scar_can_fu \
@@ -2501,19 +2807,32 @@ element create $form_name ora_fine \
     -html    "size 5 maxlength 5 $readonly_fld {} class form_element" \
     -optional
 
+if {$coimtgen(regione) in [list "FRIULI-VENEZIA GIULIA"]} {
+    set data_scadenza_autocert_readonly "readonly"
+} else {
+    if {$id_ruolo ==  "manutentore"} {
+	set data_scadenza_autocert_readonly "readonly"
+    } else {
+	set data_scadenza_autocert_readonly $readonly_fld
+	if {$funzione ne "V" } {#rom38 Aggiunta if e contenuto
+	    set jq_date_campi_dt "class ah-jquery-date"
+	}
+    }
+}
+
 if {$coimtgen(regione) eq "MARCHE"} {#gac09 if else e contenuto di if 
     element create $form_name data_scadenza_autocert \
 	-label   "Data scadenza autocertificazione" \
 	-widget   text \
 	-datatype text \
-	-html    "size 10 maxlength 10 readonly {} class form_element" \
+	-html    "size 10 maxlength 10 readonly {} class form_element $jq_date_campi_dt" \
 	-optional
 } else {#gac09
     element create $form_name data_scadenza_autocert \
 	-label   "Data scadenza autocertificazione" \
 	-widget   text \
 	-datatype text \
-	-html    "size 10 maxlength 10 $readonly_key {} class form_element" \
+	-html    "size 10 maxlength 10 $data_scadenza_autocert_readonly {} class form_element $jq_date_campi_dt" \
 	-optional
 };#gac09
 element create $form_name num_autocert \
@@ -2527,7 +2846,7 @@ element create $form_name data_arrivo_ente \
     -label   "Data di arrivo all'ente" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 
@@ -2574,7 +2893,7 @@ while {$conta < 5} {
 	-label    "data utile intervento" \
 	-widget   text \
 	-datatype text \
-	-html     "size 10 maxlength 10 $readonly_fld {} class form_element" \
+	-html     "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
 	-optional 
 }
 
@@ -2664,6 +2983,12 @@ element create $form_name fr_t_usc_lato_est.$conta_prfumi \
 						-optional 
 }
 
+db_1row query "
+     select greatest(potenza, potenza_utile) as potenza_impianto --rom37
+    --rom37 $nome_col_aimp_potenza as potenza_impianto
+       from coimaimp
+      where cod_impianto = :cod_impianto";#but06
+
 if {$coimtgen(regione) eq "MARCHE"} {#sim43 if else e suo contenuto
     
     set disabled_fld_cod_tprc \{\}
@@ -2676,6 +3001,12 @@ if {$coimtgen(regione) eq "MARCHE"} {#sim43 if else e suo contenuto
                                                          , cod_tprc 
                                                       from coimtprc"]
 
+    if {$potenza_impianto < 12.00} {#but06 aggiunto if e suo contenuto
+    set options_cod_tprc [db_list_of_lists sel_lol "select descr_tprc
+                                                         , cod_tprc
+                                                      from coimtprc
+                                                        where cod_tprc not in ('CADALLE', 'REGINAD')"]
+    }
     append options_cod_tprc " [list \"\"]"
     
     set html_change_cod_tprc "onChange document.$form_name.__refreshing_p.value='1';document.$form_name.changed_field.value='cod_tprc';document.$form_name.submit.click()"
@@ -2690,6 +3021,133 @@ if {$coimtgen(regione) eq "MARCHE"} {#sim43 if else e suo contenuto
 
 } else {
     element create $form_name cod_tprc -widget hidden -datatype text -optional
+}
+
+set ast_delega "<font color=red>*</font>";#ric03
+set delegation_active_p "f";#ric03
+set delegation_warning "";#ric03
+if {$coimtgen(regione) eq "MARCHE"} {#ric03 aggiunta if e contenuto
+
+    if {$funzione eq "I"} {
+	
+	element create $form_name cod_manu_dele -widget hidden -datatype text -optional
+	element create $form_name cod_opma_dele -widget hidden -datatype text -optional
+	
+	if {$cod_tprc eq "PRIMMES" || $cod_tprc eq "SOSTGEN" || $cod_tprc eq "RIATTIV" || $cod_tprc eq "RISTRUT"} {
+	    
+	    if {[db_0or1row q "select cod_manutentore as cod_manutentore
+                         from coimdele
+                        where delegation_state = 'A'
+                          and cod_manutentore = :cod_manu
+                          and current_date between start_date and end_date 
+                         limit 1"]} {
+
+		set ast_delega "" 
+		set delegation_active_p "t"
+		set delegation_warning "<font color=red><b>Nel caso ci sia una delega formale alla prima accensione compilare i dati relativi alla delega in fondo alla pagina.</b></font>"
+		element create $form_name rag_sociale_delegato \
+		    -label   "Ditta installazione" \
+		    -widget   text \
+		    -datatype text \
+		    -html    "size 20 maxlength 100 $readonly_fld {} class form_element " \
+		    -optional
+		
+		#cerca delle ditte delegate 
+		set cerca_manu_dele [iter_search $form_name [ad_conn package_url]/src/coimmanu-dele-list [list rag_sociale_delegato rag_sociale_delegato cod_manu_dele cod_manu_dele cod_manutentore cod_manutentore]]
+	    
+                element create $form_name cognome_opma_delegato \
+		    -label   "Tecnico che ha effettuato il controllo su delega" \
+		    -widget text \
+		    -datatype text \
+		    -html    "size 20 maxlength 100 $readonly_fld {} class form_element" \
+		    -optional;#rom40
+
+		element create $form_name nome_opma_delegato \
+		    -label   "Installatore" \
+		    -widget   text \
+		    -datatype text \
+		    -html    "size 20 maxlength 100 $readonly_fld {} class form_element" \
+		    -optional
+		
+		#cerca operatori della ditta delegata
+		#rom40set cerca_opma_dele [iter_search $form_name [ad_conn package_url]/src/coimopma-dele-list [list nome_opma_delegato nome_opma_delegato cod_opma_dele cod_opma_dele cod_manu_dele cod_manu_dele]]
+		set cerca_opma_dele      [iter_search $form_name [ad_conn package_url]/src/coimopma-list [list cod_manutentore cod_manutentore dummy cod_opma_dele nome_opma_delegato nome_opma_delegato cognome_opma_delegato cognome_opma_delegato] &fstato=$fstato];#rom40
+	    } else {
+
+		element create $form_name rag_sociale_delegato -widget hidden -datatype text -optional
+		element create $form_name nome_opma_delegato   -widget hidden -datatype text -optional
+		element create $form_name cognome_opma_delegato -widget hidden -datatype text -optional;#rom40
+	    }
+
+	} else {
+	
+	    element create $form_name rag_sociale_delegato -widget hidden -datatype text -optional
+	    element create $form_name nome_opma_delegato   -widget hidden -datatype text -optional
+	    element create $form_name cognome_opma_delegato -widget hidden -datatype text -optional;#rom40
+	}
+	
+    } else {
+	
+	if {[db_0or1row q "select 1
+                             from coimdimp
+                            where cod_dimp = :cod_dimp
+                              and cod_manu_dele is not null"]} {	
+	    set delegation_active_p "t"
+	    
+	    element create $form_name cod_manu_dele -widget hidden -datatype text -optional
+	    element create $form_name cod_opma_dele -widget hidden -datatype text -optional
+
+	    if {$funzione eq "M"} {
+		#cerca delle ditte delegate 
+		set cerca_manu_dele [iter_search $form_name [ad_conn package_url]/src/coimmanu-dele-list [list rag_sociale_delegato rag_sociale_delegato cod_manu_dele cod_manu_dele cod_manutentore cod_manutentore]]
+		#cerca operatori della ditta delegata
+		#rom40set cerca_opma_dele [iter_search $form_name [ad_conn package_url]/src/coimopma-dele-list [list nome_opma_delegato nome_opma_delegato cod_opma_dele cod_opma_dele cod_manu_dele cod_manu_dele]]
+		set cerca_opma_dele      [iter_search $form_name [ad_conn package_url]/src/coimopma-list [list cod_manutentore cod_manutentore dummy cod_opma_dele nome_opma_delegato nome_opma_delegato cognome_opma_delegato conome_opma_delegato] &fstato=$fstato];#rom40
+	    } else {
+		set cerca_manu_dele ""
+		set cerca_opma_dele ""
+	    }
+	    
+	    element create $form_name rag_sociale_delegato \
+		-label   "Ditta installazione" \
+		-widget   text \
+		-datatype text \
+		-html    "size 20 maxlength 100 $readonly_fld {} class form_element " \
+		-optional
+	    
+	    element create $form_name nome_opma_delegato \
+		-label   "Installatore" \
+		-widget   text \
+		-datatype text \
+		-html    "size 20 maxlength 100 $readonly_fld {} class form_element" \
+		-optional
+
+	    element create $form_name cognome_opma_delegato \
+		-label   "Tecnico che ha effettuato il controllo su delega" \
+		-widget text \
+		-datatype text \
+		-html    "size 20 maxlength 100 $readonly_fld {} class form_element" \
+		-optional;#rom40
+
+	} else {
+
+	    element create $form_name cod_manu_dele        -widget hidden -datatype text -optional
+	    element create $form_name rag_sociale_delegato -widget hidden -datatype text -optional
+	    element create $form_name cod_opma_dele        -widget hidden -datatype text -optional
+	    element create $form_name nome_opma_delegato   -widget hidden -datatype text -optional
+	    element create $form_name cognome_opma_delegato -widget hidden -datatype text -optional;#rom40
+	    set cerca_manu_dele ""
+	    set cerca_opma_dele ""
+	}
+    }
+    
+} else {
+
+    element create $form_name cod_manu_dele        -widget hidden -datatype text -optional
+    element create $form_name rag_sociale_delegato -widget hidden -datatype text -optional
+    element create $form_name cod_opma_dele        -widget hidden -datatype text -optional
+    element create $form_name nome_opma_delegato   -widget hidden -datatype text -optional
+    element create $form_name cognome_opma_delegato -widget hidden -datatype text -optional;#rom40
 }
 
 element create $form_name flag_tracciato   -widget hidden -datatype text -optional
@@ -2724,6 +3182,9 @@ element create $form_name nome_funz_gest   -widget hidden -datatype text -option
 element create $form_name flag_ins_prop    -widget hidden -datatype text -optional
 element create $form_name flag_ins_occu    -widget hidden -datatype text -optional
 element create $form_name __refreshing_p   -widget hidden -datatype text -optional
+#mat00 13/10/2025
+#modifiche fatte perchè il curmit ha la vecchia versione di openacs. Il programma non sarà committato ma portato su a mano.
+#element set_properties $form_name __refreshing_p -values 0;#mat01
 element create $form_name changed_field    -widget hidden -datatype text -optional;#nic01
 element create $form_name esente           -widget hidden -datatype text -optional;#sim15
 element create $form_name locale           -widget hidden -datatype text -optional;#sim19
@@ -2819,8 +3280,17 @@ if {$funzione != "I"} {
     set link_fatt "nome_funz=[iter_get_nomefunz coimfatt-gest]&$url_dimp&[export_url_vars cod_responsabile cod_impianto riferimento_pag]&funzione=I"
 } else {
     # valorizzo il default dei soggetti
-    if {[db_0or1row sel_aimp_old ""] == 0} {
-	iter_return_complaint "Impianto non trovato"
+    
+    if {$coimtgen(regione) in [list "MARCHE"]} {#mat02 aggiunta if-else e contenuto if
+	if {[db_0or1row sel_aimp_old_marche ""] == 0} {
+	    iter_return_complaint "Impianto non trovato"
+	}
+
+    } else {
+	if {[db_0or1row sel_aimp_old ""] == 0} {
+	    iter_return_complaint "Impianto non trovato"
+	}
+	
     }
     set link_fatt "nome_funz=[iter_get_nomefunz coimfatt-gest]&$url_dimp&cod_responsabile=$cod_responsabile_old&cod_impianto=$cod_impianto&funzione=I"
 }
@@ -2930,6 +3400,19 @@ if {[form is_request $form_name]} {
                 } else {
                     iter_return_complaint "Non trovato nessun generatore attivo: inserirlo"
                 }
+            }
+        }
+
+	if {$coimtgen(regione) in [list "FRIULI-VENEZIA GIULIA"]} {#rom21 Aggiunta if e il suo contenuto
+            if {[db_0or1row q "select 1
+                                 from coimgend
+                                where cod_impianto          = :cod_impianto
+                                  and gen_prog              = :gen_prog
+                                  and ( coalesce(pot_focolare_nom, '0') <= 12 and
+                                        coalesce(pot_focolare_lib, '0') <= 12
+                                      )"]} {
+                iter_return_complaint "Funzione impossibile per i generatori con potenze nominali in raffrescamento e in riscaldamento minori o uguali a 12 Kw."
+                ad_script_abort
             }
         }
     };#nic02 (fine del blocco copiato da coimdimp-f-gest)
@@ -3045,8 +3528,17 @@ if {[form is_request $form_name]} {
 	set data_controllo $data_prevista
 
 	# valorizzo il default dei soggetti
-	if {[db_0or1row sel_aimp_old ""] == 0} {
-	    iter_return_complaint "Impianto non trovato"
+	 
+	if {$coimtgen(regione) in [list "MARCHE"]} {#mat02 aggiunta if-else e contenuto if
+	    if {[db_0or1row sel_aimp_old_marche ""] == 0} {
+		iter_return_complaint "Impianto non trovato"
+	    }
+	    
+	} else {
+	    if {[db_0or1row sel_aimp_old ""] == 0} {
+		iter_return_complaint "Impianto non trovato"
+	    }
+	    
 	}
 
 	set potenza_old_edit [iter_edit_num $potenza_old 2]
@@ -3173,7 +3665,7 @@ if {[form is_request $form_name]} {
 	    #gac06 compilare i campi riguardanti il controllo del rendimento di combustione.
 	    #gac06 questa istruzione sarà da togliere quando ci sarà la norma UNI
 	    set cont_rend "N";#gac06
-	    set cont_rend_gen "Non effettuato";#gac06
+	    set cont_rend_gen "Non effettuata";#gac06
 	    element set_properties $form_name cont_rend_gen        -value $cont_rend_gen;#gac06
 	    element set_properties $form_name cont_rend        -value $cont_rend;#gac06
 	}
@@ -3198,6 +3690,28 @@ if {[form is_request $form_name]} {
 	# la query seguente e' temporanea e puo' essere tolta
 	#db_1row query "select cod_fiscale as cod_fiscale_resp from coimcitt where cod_cittadino = :cod_responsabile "
 
+	#ric04 aggiunta db_1row
+	db_1row q "select st.cognome         as cognome_manu
+                        , st.nome            as nome_manu
+                        , st.cod_manutentore as cod_manutentore
+                     from (select cognome
+                                , nome
+                                , cod_manutentore
+                                , current_date as data_validita
+                             from coimmanu
+                            where cod_manutentore = :cod_manutentore
+                          union
+                           select cognome
+                                , nome
+                                , cod_manutentore
+                                , st_data_validita as data_validita
+                             from coimmanu_st
+                            where cod_manutentore = :cod_manutentore
+                          ) as st
+                      where st.data_validita >= :data_controllo_st
+                   order by st.data_validita
+                      limit 1"
+	
 
 	if {[iter_check_date $data_controllo] < "20080801"} {
 	    set message "<td><table border=2 cellspacing=0 cellpadding=2 bordercolor=red><tr><td nowrap>Importo non dovuto data controllo antecedente 01/08/2008</td></tr></table></td>"
@@ -3239,8 +3753,10 @@ if {[form is_request $form_name]} {
 	set data_scad_mod [clock format [clock scan "$data_ins $flag_gg_modif_mh day"] -f %Y%m%d]
 
 	set cod_man [iter_check_uten_manu $id_utente]
+	#rom24 Aggiunta condizione su Regione Friuli
 	db_1row sel_sett "select id_settore from coimuten where id_utente = :id_utente"
-	if {![string equal $cod_man ""] || $id_settore == "regione"} {
+	if {![string equal $cod_man ""] || $id_settore == "regione" &&
+        $coimtgen(regione) ne "FRIULI-VENEZIA GIULIA"} {
 	    if {$data_scad_mod < $current_date || ![string equal $cod_docu_distinta ""]} {
 		set flag_modifica "F"
 	    } else {
@@ -3345,6 +3861,13 @@ if {[form is_request $form_name]} {
 	element set_properties $form_name cognome_occu     -value $cognome_occu
 	element set_properties $form_name nome_prop        -value $nome_prop
 	element set_properties $form_name nome_occu        -value $nome_occu
+
+	element set_properties $form_name cod_manu_dele         -value $cod_manu_dele;#ric03
+	element set_properties $form_name rag_sociale_delegato  -value $rag_sociale_delegato;#ric03
+	element set_properties $form_name cod_opma_dele         -value $cod_opma_dele;#ric03
+	element set_properties $form_name nome_opma_delegato    -value $nome_opma_delegato;#ric03
+        element set_properties $form_name cognome_opma_delegato -value $cognome_opma_delegato;#rom40
+	
 	if {$flag_portafoglio == "T"} {
 	    element set_properties $form_name importo_tariffa   -value $importo_tariffa
 	    element set_properties $form_name tariffa_reg      -value $tariffa_reg
@@ -3354,7 +3877,12 @@ if {[form is_request $form_name]} {
 	element set_properties $form_name riferimento_pag  -value $riferimento_pag
 	element set_properties $form_name data_scad_pagamento -value $data_scad
 	#if {$coimtgen(regione) eq "MARCHE"} {#gac05
+	if {$flag_combo_tipibol eq "T" && $coimtgen(regione) eq "FRIULI-VENEZIA GIULIA"} {#rom24 aggiunta if e suo contenuto
+            element set_properties $form_name flag_pagato      -options {{S&igrave; S}}
+             element set_properties $form_name flag_pagato -value "S"
+        } else {#rom24 aggiunta else ma non il contenuto
 	    element set_properties $form_name flag_pagato      -value $flag_pagato_dimp
+	};#rom24
 	#} else {
 	#    element set_properties $form_name flag_pagato      -value $flag_pagato
 	#}
@@ -3397,6 +3925,12 @@ if {[form is_request $form_name]} {
        element set_properties $form_name rct_check_list_4    -value $rct_check_list_4
        element set_properties $form_name rct_gruppo_termico   -value $rct_gruppo_termico
        element set_properties $form_name data_prox_manut  -value $data_prox_manut;#gab01
+	
+	if {$flag_combo_tipibol eq "T" && $coimtgen(regione) eq "FRIULI-VENEZIA GIULIA" && $flag_pagato ne "N"} {#rom24 aggiunta if e suo contenuto
+            element set_properties $form_name flag_pagato      -options {{S&igrave; S}}
+            element set_properties $form_name flag_pagato      -value "S"
+        }
+
        #inizio freddo
        element set_properties $form_name fr_linee_ele     -value $fr_linee_ele
 	element set_properties $form_name fr_coibentazione -value $fr_coibentazione
@@ -3608,7 +4142,13 @@ if {[form is_valid $form_name]} {
     set esente           [string trim [element::get_value $form_name esente]];#sim15
     set cod_tprc         [string trim [element::get_value $form_name cod_tprc]];#Msim28
     set is_warning_p     [string trim [element::get_value $form_name is_warning_p]];#gac05
-    
+
+    set cod_manu_dele   [string trim [element::get_value $form_name cod_manu_dele]];#ric03
+    set rag_sociale_delegato [string trim [element::get_value $form_name rag_sociale_delegato]];#ric03
+    set cod_opma_dele   [string trim [element::get_value $form_name cod_opma_dele]];#ric03
+    set nome_opma_delegato [string trim [element::get_value $form_name nome_opma_delegato]];#ric03
+    set cognome_opma_delegato [string trim [element::get_value $form_name cognome_opma_delegato]];#rom40
+
     # agg dob cind
     set cod_cind         [element::get_value $form_name cod_cind]
     if {$flag_portafoglio == "T"} {
@@ -3665,12 +4205,21 @@ if {[form is_valid $form_name]} {
 	} else {
 	    element set_properties $form_name flag_pagato -options {{"" ""} {"No, perchè non dovuto" N}}
 	}
-    } else {
+    } elseif {$coimtgen(ente) eq "PPA"} {#rom19 Aggiunta elseif e contenuto
+	element set_properties $form_name flag_pagato -options {{"" ""} {S&igrave; S}}
+    } elseif {$flag_combo_tipibol eq "T" && $coimtgen(regione) eq "FRIULI-VENEZIA GIULIA"} {#rom24 aggiunta elseif e suo contenuto
+        element set_properties $form_name flag_pagato -options {{S&igrave; S}}
+        element set_properties $form_name flag_pagato -value "S"
+    } else {	
 	element set_properties $form_name flag_pagato -options {{"" ""} {S&igrave; S} {"No, perchè non dovuto" N} {"No, per rifiuto del responsabile d'impianto a corrispondere il contributo" C}}
     }
     
     
     set flag_pagato       [string trim [element::get_value $form_name flag_pagato]]
+    if {$funzione eq "M"} {;#but05 aggiunto if e sup contenuto
+        set flag_pagato [db_string q "select flag_pagato from coimdimp where cod_dimp=:cod_dimp"]
+        element set_properties $form_name flag_pagato -value $flag_pagato
+    }
     set riferimento_pag   [string trim [element::get_value $form_name riferimento_pag]]
     set data_scad_pagamento [string trim [element::get_value $form_name data_scad_pagamento]]
     set potenza           [string trim [element::get_value $form_name potenza]]
@@ -4105,26 +4654,50 @@ if {[form is_valid $form_name]} {
 	    }
 	}
 
-		
-	if {$coimtgen(regione) eq "MARCHE" && $cod_opmanu_new eq ""} {
-	    #	[string equal $cognome_opma ""] && [string equal $nome_opma ""]
-	    #	    set cod_opma ""
-	    element::set_error $form_name cognome_opma "Devi utilizzare il Cerca"
-	    incr error_num
-	} else {
-	    #rom11if {($coimtgen(ente) eq "PSA" && $id_utente_ma eq "MA")} {}#rom03 aggiunta if ma non suo contenuto
-	    if {$coimtgen(regione) eq "CAMPANIA" && $id_utente_ma eq "MA"} {#rom11 aggiunta if ma non contenuto
-	    set chk_inp_cod_opma $cod_opma
-	    set chk_inp_cognome  $cognome_opma
-	    set chk_inp_nome     $nome_opma
-	    eval $check_cod_opma
-	    set cod_opma  $chk_out_cod_opma
-	    if {$chk_out_rc == 0} {
-		element::set_error $form_name cognome_opma $chk_out_msg
+	if {$delegation_active_p} {#ric03 aggiunto if e contenuto, else ma non contenuto
+
+	    if { [string equal $cod_opmanu_new ""] && [string equal $cod_opma_dele ""] } {
+		element::set_error $form_name cognome_opma "Inserire il tecnico che ha effettuato il controllo o l'operatore delegato."
+		element::set_error $form_name nome_opma_delegato "Inserire il tecnico che ha effettuato il controllo o l'operatore delegato."
 		incr error_num
 	    }
-	    };#rom03
-	}
+
+	    #rom40if { ![string equal $cod_opmanu_new ""] && ![string equal $cod_opma_dele ""] } {}
+	    if {![string equal $cognome_opma ""] && ![string equal $nome_opma ""] && ![string equal $nome_opma_delegato ""] && ![string equal $cognome_opma_delegato ""]} {#rom40
+		element::set_error $form_name cognome_opma "Inserire solo uno tra tecnico che ha effettuato il controllo<br> e operatore delegato."
+		element::set_error $form_name nome_opma_delegato "Inserire solo uno tra tecnico che ha effettuato il controllo<br> e operatore delegato."
+		incr error_num
+	    }
+	    if {[string equal $cognome_opma ""] && [string equal $nome_opma ""]} {#rom40
+		set cod_opmanu_new ""
+	    }
+	    if {[string equal $nome_opma_delegato ""] && [string equal $cognome_opma_delegato ""]} {#rom40
+		set cod_opma_dele ""
+	    }
+	} else {
+
+	    
+	    #rom21 Aggiunta condizione su regione Friuli
+	    if {$coimtgen(regione) in [list "MARCHE" "FRIULI-VENEZIA GIULIA"] && $cod_opmanu_new eq ""} {
+		#	[string equal $cognome_opma ""] && [string equal $nome_opma ""]
+		#	    set cod_opma ""
+		element::set_error $form_name cognome_opma "Devi utilizzare il Cerca"
+		incr error_num
+	    } else {
+		#rom11if {($coimtgen(ente) eq "PSA" && $id_utente_ma eq "MA")} {}#rom03 aggiunta if ma non suo contenuto
+		if {$coimtgen(regione) eq "CAMPANIA" && $id_utente_ma eq "MA"} {#rom11 aggiunta if ma non contenuto
+		    set chk_inp_cod_opma $cod_opma
+		    set chk_inp_cognome  $cognome_opma
+		    set chk_inp_nome     $nome_opma
+		    eval $check_cod_opma
+		    set cod_opma  $chk_out_cod_opma
+		    if {$chk_out_rc == 0} {
+			element::set_error $form_name cognome_opma $chk_out_msg
+			incr error_num
+		    }
+		};#rom03
+	    }
+	};#ric03
 	
         #routine generica per controllo codice soggetto
         set check_cod_citt {
@@ -4263,12 +4836,15 @@ if {[form is_valid $form_name]} {
 			incr error_num
 		    }
 		    
-		    if {$data_controllo < "20180501" && 
-			$flag_portafoglio == "T"     &&
-			($coimtgen(ente) eq "PUD" || 
-			 $coimtgen(ente) eq "PGO" || 
-			 $coimtgen(ente) eq "PTS" || 
-			 $coimtgen(ente) eq "PPN")} {#sim24 if e suo contenuto
+		    #rom21if {$data_controllo < "20180501" && 
+		    #rom21$flag_portafoglio == "T"     &&
+		    #rom21($coimtgen(ente) eq "PUD" || 
+		    #rom21$coimtgen(ente) eq "PGO" || 
+		    #rom21$coimtgen(ente) eq "PTS" || 
+		    #rom21$coimtgen(ente) eq "PPN")} {}#sim24 if e suo contenuto
+                    if {$data_controllo < "20180501" &&
+                        $flag_portafoglio == "T"     &&
+                        $coimtgen(regione) eq "FRIULI-VENEZIA GIULIA"} {#rom21 aggiunta if ma non contenuto		    
 			set flag_errore_data_controllo "t"
 			if {$coimtgen(regione) eq "MARCHE"} {#gac05
 			    element::set_error $form_name err_rcee "Non è possibile inserire con il bollino virtuale gli RCEE effettuati nel periodo precedente al 01 Maggio 2018."
@@ -4301,19 +4877,28 @@ if {[form is_valid $form_name]} {
 	    }
 	}
 
-        if {$coimtgen(ente) eq "PUD" || $coimtgen(ente) eq "PGO"} {
+	#rom27 Sostiuitte le condizioni su enti PUD e PGO con una condizione generale su tutta Regione Friuli.
+        if {$coimtgen(regione) eq "FRIULI-VENEZIA GIULIA"} {
             # Per Udine e Gorizia non va fatto il controllo sul codice fiscale
         } else {
             # Caso Standard
 	    if {$flag_errore_data_controllo == "f" && $data_controllo >= "20090801"} {
 		if {[db_0or1row query "select natura_giuridica as natura_r, cod_fiscale as fisc_r, cod_piva as piva_r, stato_nas from coimcitt where cod_cittadino = :cod_responsabile"]} {
 		    set fisc_r [string trim $fisc_r]
-		    if {$stato_nas eq "1"} {#san01
-			if {$fisc_r eq ""} {
-			    element::set_error $form_name cognome_resp "Il responsabile non ha il Codice Fiscale: e' obbligatorio per i modelli con data controllo superiore al 31 Luglio 2009"
-			    incr error_num
-			}
-		    };#san01
+		    
+		    if {$natura_r eq "F"} {#ric01 aggiunta if ma non il contenuto , else e contenuto
+			if {$stato_nas eq "1"} {#san01
+			    if {$fisc_r eq ""} {
+				element::set_error $form_name cognome_resp "Il responsabile non ha il Codice Fiscale: e' obbligatorio per i modelli con data controllo superiore al 31 Luglio 2009"
+				incr error_num
+			    }
+			};#san01
+		    } else {
+			if {$piva_r eq ""} {
+                            element::set_error $form_name cognome_resp "Il responsabile non ha la partita IVA: e' obbligatoria per i modelli con data controllo superiore al 31 Luglio 2009"
+                            incr error_num
+                        };#ric01 
+		    }
 		}
 	    }
 	}
@@ -4349,6 +4934,10 @@ if {[form is_valid $form_name]} {
 		} elseif {$coimtgen(regione) eq "CAMPANIA"} {#rom07 aggiunta elseif e suo contenuto
 		    set oggi50 [clock format [clock scan "$data_controllo +900 days"] -format "%Y%m%d"]
 		    set num_gg_post_data_controllo_per_messaggio 900
+		} elseif {$coimtgen(ente) eq "PPA"} {#rom25 Aggiunta elseif e contenuto
+                    #rom25set num_gg_post_data_controllo_per_messaggio 500
+                    set num_gg_post_data_controllo_per_messaggio 1000;#rom25
+                    set oggi50 [clock format [clock scan "$data_controllo + $num_gg_post_data_controllo_per_messaggio  days"] -format "%Y%m%d"]
                 } else {
 		    set oggi50 [clock format [clock scan "$data_controllo +50 days"] -format "%Y%m%d"]
 		}
@@ -4441,10 +5030,11 @@ if {[form is_valid $form_name]} {
 		    if {![string equal $dat_inst_gend ""]} {
 			set data_insta_check [db_string sel_dat "select to_char(add_months(:dat_inst_gend, '1'), 'yyyymmdd')"]
 			if {$data_controllo <= $data_insta_check} {
-			    if {$coimtgen(ente) ne "PUD" &&
-                                $coimtgen(ente) ne "PGO" && 
-                                $coimtgen(ente) ne "PPN" &&
-                                $coimtgen(ente) ne "PTS"} {#sim25 aggiunto if
+			    #rom21if {$coimtgen(ente) ne "PUD" &&
+			    #rom21$coimtgen(ente) ne "PGO" && 
+			    #rom21$coimtgen(ente) ne "PPN" &&
+			    #rom21$coimtgen(ente) ne "PTS"} {}#sim25 aggiunto if
+                            if {$coimtgen(regione) eq "FRIULI-VENEZIA GIULIA"} {#rom21 aggiunta if ma non contenuto
 				set importo_tariffa "0.00"
 				set tariffa_reg "8"
 			    }
@@ -4654,7 +5244,13 @@ if {[form is_valid $form_name]} {
 		$fr_t_usc_lato_ute ne "" ||
 		$fr_nr_circuito ne "" 
 	    } {
-		element::set_error $form_name warning_cont_rend "Non inserire la parte relativa ai controlli del rendimento di combustione in quanto il controllo non è stato effettuato "
+		if {$coimtgen(regione) eq "MARCHE"} {#rom19 Aggiunte if,else e loro contenuto
+		    set field_cont_rend "warning_cont_rend"
+		} else {
+		    set field_cont_rend "cont_rend"
+		}
+
+		element::set_error $form_name $field_cont_rend "Non inserire la parte relativa ai controlli del rendimento di combustione in quanto il controllo non è stato effettuato "
 		incr error_num
 	    }
 	    
@@ -4676,7 +5272,7 @@ if {[form is_valid $form_name]} {
 		    $fr_t_usc_lato_ute_prfumi($conta_prfumi) ne "" ||
 		    $fr_nr_circuito_prfumi($conta_prfumi) ne ""
 		} {
-		    element::set_error $form_name warning_cont_rend "Non inserire la parte relativa ai controlli del rendimento di combustione in quanto il controllo non è stato effettuato "
+		    element::set_error $form_name $field_cont_rend "Non inserire la parte relativa ai controlli del rendimento di combustione in quanto il controllo non è stato effettuato "
 		    incr error_num
 		}
 	    }
@@ -5112,8 +5708,8 @@ if {[form is_valid $form_name]} {
 	if {![string equal $pot_focolare_lib ""]} {#sim29: aggiunta questa if ed il suo contenuto
 	    set pot_focolare_lib [iter_check_num $pot_focolare_lib 2]
 	    if {[string equal $pot_focolare_lib "0.00"]} {
-		element::set_error $form_name pot_focolare_lib "Deve essere diverso da 0,00"
-		incr error_num
+		#rom26element::set_error $form_name pot_focolare_lib "Deve essere diverso da 0,00"
+		#rom26incr error_num
 	    }
 	    if {$pot_focolare_lib == "Error"} {
 		element::set_error $form_name pot_focolare_lib "Deve essere numerico e pu&ograve; avere al massimo 2 decimali"
@@ -5211,10 +5807,11 @@ if {[form is_valid $form_name]} {
 
         #nic06: Sandro ha deciso di renderla obbligatoria
         #nic06 if {![string equal $potenza ""]}
-	if {$coimtgen(regione) ne "MARCHE"} {#gac08 aggiunta if
+	#rom21 Aggiunta condizione su regione friuli
+	if {!($coimtgen(regione) in [list "MARCHE" "FRIULI-VENEZIA GIULIA"])} {#gac08 aggiunta if
 	    if {[string equal $potenza ""]} {
-		element::set_error $form_name potenza "Inserire potenza"
-		incr error_num
+		#but01element::set_error $form_name potenza "Inserire potenza"
+		#but01incr error_num
 	    } else {
 		set potenza [iter_check_num $potenza 2]
 		if {$potenza == "Error"} {
@@ -5266,12 +5863,12 @@ if {[form is_valid $form_name]} {
 		incr error_num
 	    }
 	}
-
+    
 	# costo e' obbligatorio se sono stati indicati gli altri estremi
 	# del pagamento
 	#sim15  aggiunto condizione su esente
 	if {$sw_costo_null == "t" && $esente eq "f"} {
-	    if {![string equal $tipologia_costo ""] || $flag_pagato == "S"} {
+	    if {(![string equal $tipologia_costo ""] || $flag_pagato == "S") && $coimtgen(regione) ne "FRIULI-VENEZIA GIULIA"} {
 		element::set_error $form_name costo "Inserire il costo"
 		incr error_num
 	    }
@@ -5502,7 +6099,10 @@ if {[form is_valid $form_name]} {
 	#sim31 aggiunto or per Friuli Venezia Giulia
 	#sim35 aggiunto or per Provincia salerno
 	#rom11 tolta || $coimtgen(ente) eq "PSA" e aggiunta la Regione CAMPANIA nella lista delle regioni.
-	if {$coimtgen(regione) in [list "MARCHE" "CALABRIA" "TOSCANA" "FRIULI-VENEZIA GIULIA" "CAMPANIA"]} {#sim02: Aggiunta if e suo contenuto	   
+	#rom17 Tolta Regione MARCHE dalla lista
+	#rom22 Aggiunta condizione su CBENEVENTO
+	#rom28 Aggiunta condizione su PNA modificando condizione di rom22
+	if {$coimtgen(regione) in [list "CALABRIA" "TOSCANA" "FRIULI-VENEZIA GIULIA" "CAMPANIA"] && $coimtgen(ente) ni "CBENEVENTO PNA"} {#sim02: Aggiunta if e suo contenuto	   
 	    #rom12 modificata condizione da < a <=
 	    if {$potenza_impianto <= 100.00 } {
 		if {[string equal $data_scadenza_autocert ""]} {
@@ -5533,10 +6133,58 @@ if {[form is_valid $form_name]} {
 		}
 	    }
 
-	    if {$coimtgen(regione) eq "MARCHE"} {
+	} elseif {$coimtgen(regione) eq "MARCHE"} {#rom17 trasformata la if in elseif e aggiunto il contenuto tranne parte di gac05
+
+	    if {$sw_data_controllo_ok == "t"} {
+
+		db_1row q "select cod_tpco
+                             from coimgend
+                            where gen_prog =:gen_prog
+                              and cod_impianto=:cod_impianto"
+		if {$potenza_impianto < 12.00} {#but06 aggiunto if e suo contenuto
+		    set data_scadenza_autocert ""
+		}
+		# Per pompe di calore a compresisone di vapore ad azionamento elettrico (cod_tpco 2)
+		# e/o ad assorbimento a fiamma diretta (cod_tpco 1):
+		# Con potenza impianto tra 12 e 100 la data di scadenza e' a 4 anni dalla data del controllo.
+		# Con potenza impianto > di 100 la data di scadenza e' a 2 anni dalla data del controllo.
+
+		if {$cod_tpco in [list "1" "2"]} {
+
+		    if {$potenza_impianto >= 12.00 && $potenza_impianto <= 100.00} {
+
+			set data_scadenza_autocert [db_string query "select :data_controllo::date + interval '4 year'" -default ""]
+						
+		    } elseif { $potenza_impianto > 100.00} {
+			
+			set data_scadenza_autocert [db_string query "select :data_controllo::date + interval '2 year'" -default ""]
+		    }
+		} 
+		
+		if {$potenza_impianto >= 12.00} {
+		    # Per pompe di calore a compresisone di vapore azionate da motore endotermico (cod_tpco 4)
+		    # con potenza impianto >= 12.00 la scadenza e' a 4 anni dalla data del controllo.
+		    if {[string equal $cod_tpco "4"]} {
+			
+			set data_scadenza_autocert [db_string query "select :data_controllo::date + interval '4 year'" -default ""]
+					    }
+		    # Per pompe di calore ad assorbimento alimentate con energia termica
+		    # con potenza impianto >= 12.00 la scadenza e' a 2 anno dalla data del controllo.
+		    if {[string equal $cod_tpco "3"]} {
+			set data_scadenza_autocert [db_string query "select :data_controllo::date + interval '2 year'" -default ""]
+		    }
+		} 
+
 		#gac05 La regione Marche tiene come data scadenza sempre la data di fine mese
 		set data_scadenza_autocert [db_string q "select (date_trunc('month', :data_scadenza_autocert::date) + interval '1 month' - interval '1 day')::date as end_of_month"]
-	    }
+
+	    } else {
+		set data_scadenza_autocert [iter_check_date $data_scadenza_autocert]
+		if {$data_scadenza_autocert == 0} {
+		    element::set_error $form_name data_scadenza_autocert "Inserire correttamente"
+		    incr error_num
+		}
+	    }	
 	} elseif {$coimtgen(ente) eq "PMS"} {#sim12 Massa
 	    if {$sw_data_controllo_ok eq "t" && $flag_errore_data_controllo eq "f"} {
 		set data_insta_controllo [db_string q "select coalesce(:data_insta::date,'1900-01-01')"]
@@ -5556,6 +6204,298 @@ if {[form is_valid $form_name]} {
 		}
 	    }
 	
+	} elseif {$coimtgen(regione) eq "BASILICATA"} {#rom14 Aggiunta if e suo contenuto
+
+	    if {$sw_data_controllo_ok == "t"} {
+
+		db_1row q "select cod_tpco
+                             from coimgend
+                            where gen_prog =:gen_prog
+                              and cod_impianto=:cod_impianto"
+
+		#rom16 Modificate le scadenze per nuova legge regionale:
+		#rom16 Con potenza impianto tra 12 e 100 la data di scadenza e' a 2 anni dalla data del controllo.
+		#rom16 Con potenza impianto > di 100 la data di scadenza e' a 1 anno dalla data del controllo.
+
+		# Per pompe di calore a compresisone di vapore ad azionamento elettrico (cod_tpco 2)
+		# e/o ad assorbimento a fiamma diretta (cod_tpco 1):
+		# Con potenza impianto tra 12 e 100 la data di scadenza e' a 4 anni dalla data del controllo.
+		# Con potenza impianto > di 100 la data di scadenza e' a 2 anni dalla data del controllo.
+		if {$cod_tpco in [list "1" "2"]} {
+		    
+		    if {$potenza_impianto >= 12.00 && $potenza_impianto <= 100.00} {
+
+			#rom16set data_scadenza_autocert [db_string query "select :data_controllo::date + interval '4 year'" -default ""]
+			set data_scadenza_autocert [db_string query "select :data_controllo::date + interval '2 year'" -default ""];#rom16
+
+		    } elseif { $potenza_impianto > 100.00} {
+
+			#rom16set data_scadenza_autocert [db_string query "select :data_controllo::date + interval '2 year'" -default ""]
+			set data_scadenza_autocert [db_string query "select :data_controllo::date + interval '1 year'" -default ""];#rom16
+		    }
+		} 
+
+		if {$potenza_impianto >= 12.00} {
+		    #rom16 Modificata la scadenza da 4 a 2 anni per nuova legge Regionale.
+		    # Per pompe di calore a compresisone di vapore azionate da motore endotermico (cod_tpco 4)
+		    # con potenza impianto >= 12.00 la scadenza e' a 4 anni dalla data del controllo.
+		    if {[string equal $cod_tpco "4"]} {
+			
+			#rom16set data_scadenza_autocert [db_string query "select :data_controllo::date + interval '4 year'" -default ""]
+			set data_scadenza_autocert [db_string query "select :data_controllo::date + interval '2 year'" -default ""];#rom16
+		    }
+		    #rom16 Modificata la scadenza da 2 a 1 anno per nuova legge Regionale.
+		    # Per pompe di calore ad assorbimento alimentate con energia termica
+		    # con potenza impianto >= 12.00 la scadenza e' a 2 anno dalla data del controllo.
+		    if {[string equal $cod_tpco "3"]} {
+			#rom16set data_scadenza_autocert [db_string query "select :data_controllo::date + interval '2 year'" -default ""]
+			set data_scadenza_autocert [db_string query "select :data_controllo::date + interval '1 year'" -default ""];#rom16
+		    }
+		}
+	    } else {
+		set data_scadenza_autocert [iter_check_date $data_scadenza_autocert]
+		if {$data_scadenza_autocert == 0} {
+		    element::set_error $form_name data_scadenza_autocert "Inserire correttamente"
+		    incr error_num
+		}
+	    }
+
+	} elseif {$coimtgen(ente) eq "PPA"} {#rom19 Aggiunta if e suo contenuto
+
+	    if {$sw_data_controllo_ok == "t"} {
+
+		db_1row q "select cod_tpco
+                             from coimgend
+                            where gen_prog =:gen_prog
+                              and cod_impianto=:cod_impianto"
+		# Per pompe di calore a compresisone di vapore ad azionamento elettrico (cod_tpco 2)
+		# e/o ad assorbimento a fiamma diretta (cod_tpco 1):
+		# Con potenza impianto tra 12 e 100 la data di scadenza e' a 4 anni dalla data del controllo.
+		# Con potenza impianto > di 100 la data di scadenza e' a 2 anni dalla data del controllo.
+		if {$cod_tpco in [list "1" "2"]} {
+		    
+		    if {$potenza_impianto >= 12.00 && $potenza_impianto <= 100.00} {
+
+			set data_scadenza_autocert [db_string query "select :data_controllo::date + interval '4 year'" -default ""]
+			
+		    } elseif { $potenza_impianto > 100.00} {
+
+			set data_scadenza_autocert [db_string query "select :data_controllo::date + interval '2 year'" -default ""]
+		    }
+		}
+
+		if {$potenza_impianto >= 12.00} {
+		    # Per pompe di calore a compresisone di vapore azionate da motore endotermico (cod_tpco 4)
+		    # con potenza impianto >= 12.00 la scadenza e' a 4 anni dalla data del controllo.
+		    if {[string equal $cod_tpco "4"]} {
+			
+			set data_scadenza_autocert [db_string query "select :data_controllo::date + interval '4 year'" -default ""]
+		    }
+		    # Per pompe di calore ad assorbimento alimentate con energia termica
+		    # con potenza impianto >= 12.00 la scadenza e' a 2 anno dalla data del controllo.
+		    if {[string equal $cod_tpco "3"]} {
+			set data_scadenza_autocert [db_string query "select :data_controllo::date + interval '2 year'" -default ""]
+		    }
+		}
+	    } else {
+		set data_scadenza_autocert [iter_check_date $data_scadenza_autocert]
+		if {$data_scadenza_autocert == 0} {
+		    element::set_error $form_name data_scadenza_autocert "Inserire correttamente"
+		    incr error_num
+		}
+	    }
+	   
+	} elseif {$coimtgen(ente) eq "CBENEVENTO"} {#rom22 Aggiunta elseif e il suo contenuto
+
+	    if {$sw_data_controllo_ok == "t"} {
+		
+		
+		#rom32if {$potenza_impianto < 100.00} {
+
+		#rom32    set data_scadenza_autocert [db_string query "select :data_controllo::date + interval '2 year'" -default ""]
+			
+		#rom32} else {
+		
+		#rom32    set data_scadenza_autocert [db_string query "select :data_controllo::date + interval '1 year'" -default ""]
+		#rom32}
+		
+		db_1row q "select cod_tpco
+                             from coimgend
+                            where gen_prog =:gen_prog
+                              and cod_impianto=:cod_impianto";#rom32
+		# Per pompe di calore a compresisone di vapore ad azionamento elettrico (cod_tpco 2)
+		# e/o ad assorbimento a fiamma diretta (cod_tpco 1):
+		# Con potenza impianto tra 12 e 100 la data di scadenza e' a 4 anni dalla data del controllo.
+		# Con potenza impianto > di 100 la data di scadenza e' a 2 anni dalla data del controllo.
+		if {$cod_tpco in [list "1" "2"]} {#rom32 Aggiunta if e contenuto
+		    
+		    if {$potenza_impianto >= 12.00 && $potenza_impianto <= 100.00} {
+
+			set data_scadenza_autocert [db_string query "select :data_controllo::date + interval '4 year'" -default ""]
+			
+		    } elseif { $potenza_impianto > 100.00} {
+
+			set data_scadenza_autocert [db_string query "select :data_controllo::date + interval '2 year'" -default ""]
+		    }
+		}
+
+		if {$potenza_impianto >= 12.00} {#rom32 Aggiunta if e contenuto
+		    # Per pompe di calore a compresisone di vapore azionate da motore endotermico (cod_tpco 4)
+		    # con potenza impianto >= 12.00 la scadenza e' a 4 anni dalla data del controllo.
+		    if {[string equal $cod_tpco "4"]} {
+			
+			set data_scadenza_autocert [db_string query "select :data_controllo::date + interval '4 year'" -default ""]
+		    }
+		    # Per pompe di calore ad assorbimento alimentate con energia termica
+		    # con potenza impianto >= 12.00 la scadenza e' a 2 anno dalla data del controllo.
+		    if {[string equal $cod_tpco "3"]} {
+			set data_scadenza_autocert [db_string query "select :data_controllo::date + interval '2 year'" -default ""]
+		    }
+		}
+
+	    } else {
+		set data_scadenza_autocert [iter_check_date $data_scadenza_autocert]
+		if {$data_scadenza_autocert == 0} {
+		    element::set_error $form_name data_scadenza_autocert "Inserire correttamente"
+		    incr error_num
+		}
+	    }
+	   
+	} elseif {$coimtgen(ente) eq "PNA"} {#rom28 Aggiunta if e suo contenuto
+
+	    if {$sw_data_controllo_ok == "t"} {
+
+		db_1row q "select cod_tpco
+                             from coimgend
+                            where gen_prog =:gen_prog
+                              and cod_impianto=:cod_impianto"
+		# Per pompe di calore a compresisone di vapore ad azionamento elettrico (cod_tpco 2)
+		# e/o ad assorbimento a fiamma diretta (cod_tpco 1):
+		# Con potenza impianto tra 12 e 100 la data di scadenza e' a 4 anni dalla data del controllo.
+		# Con potenza impianto > di 100 la data di scadenza e' a 2 anni dalla data del controllo.
+		if {$cod_tpco in [list "1" "2"]} {
+		    
+		    if {$potenza_impianto >= 12.00 && $potenza_impianto < 100.00} {
+
+			set data_scadenza_autocert [db_string query "select :data_controllo::date + interval '4 year'" -default ""]
+			
+		    } elseif { $potenza_impianto >= 100.00} {
+
+			set data_scadenza_autocert [db_string query "select :data_controllo::date + interval '2 year'" -default ""]
+		    }
+		}
+
+		if {$potenza_impianto >= 12.00} {
+		    # Per pompe di calore a compresisone di vapore azionate da motore endotermico (cod_tpco 4)
+		    # con potenza impianto >= 12.00 la scadenza e' a 4 anni dalla data del controllo.
+		    if {[string equal $cod_tpco "4"]} {
+			
+			set data_scadenza_autocert [db_string query "select :data_controllo::date + interval '4 year'" -default ""]
+		    }
+		    # Per pompe di calore ad assorbimento alimentate con energia termica
+		    # con potenza impianto >= 12.00 la scadenza e' a 2 anno dalla data del controllo.
+		    if {[string equal $cod_tpco "3"]} {
+			set data_scadenza_autocert [db_string query "select :data_controllo::date + interval '2 year'" -default ""]
+		    }
+		}
+	    } else {
+		set data_scadenza_autocert [iter_check_date $data_scadenza_autocert]
+		if {$data_scadenza_autocert == 0} {
+		    element::set_error $form_name data_scadenza_autocert "Inserire correttamente"
+		    incr error_num
+		}
+	    }
+
+	} elseif {$coimtgen(ente) eq "PRI"} {#ric02 Aggiunta if e suo contenuto
+	    
+            if {$sw_data_controllo_ok == "t"} {
+		
+                db_1row q "select cod_tpco
+                             from coimgend
+                            where gen_prog =:gen_prog
+                              and cod_impianto=:cod_impianto"
+                # Per pompe di calore a compresisone di vapore ad azionamento elettrico (cod_tpco 2)
+                # e/o ad assorbimento a fiamma diretta (cod_tpco 1):
+                # Con potenza impianto tra 12 e 100 la data di scadenza e' a 4 anni dalla data del controllo.
+                # Con potenza impianto > di 100 la data di scadenza e' a 2 anni dalla data del controllo.
+                if {$cod_tpco in [list "1" "2"]} {
+		    
+                    if {$potenza_impianto >= 12.00 && $potenza_impianto < 100.00} {
+			
+                        set data_scadenza_autocert [db_string query "select :data_controllo::date + interval '4 year'" -default ""]
+			
+                    } elseif { $potenza_impianto >= 100.00} {
+			
+                        set data_scadenza_autocert [db_string query "select :data_controllo::date + interval '2 year'" -default ""]
+                    }
+                }
+		
+                if {$potenza_impianto >= 12.00} {
+                    # Per pompe di calore a compresisone di vapore azionate da motore endotermico (cod_tpco 4)
+                    # con potenza impianto >= 12.00 la scadenza e' a 4 anni dalla data del controllo.
+                    if {[string equal $cod_tpco "4"]} {
+			
+                        set data_scadenza_autocert [db_string query "select :data_controllo::date + interval '4 year'" -default ""]
+                    }
+                    # Per pompe di calore ad assorbimento alimentate con energia termica
+                    # con potenza impianto >= 12.00 la scadenza e' a 2 anno dalla data del controllo.
+                    if {[string equal $cod_tpco "3"]} {
+                        set data_scadenza_autocert [db_string query "select :data_controllo::date + interval '2 year'" -default ""]
+                    }
+                }
+            } else {
+                set data_scadenza_autocert [iter_check_date $data_scadenza_autocert]
+                if {$data_scadenza_autocert == 0} {
+                    element::set_error $form_name data_scadenza_autocert "Inserire correttamente"
+                    incr error_num
+                }
+           }
+	   
+	} elseif {$coimtgen(ente) eq "PFR"} {#rom36 Aggiunta if e suo contenuto
+	    
+            if {$sw_data_controllo_ok == "t"} {
+		
+                db_1row q "select cod_tpco
+                             from coimgend
+                            where gen_prog =:gen_prog
+                              and cod_impianto=:cod_impianto"
+                # Per pompe di calore a compresisone di vapore ad azionamento elettrico (cod_tpco 2)
+                # e/o ad assorbimento a fiamma diretta (cod_tpco 1):
+                # Con potenza impianto tra 12 e 100 la data di scadenza e' a 4 anni dalla data del controllo.
+                # Con potenza impianto > di 100 la data di scadenza e' a 2 anni dalla data del controllo.
+                if {$cod_tpco in [list "1" "2"]} {
+		    
+                    if {$potenza_impianto >= 12.00 && $potenza_impianto < 100.00} {
+			
+                        set data_scadenza_autocert [db_string query "select :data_controllo::date + interval '4 year'" -default ""]
+			
+                    } elseif { $potenza_impianto >= 100.00} {
+			
+                        set data_scadenza_autocert [db_string query "select :data_controllo::date + interval '2 year'" -default ""]
+                    }
+                }
+		
+                if {$potenza_impianto >= 12.00} {
+                    # Per pompe di calore a compresisone di vapore azionate da motore endotermico (cod_tpco 4)
+                    # con potenza impianto >= 12.00 la scadenza e' a 4 anni dalla data del controllo.
+                    if {[string equal $cod_tpco "4"]} {
+			
+                        set data_scadenza_autocert [db_string query "select :data_controllo::date + interval '4 year'" -default ""]
+                    }
+                    # Per pompe di calore ad assorbimento alimentate con energia termica
+                    # con potenza impianto >= 12.00 la scadenza e' a 2 anno dalla data del controllo.
+                    if {[string equal $cod_tpco "3"]} {
+                        set data_scadenza_autocert [db_string query "select :data_controllo::date + interval '2 year'" -default ""]
+                    }
+                }
+            } else {
+                set data_scadenza_autocert [iter_check_date $data_scadenza_autocert]
+                if {$data_scadenza_autocert == 0} {
+                    element::set_error $form_name data_scadenza_autocert "Inserire correttamente"
+                    incr error_num
+                }
+           }
+	   
 	} else {;#sim02
 	    #caso standard
 	    if {[string equal $data_scadenza_autocert ""]} {
@@ -5618,50 +6558,50 @@ if {[form is_valid $form_name]} {
 		set importo_pag $costo
 	    }
 	}
-
-	set conta 0
+#gia01
+#	set conta 0
 	# controllo sui dati delle anomalie
-	while {$conta < 5} {
-	    incr conta
-	    if {![string equal $data_ut_int($conta) ""]} {
-		set data_ut_int($conta) [iter_check_date $data_ut_int($conta)]
-		if {$data_ut_int($conta) == 0} {
-		    element::set_error $form_name data_ut_int.$conta "Data non corretta"
-		    incr error_num
-		} else {
-		    if {$data_controllo > $data_ut_int($conta)} {
-			element::set_error $form_name data_ut_int.$conta "Data precedente al controllo"
-			incr error_num
-		    }
-		}
-		if {[string equal $cod_anom($conta) ""]} {
-		    element::set_error $form_name cod_anom.$conta "Inserire anche anomalia oltre alla data utile intervento"
-		    incr error_num
-		}
-	    }
+#	while {$conta < 5} {
+#	    incr conta
+#	    if {![string equal $data_ut_int($conta) ""]} {
+#		set data_ut_int($conta) [iter_check_date $data_ut_int($conta)]
+#		if {$data_ut_int($conta) == 0} {
+#		    element::set_error $form_name data_ut_int.$conta "Data non corretta"
+#		    incr error_num
+#		} else {
+#		    if {$data_controllo > $data_ut_int($conta)} {
+#			element::set_error $form_name data_ut_int.$conta "Data precedente al controllo"
+#			incr error_num
+#		    }
+#		}
+#		if {[string equal $cod_anom($conta) ""]} {
+#		    element::set_error $form_name cod_anom.$conta "Inserire anche anomalia oltre alla data utile intervento"
+#		    incr error_num
+#		}
+#	    }
 	    
-	    if {![string equal $cod_anom($conta) ""]} {
-		set sw_dup "f"
-		set conta2 $conta
-		while {$conta2 > 1 && $sw_dup == "f"} {
-		    incr conta2 -1
-		    if {$cod_anom($conta) == $cod_anom($conta2)} {
-			element::set_error $form_name cod_anom.$conta "Anomalia gi&agrave; presente"
-			incr error_num
-			set sw_dup "t"
-		    }
-		}
+#	    if {![string equal $cod_anom($conta) ""]} {
+#		set sw_dup "f"
+#		set conta2 $conta
+#		while {$conta2 > 1 && $sw_dup == "f"} {
+#		    incr conta2 -1
+#		    if {$cod_anom($conta) == $cod_anom($conta2)} {
+#			element::set_error $form_name cod_anom.$conta "Anomalia gi&agrave; presente"
+#			incr error_num
+#			set sw_dup "t"
+#		    }
+#		}
 
-		set cod_anom_db  $cod_anom($conta)
-		set prog_anom_db $prog_anom($conta)
-		if {$sw_dup == "f"
-		    &&  [db_string sel_anom_count ""] >= 1
-		} {
-		    element::set_error $form_name cod_anom.$conta "Anomalia gi&agrave; presente"
-		    incr error_num
-		}
-	    }
-	}
+#		set cod_anom_db  $cod_anom($conta)
+#		set prog_anom_db $prog_anom($conta)
+#		if {$sw_dup == "f"
+#		    &&  [db_string sel_anom_count ""] >= 1
+#		} {
+#		    element::set_error $form_name cod_anom.$conta "Anomalia gi&agrave; presente"
+#		    incr error_num
+#		}
+#	    }
+#	}
 	
 	db_1row sel_tgen_canne "select flag_obbligo_canne from coimtgen"
 	if {$flag_obbligo_canne == "S"} {
@@ -5700,8 +6640,9 @@ if {[form is_valid $form_name]} {
     
     #sim22 aggiunto condizione su Udine, Gorizia e Pordenone
     #sim27 aggiunto condizione su Regione Calabria
+    #rom21 sostituite condizioni su "PUD", "PGO" e "PPN" con "FRIULI-VENEZIA GIULIA"
     if {$coimtgen(ente) ne "CFANO" && $coimtgen(ente) ne "CJESI" && $coimtgen(ente) ne "CSENIGALLIA"
-	&& $coimtgen(ente) ne "PUD" && $coimtgen(ente) ne "PGO" && $coimtgen(ente) ne "PPN"
+	&& $coimtgen(regione) ne "FRIULI-VENEZIA GIULIA"
         && ($coimtgen(regione) ne "CALABRIA")} {;#gab02 aggiunta if
 	if {$potenza_impianto > 232 && $patentino eq "f"} {#sim08: Aggiunta if e suo contenuto
 	    #rom04element::set_error $form_name $error_nome_col_potenza "Manutentore non fornito di patentino. Impossibile inserire impianti con potenza maggiore di 232 Kw"
@@ -5712,7 +6653,11 @@ if {[form is_valid $form_name]} {
     eval $controllo_tariffa;#sim07
     set  costo [iter_check_num $tariffa 2];#sim07
     element set_properties $form_name costo -value $tariffa;#sim07
-    
+    element set_properties $form_name esente           -value $esente;#sim40
+    if {$flag_combo_tipibol eq "T" && $coimtgen(regione) eq "FRIULI-VENEZIA GIULIA"} {#rom24 aggiunta if e suo contenuto
+            element::set_value $form_name flag_pagato "S"
+	set flag_pagato [string trim [element::get_value $form_name flag_pagato]]
+    }
     if {$flag_pagato eq "" && $funzione ne "D"} {#gac05 if e suo contenuto
 	element::set_error $form_name flag_pagato "Inserire"
 	incr error_num
@@ -6046,11 +6991,20 @@ if {[form is_valid $form_name]} {
     if {$funzione != "V"} {
 	# leggo i soggetti, la potenza e data prima dich dell'impianto
 	# che servono in preparazione inserimento, modifica e cancellazione
-	if {[db_0or1row sel_aimp_old ""] == 0} {
-	    iter_return_complaint "Impianto non trovato"
+	
+	if {$coimtgen(regione) in [list "MARCHE"]} {#mat02 aggiunta if-else e contenuto if
+	    if {[db_0or1row sel_aimp_old_marche ""] == 0} {
+		iter_return_complaint "Impianto non trovato"
+	    }
+	    
+	} else {
+	    if {[db_0or1row sel_aimp_old ""] == 0} {
+		iter_return_complaint "Impianto non trovato"
+	    }
+	    
 	}
     }
-
+    
     if {$funzione == "I" || $funzione == "M"} {
 	# controllo se esiste un modello H con data piu' recente, in questo caso non vado ad eseguire gli aggiornamenti
 	if {[db_0or1row check_modh_old ""] == 0} {
@@ -6497,6 +7451,17 @@ if {[form is_valid $form_name]} {
 	    if {[exists_and_not_null tabella]} {
 		set cod_dimp $cod_dimp_ins
 	    }
+	    
+            #rom29 Aggiunta condizione per Napoli
+	    #rom31 Aggiunta condizione per Rieti
+	    #rom33 Aggiunta condizione per Caserta
+	    #rom36 Aggiunta condizione per Frosinone
+            if {$coimtgen(ente) in [list "PPA" "PNA" "PRI" "PCE" "PFR"] && $costo > 0.00} {#rom20 Aggiunte if, else e il loro contenuto
+                set riferimento_pag $cod_dimp
+            } else {
+                set riferimento_pag $riferimento_pag
+            }
+	    
 	    set dml_sql [db_map ins_dimp]	
 	    set dml_upd_tppt [db_map upd_tppt]	
 

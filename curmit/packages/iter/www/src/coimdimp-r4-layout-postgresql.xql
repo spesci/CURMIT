@@ -2,6 +2,18 @@
 <!--
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    ric02 03/03/2026 Modificato il join del responsabile: in precedenza veniva letto
+    ric02            da coimaimp (responsabile attuale dell’impianto), con il
+    ric02            rischio che non coincidesse con quello presente nel RCEE
+    ric02            (coimdimp). Questo causava una stampa diversa rispetto
+    ric02            a quanto visualizzato a video (T. 13620).
+    
+    ric01 02/10/2025 Punto 4 MEV regione marche: modificata sel_manu andando a leggere lo storico.
+
+    rom01 16/03/2022 MEV Regione Marche punto 6. Stampa RCEE precompilato senza dati del
+    rom01            Controllo del rendimento di combustione. 
+    rom01            Aggiunte query sel_gend_only_print e sel_aimp_only_print.
+    
     gac02 15/01/2019 Aggiunt campi consumi ed elettricità
 
     gac01 16/01/2019 Aggiunto campi come richiesto nel documento inviatoci dalla Regione
@@ -291,7 +303,8 @@
                                             and b.gen_prog     =  :gen_progg
                   left outer join coimcost c on c.cod_cost     = b.cod_cost 
                        inner join coimaimp a on a.cod_impianto = j.cod_impianto
-                  left outer join coimcitt d on d.cod_cittadino = a.cod_responsabile
+                       --ric02 left outer join coimcitt d on d.cod_cittadino = a.cod_responsabile
+		       left outer join coimcitt d on d.cod_cittadino = j.cod_responsabile --ric02
                   left outer join coimcitt e on e.cod_cittadino = a.cod_occupante     
                   left outer join coimcitt k on k.cod_cittadino = a.cod_proprietario
                   left outer join coimviae g on  g.cod_comune    = a.cod_comune
@@ -570,7 +583,8 @@
                                             and b.gen_prog     =  :gen_progg
                   left outer join coimcost c on c.cod_cost     = b.cod_cost 
                        inner join coimaimp a on a.cod_impianto = j.cod_impianto
-                  left outer join coimcitt d on d.cod_cittadino = a.cod_responsabile
+                       --ric02 left outer join coimcitt d on d.cod_cittadino = a.cod_responsabile
+		       left outer join coimcitt d on d.cod_cittadino = j.cod_responsabile --ric02
                   left outer join coimcitt e on e.cod_cittadino = a.cod_occupante     
                   left outer join coimcitt k on k.cod_cittadino = a.cod_proprietario
                   left outer join coimcomu h on  h.cod_comune    = a.cod_comune
@@ -584,6 +598,295 @@
        </querytext>
     </fullquery>
 
+    <fullquery name="sel_aimp_only_print">
+      <querytext>
+	          select a.cod_potenza
+                       ,substr(a.data_installaz,1,4) as anno_costruzione
+		       ,iter_edit_data(b.data_installaz) as data_installaz
+		       ,iter_edit_num(b.pot_focolare_nom,2)       as potenza
+		       ,iter_edit_num(a.potenza,2)       as pot_ter_nom_tot_max
+		       ,a.cod_combustibile as combustibile
+		       ,case b.tipologia_cogenerazione  
+                             when 'M' then 'Motore endotermico' 
+                             when 'C' then 'Caldaia cogenerativa'
+                             when 'T' then 'Turbogas'
+                             when 'A' then 'Altro'
+                             end as tipologia_cogenerazione
+		       ,b.cod_cost
+		       ,c.descr_cost
+                       ,b.modello
+                       ,b.matricola
+                       ,a.cod_manutentore
+                       ,a.cod_proprietario
+                       ,coalesce(k.cognome, '')||' '||
+                        coalesce(k.nome, '') as nominativo_prop
+                       ,d.cognome as cognome_resp
+                       ,d.nome as nome_resp
+                       ,d.cod_fiscale --gac01
+		       ,d.indirizzo as indirizzo_resp
+		       ,d.numero    as numero_resp
+                       ,d.localita as localita_resp
+                       ,d.comune as comune_resp
+                       ,d.provincia as provincia_resp
+                       ,d.cap as cap_resp
+                       ,d.telefono as telefono_resp
+		       ,a.cod_occupante
+                       ,e.cognome as cognome_util
+		       ,e.nome as nome_util
+                       ,e.indirizzo as indirizzo_util
+		       ,e.numero    as numero_util
+                       ,e.localita as localita_util
+                       ,e.comune as comune_util
+                       ,e.provincia as provincia_util
+                       ,e.cap as cap_util
+                       ,coalesce(g.descr_topo,'')||' '||
+                        coalesce(g.descr_estesa,'')||' '||
+                        coalesce(a.numero, '')||' '||
+                        coalesce(a.esponente,'') as indirizzo_ubic
+                       ,a.localita as localita_ubic
+                       ,h.denominazione as comune_ubic
+                       ,i.denominazione as provincia_ubic
+                       ,a.cap as cap_ubic
+                       , null as garanzia
+                       , null as conformita
+                       , null as lib_impianto
+                       , null as lib_uso_man
+                       , null as inst_in_out
+                       , null as idoneita_locale
+                       , null as ap_ventilaz
+                       , null as ap_vent_ostruz
+                       , null as pendenza
+                       , null as sezioni
+                       , null as curve
+                       , null as lunghezza
+                       , null as conservazione
+                       , null as scar_ca_si
+                       , null as scar_can_fu
+                       , null as scar_parete
+                       , null as riflussi_locale
+                       , null as assenza_perdite
+                       , null as pulizia_ugelli
+                       , null as antivento
+                       , null as scambiatore
+                       , null as accens_reg
+                       , null as disp_comando
+                       , null as ass_perdite
+                       , null as valvola_sicur
+                       , null as vaso_esp
+                       , null as disp_sic_manom
+                       , null as organi_integri
+                       , null as circ_aria
+                       , null as guarn_accop
+                       , null as assenza_fughe
+                       , null as coibentazione
+                       , null as eff_evac_fum
+                       , null as cont_rend
+                       , '____________________________' as data_controllo
+                       , null as temp_fumi
+                       , null as temp_ambi
+                       , null as o2
+                       , null as co2
+                       , null as bacharach
+                       , null as co
+                       , null as rend_combust
+                       , '____________________________________________________________________________________________________________________________________________' as osservazioni
+                       , '____________________________________________________________________________________________________________________________________________' as raccomandazioni
+                       , '____________________________________________________________________________________________________________________________________________' as prescrizioni
+		       , null as data_utile_inter
+                       , null as n_prot
+                       , null as data_prot
+                       , '_______________________________________' as firma_resp
+                       , null as firma_manut
+                       , null as tipologia_costo
+                       , null as riferimento_pag
+                       , null as cod_documento
+                       , null as flag_co_perc
+                       ,a.cod_responsabile
+                       , null as data_controllo_db
+
+                       , '______________' as tiraggio_fumi
+                       , '______________' as ora_inizio
+                       , '______________' as ora_fine
+                       , null as rapp_contr
+                       , null as rapp_contr_note
+                       , null as certificaz
+                       , null as certificaz_note
+                       , null as dich_conf
+                       , null as dich_conf_note
+                       , null as libretto_bruc
+                       , null as libretto_bruc_note
+                       , null as prev_incendi
+                       , null as prev_incendi_note
+                       , null as lib_impianto_note
+                       , null as ispesl
+                       , null as ispesl_note
+                       , null as data_scadenza_autocert
+                       , null as num_autocert
+                       , null as esame_vis_l_elet
+                       , null as funz_corr_bruc
+                       , null as lib_uso_man_note
+                       ,b.locale
+                       ,iter_edit_data(b.data_costruz_gen) as data_costruz_gen
+                       ,iter_edit_data(b.data_costruz_bruc) as data_costruz_bruc
+                       ,b.marc_effic_energ  
+                       , null as volimetria_risc
+                       , null as consumo_annuo
+                       ,iter_edit_num(b.pot_focolare_nom,2) as pot_focolare_nom
+                       ,b.mod_funz
+                       ,b.tipo_bruciatore
+                       ,iter_edit_num(b.campo_funzion_max,2) as campo_funzion_max
+                       ,b.matricola_bruc
+                       ,b.modello_bruc
+                       ,l.descr_cost as costruttore_bruc
+                       ,a.cod_impianto_est
+                       ,m.sigla as prov_ubic
+                       ,a.flag_resp
+                       ,n.descr_utgi as destinazione
+                       , 'O_P' as flag_status
+                       , null as rct_dur_acqua    
+                       , null as rct_tratt_in_risc       
+                       , null as rct_tratt_in_acs       
+                       , null as rct_install_interna      
+                       , null as rct_install_esterna     
+                       , null as rct_canale_fumo_idoneo  
+                       , null as rct_sistema_reg_temp_amb 
+                       , null as rct_assenza_per_comb     
+                       , null as rct_idonea_tenuta         
+                       , null as rct_valv_sicurezza      
+                       , null as rct_scambiatore_lato_fumi 
+                       , null as rct_riflussi_comb         
+                       , null as rct_uni_10389             
+                       , null as rct_rend_min_legge
+                       , null as rct_modulo_termico
+                       , null as rct_check_list_1          
+                       , null as rct_check_list_2          
+                       , null as rct_check_list_3         
+                       , null as rct_check_list_4          
+                       , null as rct_gruppo_termico  
+                       , null as rct_lib_uso_man_comp
+                       , null as cod_opmanu_new
+                       , '____________________________' as data_prox_manut
+                       , null as costo_pretty
+                       -- teleriscaldamento 24/03/2017 --
+                       , null as tel_stato_coibent_idoneo_imp
+                       , null as tel_linee_eletr_idonee
+                       , null as tel_assenza_perdite_circ_idraulico
+                       , null as tel_potenza_compatibile_dati_prog
+                       , null as tel_stato_coibent_idoneo_scamb
+                       , null as tel_disp_regolaz_controll_funzionanti
+                       , null as tel_assenza_trafil_valv_regolaz
+                       , null as tel_temp_est
+                       , null as tel_temp_mand_prim
+                       , null as tel_temp_rit_prim
+                       , null as tel_potenza_termica
+                       , null as tel_portata_fluido_prim
+                       , null as tel_temp_mand_sec
+                       , null as tel_temp_rit_sec
+                       , null as tel_check_coerenza_paramentri
+                       , null as tel_check_perdite_h2o
+                       , null as tel_check_install_involucro
+                       , null as tel_alimentazione
+                       , null as tel_fluido_vett_term_uscita
+		       , null as tel_fluido_vett_term_uscita_tel
+                       , null as tel_alimentazione_altro
+                       , null as tel_fluido_altro
+                       -- teleriscaldamento 24/03/2017 --
+		       -- cogenerazione     15/02/2018 --
+		       ,  null as cog_capsula_insonorizzata 
+		       ,  null as cog_tenuta_circ_idraulico 
+		       ,  null as cog_tenuta_circ_olio 
+		       ,  null as cog_tenuta_circ_alim_combustibile
+		       ,  null as cog_funzionalita_scambiatore 
+		       ,  null as cog_potenza_assorbita_comb   
+		       ,  null as cog_potenza_termica_piena_pot
+		       ,  null as cog_emissioni_monossido_co   
+		       ,  null as cog_temp_aria_comburente     
+		       ,  null as cog_temp_h2o_uscita          
+		       ,  null as cog_temp_h2o_ingresso        
+		       ,  null as cog_potenza_morsetti_gen     
+		       ,  null as cog_temp_h2o_motore          
+		       ,  null as cog_temp_fumi_valle          
+		       ,  null as cog_temp_fumi_monte          
+		       -- cogenerazione     14/02/2018 --
+                       , null as cog_sovrafreq_soglia1 
+                       , null as cog_sovrafreq_tempo1  
+                       , null as cog_sottofreq_soglia1 
+                       , null as cog_sottofreq_tempo1  
+                       , null as cog_sovraten_soglia1  
+                       , null as cog_sovraten_tempo1   
+                       , null as cog_sottoten_soglia1  
+                       , null as cog_sottoten_tempo1   
+                       , null as cog_sovrafreq_soglia2 
+                       , null as cog_sovrafreq_tempo2  
+                       , null as cog_sottofreq_soglia2 
+                       , null as cog_sottofreq_tempo2  
+                       , null as cog_sovraten_soglia2  
+                       , null as cog_sovraten_tempo2   
+                       , null as cog_sottoten_soglia2  
+                       , null as cog_sottoten_tempo2   
+                       , null as cog_sovrafreq_soglia3 
+                       , null as cog_sovrafreq_tempo3  
+                       , null as cog_sottofreq_soglia3
+                       , null as cog_sottofreq_tempo3
+                       , null as cog_sovraten_soglia3
+                       , null as cog_sovraten_tempo3
+                       , null as cog_sottoten_soglia3
+                       , null as cog_sottoten_tempo3
+		       , null as costo_pretty
+                       ,a.scala
+                       ,a.interno
+		       , null as descr_tprc
+		       ,a.targa
+       		       , null as consumo_annuo2
+		       , null as stagione_risc
+		       , null as stagione_risc2
+		       , null as acquisti
+		       , null as acquisti2
+		       , null as scorta_o_lett_iniz
+		       , null as scorta_o_lett_iniz2
+		       , null as scorta_o_lett_fin
+		       , null as scorta_o_lett_fin2
+                       , null as elet_esercizio_1
+		       , null as elet_esercizio_2
+		       , null as elet_esercizio_3
+		       , null as elet_esercizio_4
+                       , null as elet_lettura_iniziale
+                       , null as elet_lettura_finale
+                       , null as elet_consumo_totale
+                       , null as elet_lettura_iniziale_2
+                       , null as elet_lettura_finale_2
+                       , null as elet_consumo_totale_2
+		       , b.descrizione
+		       , b.tipo_foco as tipo_gen_foco
+		       , b.tiraggio
+  		    from coimgend b
+                    left outer join coimcost c on c.cod_cost     = b.cod_cost 
+                    inner join coimaimp a on a.cod_impianto = b.cod_impianto
+		    left outer join coimcitt f on f.cod_cittadino = a.cod_responsabile
+                    left outer join coimcitt d on d.cod_cittadino = a.cod_responsabile
+                    left outer join coimcitt e on e.cod_cittadino = a.cod_occupante     
+                    left outer join coimcitt k on k.cod_cittadino = a.cod_proprietario
+                    left outer join coimviae g on  g.cod_comune    = a.cod_comune
+                                             and g.cod_via       = a.cod_via
+                    left outer join coimcomu h on  h.cod_comune    = a.cod_comune
+                    left outer join coimprov i on  i.cod_provincia = a.cod_provincia
+                    left outer join coimcost l on l.cod_cost       = b.cod_cost_bruc
+                    left outer join coimprov m on m.cod_provincia  = a.cod_provincia
+                    left outer join coimutgi n on n.cod_utgi       = b.cod_utgi
+                   where b.cod_impianto   = :cod_impianto
+		     and b.gen_prog       = :gen_progg
+       </querytext>
+    </fullquery>
+
+    <fullquery name="sel_gend_only_print">
+      <querytext>
+	select gen_prog as gen_progg
+	from coimgend
+	where cod_impianto     = :cod_impianto
+	and flag_attivo      = 'S'
+      </querytext>
+    </fullquery>
+    
     <fullquery name="sel_aimp">
        <querytext>
                    select modello
@@ -605,8 +908,10 @@
     </fullquery>
 
     <fullquery name="sel_manu">
-       <querytext>
-                  select nome
+      <querytext>
+
+	select *
+	  from( select nome
                        , cognome
                        , indirizzo
                        , localita
@@ -614,8 +919,29 @@
                        , telefono     
 		       , cod_piva --gac01
                        , comune   --gac01
+		       , current_date as data_validita --ric01
                     from coimmanu
-                   where cod_manutentore = :cod_manutentore
+                    where cod_manutentore = :cod_manutentore
+
+		    union --ric01 aggiunta union con coimmanu_st
+
+		    select nome
+                       , cognome
+                       , indirizzo
+                       , localita
+                       , provincia
+                       , telefono     
+		       , cod_piva 
+                       , comune   
+		       , st_data_validita as data_validita 
+                    from coimmanu_st
+                    where cod_manutentore = :cod_manutentore
+	   ) as st
+	  where st.data_validita >= coalesce(:data_controllo_db, current_date)
+       order by st.data_validita
+          limit 1
+		
+		    
        </querytext>
     </fullquery>
 

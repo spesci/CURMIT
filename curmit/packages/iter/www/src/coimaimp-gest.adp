@@ -1,6 +1,16 @@
 <!--
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    rom16 29/08/2022 Su richiesta di Pavaran di Ucit la label per il campo targa varia per
+    rom16            Friulia rispetto allo standard, usata la nuova variabile label_targa.
+
+    mic01 08/07/2022 Aggiunto link per bonifica targa
+
+    rom15 04/05/2022 Su richiesta di Giuliodori fatta per mail "nuova nota campo ibrido e testo label" il 29/04
+    rom15            modificata la label dal campo flag_ibrido per le Marche.
+
+    rom14 22/03/2022 MEV Regione Marche per sistemi ibridi.
+
     rom13 21/12/2020 Aggiunto inserisci_targa visibile solo per le Marche per gli utenti che
     rom13            non sono manutentori.    	 
 
@@ -86,6 +96,7 @@
 <property name="title">@page_title;noquote@</property>
 <property name="context_bar">@context_bar;noquote@</property>
 <property name="riga_vuota">f</property>
+<property name="focus_field">@focus_field;noquote@</property><!--rom14-->
 
 <center>
 <formtemplate id="@form_name;noquote@">
@@ -159,9 +170,9 @@
           <td width="50%" class=func-menu>&nbsp;</td>
 </else>
 </tr>
-</table>
-<table border=0 width="100%"><br>
+</table><table border=0 width="100%">
   <tr><td colspan=6 class=func-menu-yellow2><b>1.1 Tipologia intervento</b></td></tr><!-- rom03 -->
+  <tr><td colspan=6>&nbsp;</td></tr>
   <tr><!--gac03 scambiato di posto data con tipologia--><!--rom05 rimesso vecchio ordine su richiesta della regione marche -->
     <td valign=top align=right class=form_title colspan=1>In data<font color=red>*</font></td><!--rom08 agg. *-->
     <td valign=top nowrap > <formwidget id="data_libretto">
@@ -180,8 +191,10 @@
     </td>
 </tr>
 <if @coimtgen.regione@ eq "MARCHE"><!--rom09 aggiunta if e contenuto-->
+  <tr><td colspan=6>&nbsp;</td></tr>
 <tr><td colspan=6 class=func-menu-yellow2><b>1.2 Ubicazione e destinazione dell'edificio</b><br>
   Informazioni prelevate automaticamente dalla scheda 1.2 </td></tr><!-- rom03 -->
+  <tr><td colspan=6>&nbsp;</td></tr>
   <tr>
     <td valign=top align=right class=form_title>Comune</td>
     <if @flag_ente@ eq P>
@@ -363,11 +376,14 @@
     </td>
 </tr>
 
+  <tr><td colspan=6>&nbsp;</td></tr>
   <tr><td colspan=6 class=func-menu-yellow2><b>1.3 Impianto destinato a soddisfare i seguenti servizi<br>1.4 Tipologia Fluido Vettore</b><br>Informazioni prelevate automaticamente dalle schede 4.1 e 4.1bis per i Generatori di calore a fiamma, dalle schede 4.4 e 4.4bis per i GF/Pompe di calore, e dalle schede 4.n e 4.nbis per i generatori di altro tipo.</td></tr>
   <tr><td valign=top align=center nowrap class=form_title colspan=6>&nbsp;</td></tr><!--gac03 aggiunta riga vuota-->
 </if><!--rom09-->
     
+  <tr><td colspan=6>&nbsp;</td></tr>
   <tr><td colspan=6 class=func-menu-yellow2><b>1.5 Individuazione della Tipologia dei Generatori</b></td></tr><!-- rom03 -->
+  <tr><td colspan=6>&nbsp;</td></tr>
   <!-- gac01 aggiunti nuovi campi 07/06/2018 -->
   <!-- rom12 Aggiunto * sulla label del campo tipologia_generatore -->
 <tr>
@@ -386,19 +402,70 @@
     </td>
     </if>
 </tr>
-<tr>
-  <if @coimtgen.regione@ eq "MARCHE"><!--rom07 inserita if e contenuto-->
-      <if @flag_tipo_impianto@ eq "R">
-	<td valign=top align=right nowrap class=form_title>Ibrido</td>
-	<td valign=top colspan=1><formwidget id="flag_ibrido">
-            <formerror  id="flag_ibrido"><br>
-              <span class="errori">@formerror.flag_ibrido;noquote@</span>
-            </formerror> <a href="#" onclick="javascript:window.open('coimaimp-gest-help?caller=ibrido', 'help', 'scrollbars=yes, esizable=yes, width=450, height=220').moveTo(110,140)"><b>per i sistemi ibridi, vedi nota</b></a><!--rom07.bis aggiunto pop-up su richiesta delle Marche-->
+<if @coimtgen.regione@ eq "MARCHE"><!--rom07 inserita if e contenuto-->
+  <tr>
+    <if @flag_tipo_impianto@ eq "R" or @flag_tipo_impianto@ eq "F">
+      <!--rom15 <td valign=top align=right nowrap class=form_title>@label_ibrido@ <font color="red">*</font></td>-->
+      <td valign=top align=right nowrap class=form_title>@label_ibrido;noquote@</td><!--rom15-->
+      <td valign=top colspan=1><formwidget id="flag_ibrido">
+          <formerror  id="flag_ibrido"><br>
+            <span class="errori">@formerror.flag_ibrido;noquote@</span>
+          </formerror> <a href="#" onclick="javascript:window.open('coimaimp-gest-help?caller=ibrido', 'help', 'scrollbars=yes, esizable=yes, width=650, height=320').moveTo(110,140)"><b> vedi nota</b></a><!--rom07.bis aggiunto pop-up su richiesta delle Marche-->
+      </td>
+      <if @label_cod_impianto_ibrido@ ne "">
+	<td valign=baseline align=right nowrap class=form_title>@label_cod_impianto_ibrido;noquote@</td>
+	<td valign=baseline><formwidget id="cod_impianto_ibrido">
+	    <formerror  id="cod_impianto_ibrido"><br>
+	      <span class="errori">@formerror.cod_impianto_ibrido;noquote@</span>
+	    </formerror>
+	</td>
+      </if>
+      <if @label_cod_impianto_princ_ibrido@ ne "">  
+	<td valign=top align=right nowrap class=form_title>@label_cod_impianto_princ_ibrido;noquote@</td>
+	<td valign=top><formwidget id="cod_impianto_princ_ibrido">
+	    <formerror  id="cod_impianto_princ_ibrido"><br>
+	      <span class="errori">@formerror.cod_impianto_princ_ibrido;noquote@</span>
+	    </formerror>
 	</td>
 	</if>
     </if>
+  </tr>
+  <if @cod_impianto_princ_ibrido@ ne ""><!--rom14 Aggiunta if e il suo contenuto -->
+    <tr>
+      <td valign=top align=center class=form_title colspan=2><b>Indicare quali dei seguenti sistemi sono eventualmente unici per gli impianti collegati:</b></td>
+      <td colspan=2>&nbsp;</td>
+    </tr>
+    <tr>
+      <td valign=top align=right nowrap class=form_title>Regolazione primaria (scheda 5.1)</td>
+      <td valign=top><formwidget id="is_regolazione_primaria_unica">
+	  <formerror  id="is_regolazione_primaria_unica"><br>
+	    <span class="errori">@formerror.is_regolazione_primaria_unica;noquote@</span>
+	  </formerror>
+      </td>
+      <td valign=top align=right nowrap class=form_title>Sistemi di accumulo (scheda 8)</td>
+      <td valign=top><formwidget id="is_coimaccu_aimp_unici">
+	  <formerror  id="is_coimaccu_aimp_unici"><br>
+	    <span class="errori">@formerror.is_coimaccu_aimp_unici;noquote@</span>
+	  </formerror>
+      </td>
+    </tr>
+    <tr>
+      <td valign=top align=right nowrap class=form_title>Scambiatori di calore intermedi (scheda 9.3)</td>
+      <td valign=top><formwidget id="is_coimscam_calo_aimp_unici">
+	  <formerror  id="is_coimscam_calo_aimp_unici"><br>
+	    <span class="errori">@formerror.is_coimscam_calo_aimp_unici;noquote@</span>
+	  </formerror>
+      </td>
+      <td valign=top align=right nowrap class=form_title>Recuperatori di calore (scheda 9.6)</td>
+      <td valign=top><formwidget id="is_coimrecu_calo_aimp_unici">
+	  <formerror  id="is_coimrecu_calo_aimp_unici"><br>
+	    <span class="errori">@formerror.is_coimrecu_calo_aimp_unici;noquote@</span>
+	  </formerror>
+      </td>
+    </tr>
+  </if>
+</if>
 
-</tr>
 <tr>
   <td colspan="6" align="center">
     <table border="0" width="90%">
@@ -447,7 +514,9 @@
   </td>
 </tr>
 <!--rom05<tr><td colspan=6 class=func-menu-yellow2><b>Dati Tecnici Impianto</b></td></tr><!-- rom03 --> 
+  <tr><td colspan=6>&nbsp;</td></tr>
   <tr><td colspan=6 class=func-menu-yellow2><b>Stampa targa / Dati riepilogativi dell'impianto</b></td></tr><!-- rom05 -->
+  <tr><td colspan=6>&nbsp;</td></tr>
 
 <tr>
   <td valign=top width="1%" align=right class=form_title>Cod. impianto</td>
@@ -485,8 +554,8 @@
     </td><!-- sim01 -->
 </if>
 <else>
-  <td valign=top width="1%" align=right class=form_title>Codice Catasto/Targa </td><!-- sim06 -->
-  <td valign=top width="1%" colspan="5"><formwidget id="targa"> @inserisci_targa;noquote@ @cerca_targa;noquote@ @link_stampa_targa;noquote@ &nbsp; Attenzione: la targa va obbligatoriamente apposta sul mantello dei generatori<!-- sim06--><!--rom11 aggiunta dicitura dopo link_stampa_targa--><!--gac05 aggiunto cerca targa-->
+  <td valign=top width="1%" align=right class=form_title>@label_targa@ </td><!-- sim06 --><!--rom16 usata variabile label_targa -->
+  <td valign=top width="1%" colspan="5"><formwidget id="targa"> @inserisci_targa;noquote@ @cerca_targa;noquote@ @bon_targa;noquote@ @link_stampa_targa;noquote@ <br> Attenzione: la targa va obbligatoriamente apposta sul mantello dei generatori<!-- sim06--><!--rom11 aggiunta dicitura dopo link_stampa_targa--><!--gac05 aggiunto cerca targa-->
       <formerror  id="targa"><br><!-- sim06 -->
         <span class="errori">@formerror.targa;noquote@</span><!-- sim06 -->
       </formerror><!-- sim06 -->
@@ -671,7 +740,9 @@
     </td>
   </tr>
 </if><!--rom06-->
+  <tr><td colspan=6>&nbsp;</td></tr>
 <tr><td colspan=6 class=func-menu-yellow2><b>Dati scadenza dell'Impianto / Informazioni dell'Impianto</b></td></tr><!-- rom03 -->
+  <tr><td colspan=6>&nbsp;</td></tr>
 <tr>
 <if @coimtgen.regione@ ne "MARCHE"> <!-- rom01 aggiunta if -->
     <td valign=top align=right class=form_title>Data di costruzione dell'impianto</td><!--gac03-->

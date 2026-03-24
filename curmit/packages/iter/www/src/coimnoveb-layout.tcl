@@ -10,6 +10,10 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== ==========================================================================
+    ric01 21/03/2023 Commentato i flag relativi all'art. 11 perchè abrogati (non per regione Marche)
+
+    rom01 02/03/2023 Settati alcuni campi di default per evitare errori nella stampa.
+
     gac01 22/11/2018 Modificato modello A della stampa con aggiunta di vari campi solo per
     gac01            regione marche
     
@@ -84,6 +88,22 @@ if {[db_0or1row $sel_aimp_2 ""] == 0} {
     if {[db_0or1row sel_noveb ""] == 0} {
 	iter_return_complaint "Allegato non trovato"
     } else {
+	#rom01 Settati i default dei campi.
+	set flag_a ""
+	set flag_c ""
+	set flag_e ""
+	set reg_imprese ""
+	set localita_reg ""
+	set cod_legale_rapp ""
+	set cognome_manu ""
+	set nome_manu ""
+	set piva ""
+	set indirizzo_manu ""
+	set provincia_manu ""
+	set comune_manu ""
+	set telefono ""
+	set fax ""
+	set email ""
 
 	if {[string range $cod_manutentore 0 1] == "MA"} {
 	    db_0or1row sel_dati_manu ""
@@ -132,16 +152,16 @@ if {[db_0or1row $sel_aimp_2 ""] == 0} {
 	    set flag_rispetta_val_min $not_checked
 	}
 	if {[string equal $n_generatori ""]} {
-	    set n_generatori "&nbsp"
+	    set n_generatori "&nbsp;"
 	}
         if {[string equal $dich_conformita_nr ""]} {
-            set dich_conformita_nr "&nbsp"
+            set dich_conformita_nr "&nbsp;"
             set flag_dich_conform $not_checked
         } else {
 	    set flag_dich_conform $checked
         } 	
 	if {[string equal $data_dich_conform ""]} {
-	    set data_dich_conform "&nbsp"
+	    set data_dich_conform "&nbsp;"
 	}
         if {$flag_libretto_centr == "t"} {
             set flag_libretto_centr $checked
@@ -149,19 +169,19 @@ if {[db_0or1row $sel_aimp_2 ""] == 0} {
             set flag_libretto_centr $not_checked
         }
         if {[string equal $firma_dichiarante ""]} {
-            set firma_dichiarante "&nbsp"
+            set firma_dichiarante "&nbsp;"
         }
 	if {[string equal $data_dichiarazione ""]} {
-	    set data_dichiarazione "&nbsp"
+	    set data_dichiarazione "&nbsp;"
 	}
 	if {[string equal $firma_responsabile ""]} {
-	    set firma_responsabile "&nbsp"
+	    set firma_responsabile "&nbsp;"
 	}
 	if {[string equal $data_ricevuta ""]} {
-	    set data_ricevuta "&nbsp"
+	    set data_ricevuta "&nbsp;"
 	}
 	if {[string equal $regolamenti_locali ""]} {
-	    set regolamenti_locali "&nbsp"
+	    set regolamenti_locali "&nbsp;"
 	}
         if {$flag_verif_emis_286 == "S"} {
             set verif_emis_286_si $checked
@@ -171,16 +191,16 @@ if {[db_0or1row $sel_aimp_2 ""] == 0} {
             set verif_emis_286_no $checked
         }
 	if {[string equal $data_verif_emiss ""]} {
-	    set data_verif_emiss "&nbsp"
+	    set data_verif_emiss "&nbsp;"
 	}
 	if {[string equal $risultato_mg_nmc_h ""]} {
-            set risultato_mg_nmc_h "&nbsp"
+            set risultato_mg_nmc_h "&nbsp;"
         }
 	if {[string equal $data_alleg_libretto ""]} {
-            set data_alleg_libretto "&nbsp"
+            set data_alleg_libretto "&nbsp;"
         }
 	if {[string equal $combustibili ""]} {
-            set combustibili "&nbsp"
+            set combustibili "&nbsp;"
         }
         if {$flag_risult_conforme == "S"} {
             set risultato_conforme_si $checked
@@ -190,7 +210,7 @@ if {[db_0or1row $sel_aimp_2 ""] == 0} {
             set risultato_conforme_no $checked
 	}
         if {[string equal $pot_term_tot_mw ""]} {
-            set pot_term_tot_mw "&nbsp"
+            set pot_term_tot_mw "&nbsp;"
         }
 
 	db_1row q "select cod_utgi from coimgend where cod_impianto = :cod_impianto limit 1";#gac01
@@ -249,7 +269,7 @@ if {[db_0or1row $sel_aimp_2 ""] == 0} {
         <tr><td>&nbsp;</td></tr>
         <tr><td align=center>DICHIARAZIONE PER IMPIANTI TERMICI CIVILI DI POTENZA TERMICA NOMINALE AL FOCOLARE > 35 kW</td></tr>
         <tr><td align=center>(D.Lgs. 152/06 art. 284)</td></tr>
-        <tr><td align=center><i>Da allegare alla dichiarazione di conformità per nuova installazione o modifica (art. 248 c.1); e da allegare al Libretto d'impianto</td></tr>
+        <tr><td align=center><i>Da allegare alla dichiarazione di conformità per nuova installazione o modifica (art. 284 c.1); e da allegare al Libretto d'impianto</td></tr>
         <tr><td align=center>per gli impinati in esercizio (art.284 c.2);</td></tr>
         <tr><td>Data $data_consegna &nbsp;&nbsp; Luogo $luogo_consegna</td>
         </tr>
@@ -284,7 +304,7 @@ if {[db_0or1row $sel_aimp_2 ""] == 0} {
      
    <tr><td align=left>Il presente documento viene allegato a:</td></tr>
         <tr><td>&nbsp;</td></tr>
-        <tr><td align=left>$flag_dich_conform Dichiarazione di conformita nr. $dich_conformita_nr del $data_dich_conform</td></tr>
+        <tr><td align=left>$flag_dich_conform Dichiarazione di conformit&agrave; nr. $dich_conformita_nr del $data_dich_conform</td></tr>
         <tr><td align=left>$flag_libretto_centr Libretto di centrale</td></tr>
         <tr><td>&nbsp;</td></tr>
         <tr><td align=left>Il Dichiarante</td></tr>
@@ -304,24 +324,24 @@ if {[db_0or1row $sel_aimp_2 ""] == 0} {
         <tr><td>&nbsp;</td></tr>
         <tr><td align=center><b>ATTO DI DICHIARAZIONE PER IMPIANTI TERMICI CIVILI DI POTENZA TERMICA NOMINALE > 0,035 MW</b></td></tr>
         <tr><td align=center><b>(D.Lgs. 152/06 art. 284 come modificato dal D.Lgs. 128/10 art. 3 comma 7)</b></td></tr>
-        <tr><td align=center>Da allegare alla dichiarazione di conformità per nuova installazione modifica (art. 248, co.1)</td></tr>
-        <tr><td align=center>e per gli impianti in esercizio da inserire nel Libretto di Centrale (art. 248, co.2)</td></tr>
+        <tr><td align=center>Da allegare alla dichiarazione di conformità per nuova installazione modifica (art. 284, co.1)</td></tr>
+        <tr><td align=center>e per gli impianti in esercizio da inserire nel Libretto di Centrale (art. 284, co.2)</td></tr>
         <tr><td>&nbsp;</td></tr>
         <tr><td align=center><b>Cod. Impianto: $cod_impianto_est</b></td></tr>
         <tr><td align=left>Io sottoscritto $cognome_manu $nome_manu</td></tr>
         <tr><td align=left>In possesso dei requisiti di cui</td></tr>
         <tr><td>&nbsp;</td></tr>
         <tr><td align=left>$flag_art_3 al D.M. 22/01/2008 n. 37 art. 3</td></tr>
-        <tr><td align=left>$flag_art_11 al DPR 412/93 art. 11</td></tr>
+        <!-- ric01 tr><td align=left>$flag_art_11 al DPR 412/93 art. 11</td></tr -->
         <tr><td>&nbsp;</td></tr>
-        <tr><td align=left>Ed in possesso inoltre dei seguenti ulteriori requisiti:</td></tr>
+        <tr><td align=left>Ed in possesso inoltre degli eventuali ulteriori requisiti:</td></tr>
         <tr><td>&nbsp;</td></tr>
         <tr><td align=left>$flag_patente_abil patentino di abilitazione per la conduzione di impianti termici (obbligatorio per Portata Termica Nominale > 0,232 MW previsto dal DL 152/2006 e ss.mm.ii.(art. 287))</td></tr>
-        <tr><td align=left>$flag_art_11_comma_3 requisiti di cui al DPR 412/93 art. 11 comma 3</td></tr>
+        <!-- ric01 tr><td align=left>$flag_art_11_comma_3 requisiti di cui al DPR 412/93 art. 11 comma 3</td></tr -->
         <tr><td>&nbsp;</td></tr>
   <tr><td align=left>Nella sua qualita di:</td></tr>
         <tr><td align=left>$flag_installatore installatore</td></tr>
-        <tr><td align=left>$flag_responsabile responsabile</td></tr>
+        <tr><td align=left>$flag_responsabile terzo responsabile</td></tr>
         <tr><td align=left>$flag_manutentore  manutentore</td></tr>
         <tr><td>&nbsp;</td></tr>
   <tr><td align=left>dell'impianto sito in &nbsp; $indir</td></tr>
@@ -342,7 +362,7 @@ if {[db_0or1row $sel_aimp_2 ""] == 0} {
      
    <tr><td align=left>Il presente documento viene allegato a:</td></tr>
         <tr><td>&nbsp;</td></tr>
-        <tr><td align=left>$flag_dich_conform Dichiarazione di conformita nr. $dich_conformita_nr del $data_dich_conform</td></tr>
+        <tr><td align=left>$flag_dich_conform Dichiarazione di conformit&agrave; nr. $dich_conformita_nr del $data_dich_conform</td></tr>
         <tr><td align=left>$flag_libretto_centr Libretto di centrale</td></tr>
         <tr><td>&nbsp;</td></tr>
         <tr><td align=left>Il Dichiarante</td></tr>
@@ -408,7 +428,7 @@ if {[db_0or1row $sel_aimp_2 ""] == 0} {
         <tr><td align=left>$verif_emis_286_si e' stata effettuata in data $data_verif_emiss con il seguente risultato: $risultato_mg_nmc_h Mg/Nmc all'ora</td></tr>
         <tr><td>&nbsp;</td></tr>
         <tr><td align=left>Tale risultato e' $risultato_conforme_si conforme &nbsp; &nbsp; $risultato_conforme_no non conforme</td></tr>
-
+        <tr><td align=left colspan=2><b>(N.B. Il limite massimo di polveri totali è pari a 50  mg/Nmc)</b></td></tr>
         <tr><td>&nbsp;</td></tr>
 
         <tr><td align=left>Il presente documento viene allegato al Libretto di Centrale in data $data_alleg_libretto</td>

@@ -7,6 +7,17 @@ ad_page_contract {
 
     @cvs-id coiminco-scar.tcl
 
+    USER  DATA       MODIFICHE
+    ===== ========== =======================================================================
+    but01 15/01/2024 Aguinto la colonna codice fiscale, e ho valorizzato il campo codice impianto
+    but01                 con il codice_impianto_est.
+
+    rom02 12/01/2024 Sandro ha chiesto di aggiungere le colonne stato e motivo annullamento
+    rom02            al file di scarico, va bnee per tutti gli enti.
+
+    rom01 21/07/2022 Su richiesta della Provincia di Salerno aggiunta la colonna flag_blocca_rcee.
+    rom01            Sandro ha detto che va bene per tutti.
+
 } {
     {cod_cinc          ""}
     {f_data            ""}
@@ -188,6 +199,7 @@ lappend head_cols "Verif. nome"
 lappend head_cols "Tipo verifica"
 lappend head_cols "Potenza"
 lappend head_cols "Utente"
+lappend head_cols "Codice fiscale";#but01
 lappend head_cols "Utente 2"
 lappend head_cols "Indirizzo"
 lappend head_cols "CAP"
@@ -267,7 +279,9 @@ lappend head_cols "Strumento"
 lappend head_cols "Osservazione/Raccomandazioni"
 lappend head_cols "Note responsabile"
 lappend head_cols "Note non conformita'"
-
+lappend head_cols "Flag blocca RCEE";#rom01
+lappend head_cols "Stato appuntamento";#rom02
+lappend head_cols "Motivo annullamento";#rom02
 
 # imposto il tracciato record del file csv
 set     file_cols ""
@@ -276,7 +290,7 @@ lappend file_cols "note_verifica"
 lappend file_cols "n_verbale"
 lappend file_cols "tipo_visita"
 lappend file_cols "tariffa"
-lappend file_cols "cod_impianto"
+lappend file_cols "cod_impianto_est";#but01 sostituito cod_impianto
 lappend file_cols "data_verifica"
 lappend file_cols "ora_verifica"
 lappend file_cols "ragione_01"
@@ -285,6 +299,7 @@ lappend file_cols "nome_verif"
 lappend file_cols "tipo_ver"
 lappend file_cols "potenza"
 lappend file_cols "resp"
+lappend file_cols "cod_fiscale";#but01
 lappend file_cols "resp2"
 lappend file_cols "indirizzo_ext"
 lappend file_cols "cap"
@@ -364,6 +379,9 @@ lappend file_cols "strumento"
 lappend file_cols "note_verificatore"
 lappend file_cols "note_resp"
 lappend file_cols "note_conf"
+lappend file_cols "flag_blocca_rcee";#rom01
+lappend file_cols "des_stato";#rom02
+lappend file_cols "descr_noin";#rom02
 
  
 if {$flag_viario == "T"} {
@@ -467,7 +485,7 @@ db_foreach $sel_inco "" {
     set tipologia_costo ""
     set riferimento_pag ""
     set data_scad_pag ""
-
+    
     foreach column_name $file_cols {
 	lappend file_col_list [set $column_name]
     }

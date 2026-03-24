@@ -20,6 +20,18 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== ===========================================================================
+    rom03 17/07/2024 Aggiunti in sola visualizzazione i campi utente e data_mod. Modifica chiesta
+    rom03            da Palermo ma Sandro ha detto che va bene per tutti.
+
+    rom02 22/05/2024 Caserta ha richiesto che per nessuna casuale l'annullamento dell'appuntamento
+    rom02            generi l'annullamento dell'impianto.
+    
+    but01 22/06/2023 Aggiunto la classe ah-jquery-date ai campi:data_verifica, data_avviso_01
+    but01            , data_avviso_02, data_estrazione, data_assegn.
+
+    rom01 22/03/2022 Su segnalazione di Pavaran di Ucit e' stato tolto l'obbligatorieta' sul
+    rom01            campo Data appuntamento per tutta la Regione Fiuli. Modifica portata dal vecchio cvs.
+
     sim01 07/06/2019 Agguinto nuovo campo flag_blocca_rcee per gestire il blocco dell'inserimento degli
     sim01            RCEE in caso di ispezione
 
@@ -165,6 +177,10 @@ switch $funzione {
 	set disabled_fld \{\}
     }
 }
+set jq_date "";#but01
+if {$funzione in "M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
 
 set disabled_ace_enve $disabled_ace
 set readonly_ace_tecn $readonly_ace
@@ -179,6 +195,21 @@ if {$flag_cod_tecn == "t"} {
 
 form create $form_name \
     -html    $onsubmit_cmd
+
+#rom03
+element create $form_name utente \
+    -label   "utente" \
+    -widget   text \
+    -datatype text \
+    -html    "size 10 maxlength 10 readonly {} class form_element" \
+    -optional
+#rom03
+element create $form_name data_mod \
+    -label   "Data modifica" \
+    -widget   text \
+    -datatype text \
+    -html    "size 10 maxlength 10 readonly {} class form_element" \
+    -optional
 
 element create $form_name cod_inco \
     -label   "Codice" \
@@ -207,19 +238,19 @@ element create $form_name tipo_estrazione \
     -datatype text \
     -html    "size 40 maxlength 50 readonly {} class form_element" \
     -optional
-
+#but01
 element create $form_name data_estrazione \
     -label   "Data estrazione" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 readonly {} class form_element" \
+    -html    "size 10 maxlength 10 readonly {} class form_element $jq_date" \
     -optional
-
+#but01
 element create $form_name data_assegn \
     -label   "Data assegnazione" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 readonly {} class form_element" \
+    -html    "size 10 maxlength 10 readonly {} class form_element $jq_date" \
     -optional
 
 if {$disabled_ace_enve != "disabled"} {
@@ -255,7 +286,8 @@ element create $form_name nom_tecn \
     -optional 
 
 if {$readonly_ace_tecn != "readonly"} {
-    if {$flag_ente  == "P" && $sigla_prov == "LI"} { 
+    #if {$flag_ente  == "P" && $sigla_prov == "LI"} { }
+    if {$coimtgen(flag_asse_data) eq "S"} {
 	set cerca_opve [iter_search $form_name coimopve-disp-list [list cod_enve cod_enve cod_opve cod_opve cognome nom_tecn nome cog_tecn data_verifica data_verifica ora_verifica ora_verifica  cod_inco cod_inco]]
 	#[list cod_enve cod_opve nome cognome data_verifica ora_verifica ]
     } else {
@@ -264,12 +296,12 @@ if {$readonly_ace_tecn != "readonly"} {
 } else {
     set cerca_opve ""
 }
-
+#but01
 element create $form_name data_verifica \
     -label   "Data appuntamento" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_ace {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_ace {} class form_element $jq_date" \
     -optional
 
 element create $form_name ora_verifica \
@@ -278,19 +310,19 @@ element create $form_name ora_verifica \
     -datatype text \
     -html    "size 05 maxlength 05 $readonly_ace {} class form_element" \
     -optional
-
+#but01
 element create $form_name data_avviso_01 \
     -label   "Data avviso di verifica" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 readonly {} class form_element" \
+    -html    "size 10 maxlength 10 readonly {} class form_element $jq_date" \
     -optional
-
+#but01
 element create $form_name data_avviso_02 \
     -label   "Data stampa esito" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 readonly {} class form_element" \
+    -html    "size 10 maxlength 10 readonly {} class form_element $jq_date" \
     -optional
 
 element create $form_name cod_noin \
@@ -428,6 +460,8 @@ if {[form is_request $form_name]} {
     set tipo_estrazione $descr_tpes
     set stato_imp ""
 
+    element set_properties $form_name utente           -value $utente  ;#rom03
+    element set_properties $form_name data_mod         -value $data_mod;#rom03
     element set_properties $form_name cod_inco         -value $cod_inco
     element set_properties $form_name stato            -value $stato
     element set_properties $form_name stato_old        -value $stato
@@ -466,6 +500,8 @@ if {[form is_request $form_name]} {
 
 if {[form is_valid $form_name]} {
     # form valido dal punto di vista del templating system
+    set utente            [element::get_value $form_name utente]  ;#rom03
+    set data_mod          [element::get_value $form_name data_mod];#rom03
     set cod_inco          [element::get_value $form_name cod_inco]
     set stato             [element::get_value $form_name stato]
     set des_stato         [element::get_value $form_name des_stato]
@@ -514,7 +550,7 @@ if {[form is_valid $form_name]} {
     # controlli standard su numeri e date, per Ins ed Upd
     set error_num 0
     if {$funzione == "N"} {
-	if {$cod_noin eq "8" || $cod_noin eq "9" || $cod_noin eq "14" || $cod_noin eq "16" || $cod_noin eq "17" || $cod_noin eq "11" || $cod_noin eq "10" || $cod_noin eq "18"} {
+	if {$cod_noin eq "2" || $cod_noin eq "9" || $cod_noin eq "14" || $cod_noin eq "16" || $cod_noin eq "17" || $cod_noin eq "11" || $cod_noin eq "10" || $cod_noin eq "18"} {
 	    if {$stato_imp eq ""} {
 		element::set_error $form_name stato_imp "Stato Impianto obbligatorio per motivi Imp.Ines., Imp.Disat., Imp.Non Sog."
 		incr error_num
@@ -625,7 +661,8 @@ if {[form is_valid $form_name]} {
 	    if {[string equal $data_verifica ""]} {
 		# personalizzazione per provincia di mantova: lascio la 
                 # possibilita' di non inserire la data dell'appuntamento
-		if {$flag_ente  != "P" && $sigla_prov != "MN"} {
+		# rom01 Aggiunta condizione su Regione Friuli.
+		if {$flag_ente  != "P" && $sigla_prov != "MN" && $coimtgen(regione) != "FRIULI-VENEZIA GIULIA"} {
 		    element::set_error $form_name data_verifica "Inserire data appuntamento"
 		    incr error_num
 		} else {
@@ -883,7 +920,8 @@ if {[form is_valid $form_name]} {
         with_catch error_msg {
             db_transaction {
                 db_dml dml_coiminco $dml_sql
-		if {$stato_imp ne "" && $funzione eq "N"} {
+		#rom02 Aggiunta condizione su Caserta.
+		if {$stato_imp ne "" && $funzione eq "N" && $coimtgen(ente) ne "PCE"} {
 		    set dml_upd_stato_imp  [db_map upd_stato_imp]
 		    db_dml dml_upd_stato_imp $dml_upd_stato_imp
 		}

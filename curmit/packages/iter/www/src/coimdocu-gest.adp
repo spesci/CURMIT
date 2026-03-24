@@ -1,3 +1,9 @@
+<!DOCTYPE html>
+<!--
+    USER  DATA        MODIFICHE
+    ===== ==========  =============================================================================
+    ric01 18/11/2025  Aggiunta gestione terzo numero di protocollo (Punto 17 MEV Regione Marche).
+-->
 <master   src="../master">
 <property name="title">@page_title;noquote@</property>
 <property name="context_bar">@context_bar;noquote@</property>
@@ -58,7 +64,7 @@
 </table>
 
 <center>
-<formtemplate id="@form_name;noquote@">
+<formtemplate id="@form_name@">
 <formwidget   id="funzione">
 <formwidget   id="caller">
 <formwidget   id="nome_funz">
@@ -130,6 +136,20 @@
     <td valign=top><formwidget id="protocollo_02">
         <formerror  id="protocollo_02"><br>
         <span class="errori">@formerror.protocollo_02;noquote@</span>
+        </formerror>
+    </td>
+</tr>
+<!-- ric01 aggiunta data_prot_03, protocollo_03 -->
+<tr><td valign=top align=right class=form_title>Data prot. 3</td>
+    <td valign=top><formwidget id="data_prot_03">
+        <formerror  id="data_prot_03"><br>
+        <span class="errori">@formerror.data_prot_03;noquote@</span>
+        </formerror>
+    </td>
+    <td valign=top align=right class=form_title>Protocollo 3</td>
+    <td valign=top><formwidget id="protocollo_03">
+        <formerror  id="protocollo_03"><br>
+        <span class="errori">@formerror.protocollo_03;noquote@</span>
         </formerror>
     </td>
 </tr>

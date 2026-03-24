@@ -20,6 +20,10 @@ ad_page_contract {
     
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    ric01 05/11/2024 Aggiunto alle opzioni possibili per gli utilizzi tutte le possibili combinazioni
+    ric01            di quelle già presenti, il campo sulla tabella coimaccu_aimp è varchar(1).
+
+    but01 22/06/2023 Aggiunto la classe ah-jquery-date ai campi:data_installaz,data_dismissione. 
     rom02 21/12/2018 Aggiunto campo num_ac_sostituente
 
     rom01 04/09/2018 Aggiunto campo flag_sostituito
@@ -98,6 +102,10 @@ switch $funzione {
         set disabled_fld \{\}
     }
 }
+set jq_date "";#but01
+if {$funzione in "M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
 
 form create $form_name \
     -html    $onsubmit_cmd
@@ -108,19 +116,19 @@ element create $form_name num_ac \
     -datatype text \
     -html    "size 8 maxlength 8 readonly {} class form_element" \
     -optional
-
+#but01
 element create $form_name data_installaz \
     -label   "Data installazione" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
-
+#but01
 element create $form_name data_dismissione \
     -label   "Data dismissione" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional 
 #rom01
 element create $form_name flag_sostituito \
@@ -167,13 +175,14 @@ element create $form_name capacita \
     -html    "size 12 maxlength 12 $readonly_fld {} class form_element" \
     -optional
 
+#ric01 aggiunto alle options anche tutte le combinazioni delle 3 già presenti 
 element create $form_name utilizzo \
     -label   "Utilizzo" \
     -widget   select \
     -datatype text \
     -html    "$disabled_fld {} class form_element" \
     -optional \
-    -options {{"" ""} {"Acqua sanitaria" A} {"Riscaldamento" R} {"Raffredamento" F}}
+    -options {{"" ""} {"Acqua sanitaria" A} {"Riscaldamento" R} {"Raffredamento" F} {"Riscaldamento + Raffredamento" T} {"Riscaldamento + Acqua sanitaria" U} {"Raffredamento + Acqua sanitaria" V} {"Riscaldamento + Raffredamento + Acqua sanitaria" Z}}
 #rom02 cambiate le options da "{Si S} {No N}" a "{Presente S} {Assente N}"
 element create $form_name coibentazione \
     -label   "Coibentazione" \

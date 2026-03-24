@@ -672,7 +672,7 @@ set pagina_esi [subst {
     <tr><td valign=top class=form_title>Caricati Controlli:</td>
     <td valign=top class=form_title>$ctr_out</td>
     <td>&nbsp;</td>
-    <td valign=top class=form_title><a target="Controlli caricati" href="$file_out_url">Scarica il file csv dei controlli/impianti caricati</a></td>
+    <td valign=top class=form_title><a target="Controlli caricati" href="$file_out_url">Scarica CSV dei controlli/impianti caricati</a></td>
     </tr>
     
     <tr><td colspan=4>&nbsp;</td>
@@ -680,7 +680,7 @@ set pagina_esi [subst {
     <tr><td valign=top class=form_title>Scartati Controlli/Impianti:</td>
     <td valign=top class=form_title>$ctr_err</td>
     <td>&nbsp;</td>
-    <td valign=top class=form_title><a target="Controlli scartati" href="$file_err_url">Scarica il file csv dei controlli/impianti scartati</a></td>
+    <td valign=top class=form_title><a target="Controlli scartati" href="$file_err_url">Scarica CSV dei controlli/impianti scartati</a></td>
     </tr>
 }]
 

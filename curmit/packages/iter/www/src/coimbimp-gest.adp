@@ -13,7 +13,7 @@
 </table>
 
 <center>
-<formtemplate id="@form_name;noquote@">
+<formtemplate id="@form_name@">
 <formwidget   id="caller">
 <formwidget   id="nome_funz">
 <formwidget   id="nome_funz_caller">

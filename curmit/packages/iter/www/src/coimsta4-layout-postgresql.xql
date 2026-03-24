@@ -82,8 +82,10 @@
     <fullquery name="count_controlli_eff">
        <querytext>
               select count(*) as controlli_eff
-                from coimcimp
-               where flag_tracciato != 'MA'
+              from coimcimp a,
+	           coimaimp b
+               where b.cod_impianto = a.cod_impianto
+                 and flag_tracciato != 'MA'
                  and data_controllo between :f_data1 and :f_data2
        </querytext>
     </fullquery>
@@ -113,14 +115,30 @@
        </querytext>
     </fullquery>
 
+        <fullquery name="count_controlli_eff_inf_pcalo">
+       <querytext>
+              select count(*) as controlli_eff_inf_pcalo
+                from coimcimp a,
+                     coimaimp b
+               where b.cod_impianto = a.cod_impianto
+                 and b.potenza < '35'
+                 and a.cod_combustibile = '88'
+                 and data_controllo between :f_data1 and :f_data2
+                 and flag_tracciato != 'MA'
+       </querytext>
+    </fullquery>
+
     <fullquery name="count_controlli_eff_inf_csolid">
        <querytext>
               select count(*) as controlli_eff_inf_csolid
                 from coimcimp a,
                      coimaimp b
+		left join coimcomb c on b.cod_combustibile = c.cod_combustibile --rom100
                where b.cod_impianto = a.cod_impianto
                  and b.potenza < '35'
-                 and a.cod_combustibile in ('12','6','211') --comb. solido,legna,pellet
+        --rom100 and a.cod_combustibile in ('12','6','211') --comb. solido,legna,pellet
+                 and c.tipo ='S'  --rom100
+		 and upper(c.descr_comb) not like 'ALTRO%' --rom100
                  and data_controllo between :f_data1 and :f_data2
                  and flag_tracciato != 'MA'
        </querytext>
@@ -172,7 +190,7 @@
                      coimaimp b
                where b.cod_impianto = a.cod_impianto
                  and b.potenza < '35'
-                 and a.cod_combustibile not in ('4','3','5','12','6','211','0')
+		 and a.cod_combustibile not in ('4','3','5','12','6','211','88') --rom100 Aggiunto comb. 88 e tolto comb. 0
                  and data_controllo between :f_data1 and :f_data2
                  and flag_tracciato != 'MA'
        </querytext>
@@ -203,14 +221,31 @@
        </querytext>
     </fullquery>
 
+    <fullquery name="count_controlli_eff_sup_pcalo">
+       <querytext>
+              select count(*) as controlli_eff_sup_pcalo
+                from coimcimp a,
+                     coimaimp b
+               where b.cod_impianto = a.cod_impianto
+                 and b.potenza >= '35'
+                 and a.cod_combustibile = '88'
+                 and data_controllo between :f_data1 and :f_data2
+                 and flag_tracciato != 'MA'
+       </querytext>
+    </fullquery>
+
+    
     <fullquery name="count_controlli_eff_sup_csolid">
        <querytext>
               select count(*) as controlli_eff_sup_csolid
                 from coimcimp a,
                      coimaimp b
+		left join coimcomb c on b.cod_combustibile = c.cod_combustibile --rom100
                where b.cod_impianto = a.cod_impianto
                  and b.potenza >= '35'
-                 and a.cod_combustibile in ('12','6','211') -- Comb. solido, legna, pellet
+        --rom100 and a.cod_combustibile in ('12','6','211') --comb. solido,legna,pellet
+                 and c.tipo ='S'  --rom100
+                 and upper(c.descr_comb) not like 'ALTRO%' --rom100
                  and data_controllo between :f_data1 and :f_data2
                  and flag_tracciato != 'MA'
        </querytext>
@@ -262,7 +297,7 @@
                      coimaimp b
                where b.cod_impianto = a.cod_impianto
                  and b.potenza >= '35'
-                 and a.cod_combustibile not in ('4','3','5','12','6','211','0')
+                 and a.cod_combustibile not in ('4','3','5','12','6','211','88') --rom100 Aggiunto comb. 88 e tolto comb. 0
                  and data_controllo between :f_data1 and :f_data2
                  and flag_tracciato != 'MA'
        </querytext>

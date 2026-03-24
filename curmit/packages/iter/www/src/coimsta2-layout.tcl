@@ -8,6 +8,11 @@ ad_page_contract {
     @param nome_funz identifica l'entrata di menu, server per le autorizzazioni
                      serve se lista e' uno zoom che permetti aggiungi.
     @cvs-id          coiminco-filter.tcl     
+
+    USER  DATA       MODIFICHE
+    ===== ========== =======================================================================
+    but01 31/10/2024 Aggiunto class=table_s nella tabella.
+
 } {
    {f_cod_comune      ""}
    {f_cod_quartiere   ""}
@@ -153,15 +158,17 @@ if {![string equal $f_cod_comune ""]
     append stampa "<br>"
 }
 # Costruisco descrittivi tabella
-append stampa "<table border=1 >"
+append stampa "<table border=1 class=table_s>";#but01
 
 set inizio "S"
 set conta 0
 
+#ric01 modificata label
+#ric01 <th align=left>Controlli su imp. < 35kW con mod H scaduta</th>
  append stampa "
 	  <tr>
 	  <th align=left>Controlli su imp. < 35kW dichiarati</th>
-          <th align=left>Controlli su imp. < 35kW con mod H scaduta</th>
+          <th align=left>Controlli su imp. < 35kW con RCEE scaduto</th> <!-- ric01 -->
           <th align=left>Controlli su imp. > 35kW dichiarati</th>
           <th align=left>Controlli su imp. non dichiarati</th>
           <th align=left>Controlli su imp. da accatastare</th>

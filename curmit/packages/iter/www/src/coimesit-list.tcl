@@ -17,7 +17,12 @@ ad_page_contract {
                              argomenti restituiti dallo script di zoom,
                              separati da '|' ed impostarli come segue:
 
-    @cvs-id coimesit-list.tcl 
+    @cvs-id coimesit-list.tcl
+
+    USER  DATA       MODIFICHE
+    ===== ========== =======================================================================
+    but01 13/07/2023 Aggiunta class"link-button-2" nel actions"Selez"
+
 } { 
    {search_word       ""}
    {rows_per_page     ""}
@@ -93,7 +98,7 @@ set link_righe       [iter_rows_per_page     $rows_per_page]
     set cmd_conf  [list "javascript:return(confirm('$msg_alert'))"]
 
     set actions "
-    <td nowrap><a href=\"$gest_prog?funzione=D&$link\" onclick=\"$cmd_conf\">Canc.</a></td>"
+    <td nowrap><a href=\"$gest_prog?funzione=D&$link\" onclick=\"$cmd_conf\" class=\"link-button-2\">Canc.</a></td>"
     set js_function ""
 #} else { 
 #    set actions [iter_select [list column_name .... ]]

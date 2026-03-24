@@ -21,6 +21,7 @@ ad_page_contract {
 
     USER  DATA       MODFIFICHE
     ===== ========== ==================================================================================================
+    but01 14/07/2023 Aggiunta class"link-button-2" nel actions"Selez"
     sim01 04/02/2020 La gestione del numero progressivo in fase di sostituzione usato per la Regione Marche diventa standard
 
     rom02 21/09/2018 Nella lista per le Marche faccio vedere gen_prog_est e non più gen_prog; aggiunto anche nuovo campo 
@@ -132,7 +133,7 @@ set link_righe      [iter_rows_per_page     $rows_per_page]
 
     set link    "\[export_url_vars cod_impianto gen_prog last_gen_prog nome_funz nome_funz_caller url_list_aimp url_aimp extra_par\]"
     set actions "
-    <td nowrap><a href=\"$gest_prog?funzione=V&$link\">Selez.</a></td>"
+    <td nowrap><a href=\"$gest_prog?funzione=V&$link\"class=\"link-button-2\" >Selez.</a></td>"
     set js_function ""
 #} else { 
 #    set actions [iter_select [list column_name .... ]]

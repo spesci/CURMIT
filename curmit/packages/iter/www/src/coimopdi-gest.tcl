@@ -12,6 +12,11 @@ ad_page_contract {
                      navigazione con navigation bar
     @param extra_par Variabili extra da restituire alla lista
     @cvs-id          coimopdi-gest.tcl
+
+    USER  DATA       MODIFICHE
+    ===== ========== ==================================================================================
+    rom01 20/11/2023 Modificato controllo che impedisce di creare disponibilita' con orari sovrapposti.
+
 } {
     
    {cod_opve         ""}
@@ -201,7 +206,8 @@ if {[form is_valid $form_name]} {
 		    incr sovrapposizioni
 		}
 	    }
-	    if {$sovrapposizioni > 100} {
+	    #rom01 Modificato controllo da $sovrapposizioni > 100 a $sovrapposizioni >= 1
+	    if {$sovrapposizioni >= 1} {
 		element::set_error $form_name ora_da "L'orario inserito &egrave; sovrapposto ad altri orari gi&agrave; inseriti"
 		incr error_num
 	    }

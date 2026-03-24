@@ -9,10 +9,10 @@
           <a href="coimboll-filter?@link_filter;noquote@" class=func-menu>Ritorna</a>
       </td>
       <td width="25%" nowrap class=func-menu>
-          <a href="coimboll-scar?@link_scar;noquote@" class=func-menu>Scarica</a>
+        <a href="coimboll-scar?@link_scar;noquote@" class=func-menu>Scarica CSV</a>
       </td>
       <td width="25%" nowrap class=func-menu>
-          <a target="Stampa lista bollini" href="coimboll-layout?@link_stp;noquote@" class=func-menu>Stampa</a>
+        <a target="Stampa lista bollini" href="coimboll-layout?@link_stp;noquote@" class=func-menu>Stampa PDF</a>
       </td>
       <td width="25%" nowrap class=func-menu>
        &nbsp;

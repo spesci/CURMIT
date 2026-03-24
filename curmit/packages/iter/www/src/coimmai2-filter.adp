@@ -1,6 +1,11 @@
 <!--
     USER  DATA       MODIFICHE
     ===== ========== =================================================================================
+    ric02 09/09/2025 Aggiunto campo f_cod_fiscale solo per regione Marche (punto 28 MEV).
+    
+    ric01 16/03/2023 Aggiunto campo f_targa solo se gestito dall'ente (flag_gest_targa).
+    ric01            Al momento le Marche e Friuli non vedono la modifica. 
+
     rom01 21/06/2018 Agguinto campo f_numero_bollino
 
 -->
@@ -11,7 +16,7 @@
 <property name="context_bar">@context_bar;noquote@</property>
 
 <center>
-<formtemplate id="@form_name;noquote@">
+<formtemplate id="@form_name@">
 <formwidget   id="funzione">
 <formwidget   id="caller">
 <formwidget   id="nome_funz">
@@ -62,7 +67,7 @@
       </tr>
       <tr>
          <td valign=top align=right class=form_title>Civico</td>
-         <td valign=top><formwidget id="f_civico">
+         <td valign=top><formwidget id="f_civico">/<formwidget id="f_esponente"> <!--but01 -->
              <formerror  id="f_civico"><br>
              <span class="errori">@formerror.f_civico;noquote@</span>
              </formerror>
@@ -93,6 +98,16 @@
             </formerror>
          </td>
       </tr>
+      <if @coimtgen.regione@ eq "MARCHE"> <!-- ric02 aggiunta if e contenuto -->
+      	  <tr> 
+	       <td valign=top align=right class=form_title>Codice fiscale</td>
+               <td valign=top nowrap><formwidget id="f_cod_fiscale">
+	       	   <formerror  id="f_cod_fiscale"><br>
+	    	   	       <span class="errori">@formerror.f_cod_fiscale;noquote@</span>
+	    	   </formerror>
+	       </td>
+      	 </tr>
+      </if>
       <tr>
          <td valign=top align=right class=form_title>Matricola</td>
          <td valign=top><formwidget id="f_matricola">
@@ -135,6 +150,23 @@
          </td>
       </tr>
 <!--   </td> -->
+
+<if @coimtgen.regione@ ne "MARCHE" and @coimtgen.regione@ ne "FRIULI-VENEZIA GIULIA"><!-- ric01 aggiunta if e suo contenuto -->
+      <if @flag_gest_targa@ eq "T"><!--ric01 Aggiunto if  e suo contenuto -->
+            <tr><td>&nbsp;</td></tr>
+	    <tr><td colspan=2>
+	    <b>Impianto gi&agrave; targato, si può procedere all'acquisizione<br>indicando obbligatoriamente solo la targa:</b></td></tr>  
+    	  <tr>
+              <td valign=top align=right class=form_title>Numero di Targa</td>
+              <td valign=top><formwidget id="f_targa">
+             	    <formerror  id="f_targa"><br>
+             	    	<span class="errori">@formerror.f_targa;noquote@</span>
+             	    </formerror>
+         	</td>
+      	  </tr>
+      </if>
+</if>
+
    </table>
 </tr>
 

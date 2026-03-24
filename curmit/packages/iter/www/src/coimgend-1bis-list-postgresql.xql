@@ -2,11 +2,26 @@
 <!--
     USER  DATA       MODIFICHE
     ===== ========== =========================================================================
+    rom08 22/05/2024 Su segnalazione di Regione Marche e Sandro ora per gli impianti del teleriscaldamento
+    rom08            tengo in considerazione solo i generatori con potenza > di 10 kW.
+    rom08            Per gli impianti del caldo e cogenerazione tengo in considerazione solo i generatori
+    rom08            con potenza >= di 10 kW. Per il freddo non ho modifcato nulla
+    rom08            perchè viene usata una query diversa.
+
+    rom07 28/02/2023 Su segnalazione di Regione Marche e Sandro ora per gli impianti del caldo
+    rom07            tengo in considerazione solo i generatori con potenza >= di 10 kW.
+    rom07            Per gli impianti del freddo tengo in considerazione solo i generatori che
+    rom07            hanno la maggiore tra potenza in riscaldamento e raffrescamento >= di 12 Kw.
+
+    mic01 07/07/2022 Su segnalazione di Regione Marche e Sandro modificate query sel_gend_fr e
+    mic01            sel_tot_gend_fr per fare in modo che vengano presi in considerazione solo i generatori
+    mic01            che hanno la maggiore tra potenza in riscaldamento e raffrescamento maggiore di 12 Kw.
+
     sim01 30/06/2021 Corretto visualizzazione sugli impianti con generatori del freddo che hanno solo
     sim01            la potenza di riscaldamento.
 
     rom06 04/08/2020 Su segnalazione di Giugliodori (Marche) vado ad esporre, per gli impianti del freddo,
-    rom06            la maggiore tra la potenza frigorifera nominale e la potenza termica nominale dell'impianto 
+    rom06            la maggiore tra la potenza frigorifera nominale e la potenza termica nominale dell impianto 
     rom06            nella sezione della scheda 1 bis.
 
 --> 		     	   
@@ -49,7 +64,11 @@
                                     and d.cod_listino = '0'
                                     and d.data_inizio <= current_date)
             where a.cod_impianto = :cod_impianto
-              and a.pot_utile_nom >10
+      --rom07 and a.pot_utile_nom >10
+              and (case when f.flag_tipo_impianto ='T' 
+                        then a.pot_utile_nom > 10
+                        else a.pot_utile_nom >= 10 end) --rom08
+      --rom08 and a.pot_utile_nom >= 10 --rom07
               and flag_attivo = 'S' --rom01
               and f.flag_tipo_impianto !='F'
            ) gen
@@ -92,7 +111,11 @@
                                       and d.data_inizio <= current_date)
             where a.cod_impianto = :cod_impianto
 	      and f.flag_tipo_impianto !='F'
-              and a.pot_utile_nom >10
+      --rom07 and a.pot_utile_nom >10
+              and (case when f.flag_tipo_impianto ='T' 
+                        then a.pot_utile_nom > 10
+                        else a.pot_utile_nom >= 10 end) --rom08
+      --rom08 and a.pot_utile_nom >= 10 --rom07
               and flag_attivo ='S' --rom01
            ) gen
          group by tipo, importo,flag_tipo_impianto,combustibile--, anni
@@ -160,7 +183,9 @@
                                     and d.data_inizio <= current_date)
             where a.cod_impianto = :cod_impianto
 	      and f.flag_tipo_impianto = 'F'
-              and greatest(a.pot_focolare_nom, a.pot_focolare_lib) > 10 --sim01
+--mic01       and greatest(a.pot_focolare_nom, a.pot_focolare_lib) > 10 --sim01
+--rom07       and greatest(a.pot_focolare_nom, a.pot_focolare_lib) > 12 --mic01
+              and greatest(a.pot_focolare_nom, a.pot_focolare_lib) >= 12 --rom07
 --sim01              and a.pot_focolare_nom >10
               and flag_attivo = 'S' --rom01
            ) gen
@@ -227,7 +252,9 @@
                                       and d.data_inizio <= current_date)
             where a.cod_impianto = :cod_impianto
 	      and f.flag_tipo_impianto = 'F'
-	      and greatest(a.pot_focolare_nom, a.pot_focolare_lib) > 10 --sim01
+   --mic01    and greatest(a.pot_focolare_nom, a.pot_focolare_lib) > 10 --sim01
+   --rom07    and greatest(a.pot_focolare_nom, a.pot_focolare_lib) > 12 --mic01
+              and greatest(a.pot_focolare_nom, a.pot_focolare_lib) >= 12 --rom07
 	      --sim01              and a.pot_focolare_nom >10
               and flag_attivo ='S' --rom01
            ) gen

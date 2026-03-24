@@ -1,6 +1,18 @@
 <!--
     USER   DATA       MODIFICHE
     ====== ========== =======================================================================
+    ric01  26/09/2023 Aggiunta nuova nota per caller rct_rend_min_legge e modificata nota
+    ric01             caller tiraggio-fumi su richiesta di Giuliodori di Regione Marche.
+
+    rom07  06/07/2023 Modificate diciture sul controllo di rendimento del caldo e freddo.
+
+    rom06  25/05/2022 Su richiesta di Giuliodori aggiunta dicitura per dichiarazioni art. 284 e 286.
+
+    rom05  27/04/2022 Su richiesta di Giuliodori modifciato intervento di rom04 per nuova voce
+    rom05             del campo flag_ibrido.
+
+    rom04  22/03/2022 MEV Regione Marche per sistemi ibridi.
+
     rom03  03/08/2021 Aggiunta dicitura per gli impianti ibridi su richiesta di Regione Marche.
 
     sim02  10/12/2019 Aggiunta nota per inserimento allegati 286
@@ -18,9 +30,6 @@
     sim01  10/09/2014 Aggiunto nuovo campo cod_impianto_princ
 -->
 
-
-
-
 <html>
 <head>
 <title>Help Selezione Impianti</title>
@@ -35,7 +44,7 @@
 <p><b>Le date devono essere scritte nel formato gg/mm/aaaa oppure nel formato ggmmaaaa</b>
 <p>
 </if>
-<if @caller@ ne "ibrido" and @caller@ ne "tipo_int" and @caller@ ne "rend_comb" and @caller@ ne "osservaz" and @caller@ ne "raccomandaz" and @caller@ ne "prescriz" and @caller@ ne "cont_rend" and @caller@ ne "rct-assenza-per-comb" and @caller@ ne "rct-idonea-tenuta" and @caller@ ne "tiraggio-fumi" and @caller@ ne "flag-clima-e-prod" and @caller@ ne "flag-pag" and @caller@ ne "aggiungi-dich" and @caller@ ne "dfm" and @caller@ ne "cont_rend_fr" and @caller@ ne "data_ultima_manu" and @caller@ ne "ins-sogg" and @caller@ ne "aggiungi-dich-286"><!--rom01M aggiunta if--><!--sim02 aggiunto aggiungi-dich-286-->
+<if @caller@ ne "ibrido" and @caller@ ne "tipo_int" and @caller@ ne "rend_comb" and @caller@ ne "osservaz" and @caller@ ne "raccomandaz" and @caller@ ne "prescriz" and @caller@ ne "cont_rend" and @caller@ ne "rct-assenza-per-comb" and @caller@ ne "rct-idonea-tenuta" and @caller@ ne "tiraggio-fumi" and @caller@ ne "flag-clima-e-prod" and @caller@ ne "flag-pag" and @caller@ ne "aggiungi-dich" and @caller@ ne "dfm" and @caller@ ne "cont_rend_fr" and @caller@ ne "data_ultima_manu" and @caller@ ne "ins-sogg" and @caller@ ne "aggiungi-dich-286" and @caller@ ne "rct_rend_min_legge"><!--rom01M aggiunta if--><!--sim02 aggiunto aggiungi-dich-286-->
 <br></br>
 <p><b>Alcune chiarimenti sulle Nomenclature</b>
 <p>
@@ -53,10 +62,19 @@
 <p><b>Stato:</b>Stato dell'impianto (attivo, non attivo, da accatastare, da controllo esterno, rottamato, annullato, Da controllare , rifiutato), è possibile opeare ed inserre la documentazione per i soli impianti attivi
 </if>
 <if @caller@ eq "ibrido"><!--rom01M aggiunta if e contenuto-->
-<br></br>
-<p><b>Sistemi Ibridi</b>
-<p>Per i sistemi ibridi, occorre compilare solo le schede relative al gruppo termico (GT).</p>
-<p><b>Attenzione!</b> non occorre inserire l'RCEE di tipo 2 per la pompa di calore.</p><!--rom03-->
+<!-- rom04 <p><b>Sistemi Ibridi</b> -->
+<!-- rom04 <p>Per i sistemi ibridi, occorre compilare solo le schede relative al gruppo termico (GT).</p> -->
+<!-- rom04 <p><b>Attenzione!</b> non occorre inserire l'RCEE di tipo 2 per la pompa di calore.</p> --><!--rom03-->
+<p><b>Sistemi Ibridi / Policombustibili / Generatori misti</b></p>
+  <p> Compilare questo campo (scegliendo l'opzione corretta) solo se ci si trova in una delle seguenti situazioni:</p>
+  <ol type="a">
+    <li>Impianto dotato di un unico generatore di calore che fa uso di combustibili differenti (generatore policombustibile) &rarr; selezionare <b>"Unico generatore policombustibile"</b>;</li>
+    <li>Generatore a pompa di calore integrato con generatore di calore a combustione, realizzati e concepiti per funzionare in abbinamento tra loro (anche se con diversa matricola) &rarr; selezionare <b>"Ibrido"</b>;</li>
+    <li>Sistema costituito da generatori alimentati da combustibili diversi che hanno in comune lo stesso sottosistema di distribuzione (anche se l'impianto &egrave; dotato di separatore idraulico) ed eventualmente anche il sottosistema di regolazione &rarr; selezionare <b>"Generatori misti"</b>;</li>
+    <li>Se non ci si trova in nessuna delle situazioni sopra descritte &rarr; selezionare <b>"Nessun collegamento con altri impianti"</b>;</li><!--rom05-->
+  </ol>
+  <p>Se per un generatore (impianto) si seleziona "ibrido" o "generatori misti", si dovr&agrave; indicare nell'apposito campo il codice dell'impianto a cui abbinarlo.</p>
+  <p>Per ulteriori indicazioni, <a href="Doc_indicazioni_sistema_ibrido.pdf">clicca qui</a>.</p>
 </if>
 <if @caller@ eq "tipo_int"><!--rom01M aggiunta if e contenuto-->
 <br></br>
@@ -94,8 +112,10 @@
 
 <if @caller@ eq "cont_rend"><!--gac01 aggiunta if e contenuto-->
   <br></br>
-  <p><b>Controllo del rendimento di combustione</b>
-  <p>Attenzione: è possibile effettuare il controllo del rendimento di combustione solo se il combustibile è uno tra i seguenti: gas naturale, propano, GPL, butano, gasolio, olio combustibile, in quanto per gli altri manca una norma UNI di riferimento.
+  <p><b>Controllo del rendimento di combustione</b><!-- rom07 Aggiunto p e contenuto-->
+  <p>Attenzione: è possibile effettuare il controllo del rendimento di combustione solo se la caldaia è alimentata da uno dei seguenti combustibili: gas naturale, propano, GPL, butano, gasolio, olio combustibile, biocombustibile solido non polverizzato, o se si tratta di un apparecchio domestico alimentato a pellet con caricamento automatico, in quanto per gli altri GT manca una norma UNI di riferimento.
+    <!-- rom07 <p><b>Controllo del rendimento di combustione</b>
+	 <p>Attenzione: è possibile effettuare il controllo del rendimento di combustione solo se il combustibile è uno tra i seguenti: gas naturale, propano, GPL, butano, gasolio, olio combustibile, in quanto per gli altri manca una norma UNI di riferimento. -->
 </if>
 
 <if @caller@ eq "rct-assenza-per-comb"><!--gac01 aggiunta if e contenuto-->
@@ -113,7 +133,8 @@
 <if @caller@ eq "tiraggio-fumi"><!--rom01 aggiunta if e contenuto-->
   <br></br>
   <p><b>Depressione canale da Fumo (Pa)</b>
-  <p>Indicare solo per generatori a tiraggio naturale alimentati a gas: utilizzare UNI 10845.
+    <!-- ric01  <p>Indicare solo per generatori a tiraggio naturale alimentati a gas: utilizzare UNI 10845. -->
+    <p>Indicare solo per i generatori a tiraggio naturale alimentati a gas utilizzando la norma UNI 10845 e per i generatori a tiraggio naturale alimentati a biocombustibile solido non polverizzato o apparecchi domestici alimentati a pellet con caricamento automatico utilizzando la norma UNI 10389-2.<!-- ric01 -->
   <p>Attenzione la misura deve essere espressa in Pascal.
 </if>
 
@@ -130,18 +151,21 @@
 </if>
 <if @caller@ eq "aggiungi-dich"><!--gac01 aggiunta if e contenuto-->
   <br></br>
-  <p><b>Aggiungi dichiarazione art.284 del D.Lgs. 152/2006 (impianti superiori a 35 kW)</b>
-  <p>La dichiarazione va redatta dagli installatori per i nuovi impianti e dai manutentori per gli impianti esistenti.
+  <p><b>Aggiungi dichiarazione art.284 del D.Lgs. 152/2006 (impianti superiori a 35 kW)</b></p>
+  <p>La dichiarazione va redatta dagli installatori per i nuovi impianti e dai manutentori per gli impianti esistenti.</p>
+  <p>NOTA BENE: la dichiarazione è obbligatoria solo se, oltre a superare i 35 kW, l’impianto produce calore destinato alla climatizzazione invernale o estiva ed è dotato di sistema di distribuzione che, nel caso sia formato da più generatori, deve essere comune</p><!--rom06-->
 </if>
 <if @caller@ eq "aggiungi-dich-286"><!--sim02 aggiunta if e contenuto-->
   <br></br>
-  <p><b>Aggiungi dichiarazione art.286 del D.Lgs. 152/2006 - verifica periodica delle emissioni (impianti superiori a 35 kW)</b>
-  <p>I controlli annuali dei valori di emissione di cui all'articolo 286, comma 2, e le verifiche di cui all'articolo 286, comma 4, non sono richiesti se l'impianto utilizza i combustibili di cui all'allegato X, parte I, sezione II, paragrafo I, lettere a) (metano), b) (gas di città), c) (GPL), d) (gasolio, kerosene, ecc.), e) (emulsioni acqua-gasolio, acqua-kerosene, ecc.) o i) (biodiesel), e se sono regolarmente eseguite le operazioni di manutenzione periodica previste dal DPR 74/2013. Dal 1° gennaio 2029, gli impianti di cui sopra aventi una potenza nominale al focolare pari o superiore a 1 MW (medi impianti), sono soggetti al controllo di cui all'articolo 286, comma 2 con frequenza triennale. Fino al 31/12/2028, per tali impianti i controlli di cui all'articolo 286, comma 2, non sono richiesti; un controllo è in tutti i casi effettuato entro quattro mesi dalla registrazione di cui all'articolo 284, comma 2-quater.
+  <p><b>Aggiungi dichiarazione art.286 del D.Lgs. 152/2006 - verifica periodica delle emissioni (impianti superiori a 35 kW)</b></p>
+  <p>I controlli annuali dei valori di emissione di cui all'articolo 286, comma 2, e le verifiche di cui all'articolo 286, comma 4, non sono richiesti se l'impianto utilizza i combustibili di cui all'allegato X, parte I, sezione II, paragrafo I, lettere a) (metano), b) (gas di città), c) (GPL), d) (gasolio, kerosene, ecc.), e) (emulsioni acqua-gasolio, acqua-kerosene, ecc.) o i) (biodiesel), e se sono regolarmente eseguite le operazioni di manutenzione periodica previste dal DPR 74/2013. Dal 1° gennaio 2029, gli impianti di cui sopra aventi una potenza nominale al focolare pari o superiore a 1 MW (medi impianti), sono soggetti al controllo di cui all'articolo 286, comma 2 con frequenza triennale. Fino al 31/12/2028, per tali impianti i controlli di cui all'articolo 286, comma 2, non sono richiesti; un controllo è in tutti i casi effettuato entro quattro mesi dalla registrazione di cui all'articolo 284, comma 2-quater.</p>
+  <p>NOTA BENE: la dichiarazione è obbligatoria solo se, oltre a tutto quanto già specificato, l’impianto produce calore destinato alla climatizzazione invernale o estiva ed è dotato di sistema di distribuzione che, nel caso sia formato da più generatori, deve essere comune</p><!--rom06-->
 </if>
 <if @caller@ eq "cont_rend_fr"><!--gac01 aggiunta if e contenuto-->
   <br></br>
-  <p><b>Controllo del rendimento di combustione</b>
-  <p>Attenzione: poichè non è ancora disponibile la norma UNI di riferimento, il controllo del rendimento di combustione non va effettuato.
+  <!-- rom07 <p><b>Controllo del rendimento di combustione</b> -->
+  <p><b>Controllo dell'efficienza energetica</b><!-- rom07 -->
+  <p>Attenzione: poichè non è ancora disponibile la norma UNI di riferimento, il controllo dell'efficienza energetica non va effettuato.
 </if>
 
 <if @caller@ eq "dfm"><!--rom02 if e contenuto-->
@@ -161,9 +185,14 @@
   <p>Inserisci soggetto indicando qui Nome e Cognome
 </if>
 
+<if @caller@ eq "rct_rend_min_legge"> <!-- ric01 aggiunta if e suo contenuto -->
+  <br></br>
+  <p><b>Rend.to combustione minimo di legge (%)</b>
+  <p>Per gli impianti a biomasse: nel caso di prima accensione, inserire il valore limite stabilito dal costruttore; negli altri casi, finché non saranno disposti rendimenti minimi di legge, ripetere in questo campo il valore del rendimento rilevato.
+</if>
 
 <br>
-<div align=center><input type=button onClick="javascript:window.close();" value ="Chiudi"></input></div>
+<div align=center><input type=button class="form_submit" onClick="javascript:window.close();" value ="Chiudi"></input></div>
 </br>
 </td></tr></table>
 </body>

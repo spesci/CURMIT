@@ -2,7 +2,7 @@
 <!--
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
-    rom02 08/07/2021 Aggiunto campo potenza nell'inserimento del dimp.
+    rom02 08/07/2021 Aggiunto campo potenza preso dal generatore nell'inserimento del dimp.
 
     rom01 06/07/2021 Aggiunta query upd_aimp_date e aggiunto idoneita_locale nell'inserimento del dimp.
 
@@ -451,7 +451,7 @@
                      ,:rct_check_list_4
 		     ,:cod_strumento_01_dimp --gac01
 		     ,:cod_strumento_02_dimp --gac01
-		     ,:cod_tprc         --gac01
+		     ,:val_cod_tprc          --rom10 cod_tprc         --gac01
 		     ,:co_fumi_secchi   --gac01
 		     ,:co_fumi_secchi_ppm --gac01
                      ,:data_prox_manut  --gac01

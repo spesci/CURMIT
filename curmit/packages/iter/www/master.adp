@@ -1,4 +1,15 @@
 <!--
+    USER  DATA       MODIFICHE
+    ===== ========== ==========================================================================
+    rom05 05/06/2024 Tolta sezione per Chiudi sessione e Cambio password.
+
+    rom04 15/11/2023 Aggiunto div per alert-message.
+
+    rom03 06/06/2023 Richiamati script per datepicker.
+
+    rom02 28/07/2022 Modifiche riportate dal vecchio cvs per allinemanto enti di Ucit al nuovo cvs:
+    rom02            Aggiunto link per cambiare l'utente del login. Richiamo la url di logout settata nel programma tcl.
+
     sim02 27/03/2019 Aggiunto Content-Security-Policy per la sicurezza
 
     rom01 14/09/2018 Cablate le righe che escono in fondo alla pagina per la Regione Marche.
@@ -93,13 +104,13 @@
             </table> 
         </td>
         <td width="78%" rowspan=2 class=bordi>
-            <table cellspacing ="0" cellpadding="1" border ="0" width="100%" height="100%">
-                <tr><td colspan=2 class=titoli>@title;noquote@</td></tr>
+            <table cellspacing ="0" cellpadding="3" border ="0" width="100%" height="100%">
+                <tr><td colspan=2 class=titoli align="center">@title;noquote@</td></tr>
 		<if @yui_menu_p@ true>
 		    <tr><td colspan=2 class=td_menu_yui><include src="/packages/iter/www/dynamic-menu"></td></tr>
 		</if>
                 <tr><td class=context>@context_bar;noquote@</td>
-		<td align=right class=context>@url_ss;noquote@</td><!--rom01 aggiunto il link -->
+		<td align=right class=context>@url_ss;noquote@ @url_spid;noquote@</td><!--rom01 aggiunto il link --><!--rom02 Aggiunto link spid-->
 		</tr>
             </table>
         </td>
@@ -122,9 +133,19 @@
     </tr>
   </table>
 </div>
+<!-- rom04  Aggiunta if e il suo contenuto-->
+    <if @user_messages:rowcount@ gt 0>
+      <div id="alert-message">
+        <multiple name="user_messages">
+          <div class="alert">
+            <strong>@user_messages.message;noquote@</strong>
+          </div>
+         </multiple>
+       </div>
+     </if>
 
 <div align=right class=cage >
-    <table width="100%" height="350" border="0" cellspacing="0" cellpadding="0" class=doppiobordo>
+    <table width="100%" height="350" border="0" cellspacing="0" cellpadding="0" class="doppiobordo" style="border-bottom:unset;">
     <tr>
         <td valign=top>
             <slave>
@@ -136,12 +157,12 @@
 <!-- <br clear="all"> -->
 <div class=cage>
     <table width="100%" border="0" cellspacing="0" cellpadding="0" height="15" class=doppiobordo>   
-    <tr>
+<!-- rom05 <tr>
       <td width="33%" align=left class=footer1><a class=footer_link href=@css_url;noquote@logout?nome_funz=@funz_log_out;noquote@>&laquo; Chiudi sessione</a></td>
       <td width="34%" class=footer1>&nbsp;</td> 
       <td width="33%" align=right class=footer1><a class=footer_link href=@css_url;noquote@utenti/coimcpwd-gest?funzione=M&nome_funz=@funz_pwd;noquote@>Cambia password &raquo;</a></td>
 
-    </tr>
+    </tr> -->
     </table>
 <if @coimtgen.regione@ ne "MARCHE"><!--rom01 aggiunta if-->    
     <table width="100%" border="0" cellspacing="0" cellpadding="0" height="15"
@@ -150,9 +171,9 @@
         <td align=left><a href="mailto:@master_ind_email;noquote@"
 			  class="footer_link">&laquo;
 	    @master_ind_email;noquote@</a></td>
-        <td align=center><a href="http://@master_sito_web;noquote@"
+        <td align=center><a href="https://@master_sito_web;noquote@"
 			    class="footer_link">@master_sito_web;noquote@</a></td>
-        <td align=right><a href="http://www.oasisoftware.com"
+        <td align=right><a href="https://www.oasisoftware.com"
 			   class="footer_link">Powered by OASI software S.r.l. 
 	    &raquo;</a></td>
       </tr>
@@ -165,8 +186,8 @@
       <td width="40%" align=left><a href="mailto:impianti-termici@regione-marche.it"
                         class="footer_link">&laquo;
           impianti-termici@regione-marche.it</a></td>
-      <td width="20%" align=center class="footer_link">@master_sito_web;noquote@</td>
-      <td width="40%" align=right class="footer_link" >Powered by OASI software S.r.l.  &nbsp;&nbsp</td>
+      <td width="20%" align=center class="footer1">@master_sito_web;noquote@</td>
+      <td width="40%" align=right class="footer1" >Powered by OASI software S.r.l.  &nbsp;&nbsp</td>
     </tr>
   </table>
 </if><!--rom01-->
@@ -184,6 +205,24 @@
     </if>
 </script>
 
+<!-- rom03 Inizio -->
+<script language="javascript" type="text/javascript" src="/iter/resources/jquery/jquery-min.js"></script>
+<link rel="stylesheet" href="/iter/resources/jquery-ui/jquery-ui.min.css" type="text/css" media="all">
+<script language="javascript" type="text/javascript" src="/iter/resources/jquery-ui/jquery-ui.min.js"></script>
+<script language="javascript" type="text/javascript" src="/iter/resources/jquery-ui/i18n/datepicker-it.js"></script>
+<script type="text/javascript">
+  $(function() {
+      $( ".ah-jquery-date" ).datepicker({
+	  changeYear: true,
+	  showOn: "button",
+	  buttonImage: "/resources/acs-templating/calendar.gif",
+	  buttonImageOnly: true,
+	  buttonText: "Apri calendario"
+      });
+  });
+</script>
+
+<!-- rom03 fine -->
 
 </body>
 </html>

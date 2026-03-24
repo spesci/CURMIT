@@ -16,6 +16,10 @@ ad_page_contract {
     @                        dallo script di zoom, separati da '|' ed impostarli come segue:
 
     @cvs-id coimtmsg-list.tcl 
+     USER  DATA       MODIFICHE
+    ===== ========== =======================================================================
+    but01 13/07/2023 Aggiunta class"link-button-2" nel actions"Selez"
+
 } { 
    {search_word       ""}
    {rows_per_page     ""}
@@ -62,7 +66,7 @@ set link_righe      [iter_rows_per_page     $rows_per_page]
 
 set link    "\[export_url_vars cod_tmsg last_key_order_by nome_funz extra_par\]"
 set actions "
-<td nowrap><a href=\"$gest_prog?funzione=V&$link\">Selez.</a></td>"
+<td nowrap><a href=\"$gest_prog?funzione=V&$link\" class=\"link-button-2\">Selez.</a></td>"
 set js_function ""
 
 # imposto la struttura della tabella

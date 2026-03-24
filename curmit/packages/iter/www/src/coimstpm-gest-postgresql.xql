@@ -30,7 +30,12 @@
                      , allegato
                      , tipo_foglio
                      , orientamento
-                     , tipo_documento)
+                     , tipo_documento
+                     , margine_alto        --but01
+                     , margine_basso       --but01
+                     , margine_destro      --but01
+                     , margine_sinistro    --but01
+		     )   
                 values 
                      (:id_stampa
                      ,:descrizione
@@ -49,7 +54,12 @@
                      ,:allegato
                      ,:tipo_foglio
                      ,:orientamento
-                     ,:tipo_documento)
+                     ,:tipo_documento
+		     ,:margine_alto         --but01
+                     ,:margine_basso        --but01
+                     ,:margine_destro       --but01
+                     ,:margine_sinistro     --but01
+		     )
        </querytext>
     </partialquery>
 
@@ -73,6 +83,10 @@
                      , tipo_foglio       = :tipo_foglio
                      , orientamento      = :orientamento
                      , tipo_documento    = :tipo_documento
+		     , margine_alto      = :margine_alto       --but01
+                     , margine_basso     = :margine_basso      --but01
+                     , margine_destro    = :margine_destro     --but01
+                     , margine_sinistro  = :margine_sinistro   --but01
                  where id_stampa         = :id_stampa
        </querytext>
     </partialquery>
@@ -105,6 +119,10 @@
             , tipo_foglio
             , orientamento
             , tipo_documento
+	    , iter_edit_num(margine_alto,2)      as margine_alto     --but01
+            , iter_edit_num(margine_basso,2)     as margine_basso    --but01
+            , iter_edit_num(margine_destro ,2)   as margine_destro   --but01
+            , iter_edit_num(margine_sinistro ,2) as margine_sinistro --but01
          from coimstpm
         where id_stampa = :id_stampa
        </querytext>

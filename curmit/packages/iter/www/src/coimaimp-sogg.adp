@@ -73,6 +73,7 @@
 <%=[iter_form_iniz]%>
 <!-- Inizio della form colorata -->
 <tr><td colspan=6 class=func-menu-yellow2><b>Scheda 1.6: Soggetti che operano sull'impianto</b></td></tr><!--gac01-->
+<tr><td colspan=6>&nbsp;</td></tr>
  <tr><td valign=top align=right>Responsabile</td>
 
      <td valign=top colspan=2><formwidget id="flag_responsabile">

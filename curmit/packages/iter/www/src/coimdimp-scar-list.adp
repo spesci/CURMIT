@@ -20,8 +20,8 @@
 <tr>
     <td width="30%">&nbsp;</td>
     <td width="40%" align="center">
-Scarica in formato
-<a href="coimdimp-scar?swc_formato=csv&@link_export;noquote@" target="Esportazione Modelli H in formato csv"><img border=0 src=@logo_dir_url;noquote@/csv.gif>Csv</a>
+Scarica <!-- ric01  "in formato" rimosso per uniformare tutte le diciture 'Scarica CSV' -->
+<a href="coimdimp-scar?swc_formato=csv&@link_export;noquote@" target="Esportazione Modelli H in formato csv"><img border=0 src=@logo_dir_url;noquote@/csv.gif>CSV</a>
 <!-- per ora non scarichiamo in formato xml
 o
 <a href="coimdimp-scar?swc_formato=xml&@link_export;noquote@" target="Esportazione Modelli H in formato xml"><img border=0 src=@logo_dir_url;noquote@/xml.gif></a>

@@ -34,6 +34,8 @@
 	   $where_costruttore
            $where_pdr
 	   $where_bollino
+	   $where_targa
+	   $where_cod_fiscale --ric01
        </querytext>
     </fullquery>
 
@@ -58,6 +60,8 @@
 	   $where_costruttore
            $where_pdr
 	   $where_bollino
+	   $where_targa
+	   $where_cod_fiscale --ric01
        </querytext>
     </fullquery>
 

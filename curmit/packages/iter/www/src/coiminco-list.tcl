@@ -18,6 +18,16 @@ ad_page_contract {
     separati da '|' ed impostarli come segue:
 
     @cvs-id coiminco-list.tcl 
+
+    USER  DATA       MODIFICHE
+    ===== ========== =======================================================================
+    mat01 12/03/2026 Aggiunta la storicizzazione del soggetto. Non prendo il soggetto responsabile
+    mat01            oggi ma quello responsabile alla data dell'appuntamento.
+    
+    rom01 12/03/2024 Ricevo e gestisco il filtro f_con_data_app
+
+    but01 13/07/2023 Aggiunta class"link-button-2" nel actions"Selez","Storico"
+
 } {
     {search_word       ""}
     {rows_per_page     ""}
@@ -61,7 +71,8 @@ ad_page_contract {
     {f_cod_noin        ""}
     {f_da_data_verifica ""}
     {f_a_data_verifica  ""}
-    {flag_tipo_impianto  ""}
+    {flag_tipo_impianto ""}
+    {f_con_data_app     ""}
 }  -properties {
     page_title:onevalue
     context_bar:onevalue
@@ -81,7 +92,7 @@ if {![string is space $nome_funz]} {
 }
 
 set desc_enve [db_map descrizione_enve_opve]
-set title_enve "Ente Verif"
+set title_enve "Ente verif"
 # controllo se l'utente è il responsabile dell'ente verificatore
 set cod_tecn   [iter_check_uten_opve $id_utente]
 set cod_enve   [iter_check_uten_enve $id_utente]
@@ -183,6 +194,21 @@ if {$caller == "index"} {
 			 [list "javascript:window.close()" "Torna alla Gestione"] \
 			 "$page_title"]
 }
+#se esiste prendo quello dello storico, altrimenti quello attuale
+set subquery_resp "
+ coalesce (
+         (select coalesce(b_sub.cognome, '')||' '||coalesce(b_sub.nome, '') 
+           from coimrife r_sub
+              , coimcitt b_sub
+          where a.data_verifica <= r_sub.data_fin_valid
+            and r_sub.cod_soggetto = b_sub.cod_cittadino
+            and r_sub.ruolo = 'R'
+            and r_sub.cod_impianto = a.cod_impianto
+          order by r_sub.data_fin_valid asc 
+          limit 1) 
+    ,   
+    coalesce(b.cognome, '')||' '||coalesce(b.nome, '') ) as resp
+";#mat01
 
 # imposto le variabili da usare nel frammento html di testata della lista.
 set curr_prog       [file tail [ns_conn url]]
@@ -190,7 +216,7 @@ set gest_prog       "coiminco-gest"
 set stor_prog       "coiminco-st-list"
 # escludo num_rec dalla form di ricerca per rieffettuare il conteggio
 set form_di_ricerca [iter_search_form $curr_prog $search_word num_rec]
-set col_di_ricerca  "Cognome"
+set col_di_ricerca  "cognome"
 set extra_par       [list rows_per_page     $rows_per_page \
 			 receiving_element  $receiving_element \
 			 f_tipo_data	    $f_tipo_data \
@@ -219,6 +245,7 @@ set extra_par       [list rows_per_page     $rows_per_page \
 			 num_rec            $num_rec \
 			 flag_scar          $flag_scar \
 			 flag_scar2         $flag_scar2 \
+			 f_con_data_app     $f_con_data_app \
                       flag_tipo_impianto         $flag_tipo_impianto]
 
 set rows_per_page   [iter_set_rows_per_page $rows_per_page $id_utente]
@@ -226,18 +253,19 @@ set link_righe      [iter_rows_per_page     $rows_per_page]
 set link_filter     [export_ns_set_vars url]
 set link_asse       "[export_ns_set_vars url \"nome_funz\"]&nome_funz=[iter_get_nomefunz coiminco-asse-filter]"
 
+#but01 Aggiunta class"link-button-2" nel actions"Selez","Storico"
 if {$caller == "index"} {
     set link    "\[export_url_vars cod_inco last_cod_inco nome_funz nome_funz_caller extra_par flag_aimp cod_impianto url_aimp url_list_aimp\]"
 
     db_1row sel_ruolo "select id_settore, id_ruolo from coimuten where id_utente = :id_utente"
     if {$id_settore == "system" || $id_settore == "ente"} {
 	if {$id_ruolo == "admin" || $id_ruolo == "utente"} {
-	    set actions "<td nowrap><a href=\"$gest_prog?funzione=$funz&$link\">Selez.</a> | <a href=\"$stor_prog?funzione=V&$link\">Storico</a></td>"
+	    set actions "<td nowrap><a href=\"$gest_prog?funzione=$funz&$link\" class=\"link-button-2\">Selez.</a> | <a href=\"$stor_prog?funzione=V&$link\" class=\"link-button-2\">Storico</a></td>"
 	} else {
-	    set actions "<td nowrap><a href=\"$gest_prog?funzione=$funz&$link\">Selez.</a></td>"
+	    set actions "<td nowrap><a href=\"$gest_prog?funzione=$funz&$link\"class=\"link-button-2\">Selez.</a></td>"
 	}
     } else {
-        set actions " <td nowrap><a href=\"$gest_prog?funzione=$funz&$link\">Selez.</a></td>"
+        set actions " <td nowrap><a href=\"$gest_prog?funzione=$funz&$link\"class=\"link-button-2\" >Selez.</a></td>"
     }
 
     set js_function ""
@@ -298,45 +326,45 @@ if {$flag_ente == "P" &&  $sigla_prov == "LI"} {
 	if {$flag_cod_tecn == "t"} {
 	    set table_def [list \
 			       [list actions           "Azioni"        no_sort $actions] \
-			       [list cod_inco          "Cod.App."      no_sort      {r}] \
-			       [list cod_impianto_est  "Cod.Imp."      no_sort      {l}] \
+			       [list cod_inco          "Cod.app."      no_sort      {r}] \
+			       [list cod_impianto_est  "Cod.imp."      no_sort      {l}] \
 			       [list resp              "Responsabile"  no_sort      {l}] \
 			       [list comune            "Comune"        no_sort      {l}] \
 			       [list indirizzo_ext     "Indirizzo"     no_sort      {l}] \
 			       [list telefono          "Telefono"      no_sort      {l}] \
 			       [list desc_stato        "Stato"         no_sort      {<td nowrap align=centre><font color=green><b>$desc_stato</b></font></td>}] \
-			       [list data_verifica     "Data App."     no_sort      {<td nowrap align=centre><font color=red><b>$data_verifica</b></font></td>}] \
-			       [list ora_verifica      "Ora App."      no_sort      {l}] \
-			       [list tipo_lettera_desc "Tipo Lettera." no_sort     {c}] \
+			       [list data_verifica     "Data app."     no_sort      {<td nowrap align=centre><font color=red><b>$data_verifica</b></font></td>}] \
+			       [list ora_verifica      "Ora app."      no_sort      {l}] \
+			       [list tipo_lettera_desc "Tipo lettera." no_sort     {c}] \
 			      ]
 	} else {
 	    set table_def [list \
 			       [list actions           "Azioni"        no_sort $actions] \
-			       [list cod_inco          "Cod.App."      no_sort      {r}] \
-			       [list cod_impianto_est  "Cod.Imp."      no_sort      {l}] \
+			       [list cod_inco          "Cod.app."      no_sort      {r}] \
+			       [list cod_impianto_est  "Cod.imp."      no_sort      {l}] \
 			       [list resp              "Responsabile"  no_sort      {l}] \
 			       [list comune            "Comune"        no_sort      {l}] \
 			       [list indirizzo_ext     "Indirizzo"     no_sort      {l}] \
 			       [list desc_stato        "Stato"         no_sort      {<td nowrap align=centre><font color=green><b>$desc_stato</b></font></td>}] \
-			       [list tipo_lettera_desc "Tipo Lettera." no_sort      {c}] \
-			       [list data_verifica     "Data App."     no_sort      {<td nowrap align=centre><font color=red><b>$data_verifica</b></font></td>}] \
-			       [list ora_verifica      "Ora App."      no_sort      {l}] \
+			       [list tipo_lettera_desc "Tipo lettera." no_sort      {c}] \
+			       [list data_verifica     "Data app."     no_sort      {<td nowrap align=centre><font color=red><b>$data_verifica</b></font></td>}] \
+			       [list ora_verifica      "Ora app."      no_sort      {l}] \
 			       [list descr_enve       $title_enve      no_sort      {l}] \
 			      ]
 	}
     } else {
 	set table_def [list \
 			   [list actions           "Azioni"        no_sort $actions] \
-			   [list cod_inco          "Cod.App."      no_sort      {r}] \
-			   [list cod_impianto_est  "Cod.Imp."      no_sort      {l}] \
+			   [list cod_inco          "Cod.app."      no_sort      {r}] \
+			   [list cod_impianto_est  "Cod.imp."      no_sort      {l}] \
 			   [list resp              "Responsabile"  no_sort      {l}] \
 			   [list comune            "Comune"        no_sort      {l}] \
 			   [list indirizzo_ext     "Indirizzo"     no_sort      {l}] \
 			   [list desc_stato        "Stato"         no_sort      {<td nowrap align=centre><font color=green><b>$desc_stato</b></font></td>}] \
 			   [list descr_camp        "Campagna"      no_sort      {l}] \
-			   [list tipo_lettera_desc "Tipo Lettera." no_sort      {c}] \
-			   [list data_verifica     "Data App."     no_sort      {<td nowrap align=centre><font color=red><b>$data_verifica</b></font></td>}] \
-			   [list ora_verifica      "Ora App."      no_sort      {l}] \
+			   [list tipo_lettera_desc "Tipo lettera." no_sort      {c}] \
+			   [list data_verifica     "Data app."     no_sort      {<td nowrap align=centre><font color=red><b>$data_verifica</b></font></td>}] \
+			   [list ora_verifica      "Ora app."      no_sort      {l}] \
 			   [list descr_enve        $title_enve     no_sort      {l}] \
 			  ]
     }
@@ -346,16 +374,16 @@ if {$flag_ente == "P" &&  $sigla_prov == "LI"} {
 	if {$flag_cod_tecn == "t"} {
 	    set table_def [list \
 			       [list actions          "Azioni"       no_sort $actions] \
-			       [list cod_inco         "Cod.App."     no_sort      {r}] \
-			       [list cod_impianto_est "Cod.Imp."     no_sort      {l}] \
+			       [list cod_inco         "Cod.app."     no_sort      {r}] \
+			       [list cod_impianto_est "Cod.imp."     no_sort      {l}] \
 			       [list resp             "Responsabile" no_sort      {l}] \
 			       [list comune           "Comune"       no_sort      {l}] \
 			       [list indirizzo_ext    "Indirizzo"    no_sort      {l}] \
 			       [list telefono         "Telefono"     no_sort      {l}] \
 			       [list desc_stato       "Stato"        no_sort      {<td nowrap align=centre><font color=green><b>$desc_stato</b></font></td>}] \
 			       [list tipo_app         "Tipo"         no_sort      {l}] \
-			       [list data_verifica    "Data App."    no_sort      {<td nowrap align=centre><font color=red><b>$data_verifica</b></font></td>}] \
-			       [list ora_verifica     "Ora App."     no_sort      {l}] \
+			       [list data_verifica    "Data app."    no_sort      {<td nowrap align=centre><font color=red><b>$data_verifica</b></font></td>}] \
+			       [list ora_verifica     "Ora app."     no_sort      {l}] \
                             [list n_generatori     "N.G."         no_sort      {<td nowrap align=centre><font color=red><b>$n_generatori</b></font></td>}] \
                             [list flag_tipo_impianto  "TI"          no_sort  $stato_imp] \
 			       [list modifica         "Mod."         no_sort $modifica] \
@@ -381,16 +409,16 @@ if {$flag_ente == "P" &&  $sigla_prov == "LI"} {
     } else {
 	set table_def [list \
 			   [list actions          "Azioni"       no_sort $actions] \
-			   [list cod_inco         "Cod.App."     no_sort      {r}] \
-			   [list cod_impianto_est "Cod.Imp."     no_sort      {l}] \
+			   [list cod_inco         "Cod.app."     no_sort      {r}] \
+			   [list cod_impianto_est "Cod.imp."     no_sort      {l}] \
 			   [list resp             "Responsabile" no_sort      {l}] \
 			   [list comune           "Comune"       no_sort      {l}] \
 			   [list indirizzo_ext    "Indirizzo"    no_sort      {l}] \
 			   [list desc_stato       "Stato"        no_sort      {l}] \
 			   [list descr_camp       "Campagna"     no_sort      {l}] \
 			   [list tipo_app         "Tipo"         no_sort      {l}] \
-			   [list data_verifica    "Data App."    no_sort      {l}] \
-			   [list ora_verifica     "Ora App."     no_sort      {l}] \
+			   [list data_verifica    "Data app."    no_sort      {l}] \
+			   [list ora_verifica     "Ora app."     no_sort      {l}] \
 			   [list descr_enve       $title_enve    no_sort      {l}] \
                         [list n_generatori     "N.G."         no_sort      {<td nowrap align=centre><font color=red><b>$n_generatori</b></font></td>}] \
                         [list flag_tipo_impianto  "TI"          no_sort  $stato_imp] \
@@ -650,6 +678,13 @@ if {![string equal $f_cod_area ""]} {
     set where_area ""
 }
 
+if {$f_con_data_app eq "S"} {#rom01 Aggiunte if, elseif, else e il loro contenuto
+    append where_cond " and a.data_verifica is not null"
+} elseif {$f_con_data_app eq "N"} {
+    append where_cond  " and a.data_verifica is null"
+} else {
+    append where_cond ""
+}
 
 # se entro come verificatore e sono provincia di mantoav o provincia di padova 
 # visualizzo solo gli incontri dallo stato assegnato in poi.

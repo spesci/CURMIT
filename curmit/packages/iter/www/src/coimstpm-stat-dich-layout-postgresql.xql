@@ -2,7 +2,10 @@
 <!--
     USER  DATA       MODIFICHE
     ===== ========== =========================================================================
-    san01 28/10/2020 Aggiunta colonna costo, puo' andare su tutti gli enti.
+    rom01 04/04/2022 MAC Regione Marche 9. Colonna N. di telefono su RCEE/DAM:
+    rom01            Aggiunta colonna telefono, puo andare su tutti gli enti.
+
+    san01 28/10/2020 Aggiunta colonna costo, puo andare su tutti gli enti.
 
 -->
 
@@ -29,6 +32,7 @@
           , a.costo
           , a.cod_dimp
           , coalesce(h.cognome,' ')||' '||coalesce(h.nome,' ') as resp
+	  , 'Tel.'||coalesce(h.telefono, ' ')|| ' - Cel.'||coalesce(h.cellulare,' ') as resp_tel --rom01
       from coimdimp a
  left join coimcitt h on a.cod_responsabile = h.cod_cittadino
          , coimaimp b 

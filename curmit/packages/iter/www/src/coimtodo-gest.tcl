@@ -12,6 +12,14 @@ ad_page_contract {
     navigazione con navigation bar
     @param extra_par Variabili extra da restituire alla lista
     @cvs-id          coimtodo-gest.tcl
+     USER  DATA       MODIFICHE
+    ===== ========== ========================================================================================
+    mat01 15/09/2025 Sandro ha detto che anche in fase di inserimento di una attività sospesa è possibile
+    mat01            selezionare tra tutte le tipologie della tabella coimtpdo. Aggiunto lo switch con la
+    mat01            tipologia 7
+
+    but01 21/06/2023 Aggiunto la classe ah-jquery-date ai campi::data_evasione, data_scadenza, data_evento.
+
 } {
     {cod_todo         ""}
     {last_cod_todo    ""}
@@ -60,16 +68,16 @@ set dettaglio "<td width=25% nowrap class=func-menu>Dettaglio</td>"
 # Personalizzo la pagina
 set link_list_script {[export_url_vars url_aimp url_list_aimp flag_impianti cod_impianto last_cod_todo caller nome_funz_caller nome_funz]&[iter_set_url_vars $extra_par]}
 set link_list        [subst $link_list_script]
-set titolo           "Sospeso"
+set titolo           "sospeso"
 switch $funzione {
-    M {set button_label "Conferma Modifica" 
+    M {set button_label "Conferma modifica" 
 	set page_title   "Modifica $titolo"}
-    D {set button_label "Conferma Cancellazione"
-	set page_title   "Cancellazione $titolo"}
-    I {set button_label "Conferma Inserimento"
-	set page_title   "Inserimento $titolo"}
+    D {set button_label "Conferma cancellazione"
+	set page_title   "Cancella $titolo"}
+    I {set button_label "Conferma inserimento"
+	set page_title   "Inserisci $titolo"}
     V {set button_label "Torna alla lista"
-	set page_title   "Visualizzazione $titolo"}
+	set page_title   "Visualizza $titolo"}
 }
 
 set context_bar  [iter_context_bar -nome_funz $nome_funz_caller]
@@ -89,15 +97,20 @@ switch $funzione {
         set disabled_fld \{\}
     }
 }
-
+set jq_date "";#but01
+if {$funzione in "M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
 form create $form_name \
     -html    $onsubmit_cmd
+#mat01
+#if {$funzione != "I"} {
+#    set opzioni_tipologia [iter_selbox_from_table coimtpdo cod_tpdo descrizione]
+#} else {
+#    set opzioni_tipologia {{Generico 4}}
+#}
 
-if {$funzione != "I"} {
-    set opzioni_tipologia [iter_selbox_from_table coimtpdo cod_tpdo descrizione]
-} else {
-    set opzioni_tipologia {{Generico 4}}
-}
+set opzioni_tipologia [iter_selbox_from_table coimtpdo cod_tpdo descrizione];#mat01
 
 element create $form_name tipologia \
     -label   "Tipologia" \
@@ -127,26 +140,26 @@ element create $form_name flag_evasione \
     -options $opzioni_flag_evasione \
     -html    "$disabled_fld {} class form_element" \
     -optional
-
+#but01 Aggiunto la classe ah-jquery-date ai campi:data_evasione, data_scadenza, data_evento.
 element create $form_name data_evasione \
     -label   "Data evasione" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name data_scadenza \
     -label   "Data scadenza" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name data_evento \
     -label   "Data evento" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_key {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_key {} class form_element $jq_date" \
     -optional
 
 
@@ -193,6 +206,8 @@ if {[form is_request $form_name]} {
 	element set_properties $form_name data_evento   -value $data_evento
 
 	if {$funzione == "V"} {
+
+	    #mat02 aggiunto switch 7
 	    switch $tipologia {
 		"1" {set prog "coimdimp-gest"
 		    set cod_dimp $cod_cimp_dimp
@@ -226,6 +241,13 @@ if {[form is_request $form_name]} {
 		    set link_prog "[export_url_vars url_list_aimp url_aimp cod_cimp cod_impianto flag_cimp nome_funz_caller]&nome_funz=cimp"
 		    set table "coimcimp"
 		    set key   "cod_cimp"}
+		"7" {set prog "coimcimp-gest"
+		    set cod_cimp $cod_cimp_dimp
+		    set flag_cimp "S"
+		    set link_prog "[export_url_vars url_list_aimp url_aimp cod_cimp cod_impianto flag_cimp nome_funz_caller]&nome_funz=cimp"
+		    set table "coimcimp"
+		    set key   "cod_cimp"
+		}
 	    }
 	    if {$tipologia != "4"} {
 		db_1row sel_count_dettaglio ""

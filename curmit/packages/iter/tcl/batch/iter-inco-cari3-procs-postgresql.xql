@@ -40,6 +40,15 @@
        </querytext>
     </fullquery>
 
+   <partialquery name="iter_inco_cari3.upd_prog_comu">
+       <querytext>
+                update coimcomu
+                   set progressivo = :progressivo
+                 where cod_comune  = :cod_comune
+       </querytext>
+    </partialquery>
+
+
     <fullquery name="iter_inco_cari3.sel_viae_check">
        <querytext>
                    select count(*)     as ctr_viae

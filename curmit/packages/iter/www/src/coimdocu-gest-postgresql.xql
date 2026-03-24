@@ -2,6 +2,8 @@
 <!--
     USER   DATA       MODIFICHE
     ===== ========== ================================================================================
+    ric01 18/11/2025 Aggiunta gestione dei campi data_prot_03, protocollo_03 (Punto 17 MEV Regione Marche)
+    
     rom01 01/12/2020 Aggiunto il campo utente_ins alle query ins_dimp e ins_dimpr. Va bene per tutti.
 -->
 <queryset>
@@ -31,7 +33,10 @@
                      , note
                      , cod_soggetto
                      , data_notifica
-                     , tipo_soggetto)
+                     , tipo_soggetto
+		     , data_prot_03  --ric01
+		     , protocollo_03 --ric01
+		     )
                 values 
                      (:cod_documento
                      ,:tipo_documento
@@ -47,7 +52,10 @@
                      ,:note
                      ,:cod_soggetto
                      ,:data_notifica
-                     ,:tipo_soggetto)
+                     ,:tipo_soggetto
+		     , :data_prot_03  --ric01
+		     , :protocollo_03 --ric01
+		     )
        </querytext>
     </partialquery>
 
@@ -65,6 +73,8 @@
                      , descrizione    = :descrizione
                      , note           = :note
                      , data_notifica  = :data_notifica
+		     , data_prot_03   = :data_prot_03   --ric01
+		     , protocollo_03  = :protocollo_03  --ric01
                  where cod_documento  = :cod_documento
        </querytext>
     </partialquery>
@@ -119,6 +129,8 @@
                   , descrizione
                   , note
                   , cod_impianto
+		  , iter_edit_data(data_prot_03) as data_prot_03  --ric01 
+		  , protocollo_03                                 --ric01
                from coimdocu
               where cod_documento = :cod_documento
        </querytext>

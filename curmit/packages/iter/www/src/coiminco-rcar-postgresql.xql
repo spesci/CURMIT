@@ -1,4 +1,10 @@
 <?xml version="1.0"?>
+/*
+    USER  DATA       MODIFICHE
+    ===== ========== =======================================================================
+    rom01 21/07/2022 Su richiesta della Provincia di Salerno aggiunta la colonna flag_blocca_rcee.
+    rom01            Sandro ha detto che va bene per tutti.
+*/
 
 <queryset>
     <rdbms><type>postgresql</type><version>7.1</version></rdbms>
@@ -80,6 +86,7 @@
                       , data_verifica = :data_verifica_db
                       , ora_verifica  = :ora_verifica
                       , cod_opve      = :cod_opve
+		      , flag_blocca_rcee = :upd_flag_blocca_rcee --rom01
                   where cod_inco      = :cod_inco
        </querytext>
     </partialquery>

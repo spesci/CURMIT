@@ -36,6 +36,7 @@
        		from $nome_tab_anom 
        		where id_riga = :id_riga 
        		and nome_colonna = :riftab
+		limit 1
 		</querytext>
 	</fullquery>
 		

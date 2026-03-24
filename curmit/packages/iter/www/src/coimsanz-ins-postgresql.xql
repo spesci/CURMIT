@@ -42,7 +42,9 @@
                      , data_ric_ulter
                      , note_ric_ulter
                      , data_ruolo
-                     , note_ruolo 
+                     , note_ruolo
+		     , data_accertamento   --rom01
+		     , numero_accertamento --rom01
                      , id_caus)
                 values 
                      (:cod_movi
@@ -75,6 +77,8 @@
                      ,:note_ric_ulter
                      ,:data_ruolo
                      ,:note_ruolo
+		     ,:data_accertamento   --rom01
+		     ,:numero_accertamento --rom01
                      ,:id_caus)
        </querytext>
     </partialquery>
@@ -105,6 +109,8 @@
                      , note_ric_ulter    = :note_ric_ulter
                      , data_ruolo        = :data_ruolo
                      , note_ruolo        = :note_ruolo
+		     , data_accertamento    = :data_accertamento   --rom01
+		     , numero_accertamento  = :numero_accertamento --rom01
                      , id_caus           = :id_caus
                  where cod_movi          = :cod_movi
        </querytext>
@@ -147,6 +153,8 @@
                   , iter_edit_data(data_ric_ulter) as data_ric_ulter
                   , note_ric_ulter
                   , iter_edit_data(data_ruolo) as data_ruolo
+		  , iter_edit_data(data_accertamento) as data_accertamento --rom01
+		  , numero_accertamento                                    --rom01
                   , note_ruolo
                from coimmovi
               where cod_movi = :cod_movi

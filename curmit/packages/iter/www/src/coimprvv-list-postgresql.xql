@@ -10,6 +10,7 @@ select cod_prvv
        when 'MC' then 'Mancato pagamento'
        when 'SN' then 'Sanzione per inadempienze sull''impianto'
        when 'GE' then 'Generico'
+       when 'CE' then 'Sollecito messa a norma del comune'
        else ''
        end as desc_causale
      , iter_edit_data(data_provv) as data_provv_edit

@@ -5,7 +5,7 @@
 
 <center>
 
-<button onclick="javascript:window.open('@file_pdf_url;noquote@', 'stampa', 'scrollbars=yes, resizable=yes')">Stampa</button>
+<button class="form_submit" onclick="javascript:window.open('@file_pdf_url;noquote@', 'stampa', 'scrollbars=yes, resizable=yes')">Stampa</button>
 
 <br>
 <br>

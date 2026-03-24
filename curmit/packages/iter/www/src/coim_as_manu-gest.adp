@@ -1,6 +1,8 @@
 <!--
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    ric01 14/09/2023 Rimosso riferimento legislativo obsoleto.
+    
     rom02 17/10/2018 Aggiunto nuovo campo flag_as_resp; Sandro ha detto che va bene per tutti
     rom02            gli enti.
 
@@ -140,7 +142,7 @@
 				<tr><td colspan=2>&nbsp;</td></tr>
 				
 				<tr>
-				   <td width=100% colspan=2 align=left>dell'articolo 1 della legge 46/90, ed in possesso dell'ulteriore requisito di:</td>
+				   <td width=100% colspan=2 align=left>In possesso dell'ulteriore requisito di:</td> <!-- ric01 dell'articolo 1 della legge 46/90, ed -->
 				</tr>
 				
 				<tr>

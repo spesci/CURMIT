@@ -1,6 +1,11 @@
+<!DOCTYPE html>
 <!--
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    ric01 29/09/2025 Aggiunto filtro ditta di manutenzione presente/assente (punto 33 MEV regione Marche 2025)
+
+    but01 28/11/2024 Aggiunto il filtro per ditta manutenzione.
+    
     rom01 19/03/2019 Aggiunti filtri per tipo_generatore, sistema_areazione e tipo_locale.
 
     san01 19/07/2016 Aggiunto filtro per cod_zona.
@@ -11,12 +16,14 @@
 <property name="context_bar">@context_bar;noquote@</property>
 
 <center>
-<formtemplate id="@form_name;noquote@">
+<formtemplate id="@form_name@">
 <formwidget   id="funzione">
 <formwidget   id="caller">
 <formwidget   id="nome_funz">
 <formwidget   id="dummy">
 <formwidget   id="f_cod_via">
+<formwidget   id="f_cod_manu">
+
 <if @flag_ente@ eq C>
    <formwidget id="cod_comune">
 </if>
@@ -67,13 +74,13 @@
     </td>
 
 </tr>
-<tr><td valign=top align=right class=form_title width="30%">Da Anno installazione</td>
+<tr><td valign=top align=right class=form_title width="30%">Da anno installazione</td>
     <td valign=top width="15%"><formwidget id="anno_inst_da">
         <formerror  id="anno_inst_da"><br>
         <span class="errori">@formerror.anno_inst_da;noquote@</span>
         </formerror>
     </td>
-    <td valign=top align=right class=form_title width="20%" nowrap>A Anno installazione</td>
+    <td valign=top align=right class=form_title width="20%" nowrap>A anno installazione</td>
     <td valign=top width="35%"><formwidget id="anno_inst_a">
         <formerror  id="anno_inst_a"><br>
         <span class="errori">@formerror.anno_inst_a;noquote@</span>
@@ -115,6 +122,24 @@
         </formerror>
     </td>
 </tr>
+
+<tr><!-- but01 Aggiunta riga e contenuto -->
+  <td>&nbsp;</td>
+  <td valign=top nowrap align=left class=form_title><b>Ricerca per manutentore</b></td>
+</tr>
+<tr><!-- but01 Aggiunta riga e contenuto -->
+  <td valign=top align=right class=form_title>Cognome</td>
+  <td valign=top nowrap colspan=3><formwidget id="f_manu_cogn">
+    <formerror  id="f_manu_cogn"><br>
+    <span class="errori">@formerror.f_manu_cogn;noquote@</span>
+    </formerror>
+  Nome&nbsp;<formwidget id="f_manu_nome">@cerca_manu;noquote@
+    <formerror  id="f_manu_nome"><br>
+    <span class="errori">@formerror.f_manu_nome;noquote@</span>
+    </formerror>
+  </td>
+</tr>
+<tr><td> &nbsp;</td></tr><!--but01-->
 
 <tr><td valign=top align=right class=form_title nowrap>Numero max di imp. da estr. <font color=red>*</font></td>
     <td valign=top colspan=3><formwidget id="num_max">
@@ -282,6 +307,16 @@
                </td>
            </tr>
 </if>
+</if>
+<if @coimtgen.regione@ eq "MARCHE"> <!--ric01 aggiunta if e contenuto -->
+  <tr>
+     <td valign=top align=right class=form_title>Ditta di manutenzione</td>
+     <td valign=top colpan=3><formwidget id="f_manu_present_p">
+	 <formerror id="f_manu_present_p">
+	   <span class="errori">@formerror.f_manu_present_p;noquote@</span>
+	 </formerror>
+     </td>
+   </tr>
 </if>
 
 <tr><td colspan=4>&nbsp;</td></tr>

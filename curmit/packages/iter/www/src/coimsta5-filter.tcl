@@ -11,6 +11,7 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    but01 19/06/2023 Aggiunto la classe ah-jquery-date al campi: f_data1, f_data2.
     rom01 21/10/2020 Su segnalazione di Salerno modificato page_title per renderlo
     rom01            uguale al nome del menu', Sandro ha detto che va bene per tutti.
     
@@ -72,19 +73,19 @@ element create $form_name flag_tipo_impianto \
     -options { {{} {}} {Riscaldamento R} {Raffreddamento F} {Cogenerazione C} {Teleriscaldamento T}}
 
 # fine dpr74
-
+#but01 Aggiunto la classe ah-jquery-date al campi: f_data1, f_data2.
 element create $form_name f_data1 \
 -label   "data inizio" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+-html    "size 10 maxlength 10 $readonly_fld {} class form_element class ah-jquery-date" \
 -optional \
 
 element create $form_name f_data2 \
 -label   "data fine" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+-html    "size 10 maxlength 10 $readonly_fld {} class form_element class ah-jquery-date" \
 -optional \
 
 element create $form_name funzione    -widget hidden -datatype text -optional

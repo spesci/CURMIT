@@ -15,6 +15,13 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    but02 21/10/2024 Aggiunto controllo per impedire di aggiungere più di una comunizazione di cessazione
+    but02            di terzo responsabile per la stessa data.
+
+    but01 07/07/2023 Aggiunto la classe ah-jquery-date ai campi:data_inizio, data_fine
+
+    sim03 20/06/2023 Il controllo sim01 non vale per gli impianti del freddo
+
     rom01 17/10/2018 Aggiunto campo flag_as_resp, Sandro ha detto che possono vederlo tutti 
     rom01            gli enti.
 
@@ -158,6 +165,10 @@ switch $funzione {
 if {![string equal $cod_impianto ""]} {
     set readonly_imp "readonly"
     set disabled_imp "disabled"
+}
+set jq_date "";#but01
+if {$funzione in "M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
 }
 
 form create $form_name \
@@ -407,19 +418,20 @@ element create $form_name swc_inizio_fine \
 -options $options \
 -html    "$readonly_fld {} class form_element" \
 -optional
-
+#but01 Aggiunto la classe ah-jquery-date ai campi:data_inizio, data_fine.
+ 
 element create $form_name data_inizio \
 -label   "Data installazione" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 $$readonly_fld {} class form_element" \
+-html    "size 10 maxlength 10 $$readonly_fld {} class form_element $jq_date" \
 -optional
 
 element create $form_name data_fine \
 -label   "Data installazione" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 $$readonly_fld {} class form_element" \
+-html    "size 10 maxlength 10 $$readonly_fld {} class form_element $jq_date" \
 -optional
 
 #gac01 aggiunto Scadenza incarico
@@ -952,6 +964,14 @@ if {[form is_valid $form_name]} {
 			element::set_error $form_name causale_fine "Inserire la causale"
 			incr error_num
 		    }
+
+		    if {[db_0or1row q "select 1
+                                         from coimrife
+                                        where cod_impianto   = :cod_impianto
+                                          and data_fin_valid = :data_fine"]} {#but02 Aggiunta if e contenuto
+			element::set_error $form_name data_fine "&Egrave; già presente una comunicazione di cessazione nella data indicata."
+			incr error_num
+		    }
 		}
 	    } else {
 		element::set_error $form_name data_fine "inserire data fine"
@@ -985,6 +1005,7 @@ if {[form is_valid $form_name]} {
     }
 
     db_1row query "select $nome_col_aimp_potenza as potenza_impianto
+                        , flag_tipo_impianto --sim03
                      from coimaimp
                     where cod_impianto = :cod_impianto";#sim01
 
@@ -995,8 +1016,9 @@ if {[form is_valid $form_name]} {
     } {#sim01: Aggiunta if e suo contenuto
 	set patentino "f"
     }
-    
-    if {$potenza_impianto > 232 && $patentino eq "f"} {#sim01: Aggiunta if e suo contenuto
+
+    #sim03 aggiunto condizionone su flag_tipo_impianto
+    if {$potenza_impianto > 232 && $patentino eq "f" && $flag_tipo_impianto ne "F"} {#sim01: Aggiunta if e suo contenuto
 
 	set error_potenza "<br>Manutentore non fornito di patentino. Impossibile inserire impianti con potenza maggiore di 232 Kw"
 	incr error_num

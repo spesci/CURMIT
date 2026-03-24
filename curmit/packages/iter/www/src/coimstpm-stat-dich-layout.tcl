@@ -14,6 +14,18 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== =============================================================================
+    but01 31/10/2024 Aggiunto class=table_s nella tabella.
+    
+    rom02 14/04/2023 Con Sandro si e' deciso che anche la Provincia di Udine filtra le dichiarazioni
+    rom02            con la data inserimento e non la data protocollo perche' sui caricamenti massivi
+    rom02            la data protocollo non e' valorizzata.
+
+    sim01 27/04/2022 Corretto errore di rom01, per le Provincie non venivano piu' settate le colonne
+    sim01            di intestazione del file e il programma andava in errore.
+
+    rom01 04/04/2022 MAC Regione Marche 9. Colonna N. di telefono su RCEE/DAM:
+    rom01            Aggiunta colonna telefono, puo' andare su tutti gli enti.
+
     san01 28/10/2020 Aggiunta colonna costo, puo' andare su tutti gli enti.
 
 } {
@@ -46,8 +58,6 @@ if {![string is space $nome_funz]} {
 
 set id_utente_em [string range $id_utente 0 5]
 
-
-
 # controllo il parametro di "propagazione" per la navigation bar
 if {[string is space $nome_funz_caller]} {
     set nome_funz_caller $nome_funz
@@ -68,7 +78,8 @@ if {![string equal $f_data_da ""] || ![string equal $f_data_a  ""]} {
 	set f_data_a "21001231"
     }
     if {$coimtgen(ente) eq "PUD"} {
-	set where_data "and a.data_prot between :f_data_da and  :f_data_a"
+	#rom02set where_data "and a.data_prot between :f_data_da and  :f_data_a"
+	set where_data "and a.data_ins  between :f_data_da and  :f_data_a";#rom02
     } else {
 	set where_data "and a.data_ins  between :f_data_da and  :f_data_a"
     }
@@ -157,7 +168,6 @@ set   file_csv [open $file_csv_name w]
 fconfigure $file_id -encoding iso8859-1
 fconfigure $file_csv -encoding iso8859-1
 
-
 set stampa ""
 iter_get_coimdesc
 set ente              $coimdesc(nome_ente)
@@ -200,10 +210,13 @@ if {![string equal $f_data_da ""] || ![string equal $f_data_a ""]} {
 #puts $file_id "<br>"
 
 # Costruisco descrittivi tabella
-if {$flag_ente == "C"} {
+#sim01 if {$flag_ente == "C"} {
+#but01 Aggiunto class=table_s
+
     append stampa "
           <center>
-          <table border=1>
+          <table border=1 class=table_s>
+             <br>
 	      <tr>
                  <th>Codice Manutentore</th>
                  <th>Manutentore</th>
@@ -211,6 +224,7 @@ if {$flag_ente == "C"} {
                  <th align=left>Combustibile</th>
                  <th align=left>Cod. Impianto</th>
                  <th align=left>Responsabile</th>
+                 <th align=left>N&deg; telefono</th><!--rom01-->
                  <th align=left>Stato Imp.</th>
                  <th align=left>Comune</th>
                  <th align=left>N.Prot</th>
@@ -229,6 +243,7 @@ if {$flag_ente == "C"} {
     lappend head_cols "Combustibile"
     lappend head_cols "Cod.Impianto"
     lappend head_cols "Responsabile"
+    lappend head_cols "N. telefono";#rom01
     lappend head_cols "Stato Imp."
     lappend head_cols "Comune"
     lappend head_cols "N.Prot"
@@ -246,6 +261,7 @@ if {$flag_ente == "C"} {
     lappend file_cols "combustibile"
     lappend file_cols "cod_impianto_est"
     lappend file_cols "resp"
+    lappend file_cols "resp_tel";#rom01"
     lappend file_cols "stato"
     lappend file_cols "comune"
     lappend file_cols "n_prot"
@@ -254,62 +270,7 @@ if {$flag_ente == "C"} {
     lappend file_cols "riferimento_pag"
     lappend file_cols "costo"
     lappend file_cols "utente_ins"
-
-} else {
-
-    append stampa "
-          <center>
-          <table border=1>
-	      <tr>
-                 <th>Codice Manutentore</th>
-                 <th>Manutentore</th>
-  	          <th>Fascia di Potenza</th>
-                 <th align=left>Combustibile</th>
-                 <th align=left>Cod. Impianto</th>
-                 <th align=left>Responsabile</th>
-                 <th align=left>Stato Imp.</th>
-                 <th align=left>Comune</th>
-                 <th align=left>N.Prot</th>
-                 <th align=left>Data Prot.</th>
-                 <th align=left>Data_controllo</th>
-                 <th align=left>Bollino</th>
-                 <th align=left>Costo</th>
-                 <th align=left>Utente Ins.</th>
-              </tr>"
-    # Setto la prima riga del csv
-    set     head_cols ""
-    lappend head_cols "Codice Manutentore"
-    lappend head_cols "Manutentore"
-    lappend head_cols "Fascia di Potenza"
-    lappend head_cols "Combustibile"
-    lappend head_cols "Cod.Impianto"
-    lappend head_cols "Responsabile"
-    lappend head_cols "StatoImp."
-    lappend head_cols "Comune"
-    lappend head_cols "N.Prot"
-    lappend head_cols "Data Prot."
-    lappend head_cols "Data_controllo"
-    lappend head_cols "Bollino"
-    lappend head_cols "Costo"
-    lappend head_cols "Utente Ins."
-
-    # imposto il tracciato record del file csv
-    set     file_cols ""
-    lappend file_cols "codice"
-    lappend file_cols "cog_manu"
-    lappend file_cols "fascia_potenza"
-    lappend file_cols "combustibile"
-    lappend file_cols "cod_impianto_est"
-    lappend file_cols "resp"
-    lappend file_cols "stato"
-    lappend file_cols "comune"
-    lappend file_cols "n_prot"
-    lappend file_cols "data_protocollo"
-    lappend file_cols "data_controllo"
-    lappend file_cols "riferimento_pag"
-    lappend file_cols "costo"
-    lappend file_cols "utente_ins"
-}
+#sim01 }
 
 set sw_primo_rec "t"
 
@@ -359,6 +320,7 @@ db_foreach sel_stat_dich "" {
                    <td align=left>$combustibile&nbsp;</td>
                    <td align=left>$cod_impianto_est&nbsp;</td>
                    <td align=left>$resp&nbsp;</td>
+                   <td align=left>$resp_tel&nbsp;</td><!--rom01-->
                    <td align=left>$stato&nbsp;</td>
                    <td align=left>$comune&nbsp;</td>
                    <td align=left>$n_prot&nbsp;</td>
@@ -382,6 +344,7 @@ db_foreach sel_stat_dich "" {
                    <td align=left>$combustibile&nbsp;</td>
                    <td align=left>$cod_impianto_est&nbsp;</td>
                    <td align=left>$resp&nbsp;</td>
+                   <td align=left>$resp_tel&nbsp;</td><!--rom01-->
                    <td align=left>$stato&nbsp;</td>
                    <td align=left>$comune&nbsp;</td>
                    <td align=left>$n_prot&nbsp;</td>

@@ -11,6 +11,10 @@ ad_page_contract {
     @param nome_funz_caller identifica l'entrata di menu, serve per la 
                      navigazione con navigation bar
     @cvs-id          coimbatc-gest.tcl
+
+    USER  DATA       MODIFICHE
+    ===== ========== =========================================================================
+    but01 19/06/2023 Aggiunto la classe ah-jquery-date ai campi dat_prev, data_verifica_fine, data_verifica_fine.
 } {
     {cod_batc         ""}
     {funzione        "I"}
@@ -70,15 +74,20 @@ switch $funzione {
         set disabled_fld \{\}
        }
 }
+set jq_date "";#but01
+if {$funzione in "M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
+
 
 form create $form_name \
 -html    $onsubmit_cmd
-
+#but01 Aggiunto la classe ah-jquery-date ai campi dat_prev, data_verifica_fine, data_verifica_fine.
 element create $form_name dat_prev \
 -label   "Data partenza" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+-html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
 -optional
 
 element create $form_name ora_prev \
@@ -101,14 +110,14 @@ element create $form_name data_verifica_iniz \
 -label   "Effettuate dal" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
 -optional
 
 element create $form_name data_verifica_fine \
 -label   "Fino al" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
 -optional
 
 element create $form_name funzione     -widget hidden -datatype text -optional

@@ -13,6 +13,11 @@ ad_page_contract {
     serve per la navigation bar
     
     @cvs-id coimdimp-scar-list.tcl 
+
+    USER  DATA       MODIFICHE
+    ===== ========== =======================================================================
+    but01 31/10/2024 Aggiunto class=table_s nella tabella.
+
 } { 
     {caller            "index"}
     {nome_funz         ""}
@@ -203,10 +208,11 @@ append stampa "
 <br>
 <h2>Elenco allegati art. 284 inseriti da $f_data1_edit a $f_data2_edit </h2>
 Numero Allegati inseriti: $tot_all da $f_data1_edit a $f_data2_edit<br>"
-
+#but01 Aggiunto class=table_s 
 append stampa "
 
-<table width=100% border=1>
+<table width=100% border=1 class=table_s>
+<br>
     <tr>
         <th align=left   valign=top>Cod.Imp.</th>
         <th align=center valign=top>Data Consegna.</th>

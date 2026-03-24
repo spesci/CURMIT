@@ -16,6 +16,9 @@ ad_page_contract {
     separati da '|' ed impostarli come segue:
 
     @cvs-id coimcitt-list.tcl 
+    USER  DATA       MODIFICHE
+    ===== ========== =======================================================================
+    but01 13/07/2023 Aggiunta class"link-button-2" nel azioni "Dettaglio"
 } {
     {f_cognome         ""}
     {f_nome            ""}
@@ -130,9 +133,9 @@ db_foreach citt $sql_query {
 	-html    "class form_element" \
 	-optional \
 	-options [list [list Si $cod_cittadino]]
-
+#but01 
     set destinaz "<input type=radio name=destinazione value=$cod_cittadino>"
-    set link "<a href=coimcitt-gest?nome_funz=cittadini&cod_cittadino=$cod_cittadino&flag_no_links=T target=dett_$cod_cittadino title=$cod_cittadino>Dettaglio</a>"
+    set link "<a href=coimcitt-gest?nome_funz=cittadini&cod_cittadino=$cod_cittadino&flag_no_links=T target=dett_$cod_cittadino title=$cod_cittadino class=\"link-button-2\">Dettaglio</a>"
 
     multirow append soggetti $link $cod_cittadino $nominativo $indirizzo $comune $cod_fiscale $destinaz
 

@@ -17,6 +17,12 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== =============================================================================
+    but01 21/06/2023 Aggiunto la classe ah-jquery-date ai campi:data_variaz, data_ini_valid.
+    rom04 22/05/2023 Gestito con if il mittente della mail per la Provincia di Fermo.
+
+    rom03 09/11/2022 Per Palermo riportati i controlli sul soggetto responsabile gia' fatti
+    rom03            Regione Marche in coimaimp-bis-gest.
+
     rom02 10/08/2018 Solo per le Marche se un Manutenore apporta delle modifiche a questa Scheda
     rom02            viene inviata una mail all'autorità competente.
 
@@ -61,6 +67,10 @@ set link_scheda3 [export_url_vars cod_impianto last_cod_impianto];#rom01
 
 iter_get_coimtgen;#Nicola 20/08/2014
 
+#rom03 controllo se l'utente e' un manutentore
+set cod_manutentore [iter_check_uten_manu $id_utente];#rom03
+
+
 if {$funzione eq "M"
 &&  $id_ruolo ne "admin"
 && ($coimtgen(ente) eq "PPO" || [string match "*iterprfi_pu*" [db_get_database]])
@@ -94,6 +104,10 @@ switch $funzione {
         set page_title   "Inserimento $titolo"}
     V {set button_label "Torna alla lista"
         set page_title   "Visualizzazione $titolo"}
+}
+set jq_date "";#but01
+if {$funzione in "M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
 }
 
 if {$caller == "index"} {
@@ -266,12 +280,13 @@ if {$funzione == "V"} {
         -html    "size 16 maxlength 16 $readonly_key {} class form_element" \
         -optional
 }
+#but01 Aggiunto la classe ah-jquery-date ai campi:data_variaz, data_ini_valid.
 
 element create $form_name data_variaz \
     -label   "data_variaz" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_key {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_key {} class form_element $jq_date" \
     -optional
 
 if {$funzione == "M" || $funzione == "D"} {
@@ -279,7 +294,7 @@ if {$funzione == "M" || $funzione == "D"} {
         -label   "data_ini_valid" \
         -widget   text \
         -datatype text \
-        -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+        -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
         -optional
 }
 
@@ -723,6 +738,57 @@ if {[form is_valid $form_name]} {
         }
     }
 
+    if {$coimtgen(ente) eq "PPA"} {#rom03 Aggiunta if e sil suo contenuto
+    	set indirizzo ""
+	set comune    ""
+	set provincia ""
+	set cap       ""
+	set telefono  ""
+	set cellulare ""
+	set fax       ""
+	set email     ""
+	set pec       ""
+
+	db_0or1row q "select * from coimcitt where cod_cittadino = :cod_responsabile"
+	set msg_error ""
+	
+	if {$indirizzo == ""} {
+	    append msg_error "Compilare campo Indirizzo nell'anagrafica del soggetto<br>"
+        }
+
+	if {$comune == ""} {
+            append msg_error "Compilare campo Comune nell'anagrafica del soggetto<br>"
+        }
+
+	if {$provincia == ""} {
+            append msg_error "Compilare campo Provincia nell'anagrafica del soggetto<br>"
+        }
+
+	if {$cap == ""} {
+            append msg_error "Compilare campo C.A.P. nell'anagrafica del soggetto<br>"
+        }
+	
+	if {$telefono == "" && $cellulare == "" && $fax == "" && $email == "" && $pec == ""} {
+
+            append msg_error "Compilare almeno un campo dei  seguenti campi:  Telefono, Cellulare, Fax, Email, Pec nell'anagrafica del soggetto responsabile<br>"
+        }
+
+	if {![string is space $msg_error] && !([string equal $cod_manutentore ""])} {
+	    element::set_error $form_name flag_responsabile $msg_error
+	    incr error_num
+	}
+
+#	if {$error_num > 0  && !($stato ne "A" && [string equal $cod_manutentore ""])} {
+#	    element::set_error $form_name cognome $msg_error
+	    #[template::form::get_errors $form_name]
+#	    ad_return_template
+	    
+#	    return
+#	}
+
+
+    }
+
     if {$error_num > 0} {
         ad_return_template
         return
@@ -997,7 +1063,12 @@ if {[form is_valid $form_name]} {
                     #proc per invio mail
 		    if {$invio_mail eq "S"} {
 			iter_get_coimdesc
-			acs_mail_lite::send -send_immediately -to_addr "$coimdesc(email)" -from_addr "$coimdesc(email)" -subject "Modifica soggetto ITER"  -body $testo_mail
+			if {$coimtgen(ente) eq "PFM"} {#rom04 Aggiunte if, else e loro contenuto
+			    set mail_ente "impiantitermici@regione.marche.it"
+			} else {
+			    set mail_ente $coimdesc(email)
+			}
+			acs_mail_lite::send -send_immediately -to_addr "$coimdesc(email)" -from_addr "$mail_ente" -subject "Modifica soggetto ITER"  -body $testo_mail
 		    }
                 }
             };#rom02

@@ -1,6 +1,11 @@
 <!--
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    mat01 06/03/2026 Aggiunto campo note_ubic per le Marche
+
+    rom06 28/04/2023 Aggiunto il campo unita_immobiliari_servite su segnalazione di Belluzzo, reso visibile per
+    rom06            tutti tranne che le Marche perche' lo gestiscono in coimaimp-bis-gest.
+
     rom05 19/01/2019 Modifiche per gli impianto del freddo richieste dalla regione marche
 
     gac02 10/12/2018 Modificato link "Passa a scheda 1.6" in "Passa a Scheda 3: Nomina Terzo 
@@ -29,7 +34,7 @@
 <property name="riga_vuota">f</property>
 
 <center>
-<formtemplate id="@form_name;noquote@">
+<formtemplate id="@form_name@">
 <formwidget   id="funzione">
 <formwidget   id="caller">
 <formwidget   id="nome_funz">
@@ -55,7 +60,7 @@
 
 @link_tab;noquote@
 @dett_tab;noquote@
-<table width="100%" cellspacing=0  class=func-menu>
+<table width="100%"  cellspacing=0 class=func-menu>
 <tr>
    <if @funzione@ eq "I">
       <td width="75%" nowrap class=func-menu>&nbsp;</td>
@@ -100,7 +105,8 @@
 <%=[iter_form_iniz]%>
 <!-- Inizio della form colorata -->
 <table border=0>
-<tr><td colspan=6 class=func-menu-yellow2><b>Scheda 1.2: Ubicazione</b></td></tr>
+<tr><td colspan=6 class=func-menu-yellow2><b>Scheda 1.2: ubicazione</b></td></tr>
+<tr><td colspan=6>&nbsp;</td></tr>
 <tr>
         <td valign=top align=right class=form_title>Comune</td>
 
@@ -200,6 +206,14 @@
             </formerror>
         </td>
 </tr>
+<tr><!-- rom06 Aggiunta tr e il suo contenuto -->
+    <td valign=top align=right nowrap class=form_title>Unità immobiliari servite <font color=red>*</font></td>
+    <td valign=top><formwidget id="unita_immobiliari_servite">
+        <formerror  id="unita_immobiliari_servite"><br>
+        <span class="errori">@formerror.unita_immobiliari_servite;noquote@</span>
+        </formerror>
+    </td>
+</tr>
   <tr>
     <td valign=top align=right class=form_title>Ultima variazione</td>
     <td valign=top colspan=3><formwidget id="data_variaz">
@@ -228,9 +242,18 @@
       </td>
     </tr>
   </if>
-  <tr>
+<!--mat01   <tr>
     <td colspan="4">&nbsp;</td>
-    </tr>
+    </tr> -->
+    <tr>
+    <td valign=top align=right class=form_title>Note</td>
+    <td valign=top colspan=3><formwidget id="note_ubic">
+                <formerror  id="note_ubic"><br>
+    		            <span class="errori">@note_ubic;noquote@</span>
+                </formerror>
+    </td>
+    </tr><!--mat01 --> 
+
 </else>
 <if @flag_obbligo_dati_catastali;noquote@ ne "T">
 <tr>
@@ -268,7 +291,7 @@
 </tr>
 
 <tr>
-     <td valign=top align=right class=form_title>Tipo Catasto</td><!--rom02bis rinominato campo, prima era "Categoria Catastale"-->
+     <td valign=top align=right class=form_title>Tipo catasto</td><!--rom02bis rinominato campo, prima era "Categoria Catastale"-->
      <td valign=top  colspan=3><formwidget id="cat_catastale">
         <formerror  id="cat_catastale"><br>
         <span class="errori">@formerror.cat_catastale;noquote@</span>

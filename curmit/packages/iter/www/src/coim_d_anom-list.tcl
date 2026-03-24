@@ -18,6 +18,10 @@ ad_page_contract {
                              separati da '|' ed impostarli come segue:
 
     @cvs-id coimanom-list.tcl 
+     USER  DATA       MODIFICHE
+    ===== ========== =======================================================================
+     but01 19/07/2023 Aggiunta class"link-button-2" nel actions"Selez"
+
 } { 
     {search_word       ""}
     {rows_per_page     ""}
@@ -130,7 +134,7 @@ set link_righe      [iter_rows_per_page     $rows_per_page]
 
 set link    "\[export_url_vars cod_cimp_dimp flag_origine url_list_aimp url_aimp cod_impianto gen_prog prog_anom last_prog_anom nome_funz nome_funz_caller extra_par flag_cimp extra_par_inco cod_inco flag_inco\]"
 set actions "
-    <td nowrap><a href=\"$gest_prog?funzione=V&$link\">Selez.</a></td>"
+    <td nowrap><a href=\"$gest_prog?funzione=V&$link\" class=\" link-button-2\">Selez.</a></td>"
 set js_function ""
 
 

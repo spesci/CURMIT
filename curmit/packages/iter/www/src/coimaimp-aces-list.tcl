@@ -16,6 +16,9 @@ ad_page_contract {
                              separati da '|' ed impostarli come segue:
 
     @cvs-id coimaimp-list.tcl 
+     USER  DATA       MODIFICHE
+    ===== ========== =======================================================================
+     but01 19/07/2023 Aggiunta class"link-button-2" nel actions"Selez"
 } { 
     {search_word          ""}
     {rows_per_page        ""}
@@ -96,7 +99,7 @@ if {$caller == "index"} {
     set link    "\[export_url_vars cod_impianto last_cod_impianto nome_funz_caller extra_par flag_aces cod_aces url_coimaces_list flag_call stato_01 f_cognome f_nome f_desc_topo f_desc_via\]&nome_funz=impianti"
 
     set actions "
-    <td nowrap><a href=\"$gest_prog?funzione=V&$link\">Selez.</a></td>"
+    <td nowrap><a href=\"$gest_prog?funzione=V&$link\"  class=\" link-button-2\">Selez.</a></td>"
     set js_function ""
 } else { 
     set actions           [iter_select [list cod_impianto resp indir]]

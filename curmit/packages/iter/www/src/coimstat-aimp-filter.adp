@@ -14,7 +14,7 @@
 <tr><td>&nbsp;</td></tr>
 <tr><td>&nbsp;</td></tr>
 <tr><td align=center  width=100%>
-    <button onclick="javascript:window.open('coimstat-aimp-gest?@link_scar;noquote@', 'scarica', 'scrollbars=yes, resizable=yes')">Scarica</button>
+    <button class="form_submit" onclick="javascript:window.open('coimstat-aimp-gest?@link_scar;noquote@', 'scarica', 'scrollbars=yes, resizable=yes')">Scarica</button>
 </td></tr>
 </table>
 <br>

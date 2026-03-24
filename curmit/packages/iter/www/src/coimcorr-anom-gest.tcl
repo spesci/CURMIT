@@ -13,6 +13,8 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== ========================================================================
+    rom01 09/09/2022 Modifiche per gestire il nuovo caricamento RCEE1 tramite xml.
+
     gac01 11/07/2019 Modifiche per gestire il nuovo caricamento RCEE2
 
     sim01 02/09/2014 Modifiche per gestire il nuovo caricamento RCEE1
@@ -50,17 +52,19 @@ set nome_tab_anom 		"ANOM_"
 set tabella_caricamento_rcee_tipo_1 [parameter::get_from_package_key -package_key iter -parameter tabella_caricamento_rcee_tipo_1];#sim02
 
 #sim01: col nuovo modello il nome della tabella  è più lungo dei precedenti quindi il range non troverebbe il nome della tabella anomalie corretto
-
-if {$tipo_modello != "R"} {
-    append nome_tab_anom 	[string range $nome_tabella 6 end]
-} else {
+if {$tipo_modello == "R"} {
     append nome_tab_anom        [string range $nome_tabella 10 end]
+} elseif {$tipo_modello == "X"} {#rom01 Aggiunta elseif e il suo contenuto
+    append nome_tab_anom        [string range $nome_tabella 11 end]
+} else {
+    append nome_tab_anom        [string range $nome_tabella 6 end]
 }
 
 #sim01: aggiunto gestione tipo modello R
+#rom01: Aggiunta gestione tipo modello X
 if {$tipo_modello == "F"} {
 	set pot_nom				"pot_nom_foc_gen"
-} elseif {$tipo_modello == "G" || $tipo_modello == "R"} {
+} elseif {$tipo_modello == "G" || $tipo_modello == "R" || $tipo_modello == "X"} {
 	set pot_nom				"potenza_utile_nom"
 }
 
@@ -609,8 +613,20 @@ if {[form is_valid $form_name]} {
 			    set nom_prog                    "iter_cari_rce_tipo_1"
 			}
 		    }
-                }
+                } elseif {$tipo_modello == "X"} {#rom01 Aggiunta elseif e il suo contenuto
 
+		    if {$nome_funz == "cari-rcee-xml-tipo-2"} {
+			set nom                         "Car.RCEE di tipo 2 tramite xml"
+			set nom_prog                    "iter_cari_rcee_xml_tipo_2"
+		    } else {
+			set nom                         "Car.RCEE di tipo 1 tramite XML"
+			if {$tabella_caricamento_rcee_tipo_1 ne "rce1"} {#sim02 if e suo contenuto
+			    set nom_prog                    "iter_cari_rcee_xml_tipo_1"
+			} else {
+			    set nom_prog                    "iter_cari_rce_xml_tipo_1"
+			}
+		    }
+		}
 
 		set dml_sql        [db_map ins_batc]
 		if {[info exists dml_sql]} {

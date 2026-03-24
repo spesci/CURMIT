@@ -8,6 +8,12 @@ ad_page_contract {
     @param nome_funz identifica l'entrata di menu, server per le autorizzazioni
                      serve se lista e' uno zoom che permetti aggiungi.
     @cvs-id          coiminco-rcar.tcl
+    USER  DATA       MODIFICHE
+
+    ===== ========== =============================================================================
+    rom01 21/07/2022 Su richiesta della Provincia di Salerno aggiunta la colonna flag_blocca_rcee.
+    rom01            Sandro ha detto che va bene per tutti.
+    
 } {
     {funzione   "I"}
     {caller "index"}
@@ -264,6 +270,8 @@ if {[form is_valid $form_name]} {
     lappend head_cols "Osservazione/Raccomandazioni"
     lappend head_cols "Note responsabile"
     lappend head_cols "Note non conformita'"
+    lappend head_cols "Flag blocca RCEE";#rom01
+
     # uso la proc perche' i file csv hanno caratterstiche 'particolari'
     iter_put_csv $file_out_id head_cols
 
@@ -366,6 +374,7 @@ if {[form is_valid $form_name]} {
     lappend carv_cols "note_verificatore"
     lappend carv_cols "note_resp"
     lappend carv_cols "note_conf"
+    lappend carv_cols "flag_blocca_rcee";#rom01
 
     set ctr_inp 0
     set ctr_out 0
@@ -522,6 +531,25 @@ if {[form is_valid $form_name]} {
 		    }
 		} else {
 		    set cod_opve ""
+		}
+	    
+		if {[string is space $flag_blocca_rcee]} {#rom01 Aggiunte if, else e il loro contenuto
+		    set carica "N"
+		    set motivo_scarto "Flag blocca RCEE non segnato."
+
+		} else {
+		    set check_flag_blocca_rcee [string toupper $flag_blocca_rcee]
+
+		    if {[string equal $check_flag_blocca_rcee "SI"]} {
+			set upd_flag_blocca_rcee t
+
+		    } elseif {[string equal $check_flag_blocca_rcee "NO"]} {
+			set upd_flag_blocca_rcee f
+
+		    } else {
+			set carica "N"
+			set motivo_scarto "Flag blocca RCEE indicato in maniera errata."
+		    }
 		}
 
 		# 6 verifico che il controllo non sia gia' presente sul db

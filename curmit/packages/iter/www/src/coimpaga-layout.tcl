@@ -8,6 +8,10 @@ ad_page_contract {
     @param nome_funz identifica l'entrata di menu, server per le autorizzazioni
     serve se lista e' uno zoom che permetti aggiungi.
     @cvs-id          coiminco-filter.tcl     
+
+    USER  DATA       MODIFICHE
+    ===== ========== =======================================================================
+    but01 31/10/2024 Aggiunto class=table_s nella tabella.
 } {
     {f_data_da         ""}
     {f_data_a          ""}
@@ -152,10 +156,11 @@ if {$flag_ente == "P" && ![string equal $f_cod_comune ""]} {
 #puts $file_id "<br>"
 
 # Costruisco descrittivi tabella
-if {$flag_ente == "C"} {
+
+if {$flag_ente == "C"} {#but01 aggiunto class=table_s
     append stampa "
           <center>
-          <table border=1>
+          <table border=1 class=table_s>
 	      <tr>
   	         <th align=left>Tipo movimento</th>
                  <th align=left>Cod. impianto</th>
@@ -167,10 +172,10 @@ if {$flag_ente == "C"} {
                  <th align=left>Indirizzo</th>
                  <th align=left>Cap-Comune</th>
               </tr>"
-} else {
+} else {#but01 aggiunto class=table_s
     append stampa "
           <center>
-          <table border=1>
+          <table border=1 class=table_s>
 	      <tr>
   	         <th align=left>Tipo movimento</th>
                  <th align=left>Cod. impianto</th>

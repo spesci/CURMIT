@@ -17,7 +17,12 @@ ad_page_contract {
                              argomenti restituiti dallo script di zoom,
                              separati da '|' ed impostarli come segue:
 
-    @cvs-id coimcimp-list.tcl 
+    @cvs-id coimcimp-list.tcl
+   
+    USER  DATA       MODIFICHE
+    ===== ========== =======================================================================
+    but01 04/04/2023   Aggiunto il rapporto di esito "Mancata ispezione" visualizzato a video su tutti gli enti
+ 
 } { 
     {search_word         ""}
     {rows_per_page       ""}
@@ -575,7 +580,22 @@ db_foreach sel_cimp $sel_cimp {
 
     regsub {,} $indir { n.} indir
 #    regsub {,} $potenza {.} potenza
-
+#but01 Aggiunto le rapporto di esito "Mancata ispezione"
+    if {$flag_tracciato == "MA"} {#but01 Aggiunte if, else e il loro contenuto
+        set esit "Mancata ispezione"
+    } else {
+        switch $esito_verifica {
+            "P" {set esit "Positivo"}
+            "N" {set esit "Negativo"}
+	    default {set esit ""}
+        }
+        if {$flag_pericolosita == "T"} {
+            if {![string equal $esit ""]} {
+                append esit ""
+            }
+            append esit " pericoloso"
+        }
+    }
     
  append stampa "
        <tr>
@@ -588,7 +608,7 @@ db_foreach sel_cimp $sel_cimp {
            <td>$data_controllo_edit&nbsp;</td>
            <td>$verb_n&nbsp;</td>
            <td>$data_verb_edit&nbsp;</td>
-           <td>$esito_veri&nbsp;</td>
+           <td>$esit&nbsp;</td>
            <td>$flag_tipo_impianto&nbsp;</td>
         </tr>"
 

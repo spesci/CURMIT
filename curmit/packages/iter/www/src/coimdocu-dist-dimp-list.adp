@@ -48,7 +48,7 @@
 <p>
 
 <if @ctr_rec@ ne "0">
-<input type="button" onclick="javascript:location.href('coimdocu-dist-layout?@link_docu_dist_layout;noquote@')" value ="Conferma creazione distinta">
+<input type="button" onclick="javascript:location.href=('coimdocu-dist-layout?@link_docu_dist_layout;noquote@')" value ="Conferma creazione distinta">
 </if>
 
 </center>

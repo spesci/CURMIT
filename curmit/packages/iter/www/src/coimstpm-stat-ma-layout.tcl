@@ -8,6 +8,12 @@ ad_page_contract {
     @param nome_funz identifica l'entrata di menu, server per le autorizzazioni
     serve se lista e' uno zoom che permetti aggiungi.
     @cvs-id          coimstpm-stat-opve-layout.tcl     
+
+    USER  DATA       MODIFICHE
+    ===== ========== =============================================================================================================
+    rom01 08/04/2024 Sandro ha chiesto di aggiungere i campi importo, flag pagato e data pagamento della coimmovi.
+    rom01            Intervento richiesto per Terra di Lavoro ma puo' andare bene per tutti.
+
 } {
     {f_data_da         ""}
     {f_data_a          ""}
@@ -203,6 +209,9 @@ append stampa "
                  <th align=left>Indirizzo</th>
                  <th align=left>Comune</th>
                  <th align=left>Responsabile</th>
+                 <th align=left>Importo</th>
+                 <th align=left>Pagato</th>
+                 <th align=left>Data pagamento</th>
                              </tr>"
 
 # Costruisco descrittivi tabella
@@ -215,6 +224,9 @@ lappend head_cols "Codice Impianto"
 lappend head_cols "Indirizzo"
 lappend head_cols "Comune"
 lappend head_cols "Responsabile"
+lappend head_cols "Importo";#rom01
+lappend head_cols "Pagato";#rom01
+lappend head_cols "Data pagamento";#rom01
 lappend head_cols "Cod. Incontro"
 lappend head_cols "St. Incontro"
 lappend head_cols "Note"
@@ -229,6 +241,9 @@ lappend file_cols "cod_impianto_est"
 lappend file_cols "indirizzo"
 lappend file_cols "comune"
 lappend file_cols "nome_resp"
+lappend file_cols "importo_mov";#rom01
+lappend file_cols "flag_pagato_mov";#rom01
+lappend file_cols "data_pag_mov";#rom01
 lappend file_cols "cod_inco"
 lappend file_cols "stato_inco"
 lappend file_cols "note_verificatore"
@@ -242,6 +257,10 @@ set table_def [list \
 		   [list indirizzo            "Indirizzo"             no_sort {l}] \
 		   [list comune               "Comune"                no_sort {l}] \
 		   [list nome_resp            "Responsabile"          no_sort {l}] \
+		   [list importo_mov          "Importo"               no_sort {l}] \
+		   [list flag_pagato_mov      "Pagato"                no_sort {l}] \
+		   [list data_pag_mov         "Data pagamento"        no_sort {l}] \
+
 	          ]
 
 # setto la query da utilizzare per la tabella dei risultati
@@ -253,6 +272,7 @@ if {![db_0or1row query "
   from coimcimp a
 left outer join coiminco g on g.cod_inco = a.cod_inco
 left outer join coimnoin f on f.cod_noin = a.cod_noin
+left outer join coimmovi m on m.riferimento = a.cod_cimp and m.data_compet= a.data_controllo --rom01
 ,coimaimp b
 ,coimviae d
 ,coimcomu c
@@ -285,7 +305,10 @@ db_foreach sel_stat_ma "" {
                    <td align=left>$indirizzo&nbsp;</td>
                    <td align=left>$comune&nbsp;</td>
                    <td align=left>$nome_resp&nbsp;</td>
-               </tr>"   
+                   <td align=left>$importo_mov&nbsp;</td>
+                   <td align=left>$flag_pagato_mov&nbsp;</td>
+                   <td align=left>$data_pag_mov&nbsp;</td>
+               </tr>"
 
     set file_cols_list ""
     

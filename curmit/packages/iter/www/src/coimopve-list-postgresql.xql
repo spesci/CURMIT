@@ -1,5 +1,9 @@
 <?xml version="1.0"?>
-
+<!--
+    USER  DATA       MODIFICHE
+    ===== ========== ==================================================================================================================
+    mic01 28/07/2022 Riportata sul nuovo CVS la modifica rom01 fatta su iter-dev per la gestione della targatura solo su regione Friuli
+-->
 <queryset>
     <rdbms><type>postgresql</type><version>7.1</version></rdbms>
 
@@ -7,6 +11,7 @@
        <querytext>
 select cod_opve
      , cod_enve
+     , coalesce(cod_portale, '') as cod_portale --mic01 28/07/2022
      , cognome
      , nome
      , matricola

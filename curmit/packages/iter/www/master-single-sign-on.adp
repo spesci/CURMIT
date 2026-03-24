@@ -47,7 +47,34 @@
 <script type="text/javascript" src="/resources/acs-subsite/core.js"></script><!-- sim01 -->
 
 <!-- end menu stuff -->   
+<style>
+  /* Stile base per i link nell'header */
+  .link-header {
+  color: #ffffff; /* Colore bianco */
+  text-decoration: underline;
+  font-weight: bold;
+  transition: text-shadow 0.3s ease, opacity 0.3s ease;
+  }
 
+  /* Hover: aggiunge un leggero bagliore */
+  .link-header:hover {
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+  opacity: 0.9; /* Leggera riduzione di opacità per effetto visivo */
+  }
+
+  /* Stato attivo: leggermente meno luminoso */
+  .link-header:active {
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.4);
+  opacity: 0.8;
+  }
+
+  /* Stato visitato: rimane bianco */
+  .link-header:visited {
+  color: #ffffff;
+  text-shadow: none;
+  }
+  
+  </style>
 
 <!-- ale01 -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -60,59 +87,28 @@
 <!-- lightblue -->
 <body text="black" class="yui-skin-sam" id="yahoo-com">
 
-
 <center>
 <div class=cage>
-    <table width="100%" border="0" cellspacing="0" cellpadding="0" height="20" class=doppiobordo>  
+  <table width="100%" border="0" cellspacing="0" cellpadding="0" height="15%" class=doppiobordo>
     <tr>
-        <td width="11%" rowspan=2 class=bordi-r>
-            <table width="100%" height="100%">
-                <tr><td align=center class=sottotitoli><b></b></td></tr>
-                <tr><td align=center></td></tr>
-                <tr><td align=center class=sottotitoli>
-                        <if @master_logo_sx_titolo_sotto@ eq "">
-                            &nbsp;
-                        </if>
-                        <else>
-                            <b></b>
-                        </else>
-                    </td>
-                </tr>
-            </table> 
-        </td>
-        <td width="78%" rowspan=2 class=bordi>
-            <table cellspacing ="0" cellpadding="1" border ="0" width="100%" height="100%">
-                <tr><td colspan=2 class=titoli>@title;noquote@</td></tr>
-		<if @yui_menu_p@ true>
-		    <tr><td colspan=2 class=td_menu_yui></td></tr>
-		</if>
-                <tr><td class=context>@context_bar;noquote@</td>
-		<td align=right class=context>@url_ss;noquote@</td><!--rom01 aggiunto il link -->
-		</tr>
-            </table>
-        </td>
-        <td width="11%" rowspan=2 class=bordi-l>
-            <table width="100%" height="100%">
-                <tr><td align=center class=sottotitoli><b>@master_logo_dx_titolo_sopra@</b></td></tr>
-                <tr><td align=center><img src="@logo_url;noquote@/@master_logo_dx_nome;noquote@" height=@master_logo_dx_height@></td></tr>
-                <tr><td align=center class=sottotitoli>
-                        <if @master_logo_dx_titolo_sotto@ eq "">
-                            &nbsp;
-                        </if>
-                        <else>
-                            <b>@master_logo_dx_titolo_sotto@</b>
-                        </else>
-                    </td>
-                </tr>
-            </table> 
-        </td>
-	
+      <td width="100%" align="center" style="background-color: #EFEFEF; padding:5px;"><img src="@logo_url;noquote@/@master_logo_dx_nome;noquote@" height="100%"></td>
+    </tr>
+    <tr>
+      <td width="100%" rowspan=1 class=bordi>
+        <table cellspacing ="0" cellpadding="1" border ="0" width="100%" height="100%">
+          <tr>
+            <td class="context" width="30%">@context_bar;noquote@</td>
+	    <td class="titoli" style="color:#FFF;" align="center"><big>@title;noquote@</bog></td>
+	    <td align="right" class="context" width="30%" style="padding-right: 10px;">@url_ss;noquote@</td><!--rom01 aggiunto il link -->
+	  </tr>
+        </table>
+      </td>
     </tr>
   </table>
 </div>
-
-<div align=right class=cage >
-    <table width="100%" height="350" border="0" cellspacing="0" cellpadding="0" class=doppiobordo>
+<div align=right class=cage>
+  <table width="100%" border="0" cellspacing="0" cellpadding="0" class="doppiobordo" height="75%" style="border-bottom:unset;">
+    <br>
     <tr>
         <td valign=top>
             <slave>
@@ -124,26 +120,40 @@
 <!-- <br clear="all"> -->
 <div class=cage>
     <table width="100%" border="0" cellspacing="0" cellpadding="0" height="15" class=doppiobordo>   
-    <tr>
+<!-- rom05 <tr>
       <td width="33%" align=left class=footer1><a class=footer_link href=@css_url;noquote@logout?nome_funz=@funz_log_out;noquote@>&laquo; Chiudi sessione</a></td>
       <td width="34%" class=footer1>&nbsp;</td> 
       <td width="33%" align=right class=footer1><a class=footer_link href=@css_url;noquote@utenti/coimcpwd-gest?funzione=M&nome_funz=@funz_pwd;noquote@>Cambia password &raquo;</a></td>
 
-    </tr>
+    </tr> -->
     </table>
+<if @coimtgen.regione@ ne "MARCHE"><!--rom01 aggiunta if-->    
     <table width="100%" border="0" cellspacing="0" cellpadding="0" height="15"
 	    class=doppiobordo>
       <tr class=footer2>
         <td align=left><a href="mailto:@master_ind_email;noquote@"
 			  class="footer_link">&laquo;
 	    @master_ind_email;noquote@</a></td>
-        <td align=center><a href="http://@master_sito_web;noquote@"
+        <td align=center><a href="https://@master_sito_web;noquote@"
 			    class="footer_link">@master_sito_web;noquote@</a></td>
-        <td align=right><a href="http://www.oasisoftware.com"
-			   class="footer_link">Powered by Oasi Software 
+        <td align=right><a href="https://www.oasisoftware.com"
+			   class="footer_link">Powered by OASI software S.r.l. 
 	    &raquo;</a></td>
       </tr>
     </table>
+</if>
+<if @coimtgen.regione@ eq "MARCHE"><!--rom01 aggiunta if e contenuto-->
+  <table width="100%" border="0" cellspacing="0" cellpadding="0" height="15"
+         class=doppiobordo>
+    <tr class=footer2>
+      <td width="40%" align=left><a href="mailto:impianti-termici@regione-marche.it"
+                        class="footer_link">&laquo;
+          impianti-termici@regione-marche.it</a></td>
+      <td width="20%" align=center class="footer1">@master_sito_web;noquote@</td>
+      <td width="40%" align=right class="footer1" >Powered by OASI software S.r.l.  &nbsp;&nbsp</td>
+    </tr>
+  </table>
+</if><!--rom01-->
 </div>
 </center>
 

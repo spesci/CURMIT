@@ -19,6 +19,11 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== ===========================================================================
+    ric01 03/10/2025 Punto 4 MEV Marche: leggo storico ditta di manutenzione.
+
+    mat01 27/01/2025 Corretto problema sul refresh della pagina riscontrato dopo aggiornamento a
+    mat01            OpenACS 5.10.
+
     sim01 27/07/2021 Inserito il controllo in modo che non sia possibile inserire dichiarazioni con
     sim01            data successiva a oggi.
 
@@ -138,17 +143,17 @@ if {$funzione eq "I"} {
     }
 }
 
-set titolo "Dichiarazione di Avvenuta Manutenzione"
+set titolo "dichiarazione di avvenuta manutenzione"
 
 switch $funzione {
-    M {set button_label "Conferma Modifica"
+    M {set button_label "Conferma modifica"
        set page_title   "Modifica $titolo"}
-    D {set button_label "Conferma Cancellazione"
-       set page_title   "Cancellazione $titolo"}
-    I {set button_label "Conferma Inserimento"
-       set page_title   "Inserimento $titolo"}
+    D {set button_label "Conferma cancellazione"
+       set page_title   "Cancella $titolo"}
+    I {set button_label "Conferma inserimento"
+       set page_title   "Inserisci $titolo"}
     V {set button_label "Torna alla lista"
-       set page_title   "Visualizzazione $titolo"}
+       set page_title   "Visualizza $titolo"}
 }
 
 set link_gest [export_url_vars cod_impianto cod_dimp last_cod_dimp caller nome_funz nome_funz_caller extra_par url_aimp url_list_aimp]
@@ -198,6 +203,9 @@ form create $form_name \
 
 # Identifico se questa richiesta e' dovuta ad un refresh
 element create $form_name __refreshing_p -widget hidden -datatype text -optional
+#mat00 13/10/2025
+#modifiche fatte perchè il curmit ha la vecchia versione di openacs. Il programma non sarà committato ma portato su a mano.
+#element set_properties $form_name __refreshing_p -values 0;#mat01
 set is_refresh_p [expr {[element::get_value $form_name __refreshing_p] == 1}]
 
 # Se vengo da una refresh, potrei avere il codice manutentore gia' popolato...
@@ -721,6 +729,7 @@ if {$is_refresh_p || [form is_request $form_name]} {
     set dam_flag_osservazioni    "f"
     set dam_flag_raccomandazioni "f"
     set dam_flag_prescrizioni    "f"
+    set data_dich_st "";#ric01
 
     
     # Non rileggo la riga se siamo in un refresh,
@@ -737,6 +746,7 @@ if {$is_refresh_p || [form is_request $form_name]} {
               cod_manutentore,
               dam_tipo_tecnico,
               cod_opmanu_new,
+              data_controllo as data_dich_st,   --ric01
               data_controllo as data_dich,
               cod_responsabile,
               dam_tipo_manutenzione,
@@ -833,20 +843,44 @@ if {$is_refresh_p || [form is_request $form_name]} {
         if {[form is_request $form_name] || ($is_refresh_p && $cod_manutentore ne $cod_manutentore_pre_refresh)} {#nic01 (aggiunta questa if altrimenti c'erano problemi)
 	    
 		db_1row sel_man "
-            select cognome as cognome_manu,
-                   nome as nome_manu,
-                   reg_imprese,
-                   localita_reg,
-                   flag_a,
-                   flag_b,
-                   flag_c,
-                   flag_d,
-                   flag_e,
-                   flag_f,
-                   flag_g,
-                   cod_legale_rapp
-              from coimmanu 
-             where cod_manutentore = :cod_manutentore"
+            select * 
+              from (select cognome as cognome_manu,
+                           nome as nome_manu,
+                           reg_imprese,
+                           localita_reg,
+                           flag_a,
+                           flag_b,
+                           flag_c,
+                           flag_d,
+                           flag_e,
+                           flag_f,
+                           flag_g,
+                           cod_legale_rapp,
+                           current_date as data_validita --ric01
+                      from coimmanu 
+                     where cod_manutentore = :cod_manutentore
+ 
+                  union --ric01 aggiunta union
+
+                     select cognome as cognome_manu,
+                           nome as nome_manu,
+                           reg_imprese,
+                           localita_reg,
+                           flag_a,
+                           flag_b,
+                           flag_c,
+                           flag_d,
+                           flag_e,
+                           flag_f,
+                           flag_g,
+                           cod_legale_rapp,
+                           st_data_validita as data_validita 
+                      from coimmanu_st 
+                     where cod_manutentore = :cod_manutentore
+                  ) as st
+             where st.data_validita >= coalesce(:data_dich_st, current_date)
+           order by st.data_validita
+              limit 1"
             set cod_manutentore_pre_refresh $cod_manutentore;#nic01
 
 	    foreach nome_campo {

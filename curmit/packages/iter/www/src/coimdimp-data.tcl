@@ -12,6 +12,11 @@ ad_page_contract {
                      navigazione con navigation bar
     @param extra_par Variabili extra da restituire alla lista
     @cvs-id          coimcimp-gest.tcl
+
+     USER  DATA       MODIFICHE
+    ===== ========== =======================================================================
+    but01 20/06/2023 Aggiunto la classe ah-jquery-date al campo data_dest.
+    
 } {
 
     {cod_dimp         ""}
@@ -45,6 +50,11 @@ switch $funzione {
     "M" {set lvl 3}
     "D" {set lvl 4}
 }
+set jq_date "";#but01
+if {$funzione in "M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
+
 
 #set id_utente [lindex [iter_check_login $lvl $nome_funz] 1]
 
@@ -62,6 +72,7 @@ set context_bar  [iter_context_bar -nome_funz $nome_funz_caller]
 set buttons [list "Aggiorna"]
 
 # NOTE form name must not contains '-' or JavaScript gets confused
+#but01 Aggiunto la classe ah-jquery-date al campo data_dest.
 ad_form -name addedit \
         -edit_buttons $buttons \
         -has_edit 1 \
@@ -73,7 +84,7 @@ ad_form -name addedit \
 	}
 	{data_dest:text
 	    {label {Data Corretta GG/MM/AAAA}}
-	    {html {length 10} }
+	    {html {length 10 $jq_date} }
 	}
     } -on_submit {
 
@@ -83,6 +94,7 @@ switch $funzione {
     "M" {set lvl 3}
     "D" {set lvl 4}
 }
+
 
 set nome_funz            "coimdimp-data"
 set id_utente    [lindex [iter_check_login $lvl $nome_funz] 1]

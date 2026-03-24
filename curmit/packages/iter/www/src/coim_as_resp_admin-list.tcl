@@ -18,6 +18,11 @@ ad_page_contract {
                              separati da '|' ed impostarli come segue:
 
     @cvs-id coim_as_resp-list.tcl 
+
+    USER  DATA       MODIFICHE
+    ===== ========== =======================================================================
+    but01 19/07/2023 Aggiunta class"link-button-2" nel actions"Selez"
+
 } { 
    {search_word       ""}
    {rows_per_page     ""}
@@ -80,7 +85,7 @@ set link_righe      [iter_rows_per_page     $rows_per_page]
 
 set link    "\[export_url_vars cod_as_resp cod_impianto url_list_aimp url_aimp last_cod_as_resp nome_funz_caller extra_par \]"
 set actions "
- <td nowrap><a href=\"$gest_prog?funzione=V&nome_funz=[iter_get_nomefunz coim_as_resp-gest]&$link\">Selez.</a>|<a href=\"coimdimp-ins-list?funzione=V&nome_funz=$nome_funz&$link\">Ricerca</a></td>"
+ <td nowrap><a href=\"$gest_prog?funzione=V&nome_funz=[iter_get_nomefunz coim_as_resp-gest]&$link\" class=\" link-button-2\">Selez.</a>|<a href=\"coimdimp-ins-list?funzione=V&nome_funz=$nome_funz&$link\">Ricerca</a></td>"
 set js_function ""
 
 # imposto la struttura della tabella

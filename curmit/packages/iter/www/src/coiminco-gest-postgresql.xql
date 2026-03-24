@@ -53,6 +53,8 @@
                   , a.note
                   , a.cod_noin
 		  , a.flag_blocca_rcee --sim01
+                  , a.utente                               -- rom03
+                  , iter_edit_data(a.data_mod) as data_mod -- rom03
                from coiminco a
                   , coiminst b
               where   cod_inco = :cod_inco

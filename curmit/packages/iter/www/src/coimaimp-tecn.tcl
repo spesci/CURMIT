@@ -13,6 +13,21 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== ========================================================================================
+    ric01 10/09/2025 Punto 33 MEV regione Marche: il campo manutentore non può essere sbiancabile, per il manutentore
+    ric01            non deve essere modificabile. Modifica solo per regione Marche.
+
+    rom08 17/05/2024 CASERTA HA CHIESTO DI TOGLIERE I CONTROLLI SU POD E PDR FINO AL 31/08/2024
+
+    rom07 19/12/2023 Rieti ha chiesto di togleire sempre l'obbligatorietà sui campi POD e PDR.
+
+    rom06 27/11/2023 Napoli ha richiesto di togliere sempre l'obbligatorieta' sui campi POD e PDR.
+
+    but01 21/06/2023 Aggiunto la classe ah-jquery-date ai campi:data_variaz, data_ini_valid.
+
+    rom05 24/01/2023 UCIT non deve avere pod e pdr obbligatori come Palermo.
+
+    rom04 05/12/2022 Sandro ha chiesto che pod e pdr non siano mai obbligatori per la Citta Metropolitana di Palermo.
+
     rom03 03/02/2021 Aggiunto controllo su PDR per il Comune di Salerno: deve iniziare per 1534.
 
     rom02 11/12/2020 Per Regione Marche non vado a fare l'update su pod e pdr perche' sono stati spostati
@@ -206,12 +221,12 @@ iter_set_func_class $funzione
 
 set link_list_script {[export_url_vars last_cod_impianto caller nome_funz nome_funz_caller]&[iter_set_url_vars $extra_par]}
 set link_list        [subst $link_list_script]
-set titolo           "Tecnici coinvolti"
+set titolo           "tecnici coinvolti"
 switch $funzione {
-    M {set button_label "Conferma Modifica" 
+    M {set button_label "Conferma modifica" 
        set page_title   "Modifica $titolo"}
     V {set button_label "Torna alla lista"
-       set page_title   "Visualizzazione $titolo"}
+       set page_title   "Visualizza $titolo"}
 }
 
 if {$caller == "index"} {
@@ -241,24 +256,14 @@ switch $funzione {
         set disabled_fld \{\}
        }
 }
-
+set jq_date "";#but01
+if {$funzione in "M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
 form create $form_name \
 -html    $onsubmit_cmd
 
-element create $form_name cognome_manu \
--label   "Cognome manutentore" \
--widget   text \
--datatype text \
--html    "size 40 maxlength 100 $readonly_fld {} class form_element" \
--optional
-
-element create $form_name nome_manu \
--label   "Nome manutentore" \
--widget   text \
--datatype text \
--html    "size 20 maxlength 100 $readonly_fld {} class form_element" \
--optional
-
+#ric01 spostato il cerca qua, prima era dopo nome_manu
 if {$funzione == "I"
 ||  $funzione == "M"
 } {
@@ -267,20 +272,7 @@ if {$funzione == "I"
     set cerca_manu ""
 }
 
-element create $form_name cognome_inst \
--label   "Cognome installatore" \
--widget   text \
--datatype text \
--html    "size 40 maxlength 100 $readonly_fld {} class form_element" \
--optional
-
-element create $form_name nome_inst \
--label   "Nome installatore" \
--widget   text \
--datatype text \
--html    "size 20 maxlength 100 $readonly_fld {} class form_element" \
--optional
-
+#ric01 spostato il cerca qua, prima era dopo nome_inst
 if {$funzione == "I"
 ||  $funzione == "M"
 } {
@@ -288,6 +280,47 @@ if {$funzione == "I"
 } else {
     set cerca_inst ""
 }
+
+set widget_manu_inst "text";#ric01
+if {$coimtgen(regione) eq "MARCHE"} {#ric01 aggiunta if e contenuto
+    if {![string equal [iter_check_uten_manu $id_utente] ""]} {
+	set widget_manu_inst "inform"
+	set cerca_manu ""
+	set cerca_inst ""
+    } 
+}
+
+#ric01 aggiunto widget_manu_inst
+element create $form_name cognome_manu \
+-label   "Cognome manutentore" \
+-widget   $widget_manu_inst \
+-datatype text \
+-html    "size 40 maxlength 100 $readonly_fld {} class form_element" \
+-optional
+
+#ric01 aggiunto widget_manu_inst
+element create $form_name nome_manu \
+-label   "Nome manutentore" \
+-widget  $widget_manu_inst \
+-datatype text \
+-html    "size 20 maxlength 100 $readonly_fld {} class form_element" \
+-optional
+
+#ric01 aggiunto widget_manu_inst
+element create $form_name cognome_inst \
+-label   "Cognome installatore" \
+-widget   $widget_manu_inst \
+-datatype text \
+-html    "size 40 maxlength 100 $readonly_fld {} class form_element" \
+-optional
+
+#ric01 aggiunto widget_manu_inst
+element create $form_name nome_inst \
+-label   "Nome installatore" \
+-widget   $widget_manu_inst \
+-datatype text \
+-html    "size 20 maxlength 100 $readonly_fld {} class form_element" \
+-optional
 
 element create $form_name cod_distributore \
 -label   "Distributore" \
@@ -318,12 +351,12 @@ if {$funzione == "I"
 } else {
     set cerca_prog ""
 }
-
+#but01 Aggiunto la classe ah-jquery-date ai campi:data_variaz, data_ini_valid. 
 element create $form_name data_variaz \
 -label   "data_variaz" \
 -widget   text \
 -datatype text \
- -html    "size 10 maxlength 10 $readonly_key {} class form_element" \
+ -html    "size 10 maxlength 10 $readonly_key {} class form_element $jq_date" \
 -optional
 
 element create $form_name cod_amag \
@@ -343,22 +376,11 @@ element create $form_name cod_distributore_el \
 
 if {$coimtgen(regione) ne "MARCHE"} {#rom01 aggiunta if, aggiunta else e suo contenuto
 
-    #sim01 tolto optional
-    if { [db_0or1row q "
-                select 1 
-                  from coimgend 
-                 where cod_combustibile ='5' 
-                   and cod_impianto = :cod_impianto 
-                   and flag_attivo= 'S' 
-                 limit 1"]} {	
+    #rom06 Aggiunta condizione su Napoli modificando intervento di rom04
+    #rom08 AGGIUNTA CONDIZIONE SU CASERTA
+    if {$coimtgen(ente) in [list "PPA" "PNA" "PRI" "PCE"] || $coimtgen(regione) eq "FRIULI-VENEZIA GIULIA"} {#rom04 Aggiunta if e il suo contenuto
 	
-	element create $form_name pdr \
-	    -label   "PDR" \
-	    -widget   text \
-	    -datatype text \
-	    -html    "size 20 maxlength 20 $readonly_fld {} class form_element"
-	
-    } else {
+	#Sandro ha chiesto che per Palermo pod e pdr non siano mai obbligatori.
 	
 	element create $form_name pdr \
 	    -label   "PDR" \
@@ -366,13 +388,49 @@ if {$coimtgen(regione) ne "MARCHE"} {#rom01 aggiunta if, aggiunta else e suo con
 	    -datatype text \
 	    -html    "size 20 maxlength 20 $readonly_fld {} class form_element" \
 	    -optional
-    }
-    element create $form_name pod \
-	-label   "POD" \
-	-widget   text \
-	-datatype text \
-	-html    "size 20 maxlength 20 $readonly_fld {} class form_element" 
+	
+	element create $form_name pod \
+	    -label   "PDR" \
+	    -widget   text \
+	    -datatype text \
+	    -html    "size 20 maxlength 20 $readonly_fld {} class form_element" \
+	    -optional    
+	
+    } else {#rom04 Aggiunta else ma non il suo contenuto
+
     
+	#sim01 tolto optional
+	if {![db_0or1row q "
+                select 1 
+                  from coimgend 
+                 where cod_combustibile ='5' 
+                   and cod_impianto = :cod_impianto 
+                   and flag_attivo= 'S' 
+                 limit 1"]} {	
+	    
+	    element create $form_name pod \
+		-label   "POD" \
+		-widget   text \
+		-datatype text \
+		-html    "size 20 maxlength 20 $readonly_fld {} class form_element"
+	    
+	} else {
+	    
+	    element create $form_name pod \
+		-label   "POD" \
+		-widget   text \
+	    -datatype text \
+		-html    "size 20 maxlength 20 $readonly_fld {} class form_element" \
+		-optional
+	}
+	element create $form_name pdr \
+	-label   "PDR" \
+	    -widget   text \
+	    -datatype text \
+	    -html    "size 20 maxlength 20 $readonly_fld {} class form_element" 
+
+    };#rom04
+	
 } else {
     element create $form_name pod      -widget hidden -datatype text -optional
     element create $form_name pdr      -widget hiddeb -datatype text -optional
@@ -383,7 +441,7 @@ if {$funzione == "M"} {
     -label   "data_ini_valid" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 } else {
     element create $form_name data_ini_valid -widget hidden -datatype text -optional
@@ -523,10 +581,18 @@ if {[form is_valid $form_name]} {
 	    }
 	}
 
+	#leggo lo storico
+	db_0or1row sel_aimp_db {};#ric01
+	
         if {[string equal $cognome_manu ""]
 	&&  [string equal $nome_manu    ""]
 	} {
-            set cod_manutentore ""
+	    if {$coimtgen(regione) eq "MARCHE"&& ![string equal $db_cod_manutentore ""]} {#ric01 aggiunta if e contenuto
+		element::set_error $form_name cognome_manu "Non è possibile rimuovere il manutentore."
+		incr error_num
+	    } else {
+		set cod_manutentore ""
+	    }
 	} else {
 	    set chk_inp_cod_manu $cod_manutentore
 	    set chk_inp_cognome  $cognome_manu
@@ -542,7 +608,12 @@ if {[form is_valid $form_name]} {
 	if {[string equal $cognome_inst ""]
 	&&  [string equal $nome_inst    ""]
 	} {
-	    set cod_installatore ""
+	    if {$coimtgen(regione) eq "MARCHE" && ![string equal $db_cod_installatore ""]} {#ric01 aggiunta if e contenuto
+		element::set_error $form_name cognome_inst "Non è possibile rimuovere l'installatore."
+		incr error_num
+	    } else {
+		set cod_installatore ""
+	    }
 	} else {
 	    set chk_inp_cod_manu $cod_installatore
 	    set chk_inp_cognome  $cognome_inst

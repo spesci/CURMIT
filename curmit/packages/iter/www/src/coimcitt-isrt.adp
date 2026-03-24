@@ -93,10 +93,16 @@
        <span class="errori">@formerror.natura_giuridica;noquote@</span>
        </formerror>
    </td>
-   <td valign=top align=right class=form_title>Cod.Fisc. / P.Iva</td>
+   <td valign=top align=right class=form_title>Cod.Fisc.</td>
    <td valign=top><formwidget id="cod_fiscale">
        <formerror  id="cod_fiscale"><br>
        <span class="errori">@formerror.cod_fiscale;noquote@</span>
+       </formerror>
+   </td>
+   <td valign=top align=right class=form_title>P.IVA</td>
+   <td valign=top><formwidget id="cod_piva">
+       <formerror  id="cod_piva"><br>
+       <span class="errori">@formerror.cod_piva;noquote@</span>
        </formerror>
    </td>
 </tr>

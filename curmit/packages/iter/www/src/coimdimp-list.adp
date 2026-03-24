@@ -32,11 +32,16 @@
     <td colspan=5>&nbsp;</td>
   </tr>
 </if><!--rom01-->
-<tr><td colspan=6 class=func-menu-yellow2><b>RCEE e moduli regionali</b></td></tr>
-<table
+<tr><td class=func-menu-yellow2><b>RCEE e moduli regionali</b></td></tr>
+<tr><td>&nbsp;</td></tr>
 <!-- barra con il cerca, link di aggiungi e righe per pagina -->
 @list_head;noquote@
 
+<table width=50% align=center class="styled-table">
+<tr>
+<td>@link_aggiungi;noquote@</td>
+</tr>
+</table>
 <br>
 <center>
 <!-- genero la tabella -->

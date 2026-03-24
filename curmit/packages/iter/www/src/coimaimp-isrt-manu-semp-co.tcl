@@ -215,14 +215,14 @@ element create $form_name data_installaz \
     -label   "data_installaz" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element class ah-jquery-date" \
     -optional
 
 element create $form_name anno_costruzione \
     -label   "anno_costruzione" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element class ah-jquery-date" \
     -optional
 
 set where_cod_combustibile "where cod_combustibile ='20'"
@@ -256,7 +256,7 @@ element create $form_name data_attivaz \
     -label   "data_attivaz" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element class ah-jquery-date" \
     -optional
 
 element create $form_name note \
@@ -603,14 +603,14 @@ element create $form_name data_inizio_cont \
     -label   "data inizio contratto" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element class ah-jquery-date" \
     -optional
 
 element create $form_name data_fine_cont \
     -label   "data fine contratto" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element class ah-jquery-date" \
     -optional
 
 element create $form_name volimetria_risc \
@@ -647,7 +647,7 @@ element create $form_name data_scheda \
     -label   "Data Scheda" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element class ah-jquery-date" \
     -optional
 
 element create $form_name funzione             -widget hidden -datatype text -optional

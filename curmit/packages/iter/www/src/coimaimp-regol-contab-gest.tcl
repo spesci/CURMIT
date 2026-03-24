@@ -17,6 +17,20 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== ==================================================================================
+   but01 22/06/2023 Aggiunto la classe ah-jquery-date ai campi:regol_curva_ind_iniz_data_inst
+                    , regol_curva_ind_iniz_data_dism, regol_data_sost_sistema, data_ini_valid
+                    , regol_valv_ind_iniz_data_inst, regol_valv_ind_iniz_data_dism.
+    mic01 13/05/2022 Modificata lunghezza massima dei campi regol_curva_ind_iniz_n_punti_reg ,
+    mic01            regol_curva_ind_iniz_n_liv_temp, regol_valv_ind_iniz_n_vie e regol_valv_ind_iniz_servo_motore
+    mic01            da 30 a 20 caratteri perche' sul db i campi sono varchar(20) e il programma poteva
+    mic01            andare in errore.
+
+    rom05 30/03/2022 MEV Regione Marche per sistemi ibridi. Se sono un impianto ibrido associato ad un
+    rom05            altro impianto ibrido "principale" e il flag is_regolazione_primaria_unica e' stato
+    rom05            messo a N nella scheda 1 allora non devo poter inserire i dati relativi alla 
+    rom05            scheda 5.1 ma vedo un messaggio che spiega che i dati relativi alla scheda 5.1 vanno
+    rom05            visualizzati dall'impianto ibrido principale.
+
     rom04 03/02/2021 Corretto errore su modifica rom03
 
     rom03 03/12/2020 Corretto errore sulla modifica: Le Marche possono avere piu' sistemi di regolazione
@@ -52,9 +66,14 @@ switch $funzione {
     "V" {set lvl 1}
     "M" {set lvl 3}
 }
- 
+
 set id_utente [lindex [iter_check_login $lvl $nome_funz] 1]
 set link_gest [export_url_vars cod_impianto url_list_aimp url_aimp last_cod_impianto nome_funz nome_funz_caller extra_par caller]
+
+set visualizza_scheda5_1            "t";#rom05
+set cod_impianto_princ               "";#rom05
+set cod_impianto_est_ibrido_princ    "";#rom05
+set export_vars_ibrido               "";#rom05 
 
 if {$coimtgen(regione) eq "MARCHE"} {#rom01 if e contenuto
 
@@ -97,6 +116,18 @@ if {$coimtgen(regione) eq "MARCHE"} {#rom01 if e contenuto
     set table_result_1 [ad_table -Tmissing_text "Non &egrave; presente nessun Sistema di Regolazione." -Textra_vars {cod_sistema_regolazione_aimp num_sr cod_impianto caller nome_funz nome_funz_caller url_list_aimp url_aimp } go $sel_sist_circ_aimp $table_def_1]
 
     set table_result_2 [ad_table -Tmissing_text "Non &egrave; presente nessuna Valvola di Regolazione." -Textra_vars {cod_valvola_regolazione_aimp num_vr cod_impianto caller nome_funz nome_funz_caller url_list_aimp url_aimp } go $sel_valv_rego_aimp $table_def_2]
+
+    if {[db_0or1row q "select a.cod_impianto_est   as cod_impianto_est_ibrido_princ
+                            , a.cod_impianto       as cod_impianto_princ
+                         from coimaimp_ibrido i
+                         left join coimaimp   a
+                           on a.cod_impianto                  = i.cod_impianto_princ
+                        where i.cod_impianto_ibrido           = :cod_impianto
+                          and i.is_regolazione_primaria_unica = 'S'" ]} {#rom05 Aggiunta if e il suo contenuto
+	set visualizza_scheda5_1 "f"
+	set export_vars_ibrido [export_vars -url {{funzione V} {cod_impianto $cod_impianto_princ} nome_funz caller}]
+    }
+
 };#rom01
 
 # controllo il parametro di "propagazione" per la navigation bar
@@ -142,6 +173,11 @@ switch $funzione {
         set disabled_fld \{\}
        }
 }
+set jq_date "";#but01
+if {$funzione in "M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
+
 
 form create $form_name \
 -html    $onsubmit_cmd
@@ -169,19 +205,19 @@ element create $form_name regol_curva_indipendente \
     -html    "$disabled_fld {} class form_element" \
     -optional \
     -options {{{} {}} {Si S}}
-
+#but01 
 element create $form_name regol_curva_ind_iniz_data_inst \
     -label   "Data di installazione" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
-
+#but01
 element create $form_name regol_curva_ind_iniz_data_dism \
     -label   "Data di dismissione" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name regol_curva_ind_iniz_fabbricante \
@@ -202,14 +238,14 @@ element create $form_name regol_curva_ind_iniz_n_punti_reg \
     -label   "Numero punti di regolazione" \
     -widget   text \
     -datatype text \
-    -html    "size 20 maxlength 30 $readonly_fld {} class form_element" \
+    -html    "size 20 maxlength 20 $readonly_fld {} class form_element" \
     -optional
 
 element create $form_name regol_curva_ind_iniz_n_liv_temp \
     -label   "Numero livelli di temperatura" \
     -widget   text \
     -datatype text \
-    -html    "size 20 maxlength 30 $readonly_fld {} class form_element" \
+    -html    "size 20 maxlength 20 $readonly_fld {} class form_element" \
     -optional
 
 element create $form_name regol_valv_regolazione \
@@ -219,19 +255,19 @@ element create $form_name regol_valv_regolazione \
     -html    "$disabled_fld {} class form_element" \
     -optional \
     -options {{{} {}} {Si S}}
-
+#but01
 element create $form_name regol_valv_ind_iniz_data_inst \
     -label   "Data di installazione" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
-
+#but01
 element create $form_name regol_valv_ind_iniz_data_dism \
     -label   "Data di dismissione" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name regol_valv_ind_iniz_fabbricante \
@@ -252,14 +288,14 @@ element create $form_name regol_valv_ind_iniz_n_vie \
     -label   "Numero di vie" \
     -widget   text \
     -datatype text \
-    -html    "size 20 maxlength 30 $readonly_fld {} class form_element" \
+    -html    "size 20 maxlength 20 $readonly_fld {} class form_element" \
     -optional
 
 element create $form_name regol_valv_ind_iniz_servo_motore \
     -label   "Servomotore" \
     -widget   text \
     -datatype text \
-    -html    "size 20 maxlength 30 $readonly_fld {} class form_element" \
+    -html    "size 20 maxlength 20 $readonly_fld {} class form_element" \
     -optional
 
 element create $form_name regol_sist_multigradino \
@@ -354,12 +390,12 @@ element create $form_name regol_desc_sistema_iniz \
     -datatype text \
     -html    "cols 60 rows 2 $readonly_fld {} class form_element" \
     -optional
-
+#but01
 element create $form_name regol_data_sost_sistema \
     -label   "Data di sostituzione" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name regol_desc_sistema_sost \
@@ -381,7 +417,7 @@ element create $form_name contab_si_no \
 element create $form_name contab_tipo_contabiliz \
     -label   "Se contabilizzate" \
     -widget   select \
-    -options  {{{} {}} {RISCALDAMENTO R} {RAFFRESCAMENTO F}  {{ACQUA CALDA SANITARIA} A} {{RISC./ACQUA CALDA SAN.} E} {{RISC./RAFFRESCAMENTO} I} {{RISC./RAFFRES./ACQUA CALDA SANIT.} O} {{RAFFRES./ACQUA CALDA SANIT.} } }\
+    -options  {{{} {}} {RISCALDAMENTO R} {RAFFRESCAMENTO F}  {{ACQUA CALDA SANITARIA} A} {{RISC./ACQUA CALDA SAN.} E} {{RISC./RAFFRESCAMENTO} I} {{RISC./RAFFRES./ACQUA CALDA SANIT.} O} {{RAFFRES./ACQUA CALDA SANIT.} U} }\
     -datatype text \
     -html    "$disabled_fld {} class form_element" \
     -optional
@@ -405,7 +441,7 @@ element create $form_name contab_data_sost_sistema \
     -label   "Data di sostituzione" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name contab_desc_sistema_sost \
@@ -414,13 +450,13 @@ element create $form_name contab_desc_sistema_sost \
     -datatype text \
     -html    "cols 60 rows 2 $readonly_fld {} class form_element" \
     -optional
-
+#but01
 if {$funzione == "M"} {
     element create $form_name data_ini_valid \
     -label   "data_ini_valid" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 }
 

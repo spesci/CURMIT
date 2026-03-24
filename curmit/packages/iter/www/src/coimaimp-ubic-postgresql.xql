@@ -34,6 +34,8 @@
 		     , cod_cted        = :cod_cted --rom02
 		     , volimetria_risc   = :volimetria_risc --rom03
 		     , volimetria_raff   = :volimetria_raff --rom03
+                     , unita_immobiliari_servite = :unita_immobiliari_servite -- rom06 28/04/2023
+		     , note_ubic              = :note_ubic --mat01
                  where cod_impianto = :cod_impianto
        </querytext>
     </partialquery>
@@ -67,8 +69,10 @@
 		     , cod_cted        = null --rom02
 		     , volimetria_risc = null --rom03
 		     , volimetria_raff = null --rom03
+		     , note_ubic            = null --mat01
+                     , unita_immobiliari_servite = null --rom06
                      , data_mod        = current_date
-                     , utente          = :id_utente                 
+                     , utente          = :id_utente
                  where cod_impianto = :cod_impianto
        </querytext>
     </partialquery>
@@ -142,12 +146,14 @@
 	       , a.cod_cted --rom02
 	       , iter_edit_num(a.volimetria_risc,2) as volimetria_risc --rom03
 	       , iter_edit_num(a.volimetria_raff,2) as volimetria_raff --rom03
+	       , a.unita_immobiliari_servite -- rom06 28/04/2023
                , a.toponimo 
                , a.indirizzo 
                , iter_edit_data(a.data_installaz)  as data_variaz
                , coalesce(a.cod_tpdu, '') as cod_tpdu
                , iter_edit_num(to_number(a.gb_x,'99.999999999999999999'),10) as gb_x
                , iter_edit_num(to_number(a.gb_y,'99.999999999999999999'),10) as gb_y
+	       , note_ubic --mat01
 	       $indirizzo
                from coimaimp a
                $coimviae $where_viae 

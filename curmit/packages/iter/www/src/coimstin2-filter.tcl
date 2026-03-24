@@ -2,6 +2,7 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    but01 20/06/2023 Aggiunto la classe ah-jquery-date ai campi da_data_app, a_data_app, da_data_ins, a_data_ins.
     rom01 21/10/2020 Su segnalazione di Salerno modificato page_title per renderlo
     rom01            uguale al nome del menu', Sandro ha detto che va bene per tutti.
     
@@ -165,33 +166,33 @@ element create $form_name funzionare \
     -optional \
     -options {{{} {}} {Si S} {No N}}
 
-
+#but01 Aggiunto la classe ah-jquery-date ai campi da_data_app, a_data_app, da_data_ins, a_data_ins.
 element create $form_name da_data_app \
     -label   "da_data_app" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 class form_element" \
+    -html    "size 10 maxlength 10 class form_element class ah-jquery-date" \
     -optional 
 
 element create $form_name a_data_app \
     -label   "a_data_app" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 class form_element" \
+    -html    "size 10 maxlength 10 class form_element class ah-jquery-date" \
     -optional
 
 element create $form_name da_data_ins \
     -label   "da_data_ins" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 class form_element" \
+    -html    "size 10 maxlength 10 class form_element class ah-jquery-date" \
     -optional;#san01
 
 element create $form_name a_data_ins \
     -label   "a_data_ins" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 class form_element" \
+    -html    "size 10 maxlength 10 class form_element class ah-jquery-date" \
     -optional;#san01
 
 element create $form_name f_cod_manu       -widget hidden -datatype text -optional

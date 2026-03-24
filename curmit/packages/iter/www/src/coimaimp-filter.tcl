@@ -13,6 +13,20 @@ ad_page_contract {
     
     USER  DATA       MODIFICHE
     ===== ========== =============================================================================
+    ric02 25/11/2024 MEV Regione Marche ordine 63/2022 riga 3
+
+    but01 06/06/2023 Aggiunta classe 'ah-jquery-date' per la scelta della data col datepicker.
+
+    ric01 09/06/2023 Aggiunti element per criteri aggiuntivi di ricerca impianti.
+    
+    rom06 13/01/2023 Sviluppo per Palermo Energia: aggiunto filro "Per Soggetto presente nello storico RCEE".
+
+    rom05 05/05/2022 Per un caso segnalato da un ente di Regione Marche il campo f_matricola potrebbe
+    rom05            contenere i caratteri < e > quindi devo trattare il campo come html altrimenti
+    rom05            le proc di controllo di OpenAcs bloccano il programma.
+
+    rom04 10/01/2022 Aggiunto nuovo campo di ricerca POD su segnealazione di Regione Marche.
+
     rom03 21/10/2020 Su segnalazione di Salerno modificato page_title per renderlo
     rom03            uguale al nome del menu', Sandro ha detto che va bene per tutti.
 
@@ -40,7 +54,9 @@ ad_page_contract {
     {f_targa              ""}
     {f_resp_cogn          ""} 
     {f_resp_nome          ""} 
-
+    {f_resp_cogn_rcee     ""} 
+    {f_resp_nome_rcee     ""}
+    
     {f_comune             ""}
     {f_quartiere          ""}
 
@@ -72,8 +88,9 @@ ad_page_contract {
 
     {f_dpr_412            ""}
     {f_cod_utenza         ""}
+    {f_pod                ""}
     {f_cod_impianto_old   ""}
-    {f_matricola          ""}
+    {f_matricola:html     ""}
     {f_prov_dati          ""}
     {cerca_multivie       ""}
     {f_da_data_verifica   ""}
@@ -84,6 +101,14 @@ ad_page_contract {
     {f_impianto_modificato   ""}
     {f_soggetto_modificato   ""}
     {f_generatore_sostituito ""}
+
+    {f_ibrido                ""}
+    {f_pagato                ""}
+    {f_tprc                  ""}
+    {f_dich_conformita       ""}
+    {f_dfm_manu              ""}
+    {f_dfm_resp_mod          ""}
+    
 } -properties {
     page_title:onevalue
     context_bar:onevalue
@@ -91,7 +116,6 @@ ad_page_contract {
 }
 #iter_blocca_doppio_click
 # B80: RECUPERO LO USER - INTRUSIONE
-
 
 set id_utente [ad_get_cookie iter_login_[ns_conn location]]
 set id_utente_loggato_vero [ad_get_client_property iter logged_user_id]
@@ -192,6 +216,11 @@ set readonly_fld "readonly"
 set disabled_fld "disabled"
 set onsubmit_cmd ""
 
+set jq_date "";#but01
+if {$funzione in "V M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
+
 set readonly_fld \{\}
 set disabled_fld \{\}
 form create $form_name \
@@ -240,6 +269,59 @@ element create $form_name f_resp_nome \
     -datatype text \
     -html    "size 20 maxlength 100 $readonly_fld {} class form_element tabindex 3" \
     -optional
+
+set readonly_fld2 \{\};#rom06
+#rom06
+element create $form_name f_resp_cogn_rcee \
+    -label   "Cognome" \
+    -widget   text \
+    -datatype text \
+    -html    "size 20 maxlength 100 $readonly_fld2 {} class form_element tabindex 2" \
+    -optional
+#rom06
+element create $form_name f_resp_nome_rcee \
+    -label   "Nome" \
+    -widget   text \
+    -datatype text \
+    -html    "size 20 maxlength 100 $readonly_fld2 {} class form_element tabindex 3"\
+    -optional
+
+#ric01 inizio aggiunta criteri aggiuntivi di ricerca, li mostro solo per le Marche 
+set options_ibrido "{{} {}} {\"Sistema ibrido\" S} {\"Unico generatore policombustibile\" P} {\"Generatori misti (con combustibili diversi)\" M} {\"Nessun collegamento con altri impianti\" N}"
+
+element create $form_name f_ibrido \
+    -label   "ibrido" \
+    -widget   select \
+    -datatype text \
+    -html    "$disabled_fld {} class form_element" \
+    -optional \
+    -options $options_ibrido
+
+set options_fl_pagato [list "{} {}" "S&igrave; S" "{No, perchè non dovuto} N" "{No, per rifiuto del responsabile} C"]
+
+element create $form_name f_pagato \
+    -label   "Pagato" \
+    -widget   select \
+    -options  $options_fl_pagato\
+    -datatype text \
+    -html    "$disabled_fld {} class form_element" \
+    -optional
+
+set options_cod_tprc "[list \"\"] "
+
+append options_cod_tprc [db_list_of_lists sel_lol "select substr(descr_tprc, 1, 42) as descr_tprc
+                                                         , cod_tprc
+                                                      from coimtprc"]
+
+element create $form_name f_tprc \
+    -label   "Tipo controllo" \
+    -widget   select \
+    -datatype text \
+    -html    "$disabled_fld {} class form_element " \
+    -optional \
+    -options  $options_cod_tprc
+
+#ric01 fine
 
 if {$flag_ente == "P"} {
     if {$user_is_comu eq ""} {
@@ -323,6 +405,38 @@ if {[string equal $cod_manutentore ""]} {
     set cerca_manu ""
 }
 
+#ric02 inizio aggiunta criteri aggiuntivi di ricerca, li mostro solo per le Marche
+element create $form_name f_dich_conformita \
+    -label   "Dichiarazione Conformita" \
+    -widget   select \
+    -datatype text \
+    -html    "$disabled_fld {} class form_element tabindex 57" \
+    -optional \
+    -options { {{} {}} {S&igrave; S} {No N}}
+
+if {$sw_manu} {
+    element create $form_name f_dfm_manu \
+	-label   "DFM inserita da manutentore" \
+	-widget   select \
+	-datatype text \
+	-html    "$disabled_fld {} class form_element tabindex 57" \
+	-optional \
+	-options { {{} {}} {S&igrave; S} {No N}}
+
+    element create $form_name f_dfm_resp_mod \
+	-label   "DFM inserita per cambio responsabile" \
+	-widget   select \
+	-datatype text \
+	-html    "$disabled_fld {} class form_element tabindex 57" \
+	-optional \
+	-options { {{} {}} {No N}}
+    
+} else {
+    element create $form_name f_dfm_manu        -widget hidden -datatype text -optional
+    element create $form_name f_dfm_resp_mod    -widget hidden -datatype text -optional
+}
+#ric02 fine
+
 element create $form_name f_manu_cogn \
     -label   "Cognome" \
     -widget   text \
@@ -341,14 +455,14 @@ element create $form_name f_data_mod_da \
     -label   "Da data modifica" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element tabindex 12" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element tabindex 12 $jq_date" \
     -optional
 
 element create $form_name f_data_mod_a \
     -label   "A data modifica" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element tabindex 13" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element tabindex 13 $jq_date" \
     -optional
 
 element create $form_name f_utente \
@@ -377,14 +491,14 @@ element create $form_name f_data_installaz_da \
     -label   "data installazione" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element tabindex 53" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element tabindex 53 $jq_date" \
     -optional
 
 element create $form_name f_data_installaz_a \
     -label   "data installazione" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element tabindex 54" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element tabindex 54 $jq_date" \
     -optional
 
 
@@ -486,6 +600,14 @@ element create $form_name f_cod_utenza \
     -html    "size 20 maxlength 20 $readonly_fld {} class form_element tabindex 1" \
     -optional
 
+#rom04 Aggiunto campo f_pod 
+element create $form_name f_pod \
+    -label   "POD" \
+    -widget   text \
+    -datatype text \
+    -html    "size 20 maxlength 20 $readonly_fld {} class form_element tabindex 1" \
+    -optional
+
 element create $form_name f_cod_impianto_old \
     -label   "f_cod_impianto_old" \
     -widget   text \
@@ -512,14 +634,14 @@ element create $form_name f_da_data_verifica \
     -label   "Da data verifica" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element " \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name f_a_data_verifica \
     -label   "A data verifica" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element " \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name f_bollino \
@@ -598,7 +720,15 @@ if {[form is_request $form_name]} {
     element set_properties $form_name f_targa              -value $f_targa;#sim02
     element set_properties $form_name f_resp_cogn          -value $f_resp_cogn
     element set_properties $form_name f_resp_nome          -value $f_resp_nome
-
+    element set_properties $form_name f_resp_cogn_rcee     -value $f_resp_cogn_rcee;#rom06
+    element set_properties $form_name f_resp_nome_rcee     -value $f_resp_nome_rcee;#rom06
+    element set_properties $form_name f_ibrido             -value $f_ibrido;#ric01
+    element set_properties $form_name f_pagato             -value $f_pagato;#ric01
+    element set_properties $form_name f_tprc               -value $f_tprc;#ric01
+    element set_properties $form_name f_dich_conformita    -value $f_dich_conformita;#ric02
+    element set_properties $form_name f_dfm_manu           -value $f_dfm_manu;#ric02
+    element set_properties $form_name f_dfm_resp_mod       -value $f_dfm_resp_mod;#ric02
+    
     if {$flag_ente == "P"} {
 	if {$user_is_comu eq ""} {
 	    element set_properties $form_name f_comune   -value $f_comune
@@ -621,6 +751,7 @@ if {[form is_request $form_name]} {
 
     element set_properties $form_name f_cod_impianto_old -value $f_cod_impianto_old
     element set_properties $form_name f_cod_utenza       -value $f_cod_utenza
+    element set_properties $form_name f_pod              -value $f_pod;#rom04
     element set_properties $form_name f_dpr_412          -value $f_dpr_412
 
     element set_properties $form_name f_data_mod_da      -value [iter_edit_date $f_data_mod_da]
@@ -672,7 +803,15 @@ if {[form is_valid $form_name]} {
     set f_targa              [string trim [element::get_value $form_name f_targa]];#sim02    
     set f_resp_cogn          [string trim [element::get_value $form_name f_resp_cogn]]
     set f_resp_nome          [string trim [element::get_value $form_name f_resp_nome]]
-
+    set f_resp_cogn_rcee     [string trim [element::get_value $form_name f_resp_cogn_rcee]];#rom06
+    set f_resp_nome_rcee     [string trim [element::get_value $form_name f_resp_nome_rcee]];#rom06
+    set f_ibrido             [string trim [element::get_value $form_name f_ibrido]];#ric01
+    set f_pagato             [string trim [element::get_value $form_name f_pagato]];#ric01
+    set f_tprc               [string trim [element::get_value $form_name f_tprc]];#ric01
+    set f_dich_conformita    [string trim [element::get_value $form_name f_dich_conformita]];#ric02
+    set f_dfm_manu           [string trim [element::get_value $form_name f_dfm_manu]];#ric02
+    set f_dfm_resp_mod       [string trim [element::get_value $form_name f_dfm_resp_mod]];#ric02
+    
     if {$user_is_comu eq "" } {
 	set f_comune       [string trim [element::get_value $form_name f_comune]]
     } else {
@@ -709,6 +848,7 @@ if {[form is_valid $form_name]} {
     set f_mod_h            [string trim [element::get_value $form_name f_mod_h]]
     set f_dpr_412          [string trim [element::get_value $form_name f_dpr_412]]
     set f_cod_utenza       [string trim [element::get_value $form_name f_cod_utenza]]
+    set f_pod              [string trim [element::get_value $form_name f_pod]];#rom04
     set f_cod_impianto_old [string trim [element::get_value $form_name f_cod_impianto_old]]
     set f_matricola        [string trim [element::get_value $form_name f_matricola]]
     set f_prov_dati        [string trim [element::get_value $form_name f_prov_dati]]
@@ -748,6 +888,8 @@ if {[form is_valid $form_name]} {
     }
     #sim01 aggiunto f_cod_impianto_princ sul controllo
     #sim02 aggiunto f_targa sul controllo
+    #rom04 aggiunto f_pod sul controllo
+    #rom06 Aggiunti f_resp_cogn_rcee e f_resp_nome_rcee sul controllo
     if {[string equal $f_cod_impianto_est ""] && [string equal $f_resp_cogn ""]
 	&&  [string equal $f_resp_nome ""]    && [string equal $f_manu_cogn ""]
 	&&  [string equal $f_manu_nome ""]    && $sw_filtro_ind == "f"
@@ -755,7 +897,8 @@ if {[form is_valid $form_name]} {
 	&&  [string equal $f_utente ""]       && [string equal $f_cod_impianto_old ""]
 	&&  [string equal $f_cod_utenza ""]   && [string equal $f_matricola ""]
 	&&  [string equal $f_bollino ""]      && [string equal $f_cod_impianto_princ ""]
-	&&  [string equal $f_targa ""]
+	&&  [string equal $f_targa ""]         && [string equal $f_pod ""]
+	&& [string equal $f_resp_cogn_rcee ""] &&  [string equal $f_resp_nome_rcee ""]
     } {
         if {$flag_ente == "P"} {
             set errore_indirizzo "comune"
@@ -766,7 +909,11 @@ if {[form is_valid $form_name]} {
 	element::set_error $form_name f_cod_impianto_est "Indicare almeno codice impianto o responsabile o $errore_indirizzo o manutentore o data modifica o utente o matricola generatore o codice impianto principale"
 	incr error_num
     }
+    #ric01 aggiunto il campo f_ibrido, f_pagato, f_tprc
     #rom02 aggiunti i campi impianto_inserito, impianto_modificato, soggetto_modificato e generatore_sostituito
+    #rom04 aggiunto il campo f_pod
+    #rom06 Aggiunti i campi f_resp_cogn_rcee e f_resp_nome_rcee
+    #ric02 aggiunto il campo f_dich_conformita, f_dfm_manu, f_dfm_resp_mod 
     if {![string equal $f_cod_impianto_est ""]
 	&& (![string equal $f_resp_cogn ""]
 	    ||  ![string equal $f_resp_nome ""]
@@ -785,6 +932,7 @@ if {[form is_valid $form_name]} {
 	    || ![string equal $f_cod_combustibile ""]
 	    || ![string equal $f_cod_tpim ""]
 	    || ![string equal $f_cod_utenza ""]
+	    || ![string equal $f_pod ""]
 	    || ![string equal $f_cod_impianto_old ""]
 	    || ![string equal $f_dpr_412 ""]
 	    || ![string equal $f_cod_tpdu ""]
@@ -793,12 +941,24 @@ if {[form is_valid $form_name]} {
 	    || ![string equal $f_impianto_inserito "N"]
 	    || ![string equal $f_impianto_modificato "N"]
 	    || ![string equal $f_soggetto_modificato "N"]
-	    || ![string equal $f_generatore_sostituito "N"])
+	    || ![string equal $f_generatore_sostituito "N"]
+	    || ![string equal $f_resp_cogn_rcee ""]
+	    || ![string equal $f_resp_nome_rcee ""]
+	    || ![string equal $f_ibrido ""]
+	    || ![string equal $f_pagato ""]
+	    || ![string equal $f_tprc   ""]
+	    || ![string equal $f_dich_conformita ""]
+	    || ![string equal $f_dfm_manu ""]
+	    || ![string equal $f_dfm_resp_mod ""])
 	&&  $sw_manu == "f" } {
 	element::set_error $form_name f_cod_impianto_est "Con la selezione per codice non &egrave; possibile indicare nessun altro criterio di selezione"
 	incr error_num
     } else {
+	#ric01 aggiunto il campo f_ibrido, f_pagato, f_tprc
 	#rom02 aggiunti i campi impianto_inserito, impianto_modificato, soggetto_modificato e generatore_sostituito
+	#rom04 aggiunto il campo f_pod
+	#rom06 Aggiunti i campi f_resp_cogn_rcee e f_resp_nome_rcee
+	#ric02 aggiunto il campo f_dich_conformita, f_dfm_manu, f_dfm_resp_mod
 	if {![string equal $f_cod_impianto_old ""]
 	    && (![string equal $f_resp_cogn            ""]
 		||  ![string equal $f_resp_nome        ""]
@@ -817,6 +977,7 @@ if {[form is_valid $form_name]} {
 		|| ![string equal $f_cod_combustibile  ""]
 		|| ![string equal $f_cod_tpim          ""]
 		|| ![string equal $f_cod_utenza        ""]
+		|| ![string equal $f_pod               ""]
 		|| ![string equal $f_cod_impianto_est  ""]
 		|| ![string equal $f_dpr_412           ""]
 		|| ![string equal $f_cod_tpdu          ""]
@@ -825,13 +986,24 @@ if {[form is_valid $form_name]} {
 		|| ![string equal $f_impianto_inserito "N"]
 		|| ![string equal $f_impianto_modificato "N"]
 		|| ![string equal $f_soggetto_modificato "N"]
-		|| ![string equal $f_generatore_sostituito "N"])
+		|| ![string equal $f_generatore_sostituito "N"]
+		|| ![string equal $f_resp_cogn_rcee ""]
+		|| ![string equal $f_resp_nome_rcee ""]
+		|| ![string equal $f_ibrido ""]
+		|| ![string equal $f_pagato ""]
+		|| ![string equal $f_tprc   ""]
+		|| ![string equal $f_dich_conformita  ""]
+		|| ![string equal $f_dfm_manu ""]
+		|| ![string equal $f_dfm_resp_mod ""])
 	    &&  $sw_manu == "f"} {
 	    element::set_error $form_name f_cod_impianto_old "Con la selezione per codice non &egrave; possibile indicare nessun altro criterio di selezione"
 	    incr error_num
 	} else {
+	    #ric01 aggiunto il campo f_ibrido, f_pagato, f_tprc
 	    #rom02 aggiunti i campi impianto_inserito, impianto_modificato, soggetto_modificato e generatore_sostituito
-	    if {![string equal $f_cod_utenza ""]
+	    #rom06 Aggiunti i campi f_resp_cogn_rcee e f_resp_nome_rcee
+	    #ric02 aggiunto il campo f_dich_conformita, f_dfm_manu, f_dfm_resp_mod
+	    if {(![string equal $f_cod_utenza ""] || ![string equal $f_pod ""])
 		&& (![string equal $f_resp_cogn            ""]
 		    ||  ![string equal $f_resp_nome        ""]
 		    ||  $sw_filtro_ind == "t"
@@ -857,7 +1029,15 @@ if {[form is_valid $form_name]} {
 		    || ![string equal $f_impianto_inserito "N"]
 		    || ![string equal $f_impianto_modificato "N"]
 		    || ![string equal $f_soggetto_modificato "N"]
-		    || ![string equal $f_generatore_sostituito "N"])
+		    || ![string equal $f_generatore_sostituito "N"]
+		    || ![string equal $f_resp_cogn_rcee ""]
+		    || ![string equal $f_resp_nome_rcee ""]
+		    || ![string equal $f_ibrido ""]
+		    || ![string equal $f_pagato ""]
+		    || ![string equal $f_tprc   ""]
+		    || ![string equal $f_dich_conformita   ""]
+		    || ![string equal $f_dfm_manu ""]
+		    || ![string equal $f_dfm_resp_mod ""])		
 		&&  $sw_manu == "f" } {
 		element::set_error $form_name f_cod_utenza "Con la selezione per codice non &egrave; possibile indicare nessun altro criterio di selezione"
 		incr error_num
@@ -1178,12 +1358,23 @@ if {[form is_valid $form_name]} {
 	set f_impinto_modificato "";#rom02
 	set f_soggetto_modificato "";#rom02
 	set f_generatore_sostituito "";#rom02
+	set f_resp_cogn_rcee "";#rom06
+	set f_resp_nome_rcee "";#rom06
+	set f_ibrido "";#ric01
+	set f_pagato "";#ric01
+	set f_tprc "";#ric01
+	set f_dich_conformita "";#ric02
+	set f_dfm_manu "";#ric02
+	set f_dfm_resp_mod "";#ric02
     }
     #dpr74 aggiunto f_flag_tipo_impianto
     #sim01 aggiunto receiving_element e f_cod_impianto_princ
     #sim02 aggiunto f_targa
     #rom02 aggiunti i campi f_impianto_inserito, f_impianto_modificato, f_soggetto_modificato e f_generatore_sostituito
-    set link_list [export_url_vars receiving_element f_cod_impianto_est f_cod_impianto_princ f_targa f_resp_cogn f_resp_nome f_comune f_quartiere f_cod_via f_desc_via f_desc_topo f_civico_da f_civico_a f_manu_cogn f_manu_nome f_cod_manu f_data_mod_da f_data_mod_a f_utente f_potenza_da f_potenza_a f_data_installaz_da f_data_installaz_a f_flag_dichiarato f_stato_conformita f_cod_combustibile f_cod_cost f_cod_tpim f_cod_tpdu f_stato_aimp caller funzione nome_funz_caller f_mod_h f_cod_utenza f_cod_impianto_old f_dpr_412 f_matricola f_prov_dati cerca_multivie cod_manutentore cod_amministratore f_da_data_verifica f_a_data_verifica f_bollino f_flag_tipo_impianto f_impianto_inserito f_impianto_modificato f_soggetto_modificato f_generatore_sostituito]&nome_funz=impianti
+    #rom04 aggiunto campo f_pod
+    #rom06 Aggiunti campi f_resp_cogn_rcee f_resp_nome_rcee
+    #ric02 aggiunto il campo f_dich_conformita, f_dfm_manu, f_dfm_resp_mod
+    set link_list [export_url_vars receiving_element f_cod_impianto_est f_cod_impianto_princ f_targa f_resp_cogn f_resp_nome f_resp_cogn_rcee f_resp_nome_rcee f_comune f_quartiere f_cod_via f_desc_via f_desc_topo f_civico_da f_civico_a f_manu_cogn f_manu_nome f_cod_manu f_data_mod_da f_data_mod_a f_utente f_potenza_da f_potenza_a f_data_installaz_da f_data_installaz_a f_flag_dichiarato f_stato_conformita f_cod_combustibile f_cod_cost f_cod_tpim f_cod_tpdu f_stato_aimp caller funzione nome_funz_caller f_mod_h f_cod_utenza f_pod f_cod_impianto_old f_dpr_412 f_matricola f_prov_dati cerca_multivie cod_manutentore cod_amministratore f_da_data_verifica f_a_data_verifica f_bollino f_flag_tipo_impianto f_impianto_inserito f_impianto_modificato f_soggetto_modificato f_generatore_sostituito f_ibrido f_pagato f_tprc f_dich_conformita f_dfm_manu f_dfm_resp_mod]&nome_funz=impianti
 
     set return_url "coimaimp-list?$link_list"
     ad_returnredirect $return_url

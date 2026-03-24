@@ -52,7 +52,7 @@ Dati relativi a <b>@dir;noquote@</b>
 Impianti
 </td>
 <td width="50%">
-<a href="../spool/@dir;noquote@/@nome_file_1;noquote@.csv">Scarica</a>
+<a href="../spool/@dir;noquote@/@nome_file_1;noquote@.csv">Scarica CSV</a>
 </td>
 </tr>
 <tr align="center">
@@ -60,7 +60,7 @@ Impianti
 Rapporti
 </td>
 <td>
-<a href="../spool/@dir;noquote@/@nome_file_2;noquote@.csv">Scarica</a>
+<a href="../spool/@dir;noquote@/@nome_file_2;noquote@.csv">Scarica CSV</a>
 </td>
 </tr>
 <tr align="center">
@@ -68,7 +68,7 @@ Rapporti
 Autocertificazioni
 </td>
 <td>
-<a href="../spool/@dir;noquote@/@nome_file_3;noquote@.csv">Scarica</a>
+<a href="../spool/@dir;noquote@/@nome_file_3;noquote@.csv">Scarica CSV</a>
 </td>
 </tr>
 <tr align="center">
@@ -76,7 +76,7 @@ Autocertificazioni
 Incontri
 </td>
 <td>
-<a href="../spool/@dir;noquote@/@nome_file_4;noquote@.csv">Scarica</a>
+<a href="../spool/@dir;noquote@/@nome_file_4;noquote@.csv">Scarica CSV</a>
 </td>
 </tr>
 <tr align="center">
@@ -84,7 +84,7 @@ Incontri
 Parametri
 </td>
 <td>
-<a href="../spool/@dir;noquote@/@nome_file_5;noquote@.csv">Scarica</a>
+<a href="../spool/@dir;noquote@/@nome_file_5;noquote@.csv">Scarica CSV</a>
 </td>
 </tr>
 </table>

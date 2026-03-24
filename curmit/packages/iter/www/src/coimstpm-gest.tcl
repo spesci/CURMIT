@@ -12,6 +12,10 @@ ad_page_contract {
                             navigazione con navigation bar
     @param extra_par        Variabili extra da restituire alla lista
     @cvs-id                 coimstpm-gest.tcl
+
+    USER  DATA       MODIFICHE
+    ===== ========== =======================================================================
+    but01 22/12/2023  aggiunto i campi  margine_alto, margine_basso, margine_sinistro, margine_destro.
 } {
    {id_stampa        ""}
    {last_id_stampa   ""}
@@ -203,7 +207,33 @@ element create $form_name tipo_documento \
 -optional \
 -options [iter_selbox_from_table coimtdoc tipo_documento descrizione]
 
+element create $form_name margine_alto \
+    -label   "Margine alto" \
+    -widget   text \
+    -datatype text \
+    -html    "size 13 maxlength 13 $readonly_fld {} class form_element" \
+    -optional
 
+element create $form_name margine_basso \
+    -label   "Margine basso" \
+    -widget   text \
+    -datatype text \
+    -html    "size 13 maxlength 13 $readonly_fld {} class form_element" \
+    -optional
+
+element create $form_name margine_destro \
+    -label   "Margine destro" \
+    -widget   text \
+    -datatype text \
+    -html    "size 13 maxlength 13 $readonly_fld {} class form_element" \
+    -optional
+
+element create $form_name margine_sinistro \
+    -label   "Margine sinistro" \
+    -widget   text \
+    -datatype text \
+    -html    "size 13 maxlength 13 $readonly_fld {} class form_element" \
+    -optional
 
 element create $form_name funzione         -widget hidden -datatype text -optional
 element create $form_name caller           -widget hidden -datatype text -optional
@@ -225,7 +255,6 @@ if {[form is_request $form_name]} {
     element set_properties $form_name nome_funz_caller -value $nome_funz_caller
     element set_properties $form_name extra_par        -value $extra_par
     element set_properties $form_name last_id_stampa   -value $last_id_stampa
-
     if {$funzione == "I"} {
         
     } else {
@@ -250,6 +279,11 @@ if {[form is_request $form_name]} {
         element set_properties $form_name tipo_foglio       -value $tipo_foglio
         element set_properties $form_name orientamento      -value $orientamento
         element set_properties $form_name tipo_documento    -value $tipo_documento
+        element set_properties $form_name margine_alto      -value $margine_alto;#but01
+	element set_properties $form_name margine_basso     -value $margine_basso;#but01
+	element set_properties $form_name margine_destro    -value $margine_destro;#but01
+	element set_properties $form_name margine_sinistro  -value $margine_sinistro;#but01
+       
     }
 }
 
@@ -272,6 +306,11 @@ if {[form is_valid $form_name]} {
     set tipo_foglio       [element::get_value $form_name tipo_foglio]
     set orientamento      [element::get_value $form_name orientamento]
     set tipo_documento    [element::get_value $form_name tipo_documento]
+
+    set margine_alto      [element::get_value $form_name margine_alto];#but01
+    set margine_basso     [element::get_value $form_name margine_basso];#but01
+    set margine_destro    [element::get_value $form_name margine_destro];#but01
+    set margine_sinistro  [element::get_value $form_name margine_sinistro];#but01
     if {$funzione != "I"} {
 	set id_stampa     [element::get_value $form_name id_stampa]
     }
@@ -279,9 +318,41 @@ if {[form is_valid $form_name]} {
     # controlli standard su numeri e date, per Ins ed Upd
     set error_num 0
     if  { $funzione == "I"
-	||$funzione == "M"} {
+	  ||$funzione == "M"} {
+
+	if {![string equal $margine_alto ""]} {;#but01 aggiunto if e suo contenuto
+	    set margine_alto [iter_check_num $margine_alto 2]
+	    if {$margine_alto eq "Error"} {
+		element::set_error $form_name margine_alto "Deve essere numerico, max 2 dec"
+		incr error_num
+	    }
+	}
+
+	if {![string equal $margine_basso ""]} {;#but01 aggiunto if e suo contenuto
+	    set margine_basso [iter_check_num $margine_basso 2]
+	    if {$margine_basso eq "Error"} {
+		element::set_error $form_name margine_basso "Deve essere numerico, max 2 dec"
+		incr error_num
+	    }
+	}
+
+	if {![string equal $margine_destro ""]} {;#but01 aggiunto if e suo contenuto
+	    set margine_destro [iter_check_num $margine_destro 2]
+	    if {$margine_destro eq "Error"} {
+		element::set_error $form_name margine_destro "Deve essere numerico, max 2 dec"
+		incr error_num
+	    }
+	}
+
+	if {![string equal $margine_sinistro ""]} {;#but01 aggiunto if e suo contenuto
+	    set margine_sinistro [iter_check_num $margine_sinistro 2]
+	    if {$margine_sinistro eq "Error"} {
+		element::set_error $form_name margine_sinistro "Deve essere numerico, max 2 dec"
+		incr error_num
+	    }
+	}
 	
-        if {[string equal $descrizione ""]} {
+	if {[string equal $descrizione ""]} {
             element::set_error $form_name descrizione "Inserire Descrizione Stampa"
             incr error_num
         } 

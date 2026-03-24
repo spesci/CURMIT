@@ -12,6 +12,13 @@ ad_page_contract {
                      navigazione con navigation bar
     @param extra_par Variabili extra da restituire alla lista
     @cvs-id          coimanom-gest.tcl
+
+    USER  DATA       MODIFICHE
+    ===== ========== =======================================================================
+    mat01 15/09/2025 Aggiunta la tipologia 7 e la variabile flag_att_sosp.(da rapporto di accertamento)
+
+    but01 21/06/2023 Aggiunto la classe ah-jquery-date al campo dat_utile_inter.
+
 } {
     {cod_cimp_dimp    ""}
     {flag_origine     ""}
@@ -30,16 +37,22 @@ ad_page_contract {
     {flag_origine     ""}
    {extra_par_inco   ""}
    {cod_inco         ""}
-   {flag_inco        ""}
+    {flag_inco        ""}
+    {flag_att_sosp    ""}
 } -properties {
     page_title:onevalue
     context_bar:onevalue
     form_name:onevalue
 }
 
+set tipologia "";#mat01
 switch $flag_origine {
     "RV" {set tipologia "2"}
     "MH" {set tipologia "1"}
+}
+
+if {$flag_att_sosp eq "'AC'"} {#mat01 aggiunta if e contenuto
+    set tipologia "7"
 }
 
 # Controlla lo user
@@ -87,11 +100,11 @@ set link_list_script {[export_url_vars cod_cimp_dimp flag_origine extra_par url_
 set link_list        [subst $link_list_script]
 set titolo           "Anomalia"
 switch $funzione {
-    M {set button_label "Conferma Modifica" 
+    M {set button_label "Conferma modifica" 
        set page_title   "Modifica $titolo"}
-    D {set button_label "Conferma Cancellazione"
-       set page_title   "Cancellazione $titolo"}
-    I {set button_label "Conferma Inserimento"
+    D {set button_label "Conferma cancellazione"
+       set page_title   "cancellazione $titolo"}
+    I {set button_label "Conferma inserimento"
        set page_title   "Inserimento $titolo"}
     V {set button_label "Torna alla lista"
        set page_title   "Visualizzazione $titolo"}
@@ -116,9 +129,20 @@ switch $funzione {
         set disabled_fld \{\}
        }
 }
-
+set jq_date "";#but01
+if {$funzione in "M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
 form create $form_name \
 -html    $onsubmit_cmd
+
+#mat01
+element create $form_name tipologia \
+    -label   "" \
+    -widget   hidden \
+    -datatype text \
+    -optional \
+    -value $tipologia
 
 element create $form_name cod_cimp_dimp \
 -label   "Cod." \
@@ -149,12 +173,13 @@ if {$funzione == "I"} {
     -datatype text \
     -html     "size 80  readonly {} class form_element" \
     -optional
-} 
+}
+#but01 Aggiunto la classe ah-jquery-date al campo dat_utile_inter
 element create $form_name dat_utile_inter \
 -label   "Data utile inter." \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+-html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
 -optional
 
 element create $form_name extra_par_inco -widget hidden -datatype text -optional
@@ -191,7 +216,7 @@ if {[form is_request $form_name]} {
     element set_properties $form_name url_aimp       -value $url_aimp
     element set_properties $form_name flag_cimp      -value $flag_cimp   
     element set_properties $form_name last_prog_anom -value $last_prog_anom
-
+    element set_properties $form_name tipologia      -value $tipologia;#mat01
     if {$funzione == "I"} {
         element set_properties $form_name cod_cimp_dimp   -value $cod_cimp_dimp
         
@@ -217,8 +242,9 @@ if {[form is_valid $form_name]} {
     set prog_anom       [element::get_value $form_name prog_anom]
     set cod_tanom       [element::get_value $form_name cod_tanom]
     set dat_utile_inter [element::get_value $form_name dat_utile_inter]
-
-  # controlli standard su numeri e date, per Ins ed Upd
+    set tipologia       [element::get_value $form_name tipologia];#mat01
+    
+    # controlli standard su numeri e date, per Ins ed Upd
     set error_num 0
     if {$funzione == "I"
     ||  $funzione == "M"
@@ -231,6 +257,7 @@ if {[form is_valid $form_name]} {
 	    }
 	}
 
+	#mat01 aggiunta tipologia 7
 	switch $tipologia {
 	    "1" { if {[db_0or1row sel_dimp_data_controllo ""] == 0} {
 	  	       set data_controllo ""
@@ -240,8 +267,13 @@ if {[form is_valid $form_name]} {
 		       set data_controllo ""
 	          }  
 	    }
+	    "7" { if {[db_0or1row sel_cimp_data_controllo ""] == 0} {
+		      set data_controllo ""
+	         }
+	    }
+	    
 	}
-
+	
         if {![string equal $dat_utile_inter ""]} {
             set dat_utile_inter [iter_check_date $dat_utile_inter]
             if {$dat_utile_inter == 0} {

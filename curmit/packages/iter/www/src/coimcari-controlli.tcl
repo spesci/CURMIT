@@ -1,6 +1,11 @@
 ad_page_contract {
     @author          dob
     @creation-date   10/2011
+
+    USER  DATA       MODIFICHE
+    ===== ========== =======================================================================
+    but01 20/06/2023 Aggiunto la classe ah-jquery-date al campo dat_prev.
+
 } {
     {cod_batc         ""}
     {funzione        "I"}
@@ -67,14 +72,18 @@ switch $funzione {
        }
 }
 
+set jq_date "";#but01
+if {$funzione in "M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
 form create $form_name \
 -html    $onsubmit_cmd
-
+#but01 Aggiunto la classe ah-jquery-date al campo dat_prev.
 element create $form_name dat_prev \
 -label   "Data partenza" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+-html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
 -optional
 
 element create $form_name ora_prev \

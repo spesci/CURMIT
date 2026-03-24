@@ -15,6 +15,47 @@ ad_proc iter_cari_rcee_tipo_1 {
     
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    ric02 08/05/2024 Settato l'importo_tariffa a 0 prima della chiamata al wallet per evitare che il programma andasse in errore.
+    ric02            Aggiunto controllo per impedire l'inserimento di un RCEE per lo stesso generatore.
+
+    ric01 29/04/2024 Modificata elseif per regione FRIULI. Corrette le scadenze in base al 
+    ric01            combustibile come riportate in coimdimp-rct-gest (sim61).
+
+    sim18 19/06/2023 La tipologia di pagamento che veniva salvata era errata. Ora vado a indicare
+    sim18            come tipologia LM (Bollino virtuale).
+
+    rom15 14/04/2023 Sandro ha detto, su richiesta di Ucit, di aggiungere un controllo sui campi del generatore obbligatori.
+    rom15            Se mancano quei dati dati allora l'rcee va scartato.
+
+    rom14 06/04/2023 Modificata condizione sulla tariffa del secondo generatore per Ucit:
+    rom14            Prima c'erano le condizioni sui vari enti, ora c'e' un'unica condizione su Regione Friuli.
+
+    rom13 31/03/2023 Regione Friuli deve avere 25 Euro come tariffa per gli rcee sui secondi generatori e non 24.
+
+    rom12 26/01/2023 Nella composizione dell'url per la coimesit metto anche il nome_funz come viene gia' fatto
+    rom12            per iter-cari-rce-tipo-1-procs.tcl, se non passo il nome_funz ho il problema sui permessi.
+
+    rom11 16/12/2022 Su segnalazione di Ucit corretta anomalia riguardo ai giorni massimi consentiti
+    rom11            per inserire un rcee.
+
+    rom10 10/11/2022 Corretto errore su update della targa per UCIT, nei caricamenti con piu'
+    rom10            di una riga su impianti con targhe diverse queste venivano sovrascritte
+    rom10            perche' Ucit ha tenuto il vecchio tracciato di caricamento senza targa.
+
+    rom09 22/09/2022 Gestito il caso di impianto senza targa per Ucit, se l'impianto non ha
+    rom09            la targa associata non si puo' caricare l'rcee e la riga viene scartata.
+
+    rom04 08/06/2022 Per un caso capitato su Ucit con Sandro si e' deciso do aggiungere un
+    rom04            controllo che impedisca di caricare, per lo stesso file 2 righe con lo
+    rom04            stesso impianto, stessa data e per lo stesso generatore.
+
+    rom03 20/05/2021 Corretto errore sul controllo del costo sul secondo generatore:
+    rom03            va fatto solo se non ho errori.
+
+    rom02 09/03/2020 Inserisco il pagamento sulla coimmovi come avviene per la coimdimp-rct-gest.tcl
+    rom02            Sandro ha detto che il caricamento puo' avvenire solo per gli impianti
+    rom02            in stato Attivo.
+
     rom01 19/10/2018 Cambiata la proc richiamata per l'associazione delle targhe da 
     rom01            iter_httpget_wallet a iter_httpget_call_portale perchè dava dei problemi.
 
@@ -292,6 +333,8 @@ ns_log notice "prova dob  file_cols = $file_cols"
 		    append err_log "L'intero lotto &egrave; stato scartato in quanto la ditta di manutenzione con codice $cod_manutentore sta gi&agrave effettuando un caricamento su questo ente."
 		}
 	    }
+	    
+
 	    
 	    if {[string equal $err_log ""]} {
 		
@@ -886,17 +929,23 @@ ns_log notice "prova dob  file_cols = $file_cols"
 		    #sim17}
 		
 		    #di default se non uso la targa la setto vuota
+
+		    if {$coimtgen(regione) eq "FRIULI-VENEZIA GIULIA"} {#rom09 Aggiunta if e il suo contenuto
+			set flag_gest_targa "F"		       
+		    }
+
+
 		    if {$flag_gest_targa ne "T"} {
 			set targa ""
 			set inserire_targa "f"
 		    }
-				    
+		    
 		    if {$flag_gest_targa eq "T"} {#sim09: aggiunta if e suo contenuto
 
 			set error_targa 0
 
 			if {$targa eq ""} {
-
+			    
 			    set desc_errore "Il campo targa è obbligatorio"
 			    incr errori
 			    incr error_targa
@@ -1036,7 +1085,7 @@ ns_log notice "prova dob  file_cols = $file_cols"
 					    #                                       , esponente                           
 					    #                                    from coimaimp
 					    #                                   where cod_impianto = :cod_impianto"
-					    
+					
 					    #se lavoro su un impianto del freddo
 					    if {$flag_tipo_impianto eq "F" && $cod_impianto_freddo_targa ne ""} {
 						#ha già un impianto del freddo associato
@@ -1143,7 +1192,6 @@ ns_log notice "prova dob  file_cols = $file_cols"
 			}
 		    }
 		    #sim09: FINE CONTROLLI TARGA 
-
 
 		    # bollino
 #		    ns_log notice "prova sandro 0  riferimento: $riferimento_pag "
@@ -1311,7 +1359,53 @@ ns_log notice "prova dob  file_cols = $file_cols"
 			}
 		    }
 		}
-		 
+
+		if {$coimtgen(regione) eq "FRIULI-VENEZIA GIULIA" && $errori == 0} {#rom09 Aggiunta if e il suo contenuto
+		    if {![db_0or1row q "select targa
+                                              from coimaimp
+                                             where cod_impianto = :cod_impianto
+                                               and coalesce(targa, '') != ''"]} {
+			set msg_errore "Manca la targa sull'impianto"
+			incr errori
+			db_dml ins_anom "insert into $nome_tabella_anom values ( :id_riga , :cod_manutentore, 'cod_impianto_est' , :msg_errore )"
+			db_dml upd_riga "update $nome_tabella set numero_anomalie = :errori , flag_stato = 'S' where id_riga = :id_riga"
+			
+		    }
+		}
+
+		#rom02 Ricavo lo stato dell'impianto e, se non e' attivo, inserisci l'anomalia
+		if {$errori == 0 && ![db_0or1row q "
+                                      select 1 
+                                        from coimaimp 
+                                       where cod_impianto = :cod_impianto 
+                                         and stato = 'A'"]} {#rom02 aggiunta if e suo contenuto
+		    set desc_errore "Impossibile inserire Impianti non in stato Attivo"
+                    incr errori
+                    db_dml ins_anom "insert into $nome_tabella_anom
+                                          values ( :id_riga
+                                               , :cod_manutentore
+                                               , 'costo'
+                                               , :desc_errore )"
+                    db_dml upd_riga "update $nome_tabella
+                                        set numero_anomalie = :errori
+                                          , flag_stato = 'S'
+                                      where id_riga = :id_riga"
+
+		}
+
+		if {$coimtgen(regione) eq "FRIULI-VENEZIA GIULIA" && $errori == 0} {#rom15 Aggiunta if e il suo contenuto
+		    if {![db_0or1row q "select 1
+                                         from coimgend
+                                        where cod_impianto = :cod_impianto
+                                          and gen_prog     = :gen_prog
+                                          and rend_ter_max  is not null"]} {
+			set msg_errore "Inserire tutti i campi obbligatori del generatore."
+			incr errori
+			db_dml ins_anom "insert into $nome_tabella_anom values ( :id_riga , :cod_manutentore, 'cod_impianto_est' , :msg_errore )"
+			db_dml upd_riga "update $nome_tabella set numero_anomalie = :errori , flag_stato = 'S' where id_riga = :id_riga"
+			
+		    }
+		}
 
 		#sim07 controllo sul costo inserito. lo faccio solo se non è già stato escluso dagli altri controlli
 		ns_log notice "iter-cari-rcee-tipo-1:inizio controllo costo"
@@ -1353,6 +1447,62 @@ ns_log notice "prova dob  file_cols = $file_cols"
 		    }
 		}
 		
+
+###########inizio gestione costo secondo generatore
+#		ns_log notice "simone cod_impianto=$cod_impianto data_controllo=$data_controllo gen_prog=$gen_prog" 
+		#sim23 verifico se già esiste un rcee sull'impianto con la stessa data controllo ma su un generatore diverso.
+		#rom03 Il controllo va fatto solo se non ho errori.
+		if {$errori == 0 && [exists_and_not_null data_controllo] && [db_0or1row q "select 1
+                         from coimdimp
+                        where cod_impianto   = :cod_impianto
+                          and data_controllo = :data_controllo
+                          and gen_prog      != :gen_prog
+                          and (costo        != 0   
+                               or flag_status = 'N') --condizione per non sbiancare il costo in fase di modifica del rcee inserito per primo
+                        limit 1"]} {;#sim23 if e else e loro contenuto
+		    set rcee_su_secondo_gen "t"
+		} else {
+		    set rcee_su_secondo_gen "f"
+		}		
+		
+		#verifico anche se esiste nello stesso caricamento un generatore differente sullo stesso impianto da caricare come primo rcee
+		if {[exists_and_not_null data_controllo] && [db_0or1row q "select 1
+                         from $nome_tabella
+                        where cod_impianto_est   = :cod_impianto_est
+                          and data_controllo = :data_controllo
+                          and gen_prog      != :gen_prog
+                          and iter_edit_num(costo::numeric,2) = :tariffa "]} {
+		     set rcee_su_secondo_gen "t"
+		}
+	
+		#rom14 Messa la condizione su tutta la Regione Friuli e non sui singoli enti
+		if {$coimtgen(regione) eq "FRIULI-VENEZIA GIULIA"  && ($rcee_su_secondo_gen eq "t")} {#sim58
+		    
+		    #rom13set tariffa "24,00"
+		    set tariffa "25,00";#rom13
+		    		    
+		}
+#		ns_log notice "simone cod_impianto=$cod_impianto tariffa=$tariffa rcee_su_secondo_gen=$rcee_su_secondo_gen costo=$costo" 
+###########fine gestione costo secondo generatore
+
+		#rom04 Verifico se nello stesso caricamento esistono piu' righe riferite
+		#rom04 allo stesso impianto per lo stessa data e per lo stesso generatore.
+		if {[exists_and_not_null data_controllo] && 
+		    [db_0or1row q "select count(*)
+                                        , cod_impianto_est as cod_imp_doppio
+                                     from $nome_tabella
+                                    where cod_impianto_est   = :cod_impianto_est
+                                      and data_controllo     = :data_controllo
+                                      and gen_prog           = :gen_prog
+                                    group by cod_impianto_est
+                                   having count(*) > 1"]} {#rom04 Aggiunta if e il suo contenuto
+		    
+		    set desc_errore "Trovate più righe riferite allo stesso RCEE per l'impianto $cod_imp_doppio"
+		    incr errori
+		    db_dml ins_anom "insert into $nome_tabella_anom values ( :id_riga , :cod_manutentore, 'cod_impianto_est' , :desc_errore )"
+		    db_dml upd_riga "update $nome_tabella set numero_anomalie = :errori , flag_stato = 'S' where id_riga = :id_riga"
+		}
+
 		#sim07 Sandro ha detto di verificare sempre che il costo e la tariffa siano uguali
 		#sim09 corretto controllo perche' i 2 capi erano formattati diversamente 
 		set costo_controllo [iter_edit_num $costo 2]
@@ -1409,6 +1559,60 @@ ns_log notice "prova dob  file_cols = $file_cols"
 
 		ns_log notice "iter-cari-rcee-tipo-1;fine controllo patentino $errori $data_rottamaz_gen"
 		
+
+		set current_date [iter_set_sysdate];#rom11
+		set num_gg_post_data_controllo_per_messaggio 45;#rom11
+		
+		if {$coimtgen(ente)    eq "PFI"
+		    ||  $coimtgen(ente)    eq "PPO"
+		    ||  [string match "*iterprfi_pu*" [db_get_database]]
+		    ||  $coimtgen(ente)    eq "CRIMINI"
+		    ||  $coimtgen(ente)    eq "CBARLETTA"
+		    ||  $coimtgen(regione) eq "MARCHE"
+		    ||  $coimtgen(ente) eq "PTA"
+		    ||  $coimtgen(ente) eq "PRC"
+		    ||  $coimtgen(ente) eq "CCARRARA"
+		} {#rom11 Aggiunte if e contenuto
+		    set oggi50 [clock format [clock scan "$data_controllo +2000 days"] -format "%Y%m%d"]
+		    
+		} elseif {$coimtgen(ente) eq "PBT" || ($coimtgen(regione) eq "CALABRIA" && $coimtgen(ente) ne "PRC")} {#rom100 Aggiunta elseif e contenuto
+		    set oggi50 [clock format [clock scan "$data_controllo +60 days"] -format "%Y%m%d"]
+		    set num_gg_post_data_controllo_per_messaggio 60		    
+		} elseif {$coimtgen(ente) eq "PLI"} {#sim05 Aggiunta if e suo contenuto #rom11 trasformata if in elseif
+		    #rom11set current_date [iter_set_sysdate]
+		    if {$current_date < 20160331} {
+			set num_gg_post_data_controllo_per_messaggio 90
+		    } else {
+			set num_gg_post_data_controllo_per_messaggio 40
+		    }
+		    set oggi50 [clock format [clock scan "$data_controllo + $num_gg_post_data_controllo_per_messaggio days"] -format "%Y%m%d"]
+		    
+		} else {#rom11 Aggiunta else e contenuto
+		    set oggi50 [clock format [clock scan "$data_controllo +50   days"] -format "%Y%m%d"]
+		}
+		
+		if {$current_date > $oggi50} {
+		    
+		    set desc_errore "Non è possibile inserire rapporti di controllo tecnico oltre i $num_gg_post_data_controllo_per_messaggio giorni dalla data di effettuazione del controllo"
+		    incr errori
+		    
+		    db_dml ins_anom "
+                            insert 
+                              into $nome_tabella_anom 
+                            values (:id_riga 
+                                   ,:cod_manutentore
+                                   ,'data_controllo' 
+                                   ,:desc_errore
+                                   )"
+		    
+		    db_dml upd_riga "
+                            update $nome_tabella 
+                               set numero_anomalie = :errori 
+                                 , flag_stato      = 'P' 
+                             where id_riga = :id_riga"
+		}
+		
+		
 		#controlli sulla dichiarazione
 		if {$errori == 0
 		    && [string equal $data_rottamaz_gen ""]} {
@@ -1421,45 +1625,25 @@ ns_log notice "prova dob  file_cols = $file_cols"
 			    db_dml ins_anom "insert into $nome_tabella_anom values ( :id_riga , :cod_manutentore, 'data_controllo' , :desc_errore )"
 			    db_dml upd_riga "update $nome_tabella set numero_anomalie = :errori , flag_stato = 'S' where id_riga = :id_riga"
 
-			} elseif {[db_0or1row sel_dimp "select cod_dimp from coimdimp where cod_impianto = :cod_impianto and data_controllo = :data_controllo limit 1"]} {
+			} elseif {[db_0or1row sel_dimp "select cod_dimp from coimdimp where cod_impianto = :cod_impianto and data_controllo = :data_controllo and gen_prog != :gen_prog limit 1"]} {
 			    set desc_errore "Dichiarazione gi&agrave; presente controlla la data"
 			    incr errori
 			    db_dml ins_anom "insert into $nome_tabella_anom values ( :id_riga , :cod_manutentore, 'data_controllo' , :desc_errore )"
 			    db_dml upd_riga "update $nome_tabella set numero_anomalie = :errori , flag_stato = 'P' where id_riga = :id_riga"
-			}
-		    }		    
-
-		    if {$coimtgen(ente) eq "PLI"} {#sim05 Aggiunta if e suo contenuto
-			set current_date [iter_set_sysdate]
-			if {$current_date < 20160331} {
-			    set num_gg_post_data_controllo_per_messaggio 90
-			} else {
-			    set num_gg_post_data_controllo_per_messaggio 40
-			}
-			set oggi50 [clock format [clock scan "$data_controllo + $num_gg_post_data_controllo_per_messaggio days"] -format "%Y%m%d"]
-			
-			if {$current_date > $oggi50} {
-			    
-			    set desc_errore "Non è possibile inserire rapporti di controllo tecnico oltre i $num_gg_post_data_controllo_per_messaggio giorni dalla data di effettuazione del controllo"
+			} elseif {[db_0or1row sel_dimp "select cod_dimp
+                                                          from coimdimp
+                                                         where cod_impianto   = :cod_impianto
+                                                           and data_controllo = :data_controllo
+                                                           and gen_prog       = :gen_prog
+                                                         limit 1"]} {#ric02 aggiunta elseif e contenuto
+			    set desc_errore "Dichiarazione gi&agrave; presente per il generatore $gen_prog controlla la data"
 			    incr errori
-
-			    db_dml ins_anom "
-                            insert 
-                              into $nome_tabella_anom 
-                            values (:id_riga 
-                                   ,:cod_manutentore
-                                   ,'data_controllo' 
-                                   ,:desc_errore
-                                   )"
-
-			    db_dml upd_riga "
-                            update $nome_tabella 
-                               set numero_anomalie = :errori 
-                                 , flag_stato      = 'P' 
-                             where id_riga = :id_riga"
+			    db_dml ins_anom "insert into $nome_tabella_anom values ( :id_riga , :cod_manutentore, 'data_controllo' , :desc_errore )"
+			    db_dml upd_riga "update $nome_tabella set numero_anomalie = :errori , flag_stato = 'P' where id_riga = :id_riga"
 			}
-		    }		    
-
+		    }
+		    
+		    
 		    #Controllo che le anomalie segnalate siano presenti nella tabella coimtano
 		    # e quindi conformi agli standard della regione lombardia	    
 		    set anomalie_impianto [split $anomalie_dimp \,]
@@ -1541,7 +1725,8 @@ ns_log notice "prova dob  file_cols = $file_cols"
 		ns_unlink $file_err
 		ns_unlink $file_tot
 		
-		set file_esi_url   "${permanenti_dir_url}/coimcorr-anom-gest?nome_tabella=$nome_tabella&cod_batc=$cod_batc"
+		#rom12set file_esi_url   "${permanenti_dir_url}/coimcorr-anom-gest?nome_tabella=$nome_tabella&cod_batc=$cod_batc"
+		set file_esi_url   "${permanenti_dir_url}/coimcorr-anom-gest?nome_tabella=$nome_tabella&cod_batc=$cod_batc&nome_funz=cari-rcee-tipo-1";#rom12
 		set file_esi       "${permanenti_dir}/coimcorr-anom-gest"
 		
 		set file_esi_url [string map {permanenti src}  $file_esi_url]
@@ -1603,6 +1788,7 @@ ns_log notice "prova dob  file_cols = $file_cols"
 		set soldi_spesi "0.00"
 		#inizio la routine degli inserimenti
 		ns_log notice "iter-cari-rcee-tipo-1;inizio la routine degli inserimenti"
+
 		db_foreach sel_righe_buone "select * from $nome_tabella where flag_stato is null" {
 
 # dobdel: riferimento_pag viene impostato = a num_bollo in fase di caricamento della tabella nome_tabella  
@@ -1810,7 +1996,7 @@ and flag_tipo_impianto = 'R'"]
                     append anno_scad "1231"
                     set data_scadenza_autocert $anno_scad
 		}
-		ns_log notice "simone scadenza toscana $data_scadenza_autocert"
+#		ns_log notice "simone scadenza toscana $data_scadenza_autocert"
 	    
 	} elseif {$coimtgen(ente) eq "CPESARO" || $coimtgen(ente) eq "PPU" || $coimtgen(ente) eq "CFANO"}  {#sim02
 
@@ -1858,7 +2044,8 @@ and flag_tipo_impianto = 'R'"]
 	    }
 	    #fine sim02
 		
-	} elseif {$coimtgen(ente) eq "PUD" || $coimtgen(ente) eq "PGO" || $coimtgen(ente) eq "CBARLETTA"} {
+	} elseif { $coimtgen(ente) eq "CBARLETTA"} {
+	    #ric01 tolto condizione $coimtgen(ente) eq "PUD" || $coimtgen(ente) eq "PGO" || aggiunta condizione su regione FRIULI sotto	    
 
 	    if {$pot_focolare_nom < 35.00 } {
 		#if {[string equal $data_scadenza_autocert ""]} {
@@ -1904,7 +2091,49 @@ and flag_tipo_impianto = 'R'"]
 	    }
 	    # Fine caso PUD e PGO E CBARLETTA
 
-        } elseif {$coimtgen(ente) eq "PCE"} {
+        } elseif {$coimtgen(regione) eq "FRIULI-VENEZIA GIULIA" } {#ric01 aggiunta elseif e suo interno (copiato da coimdimp-rct-gest.tcl)
+	    
+	    set tipo_combustibile [db_string q "select tipo as tipo_combustibile
+                                                  from coimcomb
+                                                 where cod_combustibile=:combustibile"];#ric01
+	    	    
+	    if {$pot_focolare_nom < 35.00 } {
+		if {$sw_data_controllo_ok == "t"} {
+		    if {$tipo_combustibile eq "G"} {#ric01 if else e loro contenuto
+			#ric01 se gassoso 4 anni
+			set data_scadenza_autocert [db_string query "select :data_controllo::date + 1460" -default ""]
+		    } else {
+			#ric01 se diverso  da gassoso 2 anni
+			set data_scadenza_autocert [db_string query "select :data_controllo::date + 730" -default ""]
+		    }
+		}
+	    }
+
+	    if {$pot_focolare_nom >= 35.00 && $pot_focolare_nom < 100.00} {
+		if {$sw_data_controllo_ok == "t"} {
+		    if {$tipo_combustibile eq "G"} {#ric01 if else e loro contenuto
+			#ric01 se gassoso 2 anni
+			set data_scadenza_autocert [db_string query "select :data_controllo::date + 730" -default ""]
+		    } else {
+			#ric01 se diverso da gassoso 1 anno
+			set data_scadenza_autocert [db_string query "select :data_controllo::date + 365" -default ""]
+		    }
+		}
+	    }
+	    
+	    if {$pot_focolare_nom >= 100.00} {
+		if {$sw_data_controllo_ok == "t"} {
+		    if {$tipo_combustibile eq "G"} {#ric01 if else e loro contenuto
+			#ric01 se gassoso 2 anni
+			set data_scadenza_autocert [db_string query "select :data_controllo::date + 730" -default ""]
+		    } else {
+			#ric01 se diverso da gassoso 1 anno
+			set data_scadenza_autocert [db_string query "select :data_controllo::date + 365" -default ""]
+		    }
+		}
+	    }
+	    
+	} elseif {$coimtgen(ente) eq "PCE"} {
             # Provincia di Caserta (usa anche il flag valid_mod_h_b al 04/08/2014)
 
             # if {[string equal $data_scadenza_autocert ""]} {
@@ -1973,8 +2202,9 @@ and flag_tipo_impianto = 'R'"]
 		#}
 	    #}
 	}
+
 			# Fine istruzioni che devono essere identiche a quelli di coimdimp-rct-gest
-ns_log Notice "simone 1"
+#ns_log Notice "simone 1"
 			if {$coimtgen(flag_viario) == "T"} {
 			    set cod_via [db_string sel_viae_check "select cod_via
 	  	                                                              from coimviae
@@ -1998,29 +2228,35 @@ ns_log Notice "simone 1"
 
 			    set data_insta_check $data_insta
 
-#			    ns_log notice "prova dob aggiornamento potafoglio dtata controllo $data_controllo data installazione $data_insta_check"
+			    #ns_log notice "prova dob aggiornamento potafoglio dtata controllo $data_controllo data installazione $data_insta_check"
 			    
 			    if {$data_controllo >= $data_insta_check} {
-#				ns_log notice "prova dob aggiornamento potafoglio dtata controllo $data_controllo data installazione $data_insta_check"
+				#ns_log notice "prova dob aggiornamento potafoglio dtata controllo $data_controllo data installazione $data_insta_check"
+				#ns_log notice "simone qqq gen_prog=$gen_prog"
 				if {(![string equal $cod_impianto_catasto ""]) && ([db_0or1row sel_dimp_check_data_controllo ""] == 1)} {
 				    set tariffa_reg "7"
 				    set importo_contr "0.00"
+				    set importo_tariffa "0.00";#ric02
 				    db_1row sel_dual_cod_dimp ""
+				    #ns_log notice "simone aaa gen_prog=$gen_prog"
+
 				} else {
 				    set tariffa_reg "7"
 				    set pot_focolare_nom_check [iter_edit_num $potenza_foc_nom 2]
 				    set pot_focolare_nom_check [iter_check_num $pot_focolare_nom_check 2]
-
+				    #ns_log notice "simone bbb gen_prog=$gen_prog"
 				    if {$pot_focolare_nom_check == "0.00"
 					|| $pot_focolare_nom_check == "0"} {
 					incr err_count
+					#ns_log notice "simone ccc gen_prog=$gen_prog"
 					#sim06 append msg_errore "Non &egrave; stato possibile calcolare l'importo del contributo regionale in quanto la potenza e&grave; 0,00"
 					append msg_errore "Non &egrave; stato possibile calcolare l'importo in quanto la potenza e&grave; 0,00"
 				    } else {
+					#ns_log notice "simone ddd gen_prog=$gen_prog"
 					db_1row sel_cod_potenza ""
 					db_1row sel_tari_contributo ""
 					set oggi [db_string sel_date "select current_date"]
-					set url "balance?iter_code=$cod_manutentore"
+					set url "lotto/balance?iter_code=$cod_manutentore"
 					set data [iter_httpget_wallet $url]
 					array set result $data
 					set risultato [string range $result(page) 0 [expr [string first " " $result(page)] - 1]]
@@ -2028,6 +2264,8 @@ ns_log Notice "simone 1"
 					set saldo [string range $parte_2 0 [expr [string first " " $parte_2] - 1]]
 					set conto_manu [string range $parte_2 [expr [string first " " $parte_2] + 1] end]
 					
+					#ns_log notice "simone saldo=$saldo"
+
 					#sim06 $saldo < importo_contr
 					if {$saldo < $costo} {;#sim06	
 					    incr err_count
@@ -2046,6 +2284,8 @@ ns_log Notice "simone 1"
                                                            where a.cod_potenza = :cod_potenza
                                                              and a.tipo_costo  = '7'
                                                              and a.cod_listino = '0' limit 1";#sim16
+
+					    #ns_log notice "simone contributo cod_potenza=$cod_potenza importo_tariffa=$importo_tariffa cod_impianto=$cod_impianto"
 
 					    if {$importo_tariffa > 0} {#sim16 if e suo conenuto
 
@@ -2102,14 +2342,22 @@ ns_log Notice "simone 1"
 				} else {
 				    set gen_prog $gen_prog_catasto
 				}
-	ns_log notice "simone 2"			
+	#ns_log notice "simone 2"			
 				db_1row sel_tot_potenza_aimp "select sum(pot_focolare_nom) as tot_potenza_aimp from coimgend where cod_impianto = :cod_impianto_catasto"
 				db_1row sel_tot_potenza_aimp "select sum(pot_utile_nom) as tot_potenza_utile_aimp from coimgend where cod_impianto = :cod_impianto_catasto"
 				
+				
+				if {$coimtgen(regione) eq "FRIULI-VENEZIA GIULIA"} {#rom10 Aggiunta if e il suo contenuto
+				    if {![db_0or1row q "select targa
+                                              from coimaimp
+                                             where cod_impianto = :cod_impianto
+                                               and coalesce(targa, '') != ''"]} {
+					set targa ""
+				    }
+				    ns_log notice "ter-cari-rcee-tipo-1: Update su cod_impianto $cod_impianto con targa $targa"
+				}
 
 				
-
-
 				db_dml upd_aimp ""
 				
 				#spesci: il campo flag_status_g non esiste per questo csv
@@ -2120,6 +2368,64 @@ ns_log Notice "simone 1"
 				#    }
 				#}
 
+
+				#rom02 inserisco il pagamento sulla coimmovi come avviene per la coimdimp-rct-gest.tcl
+				set sw_movi     "f"
+				set data_pag    ""
+				set importo_pag ""
+				#set tipologia_costo $tipo_costo
+				#sim18 set tipologia_costo "7"
+				set tipologia_costo "LM";#sim18
+				set data_scad_pagamento $data_controllo
+				set data_pag            $data_scad_pagamento
+				set flag_pagato "S"
+				if {$costo > 0 && ![string equal $tipologia_costo ""]} {
+				    set sw_movi "t"
+				    if {$flag_pagato == "S"} {
+					if {$flag_portafoglio == "T"} {
+					    #ns_log notice "iter-cari-rcee-tipo-1 test1 importo_tariffa "
+					    set importo_pag [expr $costo + $importo_tariffa]
+					} else {
+					    set importo_pag $costo
+					}
+				    }
+				}
+			
+				if {$sw_movi == "t"} {
+				    db_1row sel_dual_cod_movi_ "select nextval('coimmovi_s') as cod_movi"
+				    #set dml_movi [db_map ins_movi]
+				    db_dml ins_movi_ "
+                insert
+                  into coimmovi 
+                     ( cod_movi
+                     , tipo_movi
+                     , cod_impianto
+                     , data_scad
+                     , data_compet
+                     , importo
+                     , importo_pag
+                     , riferimento
+                     , data_pag
+                     , tipo_pag
+                     , data_ins
+                     , utente
+                     )
+                values 
+                     (:cod_movi
+                     ,'MH'
+                     ,:cod_impianto
+                     ,:data_scad_pagamento
+                     ,:data_controllo
+                     ,:costo
+                     ,:importo_pag
+                     ,:cod_dimp
+                     ,:data_pag
+                     ,:tipologia_costo
+                     , current_date
+                     ,:id_utente
+                     )"
+				}
+				#rom02 Fine inserimento pagamenti
 				
 				if {$inserire_targa eq "t" && $errori == 0} {;#sim09: aggiunta if e suo contenuto
 				    set cod_impianto_targa $cod_impianto

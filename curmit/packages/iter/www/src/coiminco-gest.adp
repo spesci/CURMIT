@@ -187,6 +187,22 @@
     <td valign=top colspan=3 nowrap align=left class=form_title></td>
 </tr>
 
+<!-- rom03 Aggiunta riga per utente e data ultima modifica. -->
+<tr><td valign=top nowrap align=right class=form_title>Utente ultima modifica</td>
+    <td valign=top><formwidget id="utente">
+        <formerror  id="utente"><br>
+        <span class="errori">@formerror.utente;noquote@</span>
+        </formerror>
+    </td>
+    <td valign=top nowrap align=right class=form_title>Data ultima modifica</td>
+    <td valign=top><formwidget id="data_mod">
+        <formerror  id="data_mod"><br>
+        <span class="errori">@formerror.data_mod;noquote@</span>
+        </formerror>
+    </td>
+</tr>
+
+
 
 <if @funzione eq "V">
 <tr><td colspan=3>&nbsp;</td>

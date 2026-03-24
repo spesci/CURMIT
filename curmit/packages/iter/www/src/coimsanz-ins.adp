@@ -1,3 +1,11 @@
+<!--
+    USER  DATA       MODIFICHE
+    ===== ========== =======================================================================
+    rom01 13/02/2023 Aggiunti i campi data_Accertamento e numero_accertamento su richiesta di Palermo.
+    rom01            Sandro ha detto che va bene per tutti.
+
+-->
+
 <master   src="../master">
 <property name="title">@page_title;noquote@</property>
 <property name="context_bar">@context_bar;noquote@</property>
@@ -112,6 +120,20 @@
 
 <tr><td colspan=4>&nbsp;</td></tr>
 <tr><td colspan=4>&nbsp;</td></tr>
+
+<tr><td valign=top align=right class=form_title>Data accertamento</td>
+    <td valign=top><formwidget id="data_accertamento">
+        <formerror  id="data_accertamento"><br>
+        <span class="errori">@formerror.data_accertamento;noquote@</span>
+        </formerror>
+    </td>
+    <td valign=top align=right class=form_title>Numero accertamento</td>
+    <td valign=top><formwidget id="numero_accertamento">
+        <formerror  id="numero_accertamento"><br>
+        <span class="errori">@formerror.numero_accertamento;noquote@</span>
+        </formerror>
+    </td>
+</tr>
 
 <tr><td valign=top align=right class=form_title>Tipo sanzione 1</td>
     <td valign=top colspan=3><formwidget id="cod_sanzione_1">

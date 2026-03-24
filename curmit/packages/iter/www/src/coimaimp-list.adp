@@ -23,7 +23,11 @@
            </if>
        </else>
        <td width="25%" nowrap class=func-menu>
-          <a href="coimaimp-list-csv?@link_scar;noquote@"  class=func-menu>Scarica</a>
+          <a href="coimaimp-list-csv?@link_scar;noquote@"  class=func-menu>Scarica CSV</a>
+       </td>
+       <td width="25%" nowrap class=func-menu>
+         <!-- rom01<a href="coimaimp-scar-xml?@link_scar;noquote@"  class=func-menu download="scarica_xml.xml">Scarica XML</a>--><!-- ric01 -->
+	 <a href="#" onclick="javascript:window.open('@pack_dir;noquote@/coimaimp-scar-xml?@link_scar;noquote@' , 'help', 'scrollbars=yes, resizable=yes, width=840, height=520').moveTo(110,140)">Scarica XML</a><!-- rom01 -->
        </td>
      </tr>
      </table>

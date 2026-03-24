@@ -65,7 +65,7 @@
         <td valign=top class=form_title align=right width="40%">Caricati Pagamenti:</td>
         <td valign=top class=form_title align=right width="5%">@ctr_out;noquote@</td>
         <td valign=top class=form_title align=right width="5%">&nbsp;</td>
-        <td valign=top class=form_title width=30%><a target="Valori caricati" href="@file_out_url;noquote@">Scarica il file csv dei pagamenti caricati</a></td>
+        <td valign=top class=form_title width=30%><a target="Valori caricati" href="@file_out_url;noquote@">Scarica CSV dei pagamenti caricati</a></td>
         <td valign=top class=form_title align=left">Euro @totale_pagato_pretty;noquote@</td>
     </tr>
 
@@ -73,7 +73,7 @@
         <td valign=top class=form_title align=right>Scartati Pagamenti:</td>
         <td valign=top class=form_title align=right>@ctr_err;noquote@</td>
         <td valign=top class=form_title align=right width="5%">&nbsp;</td>
-        <td valign=top class=form_title><a target="Valori scartati" href="@file_err_url;noquote@">Scarica il file csv dei pagamenti non caricati</a></td>
+        <td valign=top class=form_title><a target="Valori scartati" href="@file_err_url;noquote@">Scarica CSV dei pagamenti non caricati</a></td>
         <td valign=top class=form_title align=left>Euro @totale_scartato_pretty;noquote@</td>
     </tr>
 

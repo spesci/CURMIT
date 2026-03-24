@@ -18,7 +18,27 @@ ad_page_contract {
     @param extra_par Variabili extra da restituire alla lista
 
     USER  DATA       MODIFICHE
-    ===== ========== =======================================================================
+    ===== ========== =============================================================================
+    mat02 13/03/2026 Aggiunta la gestione delle deleghe. Sandro ha detto di aggiungere il tecnico
+    mat02            e il tecnico delegato.
+
+    ric01 03/10/2025 Punto 4 MEV Marche: leggo storico ditta di manutenzione.
+
+    mat01 27/01/2025 Corretto problema sul refresh della pagina riscontrato dopo aggiornamento a
+    mat01            OpenACS 5.10.
+
+    rom07 17/12/2024 Su richiesta di Regione Marche messo controllo che impedisce l'inserimento di DFM
+    rom07            se l'impianto non è attivo. Controllo copiato da quanti già fatto in coimdimp-rct-gest.
+    rom07            Sandro ha detto che va been per tutti gli enti.
+
+    mic01 24/08/2022 Estratti campi utente_ins e data_ins da coimdope_aimp e aggiunta select
+    mic01            per estrarre nome e cognome dell'utente e formattare correttamente la data.
+
+    rom06 07/02/2022 La DFM come potenza del teleriscaldamento deve prendere la somma della
+    rom06            potenza focolare nominale (pot_focolare_nom) dei generatori attivi.
+    
+    rom05 15/11/2021 Portato il size e maxlength di reg_imprese da 15 a 20.
+
     rom04 30/06/2020 Modificato intervento di gac02, il redirect sul warning va fatto solo ai
     rom04            manutentori.
 
@@ -64,6 +84,15 @@ ad_page_contract {
     {url_list_aimp        ""}
     {is_controllo_ok    "f"}    
     {is_only_view       "f"}
+    {cod_manu_dele      ""}
+    {rag_sociale_delegato   ""}
+    {cod_opma             ""}
+    {cod_opma_dele          ""}
+    {nome_opma_delegato     ""}
+    {cognome_opma_delegato  ""}
+    {cognome_opma           ""}
+    {nome_opma              ""}
+
 } -properties {
     page_title:onevalue
     context_bar:onevalue
@@ -122,21 +151,21 @@ set titolo "";#sim01
 switch $flag_tipo_impianto {
     "R" {set titolo "gen. a fiamma"}
     "F" {set titolo "macchine frigo/pompe calore"}
-    "T" {set titolo "Telericaldamento"}
-    "C" {set titolo "Cogenerazione"}
+    "T" {set titolo "teleriscaldamento"}
+    "C" {set titolo "cogenerazione"}
 }
 
-set titolo "Dich. di freq. ed elenco oper. di contr. e manut. $titolo"
+set titolo "dich. di freq. ed elenco oper. di contr. e manut. $titolo"
 
 switch $funzione {
-    M {set button_label "Conferma Modifica"
+    M {set button_label "Conferma modifica"
        set page_title   "Modifica $titolo"}
-    D {set button_label "Conferma Cancellazione"
-       set page_title   "Cancellazione $titolo"}
-    I {set button_label "Conferma Inserimento"
-       set page_title   "Inserimento $titolo"}
+    D {set button_label "Conferma cancellazione"
+       set page_title   "Cancella $titolo"}
+    I {set button_label "Conferma inserimento"
+       set page_title   "Inserisci $titolo"}
     V {set button_label "Torna alla lista"
-       set page_title   "Visualizzazione $titolo"}
+       set page_title   "Visualizza $titolo"}
 }
 
 set link_gest [export_url_vars cod_impianto cod_dope_aimp flag_tipo_impianto last_cod_dimp caller nome_funz nome_funz_caller extra_par url_aimp url_list_aimp]
@@ -179,15 +208,16 @@ set readonly_fld "readonly"
 set disabled_fld "disabled"
 set readonly_cod "readonly";#rom02
 set onsubmit_cmd ""
+set jq_date "";#but01
 switch $funzione {
     "I" {set readonly_key \{\}
 	set readonly_fld \{\}
 	set disabled_fld \{\}
-
+	set jq_date "class ah-jquery-date";#but01
     }
     "M" {set readonly_fld \{\}
         set disabled_fld \{\}
-
+	set jq_date "class ah-jquery-date";#but01
     }
 }
 
@@ -197,6 +227,9 @@ form create $form_name \
 element create $form_name is_controllo_ok  -widget hidden -datatype text -optional;#gac02
 # Identifico se questa richiesta e' dovuta ad un refresh
 element create $form_name __refreshing_p -widget hidden -datatype text -optional
+#mat00 13/10/2025
+#modifiche fatte perchè il curmit ha la vecchia versione di openacs. Il programma non sarà committato ma portato su a mano.
+#element set_properties $form_name __refreshing_p -values 0;#mat01
 set is_refresh_p [expr {[element::get_value $form_name __refreshing_p] == 1}]
 
 # Se vengo da una refresh, potrei avere il codice manutentore gia' popolato...
@@ -400,7 +433,7 @@ element create $form_name reg_imprese \
     -label   "Reg. Imprese" \
     -widget   text \
     -datatype text \
-    -html    "size 15 maxlength 15 $readonly_fld {} class form_element" \
+    -html    "size 20 maxlength 20 $readonly_fld {} class form_element" \
     -optional
 
 element create $form_name localita_reg \
@@ -500,14 +533,14 @@ element create $form_name data_inizio \
     -label   "Data installazione" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name data_fine \
     -label   "Data installazione" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name causale_fine \
@@ -610,10 +643,159 @@ element create $form_name data_dich \
     -label   "Data dichiarazione" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional 
 
 
+#inizio mat02 copiato e aggiustato la parte di codice riguardante le deleghe negli rcee
+set ast_delega "<font color=red>*</font>"
+set delegation_active_p "f"
+set delegation_warning ""
+
+if {$coimtgen(regione) eq "MARCHE"} {#mat02 aggiunta if-else e contenuto
+
+    element create $form_name cognome_opma \
+	-label   "Cognome manutentore" \
+	-widget   text \
+	-datatype text \
+	-html    "size 15 maxlength 200 $readonly_fld {} class form_element" \
+	-optional
+    
+    element create $form_name nome_opma \
+	-label   "Nome manutentore" \
+	-widget   text \
+	-datatype text \
+	-html    "size 15 maxlength 100 $readonly_fld {} class form_element" \
+	-optional
+
+    element create $form_name cod_opma -widget hidden -datatype text -optional
+
+    if {$funzione == "I" || $funzione == "M"} { 
+	set fstato 0
+	set cerca_opma [iter_search $form_name [ad_conn package_url]/src/coimopma-list [list cod_manutentore cod_manutentore dummy cod_opma f_cognome nome_opma f_nome cognome_opma] &fstato=$fstato]
+	
+    } else {
+	set cerca_opma ""
+    }
+
+    if {$funzione eq "I"} {
+
+	element create $form_name cod_manu_dele -widget hidden -datatype text -optional
+	element create $form_name cod_opma_dele -widget hidden -datatype text -optional
+	
+	if {[db_0or1row q "select 1
+                         from coimdele
+                        where delegation_state = 'A'
+                          and cod_manutentore = :cod_manutentore
+                          and current_date between start_date and end_date
+                         limit 1"]} {
+
+	    set ast_delega ""
+	    set delegation_active_p "t"
+	    set delegation_warning "<font color=red><b>Nel caso ci sia una delega formale compilare i dati relativi alla delega in fondo alla pagina.</b></font>"
+
+	    element create $form_name rag_sociale_delegato \
+		-label   "Ditta installazione" \
+		-widget   text \
+		-datatype text \
+		-html    "size 20 maxlength 100 $readonly_fld {} class form_element " \
+		-optional
+
+	    #cerca delle ditte delegate
+	    set cerca_manu_dele [iter_search $form_name [ad_conn package_url]/src/coimmanu-dele-list [list rag_sociale_delegato rag_sociale_delegato cod_manu_dele cod_manu_dele cod_manutentore cod_manutentore]]
+
+	    
+		element create $form_name cognome_opma_delegato \
+		    -label   "Tecnico che ha effettuato il controllo su delega" \
+		    -widget text \
+		    -datatype text \
+		    -html    "size 20 maxlength 100 $readonly_fld {} class form_element" \
+		    -optional
+		
+		element create $form_name nome_opma_delegato \
+		    -label   "Tecnico che ha effettuato il controllo su delega" \
+		    -widget   text \
+		    -datatype text \
+		    -html    "size 20 maxlength 100 $readonly_fld {} class form_element" \
+		    -optional
+	    	set cerca_opma_dele      [iter_search $form_name [ad_conn package_url]/src/coimopma-list [list cod_manutentore cod_manutentore dummy cod_opma_dele nome_opma_delegato nome_opma_delegato cognome_opma_delegato cognome_opma_delegato] &fstato=$fstato]
+
+	} else {
+
+	    element create $form_name rag_sociale_delegato -widget hidden -datatype text -optional
+	    element create $form_name nome_opma_delegato   -widget hidden -datatype text -optional
+	    element create $form_name cognome_opma_delegato -widget hidden -datatype text -optional
+
+	}
+    } else {
+
+	if {[db_0or1row q "select 1
+                             from coimdope_aimp
+                            where cod_dope_aimp = :cod_dope_aimp
+                              and cod_manu_dele is not null"]} {
+	    set delegation_active_p "t"
+
+	    element create $form_name cod_manu_dele -widget hidden -datatype text -optional
+	    element create $form_name cod_opma_dele -widget hidden -datatype text -optional
+	    
+	    if {$funzione eq "M"} {
+		#cerca delle ditte delegate
+		set cerca_manu_dele [iter_search $form_name [ad_conn package_url]/src/coimmanu-dele-list [list rag_sociale_delegato rag_sociale_delegato cod_manu_dele cod_manu_dele cod_manutentore cod_manutentore]]
+		element create $form_name cod_opma_dele -widget hidden -datatype text -optional
+	    } else {
+		set cerca_manu_dele ""
+		set cerca_opma_dele ""
+	    }
+
+	    element create $form_name rag_sociale_delegato \
+		-label   "Ditta installazione" \
+		-widget   text \
+		-datatype text \
+		-html    "size 20 maxlength 100 $readonly_fld {} class form_element " \
+		-optional
+	    	    element create $form_name nome_opma_delegato \
+		-label   "Installatore" \
+		-widget   text \
+		-datatype text \
+		-html    "size 20 maxlength 100 $readonly_fld {} class form_element" \
+		-optional
+
+	    element create $form_name cognome_opma_delegato \
+		-label   "Tecnico che ha effettuato il controllo su delega" \
+		-widget text \
+		-datatype text \
+		-html    "size 20 maxlength 100 $readonly_fld {} class form_element" \
+		-optional
+
+
+	} else {
+	    
+	    element create $form_name cod_manu_dele        -widget hidden -datatype text -optional
+	    element create $form_name rag_sociale_delegato -widget hidden -datatype text -optional
+	    element create $form_name cod_opma_dele        -widget hidden -datatype text -optional
+	    element create $form_name nome_opma_delegato   -widget hidden -datatype text -optional
+	    element create $form_name cognome_opma_delegato -widget hidden -datatype text -optional
+	    set cerca_manu_dele ""
+	    set cerca_opma_dele ""
+
+	}
+    }
+
+} else {
+
+    element create $form_name cod_manu_dele        -widget hidden -datatype text -optional
+    element create $form_name rag_sociale_delegato -widget hidden -datatype text -optional
+    element create $form_name cod_opma_dele        -widget hidden -datatype text -optional
+    element create $form_name nome_opma_delegato   -widget hidden -datatype text -optional
+    element create $form_name cognome_opma_delegato -widget hidden -datatype text -optional
+    element create $form_name cognome_opma -widget hidden -datatype text -optional
+    element create $form_name nome_opma -widget hidden -datatype text -optional
+    element create $form_name cod_opma -widget hidden -datatype text -optional 
+    set cerca_opma ""
+    set cerca_opma_dele ""
+}
+
+;#fine mat02
 
 # Generatori ed operazioni su di essi
 set max_righe_generatori 12
@@ -827,13 +1009,21 @@ if {$is_refresh_p || [form is_request $form_name]} {
     element set_properties $form_name url_aimp         -value $url_aimp    
     element set_properties $form_name url_list_aimp    -value $url_list_aimp
     element set_properties $form_name flag_ins_prop    -value $flag_ins_prop
-
+    element set_properties $form_name cod_manu_dele         -value $cod_manu_dele;#mat02
+    element set_properties $form_name rag_sociale_delegato  -value $rag_sociale_delegato;#mat02
+    element set_properties $form_name cod_opma_dele         -value $cod_opma_dele;#mat02
+    element set_properties $form_name nome_opma_delegato    -value $nome_opma_delegato;#mat02
+    element set_properties $form_name cognome_opma_delegato    -value $cognome_opma_delegato;#mat02
+    element set_properties $form_name nome_opma       -value $nome_opma;#mat02
+    element set_properties $form_name cognome_opma    -value $cognome_opma;#mat02
+    
     # Preparo questi default per l'inserimento:
     set flag_doc_tecnica   "f"
     set flag_istr_tecniche "f"
     set flag_man_tecnici   "f"
     set flag_norme_uni_cei "f"
     set flag_reg_locali    "f"
+    set data_dich_st "";#ric01
     
     # Non rileggo la riga se siamo in un refresh,
     # altrimenti tutte le modifiche fatte al record
@@ -846,7 +1036,7 @@ if {$is_refresh_p || [form is_request $form_name]} {
               cognome_dichiarante,
               nome_dichiarante,
               flag_dichiarante,
-              cod_manutentore,
+              d.cod_manutentore,
               flag_tipo_tecnico,
               cod_utgi,
               pot_nom_risc,
@@ -854,9 +1044,9 @@ if {$is_refresh_p || [form is_request $form_name]} {
               num_generatori,
               cod_combustibile,
               toponimo,
-              indirizzo,
+              d.indirizzo,
               cod_via,
-              localita,
+              d.localita,
               numero,
               esponente,
               scala,
@@ -880,17 +1070,43 @@ if {$is_refresh_p || [form is_request $form_name]} {
               flag_reg_locali,
               flag_norme_uni_cei,
               altri_doc,
+              data_dich as data_dich_st, --ric01
               iter_edit_data(data_dich)     as data_dich,
               iter_edit_num(pot_nom_risc,2) as pot_nom_risc,
-              iter_edit_num(pot_nom_raff,2) as pot_nom_raff
-         from coimdope_aimp
+              iter_edit_num(pot_nom_raff,2) as pot_nom_raff,
+              d.utente_ins, --mic01
+              d.data_ins    --mic01
+            , cod_manu_dele --mat02
+            , coalesce(man.cognome,'')||' '||coalesce(man.nome,'') as rag_sociale_delegato --mat02  
+            , d.cod_opma_dele --mat02
+            , opm_dele.nome     as nome_opma_delegato --mat02
+            , opm_dele.cognome  as cognome_opma_delegato --mat02
+            , d.cod_opma --mat02
+            , opm.nome      as nome_opma --mat02
+            , opm.cognome  as cognome_opma   --mat02
+      from coimdope_aimp d
+   left outer join coimmanu man      on man.cod_manutentore  = d.cod_manu_dele --mat02
+   left outer join coimopma opm_dele on opm_dele.cod_opma    = d.cod_opma_dele --mat02
+   left outer join coimopma opm      on opm.cod_opma         = d.cod_opma      --mat02
         where cod_dope_aimp = :cod_dope_aimp
         "]} {
             iter_return_complaint "Dichiarazione di codice '$cod_dope_aimp' non trovata"
         }
 
-        set cod_manutentore_pre_refresh $cod_manutentore;#nic02
-        
+        set nome_utente_ins "";#mic01
+	set data_ins_edit   "";#mic01
+	if {$utente_ins ne ""} {#mic01 Aggiunta if e il suo contenuto
+	    db_1row q "select coalesce(cognome,'')||' '||coalesce(nome,'') as nome_utente_ins
+                         from coimuten
+                        where id_utente=:utente_ins"
+	}
+	if {$data_ins ne ""} {#mic01 Aggiunta if e il suo contenuto
+	    db_1row sel_edit_data "select iter_edit_data(:data_ins) as data_ins_edit"
+	}
+
+	set cod_manutentore_pre_refresh $cod_manutentore;#nic02
+	
+
         foreach nome_campo {
             flag_tipo_impianto
             cognome_dichiarante
@@ -924,7 +1140,15 @@ if {$is_refresh_p || [form is_request $form_name]} {
         element set_properties $form_name f_cod_via         -value $cod_via
         element set_properties $form_name fornitore_energia -value $cod_distr
 
-        # Recupero tutte le operazioni sull'impianto e popolo i campi creati dinamicamente
+	element set_properties $form_name cod_manu_dele         -value $cod_manu_dele;#mat02
+	element set_properties $form_name rag_sociale_delegato  -value $rag_sociale_delegato;#mat02
+	element set_properties $form_name cod_opma_dele         -value $cod_opma_dele;#mat02
+	element set_properties $form_name nome_opma_delegato    -value $nome_opma_delegato;#mat02
+	element set_properties $form_name cognome_opma_delegato    -value $cognome_opma_delegato;#mat02
+	element set_properties $form_name nome_opma    -value $nome_opma;#mat02
+	element set_properties $form_name cognome_opma    -value $cognome_opma;#mat02
+	
+	# Recupero tutte le operazioni sull'impianto e popolo i campi creati dinamicamente
         foreach op [db_list_of_lists query "
                     select gen_prog
                          , num_oper
@@ -961,6 +1185,8 @@ if {$is_refresh_p || [form is_request $form_name]} {
 
         if {[form is_request $form_name] || ($is_refresh_p && $cod_manutentore ne $cod_manutentore_pre_refresh)} {#nic02 (aggiunta questa if altrimenti c'erano problemi)
 	    db_1row sel_man "
+         select *
+           from (
             select cognome as cognome_manu,
                    nome as nome_manu,
                    reg_imprese,
@@ -974,10 +1200,36 @@ if {$is_refresh_p || [form is_request $form_name]} {
                    flag_g,
                    cert_uni_iso,
                    cert_altro,
-                   cod_legale_rapp
+                   cod_legale_rapp,
+                   current_date as data_validita --ric01
                    
               from coimmanu 
-             where cod_manutentore = :cod_manutentore"
+             where cod_manutentore = :cod_manutentore
+
+       union --ric01
+
+          select cognome as cognome_manu,
+                   nome as nome_manu,
+                   reg_imprese,
+                   localita_reg,
+                   flag_a,
+                   flag_b,
+                   flag_c,
+                   flag_d,
+                   flag_e,
+                   flag_f,
+                   flag_g,
+                   cert_uni_iso,
+                   cert_altro,
+                   cod_legale_rapp,
+                   st_data_validita as data_validita
+
+              from coimmanu_st
+             where cod_manutentore = :cod_manutentore
+          ) as st
+     where st.data_validita >= coalesce(:data_dich_st, current_date)
+  order by st.data_validita
+     limit 1"
 
 
             set cod_manutentore_pre_refresh $cod_manutentore;#nic02
@@ -1065,6 +1317,7 @@ if {$is_refresh_p || [form is_request $form_name]} {
                       d.nome                      as nome_resp_old,
                       d.cognome                   as cognome_resp_old,
                       b.cod_distributore          as forn_energia
+                    , b.stato as stato_imp --rom07
                   from coimgend a
                      , coimaimp b
        left outer join coimcitt d on d.cod_cittadino = b.cod_responsabile
@@ -1116,6 +1369,7 @@ if {$is_refresh_p || [form is_request $form_name]} {
                       d.nome                      as nome_resp_old,
                       d.cognome                   as cognome_resp_old,
                       b.cod_distributore as forn_energia
+                    , b.stato as stato_imp --rom07
                  from coimgend a
                     , coimaimp b
       left outer join coimcitt d on d.cod_cittadino = b.cod_responsabile
@@ -1126,6 +1380,14 @@ if {$is_refresh_p || [form is_request $form_name]} {
              order by a.flag_attivo desc
                     , a.gen_prog    desc
                 limit 1"
+    }
+
+
+    if {$funzione eq "I"} {#rom07 Aggiunta if e suo contenuto
+	if {$stato_imp ne "A" } {
+	    iter_return_complaint "Sarà possibile trasmettere DFM e altri moduli solo dopo la riattivazione/validazione dell'impianto da parte dell'ente"
+	    ad_script_abort
+	}
     }
 
     if {!$is_refresh_p && $funzione eq "I"} {
@@ -1145,6 +1407,8 @@ if {$is_refresh_p || [form is_request $form_name]} {
 	    element set_properties $form_name pot_nom_raff -value $somma_pot_focolare_nom;#rom03
 	    element set_properties $form_name pot_nom_risc -value $somma_pot_focolare_lib;#rom03
 	    #cod_combustibile non deve essere valorizzato per il freddo
+	} elseif {$flag_tipo_impianto eq "T"} {#rom06 Aggiunta elseif e suo contenuto
+	    element set_properties $form_name pot_nom_risc -value $somma_pot_focolare_nom
 	} else {
 	    element set_properties $form_name pot_nom_risc -value $potenza_old
 	    element set_properties $form_name cod_combustibile -value $cod_combustibile_old
@@ -1268,6 +1532,13 @@ if {!$is_refresh_p && [form is_valid $form_name]} {
         set $nome_campo [element::get_value $form_name $nome_campo]
     }
     
+    set cod_manu_dele   [string trim [element::get_value $form_name cod_manu_dele]];#mat02
+    set rag_sociale_delegato [string trim [element::get_value $form_name rag_sociale_delegato]];#mat02
+    set cod_opma_dele   [string trim [element::get_value $form_name cod_opma_dele]];#mat02
+    set nome_opma_delegato [string trim [element::get_value $form_name nome_opma_delegato]];#mat02
+    set cognome_opma_delegato [string trim [element::get_value $form_name cognome_opma_delegato]];#mat02
+    set cognome_opma [string trim [element::get_value $form_name cognome_opma]];#mat02
+    set nome_opma [string trim [element::get_value $form_name nome_opma]];#mat02
     # controlli standard su numeri e date, per Ins ed Upd
     set error_num 0
 
@@ -1590,7 +1861,27 @@ if {!$is_refresh_p && [form is_valid $form_name]} {
 	    }
 	}
     }
+    
+    if {$delegation_active_p} {#mat02 aggiunto if e contenuto
 
+	if {![string equal $cognome_opma ""] && ![string equal $nome_opma ""] && ![string equal $nome_opma_delegato ""] && ![string equal $cognome_opma_delegato ""]} {
+	    element::set_error $form_name cognome_opma "Inserire solo uno tra tecnico che ha effettuato il controllo<br> e operatore delegato."
+	    element::set_error $form_name nome_opma_delegato "Inserire solo uno tra tecnico che ha effettuato il controllo<br> e operatore delegato."
+	    incr error_num
+	}
+	if {[string equal $cognome_opma ""] && [string equal $nome_opma ""]} {
+	    set cod_opma ""
+	}
+	if {[string equal $nome_opma_delegato ""] && [string equal $cognome_opma_delegato ""]} {
+	    set cod_opma_dele ""
+	}
+	if {$cod_manu_dele eq "" && $cod_opma_dele ne ""} {
+	    element::set_error $form_name nome_opma_delegato "Il tecnico delegato è valorizzato. Valorizzare anche la ditta delegante."
+	    incr error_num
+	}
+    }
+    
+    
     if {$error_num > 0} {
         set errori "ATTENZIONE sono presenti degli errori nella pagina"
         ad_return_template
@@ -1622,6 +1913,7 @@ if {!$is_refresh_p && [form is_valid $form_name]} {
                          where cod_manutentore = :cod_manutentore"]
 		    }
 
+		    
 		    db_dml query "
                     insert
                       into coimdope_aimp (
@@ -1660,7 +1952,10 @@ if {!$is_refresh_p && [form is_valid $form_name]} {
                       data_dich,
                       data_ins,
                       utente_ins
-                    ) values (
+                    , cod_manu_dele --mat02
+                    , cod_opma_dele --mat02
+                    , cod_opma      --mat02 
+                     ) values (
                       :cod_dope_aimp,
                       :cod_impianto,
                       :flag_tipo_impianto,
@@ -1696,6 +1991,9 @@ if {!$is_refresh_p && [form is_valid $form_name]} {
                       :data_dich,
                       current_date,
                       :id_utente
+                     ,:cod_manu_dele --mat02
+                     ,:cod_opma_dele --mat02
+                     ,:cod_opma      --mat02
                     )"
 		}
 		M {
@@ -1736,7 +2034,10 @@ if {!$is_refresh_p && [form is_valid $form_name]} {
                       data_dich           = :data_dich,
                       data_mod            = current_date,
                       utente_mod          = :id_utente
-                  where cod_dope_aimp = :cod_dope_aimp"
+                    , cod_manu_dele       = :cod_manu_dele --mat02
+                    , cod_opma_dele       = :cod_opma_dele --mat02
+                    , cod_opma            = :cod_opma      --mat02  
+                where cod_dope_aimp = :cod_dope_aimp"
 		}
 		D {
 		    db_dml query "

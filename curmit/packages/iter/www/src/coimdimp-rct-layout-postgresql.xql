@@ -2,6 +2,30 @@
 <!--
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    rom07 19/11/2025 Dopo videocall tra Sandro e Regione del 18/11 si e deciso che per gli rcee di prima accensione e
+    rom07            sostituzione inseriti dalle ditte di manutenzione su delega degli installatori (Punto 40 MEV Regione Marche)
+    rom07            l operatore da scegliere non deve essere uno della ditta di installazione ma uno della ditta di manutenzione.
+
+    ric02 07/10/2025 Punto 40 MEV regione marhe: leggo ditta e operatore delegato.
+
+    ric01 02/10/2025 Punto 4 MEV regione marche: modificata sel_manu andando a leggere lo storico.
+    
+    rom06 16/03/2022 MEV Regione Marche punto 6. Stampa RCEE precompilato senza dati del
+    rom06            Controllo del rendimento di combustione. 
+    rom06            Aggiunte query sel_gend_only_print e sel_aimp_only_print.
+    
+    rom05 01/02/2022 Su segnalazione di Regione Marche corretto errore sul responsabile stampato:
+    rom05            bisogna stampare il responsabile salvato sull'RCEE e, in caso non fosse indicato,
+    rom05            vado a prendere il responsabile dell'impianto. Fino ad adesso viene stampato
+    rom05            sempre il responsabile dell'impianto.
+
+    rom04 28/12/2021 Corretto rom03: Regione Marche deve vedere il combustibile associato al dimp,
+    rom04            per il pregresso dove non ho il combustibile associato al dimp vado a prendere
+    rom04            il combustibile del relativo generatore. Se non trovo neanche il combustibile
+    rom04            sul generatore prendo il combustibile sull'impianto come avviene per gli altri enti.
+    
+    rom03 05/11/2021 Regione Marche deve vedere il combustibile salvato sul dimp e non quello del generatore.
+
     rom02 08/02/2020 In fase di stapma il campo marc_effic_energ in poteva contenere i 
     rom02            caratteri < e > che venivano considerati come apertura o chiusura dei
     rom02            tag html. In questi casi la stampa veniva visualizzata solo parzialmente.
@@ -42,8 +66,13 @@
                        ,iter_edit_data(b.data_installaz) as data_installaz
                        ,iter_edit_num(a.potenza,2)       as pot_ter_nom_tot_max
                        ,iter_edit_num(j.potenza,2)       as potenza
-		       ,a.cod_combustibile
-                       ,b.cod_cost
+	      --rom03  ,a.cod_combustibile
+	               , case when '$coimtgen(regione)' = 'MARCHE'
+	      --rom04    then j.cod_combustibile
+		         then coalesce(j.cod_combustibile, coalesce(b.cod_combustibile,a.cod_combustibile)) --rom04
+			 else a.cod_combustibile
+			  end                                      --rom03 Aggiunto case e contenuto
+		       ,b.cod_cost
                        ,c.descr_cost
                        ,b.modello
                        ,b.matricola
@@ -51,16 +80,16 @@
                        ,a.cod_proprietario
                        ,coalesce(k.cognome, '')||' '||
                         coalesce(k.nome, '') as nominativo_prop
-                       ,d.cognome as cognome_resp
-                       ,d.nome as nome_resp
-		       ,d.cod_fiscale --gac03
-                       ,d.indirizzo as indirizzo_resp
-		       ,d.numero    as numero_resp
-                       ,d.localita as localita_resp
-                       ,d.comune as comune_resp
-                       ,d.provincia as provincia_resp
-                       ,d.cap as cap_resp
-                       ,d.telefono as telefono_resp
+                       ,coalesce(f.cognome     , d.cognome)     as cognome_resp
+                       ,coalesce(f.nome        , d.nome)        as nome_resp
+		       ,coalesce(f.cod_fiscale , d.cod_fiscale) as cod_fiscale_resp --gac03
+                       ,coalesce(f.indirizzo   , d.indirizzo)   as indirizzo_resp
+		       ,coalesce(f.numero      , d.numero)      as numero_resp
+                       ,coalesce(f.localita    , d.localita)    as localita_resp
+                       ,coalesce(f.comune      , d.comune)      as comune_resp
+                       ,coalesce(f.provincia   , d.provincia)   as provincia_resp
+                       ,coalesce(f.cap         , d.cap)         as cap_resp
+                       ,coalesce(f.telefono    , d.telefono)    as telefono_resp
 		       ,a.cod_occupante
                        ,e.cognome as cognome_util
 		       ,e.nome as nome_util
@@ -239,10 +268,13 @@
        		       ,b.cod_grup_term  --gac04
                        ,o.descr_tprc     --gac04
 		       ,a.targa          --gac05
+		       , j.cod_manu_dele    --ric02
+		       , j.cod_opma_dele    --ric02
 		  from coimdimp j
                   left outer join coimgend b on b.cod_impianto = j.cod_impianto
                                             and b.gen_prog     =  :gen_progg
                   left outer join coimcost c on c.cod_cost     = b.cod_cost 
+		  left outer join coimcitt f on f.cod_cittadino = j.cod_responsabile --rom05
                        inner join coimaimp a on a.cod_impianto = j.cod_impianto
                   left outer join coimcitt d on d.cod_cittadino = a.cod_responsabile
                   left outer join coimcitt e on e.cod_cittadino = a.cod_occupante     
@@ -255,7 +287,7 @@
                   left outer join coimprov m on m.cod_provincia  = a.cod_provincia
                   left outer join coimutgi n on n.cod_utgi       = b.cod_utgi
                   left outer join coimtprc o on o.cod_tprc       = j.cod_tprc --gac04
-                 where j.cod_dimp     = :cod_dimp
+                  where j.cod_dimp     = :cod_dimp
        </querytext>
     </fullquery>
 
@@ -276,15 +308,15 @@
                        ,a.cod_proprietario
                        ,coalesce(k.cognome, '')||' '||
                         coalesce(k.nome, '') as nominativo_prop
-                       ,d.cognome as cognome_resp
-                       ,d.nome as nome_resp
-                       ,d.indirizzo as indirizzo_resp
-		       ,d.numero    as numero_resp
-                       ,d.localita as localita_resp
-                       ,d.comune as comune_resp
-                       ,d.provincia as provincia_resp
-                       ,d.cap as cap_resp
-                       ,d.telefono as telefono_resp
+                       ,coalesce(f.cognome     , d.cognome)     as cognome_resp
+                       ,coalesce(f.nome        , d.nome)        as nome_resp
+                       ,coalesce(f.indirizzo   , d.indirizzo)   as indirizzo_resp
+		       ,coalesce(f.numero      , d.numero)      as numero_resp
+                       ,coalesce(f.localita    , d.localita)    as localita_resp
+                       ,coalesce(f.comune      , d.comune)      as comune_resp
+                       ,coalesce(f.provincia   , d.provincia)   as provincia_resp
+                       ,coalesce(f.cap         , d.cap)         as cap_resp
+                       ,coalesce(f.telefono    , d.telefono)    as telefono_resp
 		       ,a.cod_occupante
                        ,e.cognome as cognome_util
 		       ,e.nome as nome_util
@@ -461,10 +493,13 @@
 		       ,b.cod_grup_term  --gac04
                        ,o.descr_tprc     --gac04
 		       ,a.targa          --gac05
+		       , j.cod_manu_dele    --ric02
+		       , j.cod_opma_dele    --ric02
                   from coimdimp j
                        left outer join coimgend b on b.cod_impianto = j.cod_impianto
                        and b.gen_prog     =  :gen_progg
                   left outer join coimcost c on c.cod_cost     = b.cod_cost 
+		  left outer join coimcitt f on f.cod_cittadino = j.cod_responsabile --rom05
                        inner join coimaimp a on a.cod_impianto = j.cod_impianto
                   left outer join coimcitt d on d.cod_cittadino = a.cod_responsabile
                   left outer join coimcitt e on e.cod_cittadino = a.cod_occupante     
@@ -475,10 +510,242 @@
                   left outer join coimprov m on m.cod_provincia  = a.cod_provincia
                   left outer join coimutgi n on n.cod_utgi       = b.cod_utgi
                   left outer join coimtprc o on o.cod_tprc       = j.cod_tprc --gac04
-                 where j.cod_dimp     = :cod_dimp
+                  where j.cod_dimp     = :cod_dimp
        </querytext>
     </fullquery>
 
+    <fullquery name="sel_aimp_only_print">
+       <querytext>
+                  select a.cod_potenza
+                       , substr(a.data_installaz,1,4) as anno_costruzione
+                       , iter_edit_data(b.data_installaz) as data_installaz
+                       , iter_edit_num(a.potenza,2)       as pot_ter_nom_tot_max
+                       , iter_edit_num(b.pot_utile_nom,2) as potenza
+	               , case when '$coimtgen(regione)' = 'MARCHE'
+		         then coalesce(b.cod_combustibile,a.cod_combustibile)
+			 else a.cod_combustibile
+			  end
+		       ,b.cod_cost
+                       ,c.descr_cost
+                       ,b.modello
+                       ,b.matricola
+                       ,a.cod_manutentore
+                       ,a.cod_proprietario
+                       ,coalesce(k.cognome, '')||' '||
+                        coalesce(k.nome, '') as nominativo_prop
+                       ,coalesce(f.cognome     , d.cognome)     as cognome_resp
+                       ,coalesce(f.nome        , d.nome)        as nome_resp
+		       ,coalesce(f.cod_fiscale , d.cod_fiscale) as cod_fiscale_resp --gac03
+                       ,coalesce(f.indirizzo   , d.indirizzo)   as indirizzo_resp
+		       ,coalesce(f.numero      , d.numero)      as numero_resp
+                       ,coalesce(f.localita    , d.localita)    as localita_resp
+                       ,coalesce(f.comune      , d.comune)      as comune_resp
+                       ,coalesce(f.provincia   , d.provincia)   as provincia_resp
+                       ,coalesce(f.cap         , d.cap)         as cap_resp
+                       ,coalesce(f.telefono    , d.telefono)    as telefono_resp
+		       ,a.cod_occupante
+                       ,e.cognome as cognome_util
+		       ,e.nome as nome_util
+                       ,e.indirizzo as indirizzo_util
+		       ,e.numero    as numero_util
+                       ,e.localita as localita_util
+                       ,e.comune as comune_util
+                       ,e.provincia as provincia_util
+                       ,e.cap as cap_util
+                       ,coalesce(g.descr_topo,'')||' '||
+                        coalesce(g.descr_estesa,'')||' '||
+                        coalesce(a.numero, '')||' '||
+                        coalesce(a.esponente,'') as indirizzo_ubic
+                       ,a.localita as localita_ubic
+                       ,h.denominazione as comune_ubic
+                       ,i.denominazione as provincia_ubic
+                       ,a.cap as cap_ubic
+                       , null as garanzia
+                       , null as conformita
+                       , null as lib_impianto
+                       , null as lib_uso_man
+                       , null as inst_in_out
+                       , null as idoneita_locale
+                       , null as ap_ventilaz
+                       , null as ap_vent_ostruz
+                       , null as pendenza
+                       , null as sezioni
+                       , null as curve
+                       , null as lunghezza
+                       , null as conservazione
+                       , null as scar_ca_si
+                       , null as scar_can_fu
+                       , null as scar_parete
+                       , null as riflussi_locale
+                       , null as assenza_perdite
+                       , null as pulizia_ugelli
+                       , null as antivento
+                       , null as scambiatore
+                       , null as accens_reg
+                       , null as disp_comando
+                       , null as ass_perdite
+                       , null as valvola_sicur
+                       , null as vaso_esp
+                       , null as disp_sic_manom
+                       , null as organi_integri
+                       , null as circ_aria
+                       , null as guarn_accop
+                       , null as assenza_fughe
+                       , null as coibentazione
+                       , null as eff_evac_fum
+                       , null as cont_rend
+                       , '____________________________' as data_controllo
+                       , null as temp_fumi
+                       , null as temp_ambi
+                       , null as o2
+                       , null as co2
+                       , '&nbsp;&nbsp;&nbsp;'as bacharach
+                       , null as co
+                       , null as co_fumi_secchi_ppm
+                       , null as rend_combust
+                       , '____________________________________________________________________________________________________________________________________________' as osservazioni
+		       , '____________________________________________________________________________________________________________________________________________' as raccomandazioni
+		       , '____________________________________________________________________________________________________________________________________________' as prescrizioni
+                       , null as data_utile_inter
+                       , null as n_prot
+                       , null as data_prot
+                       , '_______________________________________' as firma_resp
+                       , null as firma_manut
+                       , null as tipologia_costo
+                       , null as riferimento_pag
+                       , null as cod_documento
+                       , null as flag_co_perc
+                       , a.cod_responsabile
+                       , null as data_controllo_db
+                       , '______________' as tiraggio_fumi
+                       , '______________' as ora_inizio
+                       , '______________' as ora_fine
+                       , null as rapp_contr
+                       , null as rapp_contr_note
+                       , null as certificaz
+                       , null as certificaz_note
+                       , null as dich_conf
+                       , null as dich_conf_note
+                       , null as libretto_bruc
+                       , null as libretto_bruc_note
+                       , null as prev_incendi
+                       , null as prev_incendi_note
+                       , null as lib_impianto_note
+                       , null as ispesl
+                       , null as ispesl_note
+                       , null as data_scadenza_autocert
+                       , null as num_autocert
+                       , null as esame_vis_l_elet
+                       , null as funz_corr_bruc
+                       , null as lib_uso_man_note
+                       , b.locale
+                       , iter_edit_data(b.data_costruz_gen) as data_costruz_gen
+                       , iter_edit_data(b.data_costruz_bruc) as data_costruz_bruc
+                       , replace(replace(b.marc_effic_energ,'>','&gt;'),'<','&lt;') as marc_effic_energ
+                       , null as volimetria_risc
+                       , null as consumo_annuo
+                       , iter_edit_num(b.pot_focolare_nom,2) as pot_focolare_nom
+                       , b.mod_funz
+                       , b.tipo_bruciatore
+                       , iter_edit_num(b.campo_funzion_max,2) as campo_funzion_max
+                       , b.matricola_bruc
+                       , b.modello_bruc
+                       , l.descr_cost as costruttore_bruc
+                       , a.cod_impianto_est
+                       , m.sigla as prov_ubic
+                       , a.flag_resp
+                       , n.descr_utgi as destinazione
+                       , 'O_P' as flag_status
+                       , null as rct_dur_acqua    
+                       , null as rct_tratt_in_risc       
+                       , null as rct_tratt_in_acs       
+                       , null as rct_install_interna      
+                       , null as rct_install_esterna     
+                       , null as rct_canale_fumo_idoneo  
+                       , null as rct_sistema_reg_temp_amb 
+                       , null as rct_assenza_per_comb     
+                       , null as rct_idonea_tenuta         
+                       , null as rct_valv_sicurezza      
+                       , null as rct_scambiatore_lato_fumi 
+                       , null as rct_riflussi_comb         
+                       , null as rct_uni_10389             
+                       , null as rct_rend_min_legge
+                       , null as rct_modulo_termico
+                       , null as rct_check_list_1          
+                       , null as rct_check_list_2          
+                       , null as rct_check_list_3         
+                       , null as rct_check_list_4          
+                       , null as rct_gruppo_termico  
+                       , null as rct_lib_uso_man_comp
+                       , null as cod_opmanu_new
+                       , '____________________________' as data_prox_manut
+                       , null as costo_pretty
+		       , null as consumo_annuo2
+		       , null as stagione_risc
+		       , null as stagione_risc2
+		       , null as acquisti
+		       , null as acquisti2
+		       , null as scorta_o_lett_iniz
+		       , null as scorta_o_lett_iniz2
+		       , null as scorta_o_lett_fin
+		       , null as scorta_o_lett_fin2
+		       , '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' as bacharach2
+		       , '&nbsp;&nbsp;&nbsp;' as bacharach3
+		       , null as portata_comb
+		       , null as rispetta_indice_bacharach
+		       , null as co_fumi_secchi
+		       , null as rend_magg_o_ugua_rend_min
+                       , null as elet_esercizio_1
+		       , null as elet_esercizio_2
+		       , null as elet_esercizio_3
+		       , null as elet_esercizio_4
+                       , null as elet_lettura_iniziale
+                       , null as elet_lettura_finale
+                       , null as elet_consumo_totale
+                       , null as elet_lettura_iniziale_2
+                       , null as elet_lettura_finale_2
+                       , null as elet_consumo_totale_2
+                       , a.scala
+                       , a.interno
+                       , b.flag_clima_invernale
+		       , b.flag_prod_acqua_calda
+       		       , b.cod_grup_term
+                       , null descr_tprc
+		       , a.targa
+		       , b.descrizione
+		       , b.tipo_foco as tipo_gen_foco
+		       , b.tiraggio
+		       , b.num_prove_fumi
+		       , null as cod_manu_dele  --ric02
+		       , null as cod_opma_dele  --ric02
+  		    from coimgend b
+                    left outer join coimcost c on c.cod_cost     = b.cod_cost 
+                    inner join coimaimp a on a.cod_impianto = b.cod_impianto
+		    left outer join coimcitt f on f.cod_cittadino = a.cod_responsabile --rom05
+                    left outer join coimcitt d on d.cod_cittadino = a.cod_responsabile
+                    left outer join coimcitt e on e.cod_cittadino = a.cod_occupante     
+                    left outer join coimcitt k on k.cod_cittadino = a.cod_proprietario
+                    left outer join coimviae g on  g.cod_comune    = a.cod_comune
+                                             and g.cod_via       = a.cod_via
+                    left outer join coimcomu h on  h.cod_comune    = a.cod_comune
+                    left outer join coimprov i on  i.cod_provincia = a.cod_provincia
+                    left outer join coimcost l on l.cod_cost       = b.cod_cost_bruc
+                    left outer join coimprov m on m.cod_provincia  = a.cod_provincia
+                    left outer join coimutgi n on n.cod_utgi       = b.cod_utgi
+                   where b.cod_impianto   = :cod_impianto
+		     and b.gen_prog       = :gen_progg
+       </querytext>
+    </fullquery>
+
+    <fullquery name="sel_gend_only_print">
+       <querytext>
+                   select gen_prog as gen_progg
+                     from coimgend
+                    where cod_impianto     = :cod_impianto   
+                      and flag_attivo      = 'S'
+       </querytext>
+    </fullquery>
+  
     <fullquery name="sel_aimp">
        <querytext>
                    select modello
@@ -501,7 +768,9 @@
 
     <fullquery name="sel_manu">
        <querytext>
-                  select nome
+
+          select *
+            from (select nome
                        , cognome
                        , indirizzo
                     --sim05   , localita
@@ -510,18 +779,51 @@
                        , telefono
                        , cod_piva --gac03
                        , comune   --gac03
+		       , current_date as data_validita   --ric01
                     from coimmanu
                    where cod_manutentore = :cod_manutentore
-       </querytext>
+
+		   union --ric01 aggiunta union con coimmanu_st
+
+		   select nome
+                       , cognome
+                       , indirizzo
+                       , coalesce(comune,localita) as localita 
+                       , provincia
+                       , telefono
+                       , cod_piva 
+                       , comune
+		       , st_data_validita as data_validita
+                    from coimmanu_st
+                   where cod_manutentore = :cod_manutentore
+		) as st
+	    where st.data_validita >= coalesce(:data_controllo_db, current_date)
+	 order by st.data_validita
+	 limit 1
+
+	 </querytext>
     </fullquery>
 
     <fullquery name="sel_opma">
-       <querytext>
-          select nome    as nome_op
-               , cognome as cognome_op
-            from coimopma 
-           where cod_manutentore = :cod_manutentore
-             and cod_opma        = :cod_opmanu_new 
+      <querytext>
+
+	select a.nome_op
+ 	     , a.cognome_op
+	  from (select nome    as nome_op
+	             , cognome as cognome_op
+		  from coimopma
+		 where cod_manutentore = :cod_manutentore
+		   and cod_opma        = :cod_opmanu_new
+
+	      union --ric02 aggiunta union
+
+	        select nome    as nome_op
+		     , cognome as cognome_op
+ 		  from coimopma
+		 where cod_manutentore = :cod_manutentore --rom07 cod_manu_dele
+		   and cod_opma        = :cod_opma_dele
+	) as a
+
        </querytext>
     </fullquery>
 

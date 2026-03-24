@@ -1,5 +1,10 @@
 <?xml version="1.0"?>
+<!--
+    USER  DATA       MODIFICHE
+    ===== ========== =====================================================================================
+    rom01 27/03/2023 I vari campi estratti con la substr ora vengono letti con la funzione iter_edit_data
 
+-->
 <queryset>
     <rdbms><type>postgresql</type><version>7.1</version></rdbms>
 
@@ -67,9 +72,11 @@
               , f.descrizione as descr_camp
 	      , substr(z.descr_tpes,1,40)||'...' as tipo_estrazione
               , a.st_utente
-              , substr(a.st_data_validita, 9, 2)||'/'||substr(a.st_data_validita, 6, 2)||'/'||substr(a.st_data_validita, 1, 4) as st_data_validita
-              , substr(a.st_data_validita, 12, 8) as st_ora_validita
-              , a.st_progressivo
+     -- rom01 , substr(a.st_data_validita, 9, 2)||'/'||substr(a.st_data_validita, 6, 2)||'/'||substr(a.st_data_validita, 1, 4) as st_data_validita
+     -- rom01 , substr(a.st_data_validita, 12, 8) as st_ora_validita
+              , iter_edit_data(date(a.st_data_validita)) as st_data_validita -- rom01
+              , to_char(a.st_data_validita,'HH24:MI:SS') as st_ora_validita  -- rom01
+              , a.st_progressivo                                             -- rom01
 	      , z.descr_tpes as tipo_estrazione_long
                $desc_enve 
            from coiminco_st a
@@ -124,9 +131,11 @@ left outer join coimviae e on e.cod_comune    = c.cod_comune
                     else ''
                 end as tipo_app
               , a.st_utente
-              , substr(a.st_data_validita, 9, 2)||'/'||substr(a.st_data_validita, 6, 2)||'/'||substr(a.st_data_validita, 1, 4) as st_data_validita
-              , substr(a.st_data_validita, 12, 8) as st_ora_validita
-              , a.st_progressivo
+   -- rom01   , substr(a.st_data_validita, 9, 2)||'/'||substr(a.st_data_validita, 6, 2)||'/'||substr(a.st_data_validita, 1, 4) as st_data_validita
+   -- rom01   , substr(a.st_data_validita, 12, 8) as st_ora_validita
+              , iter_edit_data(date(a.st_data_validita)) as st_data_validita -- rom01
+              , to_char(a.st_data_validita,'HH24:MI:SS') as st_ora_validita  -- rom01
+              , a.st_progressivo                                             -- rom01
               , f.descrizione as descr_camp
               $desc_enve
            from coiminco_st a

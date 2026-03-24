@@ -13,6 +13,25 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    rom06 22/11/2024 Su richiesta di Frosinone ai non manutentori è stata data la possibilità
+    rom06            di inserire soggetti senza il codice fiscale. Sandro ha detto che va bene
+    rom06            per tutti gli enti questa modifica.
+
+    rom05 18/06/2024 Corretto controllo sul C.A.P., veniva mostrato un messaggio di errore se
+    rom05            il primo numero era uno 0
+
+    but01 21/06/2023 Aggiunto la classe ah-jquery-date ai campo data_nas
+
+    rom04 07/02/2023 Corretto intervento di ric01 sulla conferma dell'inserimento di soggetti
+    rom04            con codice fiscale o partita iva gia' presenti.
+
+    rom03 01/02/2023 Modificato intervento di ric01 per anomalie riscontrate su Ucit, aggiunto
+    rom03            il campo cod_piva in visualizzazione, prima era hidden.
+
+    ric01 21/12/2022 Gestito element cod_fiscale che valorizza cod_fiscale o cod_piva a seconda
+    ric01            della natura giuridica, aggiunto i relativi controlli anche sulla non
+    ric01            ripetibilità del dato.
+
     rom02 04/08/2020 Modificata la maxlenght del campo pec da 35 a 100 su richiesta di Sandro.
 
     rom01 01/07/2020 Modificata la maxlenght del campo mail da 35 a 100 su richiesta di Sandro.
@@ -66,7 +85,7 @@ set denom_comune  $coimtgen(denom_comune)
 
 set id_utente     [lindex [iter_check_login $lvl $nome_funz] 1]
 iter_set_func_class $funzione
-
+set id_utente_manu [iter_check_uten_manu $id_utente];#rom06
 # controllo il parametro di "propagazione" per la navigation bar
 if {[string is space $nome_funz_caller]} {
     set nome_funz_caller $nome_funz
@@ -144,7 +163,10 @@ set disabled_fld \{\}
 #} else {
     set readonly_occ \{\}
 #}
-
+set jq_date "";#but01
+if {$funzione in "M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
 form create $form_name \
 -html    $onsubmit_cmd
 
@@ -164,19 +186,18 @@ element create $form_name sesso \
 -optional \
 -options {{{} {}} {M M} {F F}}
 
-
 element create $form_name cognome \
 -label   "Cognome" \
 -widget   text \
 -datatype text \
--html    "size 30 maxlength 100 readonly {} class form_element" \
+-html    "size 30 maxlength 100 $readonly_occ {} class form_element" \
 -optional
 
 element create $form_name nome \
 -label   "Nome" \
 -widget   text \
 -datatype text \
--html    "size 20 maxlength 100 readonly {} class form_element" \
+-html    "size 20 maxlength 100 $readonly_occ {} class form_element" \
 -optional
 
 element create $form_name indirizzo \
@@ -229,6 +250,14 @@ element create $form_name cod_fiscale \
 -html    "size 16 maxlength 16 $readonly_fld {} class form_element" \
 -optional
 
+#rom03
+element create $form_name cod_piva  \
+    -label "P. IVA" \
+    -widget text\
+    -datatype text \
+    -html    "size 16 maxlength 16 $readonly_fld {} class form_element" \
+    -optional
+
 element create $form_name telefono \
 -label   "Telefono" \
 -widget   text \
@@ -256,12 +285,12 @@ element create $form_name email \
 -datatype text \
 -html    "size 30 maxlength 100 $readonly_fld {} class form_element" \
 -optional
-
+#but01  Aggiunto la classe ah-jquery-date ai campo data_nas
 element create $form_name data_nas \
 -label   "Data di nascita" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+-html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
 -optional
 
 element create $form_name comune_nas \
@@ -298,12 +327,13 @@ element create $form_name note \
 element create $form_name dummy     -widget hidden -datatype text -optional
 element create $form_name numero     -widget hidden -datatype text -optional
 element create $form_name flag_ins_prop -widget hidden -datatype text -optional
+element create $form_name flag_confermato  -widget hidden -datatype text -optional;#rom04
 element create $form_name cod_manutentore -widget hidden -datatype text -optional
 element create $form_name flag_ins_terzi -widget hidden -datatype text -optional
 element create $form_name funzione  -widget hidden -datatype text -optional
 element create $form_name caller    -widget hidden -datatype text -optional
 element create $form_name nome_funz -widget hidden -datatype text -optional
-element create $form_name cod_piva  -widget hidden -datatype text -optional
+#rom03element create $form_name cod_piva  -widget hidden -datatype text -optional
 element create $form_name descr_via  -widget hidden -datatype text -optional
 element create $form_name descr_topo -widget hidden -datatype text -optional
 element create $form_name cod_comune -widget hidden -datatype text -optional
@@ -322,7 +352,7 @@ if {[form is_request $form_name]} {
     element set_properties $form_name cod_piva  -value ""
     element set_properties $form_name receiving_element -value $receiving_element
     element set_properties $form_name flag_modello_h    -value $flag_modello_h    
-
+    element set_properties $form_name flag_confermato -value "f";#rom04
 
     if {![string equal cod_comune ""]
     &&  [db_0or1row sel_comu_desc ""] == 0
@@ -381,6 +411,7 @@ if {[form is_valid $form_name]} {
     set cod_comune       [string trim [element::get_value $form_name cod_comune]]
     set descr_via        [string trim [element::get_value $form_name descr_via]]
     set descr_topo       [string trim [element::get_value $form_name descr_topo]]
+    set flag_confermato  [string trim [element::get_value $form_name flag_confermato]];#rom04
 
   # controlli standard su numeri e date, per Ins ed Upd
     set error_num 0
@@ -410,8 +441,9 @@ if {[form is_valid $form_name]} {
                 incr error_num
             }
         }
+	#rom05 sostituito [string is integer $cap] con [string is digit $cap]
         if {![string equal $cap ""]
-        &&  ![string is integer $cap]
+        &&  ![string is digit $cap]
 	} {
 	    element::set_error $form_name cap "Il C.A.P. deve essere un valore numerico"
 	    incr error_num
@@ -439,26 +471,104 @@ if {[form is_valid $form_name]} {
 	    incr error_num
 	}
 
-
-	if {[string equal $cod_fiscale ""]} {
-#	    element::set_error $form_name cod_fiscale "Inserire codice fiscale o partita iva"
-#	    incr error_num
-	} else {
-	    set lcf [string length $cod_fiscale]
-	    if {$lcf != 16 && $lcf != 11} {
-		element::set_error $form_name cod_fiscale "Lunghezza errata"
-		incr error_num
-	    } elseif {$lcf == 16 && [iter::verifyfc -xcodfis $cod_fiscale] == 0} {
-		element::set_error $form_name cod_fiscale "Codice fiscale errato"
-		incr error_num
-	    } elseif {$lcf == 11 && [iter::verifyvc -xcodfis $cod_fiscale] == 0} {
-		element::set_error $form_name cod_fiscale "Codice fiscale errato"
+	if {![string equal $id_utente_manu ""]} {#rom06 Aggiunta if ma non il contenuto
+	    if {[string equal $cod_fiscale ""] && [string equal $natura_giuridica "F"]} {
+		element::set_error $form_name cod_fiscale "Inserire codice fiscale"
 		incr error_num
 	    }
-	}
+	};#rom06
+
+	if {[string equal $natura_giuridica "F"]} {#ric01 aggiunta if, else e loro contenuto
+	    if {$cod_fiscale ne ""} {#ric01 controlli su codice fiscale
+		set lcf [string length $cod_fiscale]
+		if {$lcf != 16 && $lcf != 11} {
+		    element::set_error $form_name cod_fiscale "Lunghezza errata"
+		    incr error_num
+		} elseif {$lcf == 16 && [iter::verifyfc -xcodfis $cod_fiscale] == 0} {
+		    element::set_error $form_name cod_fiscale "Codice fiscale errato"
+		    incr error_num
+		} elseif {$lcf == 11 && [iter::verifyvc -xcodfis $cod_fiscale] == 0} {
+		    element::set_error $form_name cod_fiscale "Codice fiscale errato"
+		    incr error_num
+		}
+		
+		if {$coimtgen(ente) eq "PPA"} {#ric01 aggiunti if, else e loro contenuto
+		    set cod_fisc_error_msg "Attenzione, esiste un altro soggetto con lo stesso codice fiscale."
+		    set cod_fisc_conf_value "f"
+		} else {
+		    set cod_fisc_error_msg "Attenzione, esiste un altro soggetto con lo stesso codice fiscale.<br>Confermi l'inserimento?"
+		    set cod_fisc_conf_value "t"	
+		};#ric01
+
+		#ric01 controllo che il codice fiscale non sia già registrato per un altro soggetto
+		#rom04 Aggiunte condizioni su error_num e flag_confermato
+		if {[db_0or1row query "
+                                       select 1
+                                         from coimcitt
+                                        where cod_fiscale = upper(:cod_fiscale)
+                                          and stato_citt  = 'A'
+                                           limit 1"]
+		    && $error_num       == 0
+		    && $flag_confermato eq "f"
+		} {
+		    element::set_error $form_name cod_fiscale $cod_fisc_error_msg;#ric01
+		    incr error_num
+		    
+		    element set_properties $form_name flag_confermato -value $cod_fisc_conf_value;#ric01
+		};#ric01
+	    }
+	    
+	    #rom03set cod_fiscale $cod_fiscale
+	    #rom03set cod_piva ""
+
+	} else {#ric01 sono natura 'Giuridica' valorizzo la partita IVA
+	    
+	    #ric01 aggiunti controlli su cod_piva; copiati da coimcitt-gest
+	    #rom03 Ora che mostro anche il campo cod_piva vado a usare la relativa variabile
+	    if {$cod_piva ne ""} {
+                set l [string length $cod_piva]
+                if {$l != 11} {
+                    element::set_error $form_name cod_piva "Lunghezza errata."
+                    incr error_num
+                } elseif {[iter::verifyvc -xcodfis $cod_piva] == 0} {
+                    element::set_error $form_name cod_piva "Partita IVA errata."
+                    incr error_num
+                }
+		
+		if {$coimtgen(ente) eq "PPA"} {#ric01 aggiunti if, else e loro contenuto
+		    set cod_piva_error_msg "Attenzione, esiste un altro soggetto con la stessa Partita IVA."
+		    set cod_piva_conf_value "f"
+		} else {
+		    set cod_piva_error_msg "Attenzione, esiste un altro soggetto con la stessa Partita IVA.<br>Confermi l'inserimento?"
+		    set cod_piva_conf_value "t"
+		};#ric01
+
+		#ric01 controllo che la Partita IVA non sia già registrata per un altro soggetto
+                #rom04 Aggiunte condizioni su error_num e flag_confermato
+		if {[db_0or1row query "
+                                       select 1
+                                         from coimcitt
+                                        where cod_piva = upper(:cod_piva)
+                                          and stato_citt  = 'A'
+                                         limit 1"]
+                    && $error_num       == 0
+                    && $flag_confermato eq "f"
+		} {
+		    
+		    element::set_error $form_name cod_piva $cod_piva_error_msg;#ric01		
+		    incr error_num
+		    
+		    element set_properties $form_name flag_confermato -value $cod_piva_conf_value;#ric01
+		}
+		
+	    }
+	    
+	    #rom03set cod_fiscale ""
+            #rom03set cod_piva $cod_fiscale
+
+	};#ric01
+	
     }
-
-
 
     if {$error_num > 0} {
         ad_return_template

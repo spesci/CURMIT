@@ -8,6 +8,11 @@ ad_page_contract {
     @param nome_funz identifica l'entrata di menu, server per le autorizzazioni
                      serve se lista e' uno zoom che permetti aggiungi.
     @cvs-id          coimaces-filter.tcl
+
+     USER  DATA       MODIFICHE
+    ===== ========== =========================================================================
+    but01 19/06/2023 Aggiunto la classe ah-jquery-date ai campi:f_data_ril_da, f_data_ril_a
+
 } {
     
    {funzione          "V"}
@@ -70,19 +75,19 @@ element create $form_name f_manu_nome \
 -optional
 
 set cerca_manu [iter_search $form_name coimmanu-list [list dummy f_cod_manu dummy f_manu_cogn dummy f_manu_nome]]
-
+#but01 Aggiunto la classe ah-jquery-date ai campi:f_data_ril_da, f_data_ril_a 
 element create $form_name f_data_ril_da \
 -label   "Da data rilascio" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+-html    "size 10 maxlength 10 $readonly_fld {} class form_element tabindex 12 class ah-jquery-date" \
 -optional
 
 element create $form_name f_data_ril_a \
 -label   "A data rilascio" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+-html    "size 10 maxlength 10 $readonly_fld {} class form_element tabindex 12 class ah-jquery-date" \
 -optional
 
 element create $form_name f_cod_manu  -widget hidden -datatype text -optional

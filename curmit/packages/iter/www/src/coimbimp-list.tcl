@@ -253,7 +253,7 @@ db_foreach cmp $sql_query {
     }
 
     set destinaz "<input type=radio name=destinazione value=$cod_impianto>"
-    set link "<a href=coimaimp-sche?nome_funz=impianti&cod_impianto=$cod_impianto&flag_no_links=T target=dett_$cod_impianto onmouseover=\"Tip ('Potenza utile: $potenza_utile<br>N. generatori: $n_generatori $dati_gen', FADEOUT, 300, FADEIN, 300, OPACITY, 80, SHADOW, true, TITLE, '<div style=white-space:nowrap;padding-right:1ex;>Dati impianto</div>')\">Dettaglio</a>"
+    set link "<a class=\"link-button-2\" href=coimaimp-sche?nome_funz=impianti&cod_impianto=$cod_impianto&flag_no_links=T target=dett_$cod_impianto onmouseover=\"Tip ('Potenza utile: $potenza_utile<br>N. generatori: $n_generatori $dati_gen', FADEOUT, 300, FADEIN, 300, OPACITY, 80, SHADOW, true, TITLE, '<div style=white-space:nowrap;padding-right:1ex;>Dati impianto</div>')\">Dettaglio</a>"
     multirow append impianti $link $cod_impianto $cod_impianto_est $resp $comune $indir $stato $destinaz
 
     lappend cod_impianti_list $cod_impianto

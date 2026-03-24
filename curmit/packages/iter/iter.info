@@ -9,16 +9,16 @@
     <implements-subsite-p>f</implements-subsite-p>
     <inherit-templates-p>t</inherit-templates-p>
     
-    <version name="2.5.68" url="http://openacs.org/repository/download/apm/iter-2.5.68.apm">
+    <version name="2.5.90" url="http://openacs.org/repository/download/apm/iter-2.5.90.apm">
         <owner url="mailto:sferrari@oasisoftware.it">Sandro Ferrari</owner>
-        <owner url="mailto:nmortoni@oasisoftware.it">Nicola Mortoni</owner>
+        <owner url="mailto:noreply@oasisoftware.it">OASI Software S.r.l.</owner>
         <summary>I.Ter. 2.5</summary>
-        <release-date>2021-06-14</release-date>
+        <release-date>2025-10-08</release-date>
         <vendor url="http://www.oasisoftware.com">OASI Software S.r.l.</vendor>
         <description format="text/html">I.Ter. 2.5</description>
         <maturity>0</maturity>
 
-        <provides url="iter" version="2.5.68"/>
+        <provides url="iter" version="2.5.90"/>
 
         <callbacks>
         </callbacks>

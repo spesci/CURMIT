@@ -2,7 +2,21 @@
 <!--
     USER  DATA       MODIFICHE
     ===== ========== ==========================================================================
-    sim02 06/09/2016 Se il parmetro flag_gest_targa e' attivo,
+    ric02 26/11/2024 MEV per regione Marche ordine 63/2022 punti 21 e 32.
+
+    rom05 31/10/2024 Ricevo e uso ls_cod_aimp
+
+    rom04 27/08/2024 Riportate nella query sel_conta_aimp le condizioni di sim01 e sim02.
+
+    rom03 14/11/2023 Vanno estratti gli impianti diversi dallo stato K
+
+    ric01 09/06/2023 Aggiunti criteri aggiuntivi per estrazione impianti.
+
+    rom02 17/01/2023 Sviluppo per Palermo Energia: aggiunto filro "Per Soggetto presente nello storico RCEE".
+
+    rom01 10/01/2021 Aggiunta variabile where_pod per filtrare gli impianti per campo pod.
+
+    sim02 06/09/2016 Se il parmetro flag_gest_targa e attivo,
     sim02            visualizzo il campo targa e non il cod impianto princ.
 
     gab01 02/05/2016 Per fare in modo che il filtro per matricola e per costruttore cerchi
@@ -122,9 +136,11 @@
                                                   and o.data_rottamaz is null)            
    left outer join coimaimp h on h.cod_impianto  = a.cod_impianto_princ --sim01
    where 1 = 1
+     and a.stato != 'K' --rom03
            $where_ammin
            $where_gend -- gab01
            $where_sogg
+	   $where_resp_rcee --rom02
            $where_word
            $where_nome
            $where_comune
@@ -137,6 +153,7 @@
 	   $where_utente
            $where_pot
            $where_codimp_est
+	   $where_ls_cod_aimp -- rom05
            $where_comb
            $where_data_installaz
            $where_flag_dichiarato
@@ -146,16 +163,24 @@
            $where_stato_aimp
            $where_last
            $where_mod_h
+	   $where_dimp_peric
+	   $where_data_scad
            $where_rife
            $where_codimp_old
            $where_cod_utenza
            $where_dpr
+	   $where_pod --rom01
            $where_prov_dati
            $where_bollino
            $where_tipo_impianto
            $where_cout
 	   $where_codimp_princ --sim01
 	   $where_targa --sim02
+	   $where_ibrido   --ric01
+	   $where_dimp     --ric01
+	   $where_dich_conformita  --ric02
+	   $where_dfm_manu         --ric02
+	   $where_dfm_resp_mod     --ric02
            $ordinamento
             limit $rows_per_page
        </querytext>
@@ -268,10 +293,11 @@
                                                   and o.flag_attivo = 'S'
                                                   and o.data_rottamaz is null)
    left outer join coimaimp h on h.cod_impianto  = a.cod_impianto_princ --sim01
-            where 1 = 1
+   where 1 = 1
            $where_ammin
            $where_gend -- gab01
            $where_sogg
+	   $where_resp_rcee --rom02
            $where_word
            $where_nome
            $where_comune
@@ -284,6 +310,7 @@
 	   $where_utente
            $where_pot
            $where_codimp_est
+	   $where_ls_cod_aimp -- rom05
            $where_comb
            $where_data_installaz
            $where_flag_dichiarato
@@ -293,16 +320,24 @@
            $where_stato_aimp
            $where_last
            $where_mod_h
+	   $where_dimp_peric
+	   $where_data_scad
            $where_rife
            $where_codimp_old
            $where_cod_utenza
            $where_dpr
+	   $where_pod --rom01
            $where_prov_dati
            $where_bollino
            $where_tipo_impianto
            $where_cout
            $where_codimp_princ --sim01
 	   $where_targa --sim02
+	   $where_ibrido   --ric01
+	   $where_dimp     --ric01
+	   $where_dich_conformita  --ric02
+	   $where_dfm_manu         --ric02
+	   $where_dfm_resp_mod     --ric02
            $ordinamento
            limit $rows_per_page
        </querytext>
@@ -321,6 +356,7 @@
            $where_ammin
            $where_gend -- gab01
            $where_sogg
+	   $where_resp_rcee --rom02
            $where_word
            $where_nome
            $where_comune
@@ -333,6 +369,7 @@
 	   $where_utente
            $where_pot
            $where_codimp_est
+	   $where_ls_cod_aimp -- rom05
            $where_comb
            $where_data_installaz
            $where_flag_dichiarato
@@ -341,14 +378,24 @@
            $where_tpdu
            $where_stato_aimp
            $where_mod_h
+	   $where_dimp_peric
+	   $where_data_scad
            $where_rife
            $where_codimp_old
            $where_cod_utenza
            $where_dpr
+	   $where_pod --rom01
            $where_prov_dati
            $where_bollino
            $where_tipo_impianto
            $where_cout
+	   $where_ibrido    --ric01
+	   $where_dimp      --ric01
+           $where_codimp_princ --rom04
+           $where_targa        --rom04
+	   $where_dich_conformita  --ric02
+	   $where_dfm_manu         --ric02
+	   $where_dfm_resp_mod     --ric02
        </querytext>
     </fullquery>
 

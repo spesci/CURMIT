@@ -11,6 +11,21 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== ==========================================================================
+    mat01 08/04/2025 Corretto problema sul refresh della pagina riscontrato dopo aggiornamento a
+    mat01            OpenACS 5.10.1
+
+    rom11 24/01/2025 Corretto problema sul refresh della pagina riscontrato dopo aggiornamento a
+    rom11            OpenACS 5.10.1
+
+    ric01 14/03/2023 Solo per Palermo aggiunto controllo in fase di inserimento di un nuovo impianto,
+    ric01            se presente più di un impianto in carico senza RCEE non permetto l'inserimento.
+
+    rom10 03/08/2022 Modifiche per allineamento enti di Ucit al nuovo cvs, i controlli sulle abilitazioni
+    rom10            vanno fatti in base al parametro flag_controllo_abilitazioni.
+
+    rom09 13/01/2022 Su segnalazione di Sandro e Regione Marche il pod e' sempre obbligatorio
+    rom09            se il combustibile e' GPL o GNL.
+
     rom08 08/04/2019 I campi pod e pdr sono resi visibili solo per le MARCHE.
 
     rom07 05/02/2019 Se un manutentore prova a inserire un impianto con caratteristiche uguali
@@ -47,6 +62,7 @@ ad_page_contract {
     {nome_funz_caller     ""}
     {flag_tipo_impianto       ""}
     {cod_combustibile    ""}
+
 } -properties {
     page_title:onevalue
     context_bar:onevalue
@@ -157,7 +173,7 @@ element create $form_name flag_tipo_impianto \
     -datatype text \
     -html   "class form_element $refresh_tipo_impianto" \
     -optional \
-    -options {{{Generatore a combustione} R} {{Pompa di calore / Macchina frigorifera} F} {{Cogenerazione / Trigenerazione} C} {{Teleriscaldamento / Teleraffrescamento} T}}
+    -options {{{Generatore a combustione} R} {{Pompa di calore / macchina frigorifera} F} {{Cogenerazione / trigenerazione} C} {{Teleriscaldamento / teleraffrescamento} T}}
 
 
 #rom02 Visto che le marche hanno una gestione delle targhe differente faccio vedere il campo già in fase di inserimento dell'impianto
@@ -192,10 +208,18 @@ element create $form_name dummy       -widget hidden -datatype text -optional
 element create $form_name submit      -widget submit -datatype text -label "$button_label" -html "class form_submit"
 element create $form_name flag_conferma        -widget hidden -datatype text -optional;#rom01
 element create $form_name __refreshing_p   -widget hidden -datatype text -optional;#gac01
+#element set_properties $form_name __refreshing_p   -value "0";#rom11
 element create $form_name changed_field    -widget hidden -datatype text -optional;#gac01
 
+
+
+#[element::get_value $form_name __refreshing_p]
+
+
+
 if {[form is_request $form_name]} {
-    
+
+   
     element set_properties $form_name funzione         -value $funzione
     element set_properties $form_name caller           -value $caller
     element set_properties $form_name nome_funz        -value $nome_funz
@@ -211,7 +235,6 @@ if {[form is_valid $form_name]} {
     set error_num 0
 
     set flag_tipo_impianto [element::get_value $form_name flag_tipo_impianto]
-
     set pdr              [element::get_value $form_name pdr                 ];#rom01
     set pod              [element::get_value $form_name pod                 ];#rom01
     set matricola        [element::get_value $form_name matricola           ];#rom01
@@ -222,12 +245,15 @@ if {[form is_valid $form_name]} {
     set modello          [string trim [element::get_value $form_name modello]];#rom03
     set __refreshing_p   [element::get_value $form_name __refreshing_p];#gac01
     set changed_field    [element::get_value $form_name changed_field];#gac01
-
+  
     if {$__refreshing_p eq "1"} {
-	    set error_num 1
-    element set_properties $form_name __refreshing_p   -value "0"
+	set error_num 1
+	element set_properties $form_name __refreshing_p   -values "0"
+#	ad_return_template
+#        return
     }
-
+    
+    
     if { $flag_tipo_impianto == "R"} {
 	set return_url "coimaimp-isrt-manu"
     }
@@ -253,7 +279,7 @@ if {[form is_valid $form_name]} {
 		element::set_error $form_name matricola "Attenzione esiste a catasto un generatore sull'impianto<br>$cod_impianto_est_esistente con la stessa matricola. Confermi l'inserimento?"
 		set controllo_impianto_matricola "t" 
 		if {$error_num == 0} {
-		    element set_properties $form_name flag_conferma -value "n"
+		    element set_properties $form_name flag_conferma -values "n" ;#mat01 corretto da -value a -values
 		}
 		incr error_num
 	    }
@@ -266,7 +292,7 @@ if {[form is_valid $form_name]} {
                                 limit 1"] == 1} {
 		    element::set_error $form_name pdr "Attenzione esiste a catasto un impianto con lo stesso PDR.<br>Confermi l'inserimento?"
 		    if {$error_num == 0} {
-			element set_properties $form_name flag_conferma -value "n"
+			element set_properties $form_name flag_conferma -values "n" ;#mat01 corretto da -value a -values
 		    }
 		    incr error_num
 		    if {[string equal $pod ""]} {#rom05 aggiunta if e contenuto
@@ -276,7 +302,7 @@ if {[form is_valid $form_name]} {
                                               and cod_combustibile = :cod_combustibile"] == 1} {
 			    element::set_error $form_name pod "Inserire POD"
 			    incr error_num
-			    element set_properties $form_name flag_conferma -value "s"
+			    element set_properties $form_name flag_conferma -values "s" ;#mat01 corretto da -value a -values
 			}		    
 		    };#rom05
 		}
@@ -290,7 +316,7 @@ if {[form is_valid $form_name]} {
                                 limit 1"] == 1} {
 		    element::set_error $form_name pod "Attenzione esiste a catasto un impianto con lo stesso POD.<br>Confermi l'inserimento?"
 		    if {$error_num == 0} {
-			element set_properties $form_name flag_conferma -value "n"
+			element set_properties $form_name flag_conferma -values "n" ;#mat01 corretto da -value a -values
 		    }
 		    incr error_num
 		}	}
@@ -302,7 +328,7 @@ if {[form is_valid $form_name]} {
 	incr error_num
     }
     if {[string equal $cod_combustibile ""]} {
-	element::set_error $form_name cod_combustibile "Inserire Combustibile"
+	element::set_error $form_name cod_combustibile "Inserire combustibile"
 	incr error_num
     }
     if {$coimtgen(regione) eq "MARCHE"} {#rom08 aggiunta if ma non suo contenuto
@@ -320,6 +346,12 @@ if {[form is_valid $form_name]} {
 	    element::set_error $form_name pod "Inserire POD"
 	    incr error_num
 	}
+	    
+	    if {$cod_combustibile in [list "4" "21"]} {#rom09 Aggiunta if e suo contenuto
+		element::set_error $form_name pod "Inserire POD"
+		incr error_num
+	    }
+	    
 	    if {$flag_tipo_impianto eq "F"} {
 		element::set_error $form_name pod "Inserire POD"
 		incr error_num
@@ -342,12 +374,13 @@ if {[form is_valid $form_name]} {
     };#rom08
     if {$flag_tipo_impianto eq "T" } {#rom01 if e suo contenuto
 	if {$cod_combustibile ne "7"} {
-	    element::set_error $form_name cod_combustibile "Selezionare il Combustibile 'Teleriscaladamento' per questa tipologia d'Impianto"
+	    element::set_error $form_name cod_combustibile "Selezionare il Combustibile 'Teleriscaladamento' per questa tipologia d'impianto"
 	    incr error_num
 	}
     };#rom01
 
-
+    
+    if {$coimtgen(flag_controllo_abilitazioni)} {#rom10 Aggiunta if ma non il suo contenuto
     if {$flag_tipo_impianto ne "" && $cod_combustibile ne "" && $cod_manutentore ne ""} {#rom01 if e suo contenuto
 	set cod_coimtpin ""
 	set descrizione_tpin ""
@@ -407,7 +440,7 @@ if {[form is_valid $form_name]} {
     };#sim
 	
     };#rom01
-    
+    };#rom10
     if {$coimtgen(regione) eq "MARCHE" && $targa ne ""} {#rom02 aggiunta if e suo contenuto
 	if {[db_0or1row q "select targa as targa_padre
                                 , flag_tipo_impianto as flag_impianto_padre
@@ -432,7 +465,7 @@ if {[form is_valid $form_name]} {
 		    #gac02		    element::set_error $form_name targa "Impossibile associare due<br>impianti della stessa tipologia"
 		    element::set_error $form_name targa "Esiste già un impianto della stessa tipologia<br>Confermi l'inserimento?"
 		    if {$error_num == 0} {#gac02
-			element set_properties $form_name flag_conferma -value "n"
+			element set_properties $form_name flag_conferma -values "n" ;#mat01 corretto da -value a -values
 		    };#gac02
 		    incr error_num
 		}
@@ -466,8 +499,31 @@ if {[form is_valid $form_name]} {
 		incr error_num
 	    }
 	}
+
+	if {$coimtgen(ente) eq "PPA"} {#ric01 aggiunta if e suo contenuto
+
+	    #ric01 conto gli impianti attivi in carico al manutentore senza rcee
+	    #ric01 inseriti dopo la partenza in produzione.
+	    db_1row q "select count(*) as num_imp_no_dich
+                         from coimaimp     
+                        where cod_manutentore = :cod_manutentore
+                          and ((flag_tipo_impianto = 'R' and potenza > '10.0')
+	                   or  (flag_tipo_impianto = 'F' and potenza > '12.0'))
+                          and data_ins > '2022-11-14'
+                          and stato = 'A'
+                          and data_prima_dich is null
+                          and data_ultim_dich is null"
+
+	    if {$num_imp_no_dich > 1} {#ric01 aggiunta if e suo contenuto
+		element::set_error $form_name cod_combustibile "Attenzione non è possibile procedere con l'inserimento perchè esiste più di un impianto senza RCEE <br> si prega di provvedere con l'inserimento."
+		incr error_num
+	    }
+	}
+	
     };#rom07
     if {$error_num > 0} {
+#	set __refreshing_prova   [element::get_value $form_name __refreshing_p]
+#	$__refreshing_prova
         ad_return_template
         return
     }

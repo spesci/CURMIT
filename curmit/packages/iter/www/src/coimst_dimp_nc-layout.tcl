@@ -6,6 +6,14 @@ ad_page_contract {
     @param nome_funz         identifica l'entrata di menu,
                              serve per le autorizzazioni
     @cvs-id coimstat-manu-list
+    ===== ========== =========================================================================
+    but02 31/10/2024 Aggiunto class=table_s nella tabella.
+
+    rom01 20/09/2023 Corretto intervento di but01 sulla variabile where_data_ins, erano state invertite
+    rom01            le variabili da_data_ins e a_data_ins nel between.
+
+    but01 12/07/2023 Aggiunto il campo comune alla stampa.
+
 } {
      nome_funz
     {nome_funz_caller  ""}
@@ -41,6 +49,15 @@ if {[string is space $nome_funz_caller]} {
 set page_title  "Lista modelli non conformi"
 set context_bar [iter_context_bar -nome_funz $nome_funz_caller]
 
+if {[string equal $a_data_ins ""]} {
+    set a_data_ins "18000101"
+}
+if {[string equal $da_data_ins ""]} {
+    set da_data_ins "21001231"
+}
+#rom01set where_data_ins "and a.data_ins between :a_data_ins and :da_data_ins"
+set where_data_ins "and a.data_ins between :da_data_ins and :a_data_ins";#rom01
+
 set where_manu ""
 if {![string equal $f_cod_manu ""]} {
     set where_manu "and a.cod_manutentore = :f_cod_manu"
@@ -51,21 +68,29 @@ set where_tipo_imp ""
 if {![string equal $flag_tipo_impianto ""]} {
     set where_tipo_imp "and b.flag_tipo_impianto = :flag_tipo_impianto"
 }
+if {![string equal $f_comune ""]} {
+    set where_comune "and l.cod_comune = :f_comune"
+} else {
+    set where_comune ""
+}
+
 
 #dpr74
+#but01 aggiunto class=table_s
 set table "<center>
-           <table border=1 cellpadding=3 cellspacing=0>
+           <table border=1 cellpadding=3 cellspacing=0 class=table_s>
            <tr>
-               <td align=center><b>Cod. impianto</b></td>
-               <td align=center><b>Responsabile</b></td>
-               <td align=center><b>Ubicazione</b></td>
-               <td align=center><b>Data controllo</b></td>
-               <td align=center><b>Modello</b></td>
-               <td align=center><b>Manutentore</b></td>
-               <td align=center><b>TI</b></td>
+               <th align=center><b>Cod.impianto</b></th>
+               <th align=center><b>Responsabile</b></th>
+               <th align=center><b>Ubicazione</b></th>
+              <th align=center><b>Comune</b></th>
+               <th align=center><b>Data controllo</b></th>
+               <th align=center><b>Modello</b></th>
+               <th align=center><b>Manutentore</b></th>
+               <th align=center><b>TI</b></th>
            </tr>"
 
-db_foreach sel_dimp "select b.cod_impianto_est
+db_foreach sel_dimp "select b.cod_impianto_est as cod_impianto_est
                             , case b.flag_tipo_impianto
                               when 'R' then 'Risc.'
                               when 'C' then 'Cog.'
@@ -78,29 +103,32 @@ db_foreach sel_dimp "select b.cod_impianto_est
                           , coalesce(d.descr_topo, '&nbsp;')||' '||coalesce(d.descrizione, '&nbsp;')||' '||coalesce(b.numero, '') as ubicazione
                           , iter_edit_data(a.data_controllo) as data_controllo_ed
                           , a.flag_tracciato
+                          , l.denominazione as comune --but01
                        from coimdimp a
             left outer join coimmanu f on f.cod_manutentore = a.cod_manutentore
                           , coimaimp b
             left outer join coimcitt c on c.cod_cittadino = b.cod_responsabile
             left outer join coimviae d on d.cod_via       = b.cod_via
-                                      and d.cod_comune    = b.cod_comune
-                      where b.cod_impianto    = a.cod_impianto
+                                      and d.cod_comune    = b.cod_comune  --but01
+            left outer join coimcomu l on l.cod_comune    = b.cod_comune
+                        where b.cod_impianto    = a.cod_impianto
                         and a.data_controllo  = (select max(e.data_controllo)
                                                    from coimdimp e
                                                   where e.cod_impianto = b.cod_impianto)
                         and a.conformita       = 'N'
                         and (a.flag_tracciato  <> 'G' or a.flag_tracciato <> 'F')
-                        and a.data_ins  between :da_data_ins and :a_data_ins
-                        and b.cod_comune      = :f_comune
-                   $where_manu
-                   $where_tipo_imp
+                    $where_data_ins --but01
+                    $where_manu
+                    $where_tipo_imp
+                   $where_comune    --but
                    order by ubicazione
 " {
 
     append table "<tr>
                      <td>$cod_impianto_est</td>
                      <td>$responsabile</td>
-                     <td>$ubicazione</td>
+                      <td>$ubicazione</td> 
+                     <td>$comune</td>
                      <td>$data_controllo_ed</td>
                      <td>$flag_tracciato</td>
                      <td>$cogn_manu</td>

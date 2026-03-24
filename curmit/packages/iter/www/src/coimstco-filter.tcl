@@ -8,6 +8,12 @@ ad_page_contract {
     @param nome_funz identifica l'entrata di menu, server per le autorizzazioni
                      serve se lista e' uno zoom che permetti aggiungi.
     @cvs-id          coimaces-filter.tcl
+
+     USER  DATA       MODIFICHE
+    ===== ========== =========================================================================
+    but01 19/06/2023  Aggiunto la classe ah-jquery-date ai campi:da_data, a_data.
+
+
 } {
     
    {caller        "index"}
@@ -61,19 +67,19 @@ element create $form_name flag_tipo_impianto \
     -options { {{} {}} {Riscaldamento R} {Raffreddamento F} {Cogenerazione C} {Teleriscaldamento T}}
 
 # fine dpr74
-
+#but01 Aggiunto la classe ah-jquery-date ai campi:da_data, a_data.
 element create $form_name da_data \
 -label   "da_data" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+-html    "size 10 maxlength 10 $readonly_fld {} class form_element class ah-jquery-date" \
 -optional
 
 element create $form_name a_data \
 -label   "a_data" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+-html    "size 10 maxlength 10 $readonly_fld {} class form_element class ah-jquery-date" \
 -optional
 
 element create $form_name caller      -widget hidden -datatype text -optional

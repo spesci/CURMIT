@@ -17,7 +17,11 @@ ad_page_contract {
                              argomenti restituiti dallo script di zoom,
                              separati da '|' ed impostarli come segue:
 
-    @cvs-id coimgend-list.tcl 
+    @cvs-id coimgend-list.tcl
+
+     USER  DATA       MODIFICHE
+    ===== ========== =======================================================================
+     but01 14/07/2023 Aggiunta class"link-button-2" nel actions"Selez"
 } { 
     {search_word       ""}
     {rows_per_page     ""}
@@ -86,7 +90,7 @@ set link_righe      [iter_rows_per_page     $rows_per_page]
 #if {$caller == "index"} {
 set link    "\[export_url_vars cod_impianto gen_prog st_progressivo st_data_validita last_gen_prog nome_funz nome_funz_caller url_list_aimp url_aimp extra_par\]"
 set actions "
-    <td nowrap><a href=\"$gest_prog?funzione=V&$link\">Selez.</a></td>"
+    <td nowrap><a href=\"$gest_prog?funzione=V&$link\" class=\" link-button-2\">Selez.</a></td>"
 set js_function ""
 #} else { 
 #    set actions [iter_select [list column_name .... ]]

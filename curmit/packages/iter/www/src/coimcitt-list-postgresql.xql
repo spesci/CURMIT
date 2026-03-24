@@ -12,6 +12,7 @@
                         , coalesce(indirizzo,'')||' '||coalesce(numero,'') as indirizzo
                         , comune
                         , cod_fiscale
+                        , cod_piva --rom01
                         , case
                           when stato_citt = 'A' then
                                'Attivo'

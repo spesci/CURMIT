@@ -15,6 +15,11 @@ ad_page_contract {
     @param extra_par Variabili extra da restituire alla lista
 
     @cvs-id          coimtmsg-gest.tcl
+
+    USER  DATA       MODIFICHE
+    ===== ========== =======================================================================
+    but01 20/06/2023 Aggiunto la classe ah-jquery-date al campo ts_ins_edit. 
+
 } {
     {cod_tmsg          ""}
     {last_key_order_by ""}
@@ -91,16 +96,20 @@ switch $funzione {
         set disabled_fld \{\}
        }
 }
+set jq_date "";#but01
+if {$funzione in "M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
 
 form create $form_name \
 -html    $onsubmit_cmd
-
+#but01 Aggiunto la classe ah-jquery-date al campo ts_ins_edit. 
 if {$funzione != "I"} {
     element create $form_name ts_ins_edit \
 	-label   "Data/Ora invio" \
 	-widget   text \
 	-datatype text \
-	-html    "size 19 maxlength 19 readonly {} class form_element" \
+	-html    "size 19 maxlength 19 readonly {} class form_element $jq_date" \
 	-optional
 
     element create $form_name utente_ins \

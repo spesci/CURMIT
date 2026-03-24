@@ -8,6 +8,9 @@ ad_page_contract {
     @param nome_funz identifica l'entrata di menu, server per le autorizzazioni
                      serve se lista e' uno zoom che permetti aggiungi.
     @cvs-id          coimstev-filter.tcl
+    USER  DATA       MODIFICHE
+    ===== ========== =========================================================================
+    but01 19/06/2023 Aggiunto la classe ah-jquery-date ai campi:f_da_data_controllo, f_a_data_controllo.
 } {
     
    {funzione         "V"}
@@ -98,7 +101,6 @@ element create $form_name flag_tipo_impianto \
     -options { {{} {}} {Riscaldamento R} {Raffreddamento F} {Cogenerazione C} {Teleriscaldamento T}}
 
 # fine dpr74
-
 element create $form_name f_tipo_data \
 -widget   select \
 -options  {{Estrazione E} {Assegnazione A} {Appuntamento I}} \
@@ -218,19 +220,19 @@ element create $form_name f_descr_via \
 -datatype text \
 -html    "size 33 maxlength 40 class form_element" \
 -optional
-
+#but01 Aggiunto la classe ah-jquery-date ai campi:f_da_data_controllo, f_a_data_controllo.
 element create $form_name f_da_data_controllo \
 -label   "Da data controllo " \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 class form_element" \
+-html    "size 10 maxlength 10 class form_element class ah-jquery-date" \
 -optional
 
 element create $form_name f_a_data_controllo \
 -label   "A data controllo " \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 class form_element" \
+-html    "size 10 maxlength 10 class form_element class ah-jquery-date" \
 -optional
 
 

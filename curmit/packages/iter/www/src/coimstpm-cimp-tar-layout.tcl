@@ -8,6 +8,12 @@ ad_page_contract {
     @param nome_funz identifica l'entrata di menu, server per le autorizzazioni
     serve se lista e' uno zoom che permetti aggiungi.
     @cvs-id          coimstpm-stat-opve-layout.tcl     
+
+    USER  DATA       MODIFICHE
+    ===== ========== =============================================================================================================
+    rom01 08/04/2024 Sandro ha chiesto di aggiungere i campi flag pagato e data pagamento della coimmovi.
+    rom01            Intervento richiesto per Terra di Lavoro ma puo' andare bene per tutti.
+
 } {
     {f_data_da         ""}
     {f_data_a          ""}
@@ -197,27 +203,6 @@ if {![string equal $f_data_da ""] ||  ![string equal $f_data_a ""]} {
     set data_a_e ""
 }
 
-#Setto la prima riga della tabella
-append stampa "
-        <center>
-          <table border=1>
-	      <tr>
-                 <th>Comune</th>
-                 <th>Ente Verif.</th>
-                 <th>Tecnico Verif.</th>
-                 <th align=left>Cod.Impianto</th>
-                 <th align=left>Responsabile</th>
-                 <th align=left>Costo</th>
-                 <th align=left>TipoCosto</th>
-                 <th align=left>Tariffa</th>
-                 <th align=left>Tipo Estr.</th>
-                 <th align=left>N.Fatt.</th>
-                 <th align=center>Esito</th>
-                 <th align=center>Dich.Scaduta?</th>
-                 <th align=center>App.n.</th>
-                  <th align=center>St.imp.</th>
-              </tr>"
-
 # Setto la prima riga del csv
 set     head_cols ""
 lappend head_cols "Da Data"
@@ -228,11 +213,13 @@ lappend head_cols "Cod.Impianto"
 lappend head_cols "Responsabile"
 lappend head_cols "Costo"
 lappend head_cols "Tipo Costo"
+lappend head_cols "Pagato";#rom01
+lappend head_cols "Data pagamento";#rom01
 lappend head_cols "Tariffa"
 lappend head_cols "Tipo Estrazione"
 lappend head_cols "Num.Fatt."
 lappend head_cols "Esito"
-lappend head_cols "Dich.Scaduta?"
+lappend head_cols "Dich.Scad?"
 lappend head_cols "App.n."
 lappend head_cols "St.Imp"
 
@@ -246,6 +233,8 @@ lappend file_cols "cod_impianto_est"
 lappend file_cols "responsabile"
 lappend file_cols "costo"
 lappend file_cols "tipo_costo"
+lappend file_cols "flag_pagato_mov";#rom01
+lappend file_cols "data_pag_mov"   ;#rom01
 lappend file_cols "tariffa"
 lappend file_cols "tp_estr"
 lappend file_cols "numfatt"
@@ -263,6 +252,8 @@ set table_def_uno [list \
 		       [list responsabile     "Responsabile"     no_sort    {l}] \
 		       [list costo            "Tot.Costo"        no_sort    {r}] \
 		       [list tipo_costo       "TipoCosto"        no_sort    {l}] \
+		       [list flag_pagato_mov  "Pagato"           no_sort    {l}] \
+		       [list data_pag_mov     "Data pagamento"   no_sort    {l}] \
 		       [list tariffa          "Tariffa"          no_sort    {r}] \
 		       [list tp_estr          "Tipo Estr."       no_sort    {l}] \
 		       [list numfatt          "Num.Fatt."        no_sort    {r}] \
@@ -275,6 +266,28 @@ set table_def_uno [list \
 # setto la query da utilizzare per la tabella dei risultati
 set select [db_map sel_cimp_tar]
 
+#Setto la prima riga della tabella
+append stampa "
+        <center>
+          <table border=1>
+	      <tr>
+                 <th>Comune</th>
+                 <th>Ente Verif.</th>
+                 <th>Tecnico Verif.</th>
+                 <th align=left>Cod.Impianto</th>
+                 <th align=left>Responsabile</th>
+                 <th align=left>Costo</th>
+                 <th align=left>TipoCosto</th>
+                 <th align=left>Pagato</th>
+                 <th align=left>DataPag.</th>
+                 <th align=left>Tariffa</th>
+                 <th align=left>Tipo Estr.</th>
+                 <th align=left>N.Fatt.</th>
+                 <th align=center>Esito</th>
+                 <th align=center>Dich.Scad?</th>
+                 <th align=center>App.n.</th>
+                  <th align=center>St.imp.</th>
+              </tr>"
 set sw_primo_rec "t"
 
 db_foreach sel_cimp_tar "" {
@@ -288,6 +301,8 @@ db_foreach sel_cimp_tar "" {
                    <td align=left>$responsabile&nbsp;</td>
                    <td align=left>$costo&nbsp;</td>
                    <td align=left>$tipo_costo&nbsp;</td>
+                   <td align=left>$flag_pagato_mov&nbsp;</td>
+                   <td align=left>$data_pag_mov&nbsp;</td>
                    <td align=left>$tariffa&nbsp;</td>
                    <td align=left>$tp_estr&nbsp;</td>
                    <td align=left>$numfatt&nbsp;</td>
@@ -343,6 +358,9 @@ lappend head_cols "Cod.Impianto"
 lappend head_cols "Indirizzo"
 lappend head_cols "Comune"
 lappend head_cols "Responsabile"
+lappend head_cols "Importo";#rom01
+lappend head_cols "Pagato";#rom01
+lappend head_cols "Data pagamento";#rom01
 
 # imposto il tracciato record del file csv
 set     file_cols ""
@@ -353,6 +371,9 @@ lappend file_cols "cod_impianto_est"
 lappend file_cols "indirizzo"
 lappend file_cols "comune"
 lappend file_cols "nome_resp"
+lappend file_cols "importo_mov";#rom01
+lappend file_cols "flag_pagato_mov";#rom01
+lappend file_cols "data_pag_mov";#rom01
 
 set table_def_due [list \
 		   [list data_controllo       "Data Controllo"        no_sort {l}] \
@@ -362,6 +383,9 @@ set table_def_due [list \
 		   [list indirizzo            "Indirizzo"             no_sort {l}] \
 		   [list comune               "Comune"                no_sort {l}] \
 		   [list nome_resp            "Responsabile"          no_sort {l}] \
+		   [list importo_mov          "Importo"               no_sort {l}] \
+		   [list flag_pagato_mov      "Pagato"                no_sort {l}] \
+		   [list data_pag_mov         "Data pagamento"        no_sort {l}] \
 		  ]
 
 # setto la query da utilizzare per la tabella dei risultati
@@ -384,6 +408,9 @@ append stampa "
                  <th align=left>Indirizzo</th>
                  <th align=left>Comune</th>
                  <th align=left>Responsabile</th>
+                 <th align=left>Importo</th>
+                 <th align=left>Pagato</th>
+                 <th align=left>Data pagamento</th>
              </tr>"
 
 set sw_primo_rec "t"
@@ -398,6 +425,9 @@ db_foreach sel_stat_ma "" {
                    <td align=left>$indirizzo&nbsp;</td>
                    <td align=left>$comune&nbsp;</td>
                    <td align=left>$nome_resp&nbsp;</td>
+                   <td align=left>$importo_mov&nbsp;</td>
+                   <td align=left>$flag_pagato_mov&nbsp;</td>
+                   <td align=left>$data_pag_mov&nbsp;</td>
                </tr>"   
 
     set file_cols_list ""
@@ -434,7 +464,7 @@ close $file_csv
 close $file_csv_due
 
 # lo trasformo in PDF
-iter_crea_pdf [list exec htmldoc --webpage --header ... --footer ... --quiet --landscape --bodyfont arial --left 1cm --right 1cm --top 0cm --bottom 0cm -f $file_pdf $file_html]
+iter_crea_pdf [list exec htmldoc --webpage --header ... --footer ... --quiet --landscape --bodyfont arial --fontsize 8 --left 1cm --right 1cm --top 0cm --bottom 0cm -f $file_pdf $file_html]
 
 ns_unlink $file_html
 ad_return_template

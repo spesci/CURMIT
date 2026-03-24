@@ -5,6 +5,8 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== ================================================================================================
+    ric01 03/10/2025 Punto 4 MEV Marche: lettura storico ditta di manutenzione.
+
     gac04 16/11/2018 Varie modifiche alla stampa su richiesta della Regione Marche
 
     gac03 29/11/2017 modificato potenza focolare e potenza utile, aggiunto nominale e tolto lib
@@ -133,7 +135,10 @@ db_1row query "
 
 # Altri dati del manutentore/dichiarante
 db_1row query "
-    select nome    as nome_manu,
+ 
+select *
+  from (
+   select nome    as nome_manu,
            cognome as cognome_manu,
            cod_piva,
            localita_reg,
@@ -150,9 +155,38 @@ db_1row query "
            flag_d,
            flag_e,
            flag_f,
-           flag_g
+           flag_g,
+           current_date as data_validita
         from coimmanu
-    where cod_manutentore = :cod_manutentore"
+    where cod_manutentore = :cod_manutentore
+
+   union   --ric01 aggiunta union
+
+      select nome    as nome_manu,
+           cognome as cognome_manu,
+           cod_piva,
+           localita_reg,
+           reg_imprese,
+           indirizzo as indirizzo_manu,
+           telefono,
+           fax,
+           email,
+           comune    as comune_manu,
+           provincia as provincia_manu,
+           flag_a,
+           flag_b,
+           flag_c,
+           flag_d,
+           flag_e,
+           flag_f,
+           flag_g,
+           st_data_validita as data_validita
+        from coimmanu_st
+    where cod_manutentore = :cod_manutentore
+) as st
+where st.data_validita >= :data_dich_db
+order by st.data_validita
+limit 1"
 
 # Estraggo i dati dell'ente per la stampa
 iter_get_coimtgen

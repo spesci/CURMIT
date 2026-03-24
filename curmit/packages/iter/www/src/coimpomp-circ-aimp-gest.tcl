@@ -20,6 +20,11 @@ ad_page_contract {
     
     USER  DATA       MODIFICHE
     ===== ========== ==========================================================================
+    rom04 09/08/2024 Su richiesta di Paravan fatto in modo di poter dismettere una Pompa senza
+    rom04            dover indicarne una sostituente.
+
+    but01 22/06/2023 Aggiunto la classe ah-jquery-date ai campi:data_installaz,data_dismissione.
+
     rom03 21/12/2018 Aggiunto campo num_po_sostituente.
 
     rom02 07/11/2018 Cambiato return_url per tornare al programma dei "Sistemi di distribuzione"
@@ -104,6 +109,21 @@ switch $funzione {
         set disabled_fld \{\}
     }
 }
+set jq_date "";#but01
+if {$funzione in "M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
+
+set msg_pomp_dism "";#rom04
+if {$funzione ne "I" && 
+    [db_0or1row q "select 1
+                     from coimpomp_circ_aimp
+                    where cod_impianto       = :cod_impianto
+                      and cod_pomp_circ_aimp = :cod_pomp_circ_aimp
+                      and data_dismissione     is not null
+                      and flag_sostituito    = 'f'"]} {#rom04 Aggiuta if e contenuto
+set msg_pomp_dism "<font color=red><b>Pompa di circolazione dismessa</font></b>"
+}
 
 form create $form_name \
     -html    $onsubmit_cmd
@@ -121,19 +141,19 @@ element create $form_name num_po_sostituente \
     -datatype text \
     -html    "size 3 maxlength 3 $readonly_fld {} class form_element" \
     -optional
-
+#but01
 element create $form_name data_installaz \
     -label   "Data installazione" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
-
+#but01
 element create $form_name data_dismissione \
     -label   "Data dismissione" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional 
 #rom01
 element create $form_name flag_sostituito \
@@ -289,8 +309,8 @@ if {[form is_valid $form_name]} {
         }
 
         if {![string is space $data_dismissione] && $flag_sostituito ne "t"} {#rom01 aggiunta if e contenuto
-            element::set_error $form_name flag_sostituito "Selezionare \"Si\" se \"Data dismissione\" &egrave; compilata"
-               incr error_num
+            #rom04 element::set_error $form_name flag_sostituito "Selezionare \"Si\" se \"Data dismissione\" &egrave; compilata"
+	    #rom04 incr error_num
         }
         if {[string is space $data_dismissione] && $flag_sostituito ne "f"} {#rom01 aggiunta if e contenuto
             element::set_error $form_name flag_sostituito "Selezionare \"Si\" solo se \"Data dismissione\" &egrave; compilata"
@@ -336,10 +356,10 @@ if {[form is_valid $form_name]} {
 	    } 
 	};#rom03
 	if { [string is space $num_po_sostituente] && $flag_sostituito eq "t"} {#rom03 if, elseif e contenuto
-	    element::set_error $form_name num_po_sostituente "Inserire quale sarà l'PO sostituente"
+	    element::set_error $form_name num_po_sostituente "Inserire quale sarà la PO sostituente."
 	    incr error_num
 	} elseif {![string is space $num_po_sostituente] && $flag_sostituito ne "t"} {
-	    element::set_error $form_name num_po_sostituente "Inserire solo se si sostituisce l'PO"
+	    element::set_error $form_name num_po_sostituente "Inserire solo se si sostituisce la PO."
 	    incr error_num
 	};#rom03
 

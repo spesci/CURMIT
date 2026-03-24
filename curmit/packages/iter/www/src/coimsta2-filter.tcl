@@ -8,6 +8,9 @@ ad_page_contract {
     @param nome_funz identifica l'entrata di menu, server per le autorizzazioni
                      serve se lista e' uno zoom che permetti aggiungi.
     @cvs-id          coiminco-filter.tcl
+     ===== ========== =========================================================================
+    but01 19/06/2023 Aggiunto la classe ah-jquery-date ai campi Data estrazione da e Data estrazione a.
+
 } {  
    {f_cod_comune      ""}
    {f_cod_quartiere   ""}
@@ -56,6 +59,12 @@ set flag_viario $coimtgen(flag_viario)
 
 set readonly_fld \{\}
 set disabled_fld \{\}
+
+set jq_date "";#but01
+if {$funzione in "V M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
+
 form create $form_name \
 -html    $onsubmit_cmd
 
@@ -72,18 +81,20 @@ if {$flag_ente == "P"} {
     element create $form_name f_cod_comune  -widget hidden -datatype text -optional
 
 }
+#but01 Aggiunto la classe ah-jquery-date ai campi Data estrazione da e Data estrazione a.
+
 element create $form_name f_data1 \
 -label   "data inizio" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+-html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
 -optional \
 
 element create $form_name f_data2 \
 -label   "data fine" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+-html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
 -optional \
 
 element create $form_name f_campagna \

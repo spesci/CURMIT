@@ -21,6 +21,7 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    but01 14/07/2023 Aggiunta class"link-button-2" nel actions"Selez"
     nic01 28/09/2016 Sistemata paginazione in modo coerente con l'ordinamento
 
 } {
@@ -171,8 +172,9 @@ set rows_per_page   [iter_set_rows_per_page $rows_per_page $id_utente]
 set link_righe      [iter_rows_per_page     $rows_per_page]
 
 set link    "\[export_url_vars cod_documento cod_impianto url_aimp url_list_aimp last_cod_documento nome_funz nome_funz_caller caller extra_par\]"
+#but01
 set actions "
-    <td nowrap><a href=\"$gest_prog?funzione=V&$link\">Selez.</a></td>"
+    <td nowrap><a href=\"$gest_prog?funzione=V&$link\" class=\"link-button-2\">Selez.</a></td>"
 set js_function ""
 set link_filter [export_ns_set_vars "url"]
 

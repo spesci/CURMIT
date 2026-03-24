@@ -18,6 +18,10 @@ ad_page_contract {
                              separati da '|' ed impostarli come segue:
 
     @cvs-id coimprvv-list.tcl 
+    USER  DATA       MODIFICHE
+    ===== ========== =======================================================================
+    but01 14/07/2023 Aggiunta class"link-button-2" nel actions"Selez"
+
 } {
     {search_word       ""}
     {rows_per_page     ""}
@@ -82,9 +86,10 @@ set rows_per_page   [iter_set_rows_per_page $rows_per_page $id_utente]
 set link_righe      [iter_rows_per_page     $rows_per_page]
 
 #if {$caller == "index"} {
-    set link    "\[export_url_vars cod_prvv cod_impianto url_aimp url_list_aimp last_cod_prvv nome_funz nome_funz_caller extra_par\]"
+set link    "\[export_url_vars cod_prvv cod_impianto url_aimp url_list_aimp last_cod_prvv nome_funz nome_funz_caller extra_par\]"
+#but01
     set actions "
-    <td nowrap><a href=\"$gest_prog?funzione=V&$link\">Selez.</a></td>"
+    <td nowrap><a href=\"$gest_prog?funzione=V&$link\" class=\"link-button-2\">Selez.</a></td>"
     set js_function ""
 #} else { 
 #    set actions [iter_select [list column_name .... ]]

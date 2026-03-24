@@ -11,6 +11,13 @@ ad_page_contract {
     @                serve se lista e' uno zoom che permetti aggiungi.
 
     @cvs-id          coimbpos-filter.tcl
+
+    USER  DATA       MODIFICHE
+    ===== ========== =================================================================================================
+    but01 19/06/2023 Aggiunto la classe ah-jquery-date al campi: f_data_controllo_da, f_data_controllo_a,
+    but01            f_data_emissione_da, f_data_emissione_a,f_data_scarico_da, f_data_pagamento_da, f_data_pagamento_a.
+
+
 } {
     {funzione         "V"}
     {caller       "index"}
@@ -60,61 +67,61 @@ set onsubmit_cmd ""
 
 form create $form_name \
     -html    $onsubmit_cmd
-
+#but01 Aggiunto la classe ah-jquery-date al campi: f_data_controllo_da, f_data_controllo_a, f_data_emissione_da, f_data_emissione_a,f_data_scarico_da, f_data_pagamento_da, f_data_pagamento_a.
 element create $form_name f_data_controllo_da \
     -label   "Da data appuntamento" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 class form_element" \
+    -html    "size 10 maxlength 10 class form_element class ah-jquery-date" \
     -optional
 
 element create $form_name f_data_controllo_a \
     -label   "A data appuntamento" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 class form_element" \
+    -html    "size 10 maxlength 10 class form_element class ah-jquery-date" \
     -optional
 
 element create $form_name f_data_emissione_da \
     -label   "Da data estrazione file" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 class form_element" \
+    -html    "size 10 maxlength 10 class form_element class ah-jquery-date" \
     -optional
 
 element create $form_name f_data_emissione_a \
     -label   "A data estrazione file" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 class form_element" \
+    -html    "size 10 maxlength 10 class form_element class ah-jquery-date" \
     -optional
 
 element create $form_name f_data_scarico_da \
     -label   "Da data scarico" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 class form_element" \
+    -html    "size 10 maxlength 10 class form_element class ah-jquery-date" \
     -optional
 
 element create $form_name f_data_scarico_a \
     -label   "A data scarico" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 class form_element" \
+    -html    "size 10 maxlength 10 class form_element class ah-jquery-date" \
     -optional
 
 element create $form_name f_data_pagamento_da \
     -label   "Da data pagamento" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 class form_element" \
+    -html    "size 10 maxlength 10 class form_element class ah-jquery-date" \
     -optional
 
 element create $form_name f_data_pagamento_a \
     -label   "A data pagamento" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 class form_element" \
+    -html    "size 10 maxlength 10 class form_element class ah-jquery-date" \
     -optional
 
 element create $form_name f_flag_pagati \

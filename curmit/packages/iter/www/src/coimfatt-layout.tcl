@@ -12,6 +12,11 @@ ad_page_contract {
                      navigazione con navigation bar
     @param extra_par Variabili extra da restituire alla lista
     @cvs-id          coimfatt-layout.tcl
+
+    USER  DATA       MODIFICHE
+    ===== ========== ============================================================================================
+    rom01 23/05/2023 Resa standard una modifica per il Comune di Salerno sul logo.
+
 } {
 
     {nome_funz         ""}
@@ -75,6 +80,12 @@ if {[db_0or1row sel_boll ""] == 0} {
     set data_fatt ""
 }
 
+if {$flag_ente eq "CSALERNO"} {#rom01 Aggiunte if, else e il loro contenuto
+    set logo_stmp "$logo_dir/LogoSinergia.jpg"
+} else {
+    set logo_stmp "$logo_dir/stpt_fattura.jpg"
+}
+
 set testata "
 <table width=100% > 
     <tr>
@@ -85,7 +96,7 @@ set testata "
     </tr>
     <tr>   
       <td align=center width=100%>
-        <img height=90 src=$logo_dir/stpt_fattura.jpg>
+        <img height=90 src=$logo_stmp>
       </td>
       <td valign=center align=center width=90%>
          <b><i></i><i></></b>

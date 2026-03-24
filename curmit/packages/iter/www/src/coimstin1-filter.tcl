@@ -2,8 +2,7 @@ ad_page_contract {
 
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
-    rom01 21/10/2020 Su segnalazione di Salerno modificato page_title per renderlo
-    rom01            uguale al nome del menu', Sandro ha detto che va bene per tutti.
+    but01 20/06/2023 Aggiunto la classe ah-jquery-date ai campi da_data_app, a_data_app.
     
 } {
     {funzione        "V"}
@@ -46,6 +45,11 @@ set readonly_fld "readonly"
 set disabled_fld "disabled"
 set onsubmit_cmd ""
 
+set jq_date "";#but01
+if {$funzione in "V M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
+
 form create $form_name \
 -html    $onsubmit_cmd
 
@@ -66,19 +70,19 @@ element create $form_name cod_manutentore \
     -html    "class form_element" \
     -optional \
     -options [iter_selbox_from_table coimmanu cod_manutentore "cognome || ' ' || coalesce(nome,'') as manutentore" cod_manutentore ]
-
+#but01 Aggiunto la classe ah-jquery-date ai campi da_data_app, a_data_app.
 element create $form_name da_data_app \
     -label   "da_data_app" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 class form_element" \
+    -html    "size 10 maxlength 10 class form_element $jq_date" \
     -optional 
 
 element create $form_name a_data_app \
     -label   "a_data_app" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 class form_element" \
+    -html    "size 10 maxlength 10 class form_element $jq_date" \
     -optional
 
 

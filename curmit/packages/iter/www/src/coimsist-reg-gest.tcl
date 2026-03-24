@@ -20,6 +20,9 @@ ad_page_contract {
     
     USER  DATA       MODIFICHE
     ===== ========== ==========================================================================
+    rom03 31/01/2022 Corretto errore che non permetteva di sostituire correttamente il SR in fase
+    rom03            di modifica.
+
     rom02 04/12/2020 Corretto refuso in fase di update della coimaimp.
 
     rom01 21/12/2018 Aggiunto campo num_sr_sostituente
@@ -338,6 +341,7 @@ if {[form is_valid $form_name]} {
                                                            from coimaimp_sistemi_regolazione 
                                                           where cod_impianto = :cod_impianto
                                                             and numero_sistema_regolazione = :num_sr
+                                                            and numero_sistema_regolazione = :num_sr_sostituente --rom03
                                                              or :num_sr = :num_sr_sostituente
                                                              or :num_sr_sostituente = 0 limit 1"] == 1} {
 		element::set_error $form_name num_sr_sostituente "Deve essere un numero intero diverso da 0 e da se stesso"

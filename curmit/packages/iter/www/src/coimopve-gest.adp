@@ -1,6 +1,11 @@
 <!--
     USER  DATA       MODIFICHE
     ===== ========== =======================================================================
+    rom02 15/09/2021 Modifiche per targatura Ispettori: Aggiunto il campo cod_portale, va valorizzato con lo stesso
+    rom02            valore dell'omonimo campo del portale (iter_inspectors) dopo che viene registrato l'ispettore.
+    rom02            Modifica riportata per allinemanto di UCIT al nuovo cvs. E' stata una modifica fatta appositamente
+    rom02            per Ucit e con Sandro si e' deciso di rendere il campo visibile solo per Regione Friuli.
+
     rom01 13/09/2018 Aggiunto campo email
 -->
 
@@ -142,6 +147,14 @@
         <span class="errori">@formerror.codice_fiscale;noquote@</span>
         </formerror>
     </td>
+    <if @coimtgen.regione@ eq "FRIULI-VENEZIA GIULIA"><!--rom02 Aggiunta if e suo contenuto -->
+      <td valign=top align=right class=form_title>Codice Portale</td>
+      <td valign=top><formwidget id="cod_portale">
+        <formerror  id="cod_portale"><br>
+	 <span class="errori">@formerror.cod_portale;noquote@</span>
+        </formerror>
+     </td>
+   </if>
 </tr>
 
 <tr><td valign=top align=right class=form_title>Note</td>

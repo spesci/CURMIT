@@ -19,7 +19,112 @@ ad_page_contract {
     @cvs-id          coimgend-gest.tcl
     
     USER  DATA       MODIFICHE
-    ===== ========== =============================================================================
+    ===== ========== ====================================================================================================
+    mat03 09/09/2025 Aggiunto l'invio di una mail se viene cambiata la matricola o se il generatore è attivo e l'impianto no.
+
+    mat02 03/03/2025 Aggiustati gli element gen_prog e gen_prog_est nel form perche perdevano il valore nel submit
+
+    mat01 27/01/2025 Corretto problema sul refresh della pagina riscontrato dopo aggiornamento a
+    mat01            OpenACS 5.10.
+
+    rom41 28/02/2028 Corretto erroe sul mittente della mail inviata all'ente nei casi di generatori indicati con camera di
+    rom41            combustione aperta e scarico fumi a camino collettivo.
+
+    rom40 24/11/2023 Anche per Citta' Metropolitana di Napoli gli utenti dell'ente e amministratori i controlli sui campi
+    rom40            sono sempre saltati come su Regione Friuli.
+
+    but02 21/06/2023 Aggiunto la classe ah-jquery-date al campo: data_installaz, data_rottamaz, data_costruz_bruc
+    but02            , data_installaz_bruc, data_costruz_gen
+
+    rom39 06/07/2023 Modificata l'opzione del campo rif_uni_10389 per il teleriscaldamento su indicazione di Giuliodori.
+    rom39            Con SAndro si e' deciso di far valere la modifica per tutti gli enti.
+
+    rom38 29/06/2023 Gestito con if il mittente della mail per la Provincia di Fermo.
+
+    rom37 22/05/2023 Modifica all'intervento di but01 su segnalazione di Belluzzo: Il controllo non va fatto per i combustibili solidi.
+
+    rom36 08/05/2023 Committata vecchia modifica per Palermo, fluido_lato_utenze non e' piu' obbligatorio.
+
+    but01 27/03/2023 Ho dovuto aggiungere un controllo de generatore a tiraggio naturale con data installazione > 01 01 2022
+    but01            deve avere per forza il flag canna fumaria collettiva  per tutti gli enti (tranne le marche) 
+
+    ric01 03/03/2023 Solo per UCIT, per gli impianti del freddo, mostro le potenze utili dei generatori in base alla loro
+    ric01            destinazione d'uso e non piu la maggiore delle due.
+
+    rom35 22/02/2023 Regione Friuli ha richiesto che per gli utenti dell'ente e amministratori i controlli sui campi obbligatori
+    rom35            siano sempre saltati. Hanno richiesto che le potenze per il freddo siano sempre obbligatorie.
+    rom35            Infine hanno chiesto do eliminare alcune voci della destinazione d'uso perche' considerate doppie rispetto ad altre.
+
+    rom34 02/02/2023 Messo il sistema di azionamento obbligatorio anche per Regione Campania e Palermo sugli impianti del freddo.
+    rom34            Il campo serve per calcolare la scadenza degli rcee quindi deve essere valorizzato per evitare server error.
+
+    rom33 30/01/2023 Belluzzo ha richiesto con mail "Richiesta informativa normativa Dpr 660/96" del 20/01/2023 di rendere
+    rom33            il campo Marcatura efficienza energetica (marc_effic_energ) non obbligatorio.
+
+    rom32 25/01/2023 Belluzzo ha richiesto che il campo Marcatura efficienza energetica (marc_effic_energ) sia fatto a tendina
+    rom32            come per Regione Marche, ho avvisato Sandro che chi aveva valorizzato in precedenza il campo con valori diversi
+    rom32            da quelli prestabiliti da noi non vedra' piu' niente ma mi ha detto che va bene cosi'.
+
+    rom31 24/01/2023 Modificato intervento di rom30, i controlli fatti per il Friuli sulla modifica del gen_prog non servono
+    rom31            piu' perche' il gen_prog non e' piu' modificabile quindi li bypasso.
+
+    mic01 05/08/2022 Creata variabile pot_max per visualizzare correttamente le potenze sugli impianti del freddo e per
+                     selezionare la fascia di potenza corretta, prendendo in considerazione il valore massimo tra
+                     tot_pot_focolare_nom e tot_pot_focolare_lib.
+
+    rom30 27/07/2022 Modifiche per allinemanto enti di UCIT al nuovo cvs:
+    rom30            Le modifiche e particolarita' fatte per i vari enti di UCIT ora vengono messi
+    rom30            in un'unica condizione riguardante la Regione Friuli.
+    rom30            I controlli sulle abilitazioni vengono fatti in base al parametro flag_controllo_abilitazioni.
+    rom30            Modifica per UCIT: i manutentori non possono andare a modificare il gen_prog.
+    rom30            Modifica per UCIT: non si puo modificare il gen_prog se ci al generatore ci
+    rom30            sono gia' associati degli RCEE, rapoorti di ispezione e controlli di frequenza.
+    rom30            Corretto un erore dpresente nella modifica di rom01.
+    rom30            Ucit non deve piu' vedere la Potenza frigorifera utile (pot_utile_nom_freddo) sul freddo.
+
+
+    rom29 20/04/2022 Su richiesta di regione Marche modificata MEV Stato impianto "Rottamato":
+    rom29            se il manutentore disattiva il generatore, e non ce ne sono altri attivi,
+    rom29            l'impianto va messo in stato NonAttivo. Se poi un generatore viene riattivato
+    rom29            l'impianto va riportato in stato Attivo se a farlo e' un utente dell'ente,
+    rom29            se la riattivazione viene fatta dal manutentore l'impianto non va riattivato.
+    rom29            Queste modifiche sono state richieste e concordate nella call tra Sandro e regione.
+
+    rom28 08/04/2022 Corretto intervento di rom24, siccome ora i bruciatori non sono piu' modificati
+    rom28            o inseriti da qua, non devo piu' andare a modificare i loro dati da questo programma.
+
+    rom27 07/04/2022 Su segnalazione di Regione Basilicata corretta anomalia sul campo mod_funz.
+    rom27            Per gli impianti diversi dal caldo non era possibile indicare le note se si
+    rom27            selezionava Altro dalla tendina. I controlli sull'obbligatorieta' vanno fatti anche
+    rom27            per la cogenerazione, tutto questo vale se no si e' di Regione Marche che usa i campi
+    rom27            in maniera diversa e non aveva l'anomalia.
+    rom27            Regione Basilicata ha richiesto di non aver piu' il blocco dei combustibili
+    rom27            per i manutentori come Regione Marche.
+    
+    rom26 31/03/2022 Su richiesta di Giuliodori con mail "MEV rilasciata in produzione." del 28/03/2022
+    rom26            vado a modificare/implementare l'intervento di rom25 per la MEV Stato impianto "Rottamato".
+    rom26            Aggiunto warning in caso di disattivazione del generatore e cambiato messaggio di errore per la data_rottamaz
+
+    rom25 18/03/2022 Manutenzione evolutiva richiesta da regione Marche.
+    rom25            25.  Stato impianto "Rottamato" in scheda 1.bis:
+    rom25            Se vengono resi non attivi i generatori l'impianto assume lo stato di NON ATTIVO.
+    rom25            Se l'impianto e' non Attivo e viene riattivato il generatore
+    rom25            anche l'impianto passa in stato Attivo.
+    
+    rom24 02/03/2022 Regione Marche tramite mail di Giuliodori "sostituzione bruciatore" del 20/01/2022
+    rom24            ha richiesto che per ogni generatore sia possibile sostituire il bruciatore.
+    rom24            Con Sandro si e' deciso di dare la possibilita' di avere piu' bruciatori attivi
+    rom24            per lo stesso generatore. Quando un generatore viene sostituito i bruciatori attivi
+    rom24            collegati al generatore vanno disattivati. Il nuovo generatore attivo all'inizio non
+    rom24            ha nessun bruciatore collegato.
+
+    rom23 30/11/2021 In fase di cancellazione devo verificare se il gen_prog che sto eliminando
+    rom23            figura come gen_prog_originario in un altro generatore dello stesso impianto e
+    rom23            andare a sbiancare il campo, altrimenti la stampa del libretto non esce corretta.
+
+    rom22 14/05/2021 Regione Basilicata ha gli stessi blocchi del combustibile come Regione Marche.
+    rom22            Reso obbligatorio il sistema di azionamento 
+
     sim20 04/08/2021 Corretto errore su controlli dei campi cop e per
 
     rom21 20/04/2021 Su richiesta di Regione Marche vado ad implementare le modifiche fatte da sim19.
@@ -40,7 +145,7 @@ ad_page_contract {
 
     rom19 11/09/2020 Per un'anomalia segnalata sulla disattivazione di un generatore su Salerno 
     rom19            Sandro ha detto che il campo motivazione_disattivo va messo obbligatorio 
-    rom19            solo per la Regione Marche. Sugli altri enti il campo non è visibile.
+    rom19            solo per la Regione Marche. Sugli altri enti il campo non e visibile.
 
     rom18 21/05/2020 Aggiunto controllo sui campi cop e per su richiesta di Sandro: non possono
     rom18            superare il valore di 10
@@ -55,12 +160,12 @@ ad_page_contract {
     sim16 04/02/2020 La gestione del numero progressivo in fase di sostituzione usato per la Regione
     sim16            Marche ora diventa standard.
 
-    sim15 04/12/2019 Le autorità competenti, devono poter modificare il combustibile anche se prima era
+    sim15 04/12/2019 Le autorita competenti, devono poter modificare il combustibile anche se prima era
     sim15            vuoto. 
 
-    gac08 25/11/2019 Le autorità competenti, per gli impianti del caldo, potranno visualizzare la
+    gac08 25/11/2019 Le autorita competenti, per gli impianti del caldo, potranno visualizzare la
     gac08            tendina "Combustibile" con tutti i combustibili del caldo.
-    gac08            Se si seleziona un tipo combustibile diverso dal combustibile precedente uscirà
+    gac08            Se si seleziona un tipo combustibile diverso dal combustibile precedente uscira
     gac08            un warning non bloccante.
     
     sim14 25/11/2019 Per calcolare la fascia di potenza usiamo la max tra Potenza frigorifera nominale
@@ -69,21 +174,21 @@ ad_page_contract {
     sim13 22/11/2019 Corretto controlli su fascia di potenza sul teleriscaldamento.
 
     sim12 11/11/2019 Modifico le regole di controllo nel caso in cui l data costruzione sia successiva al 26/09/2015
-    sim12            -Se Camera di combustione è uguale a "Stagna", allora Classif. DPR 660/96 deve essere
+    sim12            -Se Camera di combustione e uguale a "Stagna", allora Classif. DPR 660/96 deve essere
     sim12             uguale a "A gas a condensazione".
-    sim12            -Se Camera di combustione è uguale a "Aperta", allora non ho vincoli su Classif. DPR 660/96. Però
-    sim12             se "Scarico fumi" è uguale a "Camino collettivo" va avvistata con una email la autorità
+    sim12            -Se Camera di combustione e uguale a "Aperta", allora non ho vincoli su Classif. DPR 660/96. Pero
+    sim12             se "Scarico fumi" e uguale a "Camino collettivo" va avvistata con una email la autorita
     sim12             competente.
-    sim12            Il vecchio controllo è stato tolto.
+    sim12            Il vecchio controllo e stato tolto.
 
     rom05B 09/04/2019 Per la BAT sono stati portati su iter standard i controlli sulla tipologia impianto
-    rom05B           già sviluppati per la regione ma non committati. Sono marcati come rom03M
+    rom05B           gia sviluppati per la regione ma non committati. Sono marcati come rom03M
 
     rom16 05/03/2019 Aggiunto il campo tel_alimentazione su richiesta della Regione Marche, Sandro
     rom16            ha detto che il campo puo' essere visualizzato da tutti gli enti, basta che
     rom16            l'impianto sia del teleriscaldamento.
 
-    rom15 19/02/2019 Per gli impianti del freddo della Regione Marche non faccio più visualizzare
+    rom15 19/02/2019 Per gli impianti del freddo della Regione Marche non faccio piu visualizzare
     rom15            i campi flag_altro e funzione_grup_ter_note_altro. 
     rom15            Richiesta fatta dalla Regione dopo call del 18/02/2019.
     rom15            Richiesta di Sandro: per le marche in un impianto del freddo se il campo
@@ -92,9 +197,9 @@ ad_page_contract {
     rom15            dell'Installatore dopo la data del 01-07-2018 per le marche.
     
     rom14 23/01/2019 Aggiunto warning richiesto dalle Marche sulla sostituzione: se si sostituisce
-    rom14            un generatore e la Tipologia Intervento della Scheda1 è diveersa da
+    rom14            un generatore e la Tipologia Intervento della Scheda1 e diveersa da
     rom14            "Sostituzione del generatore" mostro un messaggio in rosso non bloccante.
-    rom14            La regione marche chiede di non avere più obbligatorio il campo data_costruz_gen
+    rom14            La regione marche chiede di non avere piu obbligatorio il campo data_costruz_gen
     rom14            per gli impianti del freddo, del teleriscaldamento e la cogenerazione.
     
     rom13 08/01/2019 Modifiche per le Marche sul freddo.
@@ -114,16 +219,16 @@ ad_page_contract {
     rom11 15/11/2018 Gestisco la visualizzazione dei messagi di errore relativi al campo gen_prog.
 
     rom10 05/11/2018 Tolto il controllo sul campo cod_utgi per la Regione Marche che non visualizza
-    rom10            più il campo. Nella stampa del libretto la sezione 1.3 sarà compilata in base al
+    rom10            piu il campo. Nella stampa del libretto la sezione 1.3 sara compilata in base al
     rom10            campo 
 
     rom09 24/10/2018 Su richiesta delle MARCHE aggiungo i campi cognome_inst e nome_inst dell'installatore.
     rom09            Li faccio vedere solo alla Regione Marche e lo metto obbligatorio solo se 
-    rom09            data_installaz è maggiore del 01-07-2018.  
+    rom09            data_installaz e maggiore del 01-07-2018.  
     rom09            Se un manutentore modifica, aggiunge o toglie l'Intestatario con la data_installaz
-    rom09            maggiore del 01-07-2018 mando una mail all'autorità competente.
-    rom09bis         Sandro mi ha detto che per ogni generatore di un impianto può esserci un installatore
-    rom09bis         differente, il cod_installatore verrà qiondi preso e salvato sulla coimgend e non più
+    rom09            maggiore del 01-07-2018 mando una mail all'autorita competente.
+    rom09bis         Sandro mi ha detto che per ogni generatore di un impianto puo esserci un installatore
+    rom09bis         differente, il cod_installatore verra qiondi preso e salvato sulla coimgend e non piu
     rom09bis         dalla coimaimp. (Aggiunta del 15/01/2019).
     
     rom08 17/10/2018 Su richiesta di Sandro faccio vedere gli asterischi rossi solo se sono in
@@ -134,7 +239,7 @@ ad_page_contract {
     rom07.bis        gen_prog_est come max + 1 dei generatori in generale ma bisogna fare il max + 1
     rom07.bis        solo dei generatori sostituiti.
 
-    sandro07082018   aggiunto la possibilità di digitare solo la data nella data costruzione
+    sandro07082018   aggiunto la possibilita di digitare solo la data nella data costruzione
     gac05 16/07/2018 Marcatura efficienza energetica obbligatorio solo dal 01/01/2015, quindi non 
     gac05            devo bloccare se inserito con data installazione anteriore.
 
@@ -163,13 +268,13 @@ ad_page_contract {
     rom04 20/12/2018 UCIT e Comune di Trieste non possono modificare le prove fumi per il caldo e  
     rom04            il numero circuiti per il freddo.
 
-    rom03 16/10/2018 Sui generatori di un impianto del freddo non faccio più vedere il campo dpr_660_96.
+    rom03 16/10/2018 Sui generatori di un impianto del freddo non faccio piu vedere il campo dpr_660_96.
 
     sim10 10/09/2018 Corretto modifica rom02 che faceva la if sulla potenza non in formato numerico
 
     rom02 11/04/2018 Fatte modifiche della nuova scheda 4.1bis per Regione Marche 
 
-    sim09 27/06/2018 Va tenuto conto della potenza del generatore in cui sto operando solo se Ã¨
+    sim09 27/06/2018 Va tenuto conto della potenza del generatore in cui sto operando solo se e
     sim09            attivo
 
     rom02 15/06/2018 UCIT e Comune Trieste possono avere solo una prova fumi se su un impianto del 
@@ -267,7 +372,6 @@ ad_page_contract {
     focus_field:onevalue
 }
 
-
 # B80: RECUPERO LO USER - INTRUSIONE
 set id_utente [ad_get_cookie iter_login_[ns_conn location]]
 set id_utente_loggato_vero [ad_get_client_property iter logged_user_id]
@@ -291,6 +395,11 @@ set cod_manutentore [iter_check_uten_manu $id_utente];#rom03M
 #	ns_log Notice "********AUTH-CHECK-GENDGEST-OK;ip-$clientip;$id_utente;$id_utente_loggato_vero;$session_id;$nome_funz;$adsession;"
 #    }
 # ***
+
+db_1row query "select id_settore
+                    , id_ruolo
+                 from coimuten
+                where id_utente = :id_utente";#rom35
 
 # Controlla lo user
 
@@ -331,19 +440,46 @@ set dett_tab [iter_tab_form $cod_impianto]
 set link_list_script {[export_url_vars cod_impianto last_gen_prog caller nome_funz_caller nome_funz url_list_aimp url_aimp]&[iter_set_url_vars $extra_par]}
 set link_list        [subst $link_list_script]
 
+set funzione_caller $funzione;#rom24
+set sel_gend_bruc [db_map sel_gend_bruc];#rom24
+set gest_prog_1 "coimgend-bruc-gest";#rom24
+set link_aggiungi_1 "<a href=\"$gest_prog_1?funzione=I&gen_prog=$gen_prog&funzione_caller=$funzione_caller&$link_list\" class=\"link-button-2\">Aggiungi</a>";#rom24
+set link_1 "\[export_url_vars  numero_bruc gen_prog\]&$link_list";#rom24
+set actions_1 "<td nowrap><a href=\"$gest_prog_1?funzione=V&funzione_caller=$funzione_caller&$link_1\" class=\"link-button-2\">Selez.</a>";#rom24
+
+set table_def_1 [list \
+		     [list actions_1                   "Azioni"             no_sort $actions_1] \
+		     [list numero_bruc                 "Bruc. n."           no_sort {c}] \
+		     [list data_installaz_bruc_edit    "Data inst."         no_sort {c}] \
+		     [list data_rottamaz_bruc_edit     "Data rott."         no_sort {c}] \
+		     [list flag_sostituito_bruc_edit   "Sostituito?"        no_sort {c}] \
+		     [list fabbricante_bruc            "Fabbricante"        no_sort {c}] \
+		     [list modello_bruc                "Modello"            no_sort {c}] \
+		     [list matricola_bruc              "Matricola"          no_sort {c}] \
+		     [list tipo_bruciatore             "Tipologia"          no_sort {c}] 
+		];#rom24
+
+if {$coimtgen(regione) eq "MARCHE"} {#rom24 Aggiunta if e suo contenuto
+    lappend table_def_1 [list campo_funzion_max_edit      "Pot. term. max"     no_sort {c}] \
+	[list campo_funzion_min_edit      "Pot. term. min"     no_sort {c}]
+   
+}
+
+set table_result_1 [ad_table -Tmissing_text "Non &egrave; presente nessun bruciatore." -Textra_vars {numero_bruc cod_impianto gen_prog caller nome_funz nome_funz_caller url_list_aimp url_aimp } go $sel_gend_bruc $table_def_1];#rom24
+
 set current_date      [iter_set_sysdate]
 
-set titolo              "Generatore"
+set titolo              "generatore"
 switch $funzione {
-    M {set button_label "Conferma Modifica" 
+    M {set button_label "Conferma modifica" 
 	set page_title   "Modifica $titolo"}
-    D {set button_label "Conferma Cancellazione"
-	set page_title   "Cancellazione $titolo"}
-    I {set button_label "Conferma Inserimento"
-	set page_title   "Inserimento $titolo"}
+    D {set button_label "Conferma cancellazione"
+	set page_title   "Cancella $titolo"}
+    I {set button_label "Conferma inserimento"
+	set page_title   "Inserisci $titolo"}
     V {set button_label "Torna alla lista"
-	set page_title   "Visualizzazione $titolo"}
-    S {set button_label "Conferma Sostituzione"
+	set page_title   "Visualizza $titolo"}
+    S {set button_label "Conferma sostituzione"
 	set page_title   "Sostituzione $titolo"}
 }
 
@@ -378,13 +514,13 @@ if {$coimtgen(regione) eq "MARCHE"} {#gac07 aggiunta if e suo contenuto
     
     if {$tipologia_generatore eq "ALTRO" && $flag_ibrido eq "N"} {
 	#iter_return_complaint "Dati inseriti nella Scheda 1 incongruenti, passare ad \"Altre schede libretto\""
-	iter_return_complaint "E&grave; stata compilata la scheda 1.5 in modo incongruente, passare ad \"Altre schede libretto\"."
+	iter_return_complaint "&egrave; stata compilata la scheda 1.5 in modo incongruente, passare ad \"Altre schede libretto\"."
     }
     if {$funzione eq "S" } {#rom14 aggiunta if, else e loro contenuto
 	if {$tipologia_intervento eq ""} {
 	    set warning_sostituzione "<font color=red>WARNING: Manca la Tipologia Intervento sulla Scheda 1.1</font>"
 	} elseif {$tipologia_intervento ne "SOSGE"} {
-	    set warning_sostituzione "<font color=red>WARNING: La Tipologia intervento selezionata sulla Scheda 1.1 e&grave; $tipologia_intervento_edit.<br>Si prega di correggere selezionando \"Sostituzione del generatore\"</font>"
+	    set warning_sostituzione "<font color=red>WARNING: La Tipologia intervento selezionata sulla Scheda 1.1 &egrave; $tipologia_intervento_edit.<br>Si prega di correggere selezionando \"Sostituzione del generatore\"</font>"
 	} else {
 	    set warning_sostituzione ""
 	}
@@ -393,7 +529,7 @@ if {$coimtgen(regione) eq "MARCHE"} {#gac07 aggiunta if e suo contenuto
     };#rom14
 
 }
-#gab02 ho spostato questa parte di codice dove viene estratto il flag_tipo_impianto qui perchÃ¨ la variabile mi serve per settare where_cod_comb
+#gab02 ho spostato questa parte di codice dove viene estratto il flag_tipo_impianto qui perche la variabile mi serve per settare where_cod_comb
 if {![db_0or1row query "select flag_tipo_impianto
                           from coimaimp
                          where cod_impianto = :cod_impianto"]
@@ -406,7 +542,9 @@ if {$flag_tipo_impianto eq "T"} {#gab02 aggiunta if, else e contenuto
 } else {
     set where_cod_comb ""
 }
-if {($coimtgen(regione) eq "MARCHE")} {#rom02 if e suo contenuto
+#rom22if {($coimtgen(regione) eq "MARCHE")} {}#rom02 if e suo contenuto
+#rom27 Rimossa la BASILICATA dalla lista
+if {$coimtgen(regione) in [list "MARCHE"]} {#rom22 Aggiunta if ma non il suo contenuto
     if {$funzione eq "V" || $funzione eq "D"} {
         set where_tipo_comb ""
     }
@@ -447,7 +585,7 @@ if {($coimtgen(regione) eq "MARCHE")} {#rom02 if e suo contenuto
                                      limit 1" -default ""]
 	#sim15 aggiunto condizione su cod_manutentore
 	if {$tipo_comb_where eq "" && $cod_manutentore ne ""} {
-	    iter_return_complaint "Impianto non inserito correttamente. In fase di inserimento non è stato specificato nessun combustibile. Contattare l'ente per bonificare i dati."
+	    iter_return_complaint "Impianto non inserito correttamente. In fase di inserimento non &egrave; stato specificato nessun combustibile. Contattare l'ente per bonificare i dati."
 	}
 
 	#gac08set where_tipo_comb "and tipo = '$tipo_comb_where'"
@@ -462,7 +600,11 @@ if {($coimtgen(regione) eq "MARCHE")} {#rom02 if e suo contenuto
 	    #gac08 escludo i combustibili che non si riferiscono all'impianto del caldo
 	    set where_cod_comb "and cod_combustibile not in ( '0','2','7','20','88')"
 	} else {
-	    set where_tipo_comb "and tipo = '$tipo_comb_where'"
+	    if {$flag_tipo_impianto eq "R"} {
+		set where_tipo_comb "and cod_combustibile not in ('88') and tipo = '$tipo_comb_where'"
+	    } else {
+		set where_tipo_comb "and tipo = '$tipo_comb_where'"
+	    }
 	}
     }
 
@@ -501,12 +643,17 @@ if {$funzione eq "V"} {
                             where cod_impianto = :cod_impianto
                               and gen_prog = :gen_prog
 	                      and flag_clima_invernale = 'S'"] ==1} {
-	set pot_utile_inv "&nbsp;<b>Potenza Utile:</b>&nbsp;$potenza_utile"
+	set pot_utile_inv "&nbsp;<b>Potenza utile:</b>&nbsp;$potenza_utile"
 	if {$flag_tipo_impianto eq "F"} {#rom14 per il freddo mostro la maggiore tra la potenza nominale frigorifera e termica
 	    set potenza_nominale_fr [iter_check_num $potenza_utile 2]
 	    set potenza_nominale_ri [iter_check_num $potenza_termica_nominale 2]
+   
 	    if {$potenza_nominale_ri > $potenza_nominale_fr} {
-		set pot_utile_inv "&nbsp;<b>Potenza Utile:</b>&nbsp;$potenza_termica_nominale"
+		set pot_utile_inv "&nbsp;<b>Potenza utile:</b>&nbsp;$potenza_termica_nominale"
+	    }
+	    
+	    if {$coimtgen(regione) eq "FRIULI-VENEZIA GIULIA"} {#ric01 aggiunta if e suo contenuto
+		set pot_utile_inv "&nbsp;<b>Potenza utile:</b>&nbsp;$potenza_termica_nominale"
 	    }
 	}
     } else {
@@ -521,8 +668,13 @@ if {$funzione eq "V"} {
 	if {$flag_tipo_impianto eq "F"} {#rom14 per il freddo mostro la maggiore tra la potenza nominale frigorifera e termica
 	    set potenza_nominale_fr [iter_check_num $potenza_utile 2]
 	    set potenza_nominale_ri [iter_check_num $potenza_termica_nominale 2]
+	    
 	    if {$potenza_nominale_ri > $potenza_nominale_fr} {
-		set pot_utile_est "&nbsp;<b>Potenza Utile:</b>&nbsp;$potenza_termica_nominale"
+		set pot_utile_est "&nbsp;<b>Potenza utile:</b>&nbsp;$potenza_termica_nominale"
+	    }
+	    
+	    if {$coimtgen(regione) eq "FRIULI-VENEZIA GIULIA"} {#ric01 aggiunta if e suo contenuto
+		set pot_utile_est "&nbsp;<b>Potenza utile:</b>&nbsp;$potenza_utile"
 	    }
 	}
     } else {
@@ -534,9 +686,9 @@ if {$funzione eq "V"} {
                               and gen_prog = :gen_prog
                               and flag_prod_acqua_calda = 'S'"] ==1} {
 	if {$flag_tipo_impianto eq "F"} {#rom14 aggiunta if e contenuto, aggiunta else ma non contenuto
-	    set pot_utile_acq "&nbsp;<b>Potenza Utile:</b>&nbsp;$potenza_termica_nominale"
+	    set pot_utile_acq "&nbsp;<b>Potenza utile:</b>&nbsp;$potenza_termica_nominale"
 	} else {
-	    set pot_utile_acq "&nbsp;<b>Potenza Utile:</b>&nbsp;$potenza_utile"
+	    set pot_utile_acq "&nbsp;<b>Potenza utile:</b>&nbsp;$potenza_utile"
 	};#rom14
     } else {
 	set pot_utile_acq ""
@@ -555,12 +707,12 @@ if {$funzione eq "V"} {
 
 
 
-#gac02 aggiunta if e suo contenuto se l'impianto Ã¨ un cogeneratore come combustibile posso scegliere sono cogeneratore
+#gac02 aggiunta if e suo contenuto se l'impianto e un cogeneratore come combustibile posso scegliere sono cogeneratore
 if {$flag_tipo_impianto eq "C"} {#gac02 aggiunta if, else e contenuto
     set where_cod_comb "and cod_combustibile = '20'"
     set where_tipo_comb ""
 }
-#se l'impianto Ã¨ del teleriscaldamento come combustibile posso scegliere solo teleriscaldamento
+#se l'impianto e del teleriscaldamento come combustibile posso scegliere solo teleriscaldamento
 if {$flag_tipo_impianto eq "T"} {
     set where_cod_comb "and cod_combustibile = '7'"
     set where_tipo_comb ""
@@ -640,17 +792,28 @@ switch $funzione {
         set disabled_fld \{\}
     }
 }
-if {$coimtgen(ente) eq "PUD" ||
-    $coimtgen(ente) eq "PGO" ||
-    $coimtgen(ente) eq "PPN" ||
-    $coimtgen(ente) eq "PTS" ||
-    $coimtgen(ente) eq"CTRIESTE"} {#rom04 aggiunte if, else e loro contenuto
+set fld_gen_prog $readonly_fld;#rom30
+#rom30if {$coimtgen(ente) eq "PUD" ||
+#rom30$coimtgen(ente) eq "PGO" ||
+#rom30$coimtgen(ente) eq "PPN" ||
+#rom30$coimtgen(ente) eq "PTS" ||
+#rom30$coimtgen(ente) eq"CTRIESTE"} {}#rom04 aggiunte if, else e loro contenuto
+if {$coimtgen(regione) eq "FRIULI-VENEZIA GIULIA"} {#rom30 Aggiunta if ma non contenuto
     set fld_pr_fumi "readonly"
-    set fld_nr_circ "readonly"
+    #rom30set fld_nr_circ "readonly"
+    set fld_nr_circ $readonly_fld;#rom30
+    if {$cod_manutentore ne "" } {#rom30 aggiunta if e suo contenuto
+        set fld_gen_prog "readonly"
+    }
 } else {
     set fld_pr_fumi $readonly_fld
     set fld_nr_circ $readonly_fld
 }
+set jq_date "";#but01
+if {$funzione in "M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
+
 
 form create $form_name \
     -html    $onsubmit_cmd
@@ -665,15 +828,18 @@ form create $form_name \
 
 #sim16    element create $form_name gen_prog_est -widget hidden -datatype text -optional
 #sim16} else {
-    element create $form_name gen_prog -widget hidden -datatype text -optional
+#mat02 In riferimento a gen_prog cambiato -widget da hidden a text perche altrimenti perdeva il valore con il submit. Aggiunto  -html "style=\"display:none\""
+    element create $form_name gen_prog -widget text -datatype text -html "style=\"display:none\" \"\""  -optional 
 
+#mat02 In riferimento a gen_prog_est cambiato -widget da inform a text perche altrimenti perdeva il valore con il submit . Aggiunto -mode display
     element create $form_name gen_prog_est \
 	-label   "numero gen" \
-	-widget   inform \
+	-widget   text \
 	-datatype text \
-	-html    "size 8 maxlength 8 $readonly_fld {} class form_element" \
-	-optional 
-
+        -html    "size 8 maxlength 8 $fld_gen_prog {} class form_element" \
+        -optional \
+        -mode display \
+        
 #sim16};#rom07
 #rom07
 
@@ -780,7 +946,15 @@ element create $form_name altro_funz \
     -optional
 
 #gac04 aggiunta if else e contenuto di else 
-if {$coimtgen(regione) ne "MARCHE"} {
+if {$coimtgen(regione) eq "FRIULI-VENEZIA GIULIA"} {#rom35 Aggiunta if e il contenuto.
+    element create $form_name cod_utgi \
+        -label   "cod_utgi" \
+        -widget   select \
+	-datatype text \
+	-html    "$disabled_fld {} class form_element" \
+        -optional \
+	-options [iter_selbox_from_table_wherec coimutgi cod_utgi descr_utgi cod_utgi "where cod_utgi != 'D' and cod_utgi != 'I'"]
+} elseif {$coimtgen(regione) ne "MARCHE"} {#rom35 Trasformata if in elseif, il contenuto e' rimasto invariato.
     element create $form_name cod_utgi \
 	-label   "cod_utgi" \
 	-widget   select \
@@ -890,13 +1064,13 @@ element create $form_name cod_combustibile \
     -html    "$disabled_fld {} class form_element" \
     -optional \
     -options [iter_selbox_from_table_wherec coimcomb cod_combustibile descr_comb  "" "where 1 = 1 $where_cod_comb $where_tipo_comb"] \
-
+ #but02 Aggiunto la classe ah-jquery-date al campo: data_installaz, data_rottamaz, data_costruz_bruc, data_installaz_bruc, data_costruz_gen
 element create $form_name data_installaz \
     -label   "data installaz" \
     -widget   text \
     -datatype text \
     -optional \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element"
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date"
 
 if {$coimtgen(regione) eq "MARCHE"} {#rom09 aggiunta if e contenuto
     element create $form_name cognome_inst \
@@ -931,7 +1105,7 @@ element create $form_name data_rottamaz \
     -label   "data rottamaz" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name pot_focolare_lib \
@@ -977,6 +1151,9 @@ element create $form_name flag_attivo \
     -html    "class form_element onChange document.$form_name.__refreshing_p.value='1';document.$form_name.changed_field.value='flag_attivo';document.$form_name.submit.click();" \
     -optional \
     -options {{Si S} {No N} }
+
+element create $form_name flag_attivo_db -widget hidden -datatype text -optional;#rom26
+
 #rom12
 if {$flag_tipo_impianto eq "F"} {
     set label_motivazione_disattivo "Motivazione GF inattivo"
@@ -988,7 +1165,7 @@ if {$flag_tipo_impianto eq "F"} {
     set label_motivazione_disattivo "Motivazione GT inattivo"
 }
 element create $form_name motivazione_disattivo \
-    -label "GT inattivo perchè" \
+    -label "GT inattivo perche" \
     -widget   select \
     -datatype text \
     -html    "$disabled_fld {} class form_element" \
@@ -1008,30 +1185,31 @@ element create $form_name data_costruz_gen \
     -widget   text \
     -datatype text \
     -optional \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element"
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date"
 
 element create $form_name data_costruz_bruc \
     -label   "data costruzione bruciatore" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name data_installaz_bruc \
     -label   "data installaz bruciatore" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
 element create $form_name data_rottamaz_bruc \
     -label   "data rottamazione bruciatore" \
     -widget   text \
     -datatype text \
-    -html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+    -html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
     -optional
 
-if {($coimtgen(regione) eq "MARCHE")} {
+#rom32 Modificata if per aggiungere Regione Friuli
+if {$coimtgen(regione) in [list "MARCHE" "FRIULI-VENEZIA GIULIA"]} {
 
 element create $form_name marc_effic_energ \
     -label   "marcatura efficenza energetica" \
@@ -1265,9 +1443,15 @@ if {$flag_tipo_impianto eq "R"} {#rom14 aggiunta if e suo contenuto
 if {$flag_tipo_impianto eq "F"} {#rom14 aggiunta if e suo contenuto
     set options_rif_uni_10389 "{{}} {{norma UNI-10389-3} {U}} {{Altro} {A}}"
 }
-if {$flag_tipo_impianto eq "C" || $flag_tipo_impianto eq "T"} {#rom014 aggiunta if e suo contenuto
+#rom39 Tolta condizione || $flag_tipo_impianto eq "T"
+if {$flag_tipo_impianto eq "C"} {#rom014 aggiunta if e suo contenuto
     set options_rif_uni_10389 "{{}} {{In attesa di definizione} {U}} {{Altro} {A}}"
 }
+
+if {$flag_tipo_impianto eq "T"} {#rom39 Aggiunta if e il suo contenuto
+    set options_rif_uni_10389 "{{}} {{norma UNI-10389-4} {U}} {{Altro} {A}}"
+}
+
 element create $form_name rif_uni_10389 \
     -label   "Riferimento" \
     -widget   select \
@@ -1354,8 +1538,12 @@ element create $form_name submit           -widget submit -datatype text -label 
 element create $form_name last_gen_prog    -widget hidden -datatype text -optional
 element create $form_name gen_prog_old     -widget hidden -datatype text -optional
 element create $form_name __refreshing_p   -widget hidden -datatype text -optional;#nic01
+#mat00 13/10/2025
+#modifiche fatte perchè il curmit ha la vecchia versione di openacs. Il programma non sarà committato ma portato su a mano.
+#element set_properties $form_name __refreshing_p -values 0;#mat01
 element create $form_name changed_field    -widget hidden -datatype text -optional;#nic01
 element create $form_name evidenzia_rend_ter -widget hidden -datatype text -optional
+element create $form_name matricola_old     -widget hidden -datatype text -optional;#mat03
 #gab01
 set cod_cost_asterisco "<font color=red>*</font>"
 set data_installaz_asterisco "<font color=red>*</font>"
@@ -1371,7 +1559,11 @@ set mod_funz_asterisco "*"
 set cod_utgi_asterisco "*"
 set locale_asterisco "<font color=red>*</font>"
 set cod_combustibile_asterisco "<font color=red>*</font>"
-set marc_effic_energ_asterisco "*";#rom08
+if {$coimtgen(regione) ne "FRIULI-VENEZIA GIULIA"} {#rom33 Aggiunta if ma non il suo contenuto
+    set marc_effic_energ_asterisco "*";#rom08
+} else {#rom33 Aggiunta else e il suo contenuto
+    set marc_effic_energ_asterisco ""
+}
 set pot_utile_nom_asterisco    "*";#rom08
 set cod_emissione_asterisco    "*";#rom08
 set cod_tpco_asterisco "<font color=red>*</font>";#rom13
@@ -1399,7 +1591,7 @@ if {[form is_request $form_name]} {
 
 	element set_properties $form_name flag_attivo    -value "S"
 	set flag_attivo "S"
-
+	element set_properties $form_name flag_attivo_db $flag_attivo
 
 	# propongo il numero del nuovo generatore con il max + 1
         db_1row sel_gend_next_prog_x "select coalesce(max(gen_prog),0) + 1 as next_prog 
@@ -1484,6 +1676,7 @@ if {[form is_request $form_name]} {
                   , iter_edit_num(g.pot_utile_nom, 2)    as pot_utile_nom
                   , iter_edit_num(g.pot_utile_nom_freddo, 2) as pot_utile_nom_freddo --sim04
                   , g.flag_attivo
+                  , g.flag_attivo as flag_attivo_db --rom26
                   , g.motivazione_disattivo --rom12
                   , g.note
 		  , g.gen_prog_est
@@ -1548,7 +1741,7 @@ if {[form is_request $form_name]} {
                 and g.gen_prog     = :gen_prog"] == 0} {
             iter_return_complaint "Record non trovato"
 	}
-
+	set matricola_old $matricola;#mat03
 	set evidenzia_rend_ter "f"
 	if {$coimtgen(regione) eq "MARCHE"} {#rom04 if e suo contenuto
 	    if {$flag_tipo_impianto ne "F"} {#rom05 aggiunta if
@@ -1596,6 +1789,7 @@ if {[form is_request $form_name]} {
         element set_properties $form_name pot_utile_nom       -value $pot_utile_nom
 	element set_properties $form_name pot_utile_nom_freddo -value $pot_utile_nom_freddo;#sim04
         element set_properties $form_name flag_attivo         -value $flag_attivo
+	element set_properties $form_name flag_attivo_db      -value $flag_attivo_db;#rom26
 	element set_properties $form_name motivazione_disattivo -value $motivazione_disattivo;#rom12
         element set_properties $form_name note                -value $note
 	element set_properties $form_name data_costruz_gen    -value $data_costruz_gen
@@ -1648,8 +1842,8 @@ if {[form is_request $form_name]} {
 	element set_properties $form_name sorgente_lato_esterno -value $sorgente_lato_esterno;#rom13
 	element set_properties $form_name fluido_lato_utenze    -value $fluido_lato_utenze;#rom13
 	element set_properties $form_name tel_alimentazione     -value $tel_alimentazione;#rom16
-	
-	# Imposto ora le options di cod_mode perchÃ¨ solo adesso ho a disposiz. la var. cod_cost
+	element set_properties $form_name matricola_old     -value $matricola_old;#mat03
+	# Imposto ora le options di cod_mode perche solo adesso ho a disposiz. la var. cod_cost
 	if {$cod_mode eq ""} {
 	    set or_cod_mode ""
 	} else {
@@ -1659,7 +1853,7 @@ if {[form is_request $form_name]} {
 	element set_properties $form_name cod_mode            -options [iter_selbox_from_table "coimmode where cod_cost = '[db_quote $cod_cost]' and (flag_attivo <> 'N' $or_cod_mode)" cod_mode descr_mode];#nic01
         element set_properties $form_name cod_mode            -value $cod_mode;#nic01
 
-	# Imposto ora le options di cod_mode_bruc perchÃ¨ solo adesso ho a disposiz. la var. cod_cost_bruc
+	# Imposto ora le options di cod_mode_bruc perche solo adesso ho a disposiz. la var. cod_cost_bruc
 	if {$cod_mode_bruc eq ""} {
 	    set or_cod_mode ""
 	} else {
@@ -1687,9 +1881,13 @@ if {[form is_request $form_name]} {
 	    set dpr_660_96_asterisco "*"
 	    set mod_funz_asterisco "*"
             set cod_utgi_asterisco "*"
-            set locale_asterisco "*" 
-            set cod_combustibile_asterisco "*" 
-	    set marc_effic_energ_asterisco "*";#rom08
+            set locale_asterisco "*"
+            set cod_combustibile_asterisco "*"
+	    if {$coimtgen(regione) ne "FRIULI-VENEZIA GIULIA"} {#rom33 Aggiunta if ma non il suo contenuto
+		set marc_effic_energ_asterisco "*";#rom08
+	    } else {#rom33 Aggiunta else e il suo contenuto
+		set marc_effic_energ_asterisco ""
+	    }
 	    set pot_utile_nom_asterisco    "*";#rom08
 	    set cod_emissione_asterisco    "*";#rom08
 
@@ -1698,12 +1896,26 @@ if {[form is_request $form_name]} {
 		set tipo_foco_asterisco "*"
 	    }
 	    if {$flag_tipo_impianto eq "F"} {#rom13 aggiunta if e suo contenuto
-		set cod_tpco_asterisco "<font color=red>*</font>"
-		set sorgente_lato_esterno_asterisco "<font color=red>*</font>"
-		set cod_flre_asterisco "<font color=red>*</font>"
-		set fluido_lato_utenze_asterisco "<font color=red>*</font>"
+		#rom34 Aggiunte condizioni su Campania e Palermo.
+		if {$coimtgen(regione) in [list "MARCHE" "BASILICATA" "CAMPANIA"] || $coimtgen(ente) eq "PPA"} {#rom22 Aggiunta if ma non il suo contenuto
+		    set cod_tpco_asterisco "<font color=red>*</font>"
+		    set sorgente_lato_esterno_asterisco "<font color=red>*</font>"
+		    set cod_flre_asterisco "<font color=red>*</font>"
+		    set fluido_lato_utenze_asterisco "<font color=red>*</font>"
+		} else {#rom22 Aggiunta else e il suo contenuto
+		    set cod_tpco_asterisco ""
+		    set sorgente_lato_esterno_asterisco ""
+		    set cod_flre_asterisco ""
+		    set fluido_lato_utenze_asterisco ""
+		}
 	    }
-	}    
+	} else {#rom26 Aggiunto else e il suo contenuto
+	    if {$coimtgen(regione) eq "MARCHE" &&
+		$funzione eq "M" &&
+		$flag_attivo_db eq "S"} {
+		element::set_error $form_name flag_attivo "Attenzione se si disattiva il generatore (ed &egrave; unico) verr&agrave; disattivato anche l'impianto, che potr&agrave; essere riattivato solo dal soggetto esecutore. Inoltre si precisa che nel caso il soggetto esecutore disattivi/chiuda/rottami l'impianto la procedura metter&agrave; in automatico il generatore in stato Non Attivo.";#rom26
+	    }
+	}
     }
     
     #####################fine controlli campi obbligatori	
@@ -1714,7 +1926,7 @@ if {[form is_request $form_name]} {
 if {[form is_valid $form_name]} {
     # form valido dal punto di vista del templating system
 
-    #sim19 setto i default delle variabili che userò dopo nei controlli
+    #sim19 setto i default delle variabili che usero dopo nei controlli
     set is_null_per_p 0;#sim19
     set is_null_cop_p 0;#sim19
     set is_null_pot_focolare_nom_p 0;#sim19
@@ -1752,6 +1964,7 @@ if {[form is_valid $form_name]} {
     set pot_utile_nom        [element::get_value $form_name pot_utile_nom]
     set pot_utile_nom_freddo [element::get_value $form_name pot_utile_nom_freddo];#sim04
     set flag_attivo          [element::get_value $form_name flag_attivo]
+    set flag_attivo_db       [element::get_value $form_name flag_attivo_db];#rom26
     set motivazione_disattivo [element::get_value $form_name motivazione_disattivo];#rom12
     set note                 [element::get_value $form_name note]
     set data_costruz_gen     [element::get_value $form_name data_costruz_gen]
@@ -1796,6 +2009,7 @@ if {[form is_valid $form_name]} {
     set altro_rif                    [element::get_value $form_name altro_rif]                   ;#gac03
     set altro_funz                   [element::get_value $form_name altro_funz]                  ;#rom04
     set conferma_rend_ter            [element::get_value $form_name conferma_rend_ter]           ;#rom04
+    set matricola_old                [element::get_value $form_name matricola_old];#mat03
     if {$coimtgen(regione) eq "MARCHE"} {#rom09 aggiunta if e contenuto
 	set cognome_inst        [element::get_value $form_name cognome_inst ]
 	set nome_inst           [element::get_value $form_name nome_inst]
@@ -1813,10 +2027,10 @@ if {[form is_valid $form_name]} {
 	# Devo esporre comunque il vecchio modello disattivato
 	set or_cod_mode "or cod_mode = $cod_mode"
     }
-    #Imposto ora le options di cod_mode perchÃ¨ solo adesso ho a disposizione la var. cod_cost
+    #Imposto ora le options di cod_mode perche solo adesso ho a disposizione la var. cod_cost
     element set_properties $form_name cod_mode -options [iter_selbox_from_table "coimmode where cod_cost = '[db_quote $cod_cost]' and (flag_attivo <> 'N' $or_cod_mode)" cod_mode descr_mode];#nic01
 
-    #Imposto ora le options di cod_mode_bruc perchÃ¨ solo adesso ho a disposizione la var. cod_cost_bruc
+    #Imposto ora le options di cod_mode_bruc perche solo adesso ho a disposizione la var. cod_cost_bruc
     set cod_mode_bruc        [element::get_value $form_name cod_mode_bruc];#nic01
     if {$cod_mode_bruc eq ""} {
 	set or_cod_mode ""
@@ -1839,7 +2053,11 @@ if {[form is_valid $form_name]} {
 	set cod_utgi_asterisco "*"
 	set locale_asterisco "*" 
 	set cod_combustibile_asterisco "*"     
-	set marc_effic_energ_asterisco "*";#rom08
+	if {$coimtgen(regione) ne "FRIULI-VENEZIA GIULIA"} {#rom33 Aggiunta if ma non il suo contenuto
+	    set marc_effic_energ_asterisco "*";#rom08
+	} else {#rom33 Aggiunta else e il suo contenuto
+	    set marc_effic_energ_asterisco ""
+	}
 	set pot_utile_nom_asterisco    "*";#rom08
 	set cod_emissione_asterisco    "*";#rom08
     
@@ -1848,10 +2066,25 @@ if {[form is_valid $form_name]} {
 	    set tipo_foco_asterisco "*"
 	}
 	if {$flag_tipo_impianto eq "F"} {#rom13 aggiunta if e suo contenuto
-	    set cod_tpco_asterisco "<font color=red>*</font>"
-	    set sorgente_lato_esterno_asterisco "<font color=red>*</font>"
-	    set cod_flre_asterisco "<font color=red>*</font>"
-	    set fluido_lato_utenze_asterisco "<font color=red>*</font>"
+	    #rom34 Aggiunte condizioni su Campania e Palermo.
+	    if {$coimtgen(regione) in [list "MARCHE" "BASILICATA" "CAMPANIA"] || $coimtgen(ente) eq "PPA"} {#rom22 aggiunta if ma non il suo contenuto
+		set cod_tpco_asterisco "<font color=red>*</font>"
+		set sorgente_lato_esterno_asterisco "<font color=red>*</font>"
+		set cod_flre_asterisco "<font color=red>*</font>"
+		set fluido_lato_utenze_asterisco "<font color=red>*</font>"
+	    } else {#rom22 Aggiunta else e suo contenuto
+		set cod_tpco_asterisco ""
+		set sorgente_lato_esterno_asterisco ""
+		set cod_flre_asterisco ""
+		set fluido_lato_utenze_asterisco ""
+	    }
+	}
+    }  else {#rom26 Aggiunto else e il suo contenuto
+	if {$coimtgen(regione) eq "MARCHE" &&
+	    $funzione eq "M" &&
+	    $flag_attivo_db eq "S"} {
+
+	   element::set_error $form_name flag_attivo "Attenzione se si disattiva il generatore (ed &egrave; unico) verr&agrave; disattivato anche l'impianto, che potr&agrave; essere riattivato solo dal soggetto esecutore. Inoltre si precisa che nel caso il soggetto esecutore disattivi/chiuda/rottami l'impianto la procedura metter&agrave; in automatico il generatore in stato Non Attivo."
 	}
     }
 
@@ -1894,10 +2127,12 @@ if {[form is_valid $form_name]} {
 	};#rom07
 	
 	set data_insta [iter_check_date $data_installaz]
-	if {[string equal $marc_effic_energ ""] && $flag_tipo_impianto ne "T" && $flag_tipo_impianto ne "C" &&  $flag_tipo_impianto ne "F" && $data_insta > "2015-01-01"} {#gac05 aggiunto && $data_insta > "2015-01-01" #rom13aggiunta cond per freddo
-	    element::set_error $form_name marc_effic_energ "Inserire"
-	    incr error_num
-	}
+	if {$coimtgen(regione) ne "FRIULI-VENEZIA GIULIA"} {#rom33 Aggiunta if ma non il suo contenuto	    
+	    if {[string equal $marc_effic_energ ""] && $flag_tipo_impianto ne "T" && $flag_tipo_impianto ne "C" &&  $flag_tipo_impianto ne "F" && $data_insta > "2015-01-01"} {#gac05 aggiunto && $data_insta > "2015-01-01" #rom13aggiunta cond per freddo
+		element::set_error $form_name marc_effic_energ "Inserire"
+		incr error_num
+	    }
+	};#rom33
     
 	if {![string equal $marc_effic_energ ""]} {#rom20 Aggiunta if e suo contenuto
 	    if {[string match "*<*" $marc_effic_energ] || [string match "*>*" $marc_effic_energ]} {
@@ -1906,7 +2141,9 @@ if {[form is_valid $form_name]} {
 	    }
 	}
 
-	if {$flag_tipo_impianto eq "F" && $coimtgen(regione) eq "MARCHE"} {#rom13 aggiunta if e contenuto
+	#rom22if {$flag_tipo_impianto eq "F" && $coimtgen(regione) eq "MARCHE"} {}#rom13 aggiunta if e contenuto
+	#rom34 Aggiunte condizioni su Campania e Palermo
+	if {$flag_tipo_impianto eq "F" && ($coimtgen(regione) in [list "MARCHE" "BASILICATA" "CAMPANIA"] || $coimtgen(ente) eq "PPA")} {#rom22 aggiunta if ma non il contenuto
 	    if {$cod_tpco eq ""} {
 		element::set_error $form_name cod_tpco "Inserire"
 		incr error_num
@@ -1927,10 +2164,12 @@ if {[form is_valid $form_name]} {
 		element::set_error $form_name sorgente_lato_esterno "Inserire"
 		incr error_num
 	    }
+	    if {$coimtgen(ente) ne "PPA"} {#rom36 if ma non il contenuto
 	    if {$fluido_lato_utenze eq ""} {
 		element::set_error $form_name fluido_lato_utenze "Inserire"
 		incr error_num
 	    }
+	    };#rom36
 	    if {$cod_flre eq ""} {
 		element::set_error $form_name cod_flre "Inserire"
 		incr error_num
@@ -1970,6 +2209,11 @@ if {[form is_valid $form_name]} {
 		    incr error_num
 		    incr error_bloccante;#sim20
 		}
+	    } else {#rom30 Aggiunta else e il suo contenuto
+		if {$coimtgen(regione) ne "MARCHE"} {
+		    element::set_error $form_name per "Campo obbligatorio"
+		    incr error_num
+		}
 	    }
 
 	    if {![string equal $cop ""]} {#sim08 if e suo contenuto
@@ -1978,6 +2222,11 @@ if {[form is_valid $form_name]} {
 		    #rom18element::set_error $form_name cop "Deve essere numerico, max 2 dec"
 		    element::set_error $form_name cop "Deve essere numerico, max 2 dec e non deve essere maggiore di 10.";#rom18
 		    incr error_bloccante;#sim20
+		    incr error_num
+		}
+	    } else {#rom30 Aggiunta else e il suo contenuto
+		if {$coimtgen(regione) ne "MARCHE"} {
+		    element::set_error $form_name cop "Campo obbligatorio"
 		    incr error_num
 		}
 	    }
@@ -2032,19 +2281,19 @@ if {[form is_valid $form_name]} {
 		}
 	    };#rom07
 	    #rom02 UCIT e Comune Trieste possono avere solo una prova fumi se sul generatore del caldo pot_focolare_nom 
-	    #rom02 Ã¨ < 35 
-	    if {$coimtgen(ente) eq "PUD" || 
-                $coimtgen(ente) eq "PGO" || 
-                $coimtgen(ente) eq "PPN" || 
-                $coimtgen(ente) eq "PTS" || 
-                $coimtgen(ente) eq "CTRIESTE"
-	    } {#rom02 if e suo contenuto
-
+	    #rom02 e < 35 
+	    #rom30if {$coimtgen(ente) eq "PUD" || 
+	    #rom30$coimtgen(ente) eq "PGO" || 
+	    #rom30$coimtgen(ente) eq "PPN" || 
+	    #rom30$coimtgen(ente) eq "PTS" || 
+	    #rom30$coimtgen(ente) eq "CTRIESTE"
+	    #rom30} {}#rom02 if e suo contenuto
+	    if {$coimtgen(regione) eq "FRIULI-VENEZIA GIULIA"} {#rom30 aggiunta if ma non contenuto
 		set pot_focolare_nom_controllo_pf [iter_check_num $pot_focolare_nom 2];#sim10
 
 		#sim10 usato nuova variabile pot_focolare_nom_controllo_pf e aggiunto if su Error
 		if {$num_prove_fumi > 1 && $pot_focolare_nom_controllo_pf != "Error" && $pot_focolare_nom_controllo_pf < 35} {
-		    element::set_error $form_name num_prove_fumi "Se Potenza nominale focolare Ã¨ minore di 35 (kW) si puÃ² inserire solo 1 prova fumi"
+		    element::set_error $form_name num_prove_fumi "Se Potenza nominale focolare &egrave; minore di 35 (kW) si pu&ograve; inserire solo 1 prova fumi"
                 incr error_num
 		} 
 	    };#rom02
@@ -2118,18 +2367,21 @@ if {[form is_valid $form_name]} {
 		    incr error_num
 		}
 	    } 
-	    if {$flag_tipo_impianto ne "C"} {
+	    #rom27if {$flag_tipo_impianto ne "C"} {
+	    #rom27 Il fluido termovettore e' visibile e obbligatorio anche per la cogenerazione
+	    #rom27 Se scelgono altro devono valorizzare il campo note altro.
 		if {$coimtgen(regione) ne "MARCHE"} {#rom13 aggiunta if, le marche non vedono il campo
 		    if {$mod_funz eq ""} {#san03: aggiunta if e suo contenuto
 			element::set_error $form_name mod_funz "Campo obbligatorio"
 			incr error_num
 		    }
-		    if {$mod_funz eq "3" && $altro_funz eq ""} {#rom04 aggiunta if e suo contenuto
+		    if {$mod_funz eq "3" && [string is space $altro_funz]} {#rom04 aggiunta if e suo contenuto
 			element::set_error $form_name altro_funz "Compilare \"Altro\""
 			incr error_num
 		    };#rom04
 		};#rom13
-	    }
+	    #rom27}
+	    
 	    if {$coimtgen(regione) eq "MARCHE" && ($flag_tipo_impianto eq "R" || $flag_tipo_impianto eq "T" || $flag_tipo_impianto eq "C")} {#rom13 aggiunta if e contenuto
 		if {$mod_funz eq ""} {#san03: aggiunta if e suo contenuto
 		    element::set_error $form_name mod_funz "Campo obbligatorio"
@@ -2143,7 +2395,7 @@ if {[form is_valid $form_name]} {
 		}
 	    }
 	    
-	    if {$coimtgen(regione) ne "MARCHE"} {#rom10 La regione Marche non visualizza più il campo
+	    if {$coimtgen(regione) ne "MARCHE"} {#rom10 La regione Marche non visualizza piu il campo
 		if {$cod_utgi eq ""} {#san03: aggiunta if e suo contenuto
 		    element::set_error $form_name cod_utgi "Campo obbligatorio"
 		    incr error_num
@@ -2174,14 +2426,63 @@ if {[form is_valid $form_name]} {
 		    element::set_error $form_name $gen_prog_error "Il codice risulta gia' presente";#rom11
 		    incr error_num
 		}
-            set cambiocodice "S"
-	    }
+
+		#rom31 Aggiunta condizione 1 == 0
+		if {$coimtgen(regione) eq "FRIULI-VENEZIA GIULIA" && 1 == 0} {#rom30 aggiunta if e il suo contenuto
+		    db_0or1row sel_cimp_check_x "select count(*) as conta_cimp
+                                                   from coimcimp
+                                                  where cod_impianto = :cod_impianto
+                                                    and gen_prog     = :gen_prog_old
+                                                    and flag_tracciato <> 'MA'"
+		    if {$conta_cimp > 0} {
+			# controllo la presenza di rapporti verifica con questo generatore
+			element::set_error $form_name gen_prog_est "Il codice risulta presente in uno o pi&ugrave; rapporti di ispezione"
+			incr error_num
+		    }
+		
+		    db_0or1row sel_dope_gend_check_x "select count(*) as conta_dope_gend
+                                                        from coimdope_aimp a
+                                                           , coimdope_gend g
+                                                       where a.cod_dope_aimp = g.cod_dope_aimp
+                                                         and a.cod_impianto = :cod_impianto
+                                                         and g.gen_prog     = :gen_prog_old"
+		    if {$conta_dope_gend > 0} {
+			# controllo la presenza di record della tabella coimdope_gend con questo generatore
+			element::set_error $form_name gen_prog "Il codice risulta presente in una o pi&ugrave; Dichiarazioni di Frequenza"
+			incr error_num
+		    }
+		    if {[db_0or1row sel_dimp_dam_check_x "select 1
+                                                            from coimdimp a
+                                                           where a.cod_impianto = :cod_impianto
+                                                             and a.gen_prog     = :gen_prog_old
+                                                           limit 1"]} {
+			# controllo la presenza di record della tabella coimdimp con questo generatore
+			element::set_error $form_name gen_prog_est "Il codice risulta presente in una o pi&ugrave; Dichiarazioni"
+			incr error_num
+		    } 
+		};#rom30
+		
+		set cambiocodice "S"
+	    }	
+	
         if {![string equal $data_installaz ""]} {
             set data_installaz [iter_check_date $data_installaz]
             if {$data_installaz == 0} {
                 element::set_error $form_name data_installaz "Data installazione deve essere una data"
                 incr error_num
             } else {
+
+		#but01 controllo per tutti gli enti (tranne le marche)
+		#rom37 Aggiunta condizione su tipo_comb
+ 		if {$flag_tipo_impianto eq "R" && $tipo_comb ne "S"} {#but01 if e suo contenuto
+		    if {$coimtgen(regione) ne "MARCHE"} {
+			if {$data_installaz >= "20220101" && $tiraggio eq "N" && $cod_emissione ne "C"} {
+			    element::set_error $form_name cod_emissione "Per i generatori a tiraggio naturale lo scarico pu&ograve; essere solo camino collettivo"
+			    incr error_num         
+			}
+		    }
+		}
+
 		if {$data_installaz > $current_date} {
 		    element::set_error $form_name data_installaz  "Data deve essere anteriore alla data odierna"
 		    incr error_num
@@ -2294,7 +2595,8 @@ if {[form is_valid $form_name]} {
 	
         if {[string equal $flag_attivo "S"]
 	    && ![string equal $data_rottamaz ""]} {
-	    element::set_error $form_name data_rottamaz "Non rottamabile se &egrave; attivo"
+	    #rom26element::set_error $form_name data_rottamaz "Non rottamabile se &egrave; attivo"
+	    element::set_error $form_name data_rottamaz "La data di dismissione/disattivazione va inserita solo nel caso in cui il generatore sia dismesso o disattivo.<br>Nel caso in cui si stia riattivando il generatore il campo va lasciato vuoto.";#rom26
             incr error_num
 	}
 
@@ -2431,45 +2733,64 @@ if {[form is_valid $form_name]} {
 
 	if {$flag_tipo_impianto eq "F"} {#sim04 if e suo contenuto
 	    
-	    set flag_pot_utile_nom_freddo_ok "f";#sim04
-	if {[string equal $pot_utile_nom_freddo ""]} {#sim04 if else e loro contenuto
-	    set is_null_pot_utile_nom_freddo_p 1;#sim19
-	    #sim19 element::set_error $form_name pot_utile_nom_freddo "Inserire"
-	    #sim19 incr error_num
-	    #sim19 incr error_bloccante;#gac08
-	} else {
-            set pot_utile_nom_freddo [iter_check_num $pot_utile_nom_freddo 2]
-            if {$pot_utile_nom_freddo == "Error"} {
-                element::set_error $form_name pot_utile_nom_freddo "Deve essere numerico, max 2 dec"
-                incr error_num
-		incr error_bloccante;#gac08
-            } elseif {$pot_utile_nom_freddo <= 0} {
-		element::set_error $form_name pot_utile_nom_freddo "Deve essere > 0,00"
-		incr error_num
-		incr error_bloccante;#gac08
-	    } elseif {[iter_set_double $pot_utile_nom_freddo] >= [expr pow(10,5)]} {
-		element::set_error $form_name pot_utile_nom_freddo "Deve essere inferiore di 100.000"
-		incr error_num
-		incr error_bloccante;#gac08
-            } else {
-		set flag_pot_utile_nom_freddo_ok "t"
+	    if {$coimtgen(regione) eq "FRIULI-VENEZIA GIULIA" && $error_bloccante == 0} {#rom30 Aggiunte if, else e il loro contenuto
+		set pot_utile_nom [db_string q "select iter_edit_num(:pot_utile_nom, 2)"]
+		set pot_freddo_da_contr $pot_utile_nom
+		set nome_campo_pot_freddo pot_utile_nom
+	    } else {
+		set pot_freddo_da_contr $pot_utile_nom_freddo
+		set nome_campo_pot_freddo pot_utile_nom_freddo
 	    }
-	}
 
+	    set flag_pot_utile_nom_freddo_ok "f";#sim04
 
+	    #rom30 Rinominata variabile pot_utile_nom_freddo in pot_freddo_da_contr
+	    #rom30 I messaggi di errore sulla potenza del freddo ora si basano sulla variabile nome_campo_pot_freddo, prima erano sempre sul campo pot_utile_nom_freddo
+	    if {[string equal $pot_freddo_da_contr ""]} {#sim04 if else e loro contenuto
+		set is_null_pot_utile_nom_freddo_p 1;#sim19
+		#sim19 element::set_error $form_name pot_utile_nom_freddo "Inserire"
+		#sim19 incr error_num
+		#sim19 incr error_bloccante;#gac08
+	    } else {
 
+		set pot_freddo_da_contr [iter_check_num $pot_freddo_da_contr 2]
+
+		if {$pot_freddo_da_contr == "Error"} {
+		    element::set_error $form_name $nome_campo_pot_freddo "Deve essere numerico, max 2 dec"
+		    incr error_num
+		    incr error_bloccante;#gac08
+		} elseif {$pot_freddo_da_contr <= 0} {
+		    element::set_error $form_name $nome_campo_pot_freddo "Deve essere > 0,00"
+		    incr error_num
+		    incr error_bloccante;#gac08
+		} elseif {[iter_set_double $pot_freddo_da_contr] >= [expr pow(10,5)]} {
+		    element::set_error $form_name $nome_campo_pot_freddo "Deve essere inferiore di 100.000"
+		    incr error_num
+		    incr error_bloccante;#gac08
+		} else {
+		    set flag_pot_utile_nom_freddo_ok "t"
+		}
+	    }
+	    
 	    if {$flag_pot_focolare_nom_ok eq "t" && $flag_pot_utile_nom_freddo_ok eq "t"} {
-		if {$pot_utile_nom_freddo > $pot_focolare_nom} {
-		    if {$coimtgen(regione) ne "MARCHE"} {#rom13 aggiunta if ma non contenuto, aggiunta else e suo contenuto
-			element::set_error $form_name pot_utile_nom_freddo "Potenza utile deve essere <= alla potenza nominale"
+		if {$pot_freddo_da_contr > $pot_focolare_nom} {
+		    #rom30 Aggiunta Regione Friuli
+		    if {!($coimtgen(regione) in [list "MARCHE" "FRIULI-VENEZIA GIULIA"])} {#rom13 aggiunta if ma non contenuto, aggiunta else e suo contenuto
+			element::set_error $form_name $nome_campo_pot_freddo "Potenza utile deve essere <= alla potenza nominale"
 		    } else {
-			element::set_error $form_name pot_utile_nom_freddo "Potenza assorbita deve essere <= alla potenza nominale"
+			element::set_error $form_name $nome_campo_pot_freddo "Potenza assorbita deve essere <= alla potenza nominale"
 		    };#rom13
 		    incr error_num
 		    incr error_bloccante;#gac08
 		    set flag_potenza_utile_ok "f"
 		}
 	    }	    
+
+	    if {$coimtgen(regione) eq "FRIULI-VENEZIA GIULIA"} {#rom30 Aggiunte if, else e il loro contenuto
+		set pot_utile_nom $pot_freddo_da_contr
+	    } else {
+		set pot_utile_nom_freddo $pot_freddo_da_contr
+	    }
 
 	} else {#sim04
 	if {$flag_pot_focolare_nom_ok eq "t" && $flag_pot_utile_nom_ok eq "t"} {#san03: aggiunta if e suo contenuto
@@ -2492,14 +2813,14 @@ if {[form is_valid $form_name]} {
 	    if {$coimtgen(regione) ne "MARCHE"} {
 
 		#cop e per non sono obbligatori negli enti della regione marche. Vado quindi a settarli uguali ai flag
-		# relativi alle potenze in modo che non siano più significativi nei controlli sotto
+		# relativi alle potenze in modo che non siano piu significativi nei controlli sotto
 		set is_null_cop_p $is_null_pot_focolare_lib_p
 		set is_null_per_p $is_null_pot_focolare_nom_p
 
 	    } else {
 
-		#la pot_utile_nom è visibile solo per gli enti diversi dalla regione marche. Vado quindi a settarlo uguale
-		#ai flag relativi alle potenze in modo che non sia più significato nei controlli sotto
+		#la pot_utile_nom e visibile solo per gli enti diversi dalla regione marche. Vado quindi a settarlo uguale
+		#ai flag relativi alle potenze in modo che non sia piu significato nei controlli sotto
 		set is_null_pot_utile_nom_p $is_null_per_p
 	    }
 
@@ -2602,15 +2923,15 @@ if {[form is_valid $form_name]} {
 	    }
 	}
 	if {($coimtgen(regione) eq "MARCHE") } {#rom02 if e suo contenuto
-	    #rom02 se dpr_660_96 equivale a 'S'(Standard) , data_costruz_gen Ã¨ successiva al 26/09/2015, 
-	    #rom02 il combustibile Ã¨ liquido o solido e tipo_foco non Ã¨ 'A' (Aperta) do il messaggio di errore e blocco.
+	    #rom02 se dpr_660_96 equivale a 'S'(Standard) , data_costruz_gen e successiva al 26/09/2015, 
+	    #rom02 il combustibile e liquido o solido e tipo_foco non e 'A' (Aperta) do il messaggio di errore e blocco.
 	    if {$flag_tipo_impianto ne "F"} {#rom05 aggiunta if
 		#sim12 if { $dpr_660_96 eq "S" && $data_costruz_gen >"20150906" && [db_0or1row q "select 1 
                 #sim12                                                                             from coimcomb 
                 #sim12                                                                            where cod_combustibile = :cod_combustibile 
                 #sim12                                                                              and tipo in ('L' , 'G')"] && $tipo_foco ne "A" 
 		#sim12 } {
-		#sim12    element::set_error $form_name dpr_660_96 "In base alla Direttiva 2005/32/CE \"Ecodesign\" se<br>la 'data costruzione' Ã¨ successiva al 26/09/2015 il campo<br>'Classif. DPR 660/96' puÃ² essere solo 'A gas a condensazione'.<br>A meno che alla voce 'Camera di combustione' non venga selezionata la tipologia  'Aperta'" 
+		#sim12    element::set_error $form_name dpr_660_96 "In base alla Direttiva 2005/32/CE \"Ecodesign\" se<br>la 'data costruzione' e successiva al 26/09/2015 il campo<br>'Classif. DPR 660/96' puo essere solo 'A gas a condensazione'.<br>A meno che alla voce 'Camera di combustione' non venga selezionata la tipologia  'Aperta'" 
 		#sim12    incr error_num
 		    
 		#sim12}
@@ -2622,7 +2943,7 @@ if {[form is_valid $form_name]} {
 		    
 		    if {$tipo_foco eq "C" && $dpr_660_96 ne "G"} {
 
-			element::set_error $form_name dpr_660_96 "In base alla Direttiva 2005/32/CE \"Ecodesign\" se<br>la 'data costruzione' è successiva al 26/09/2015 e la Camera di combustione è uguale a \"Stagna\" il campo<br>'Classif. DPR 660/96' può essere solo 'A gas a condensazione'."
+			element::set_error $form_name dpr_660_96 "In base alla Direttiva 2005/32/CE \"Ecodesign\" se<br>la 'data costruzione' &egrave; successiva al 26/09/2015 e la Camera di combustione &egrave; uguale a \"Stagna\" il campo<br>'Classif. DPR 660/96' pu&ograve; essere solo 'A gas a condensazione'."
 			incr error_num
 
 		    }
@@ -2736,7 +3057,7 @@ if {[form is_valid $form_name]} {
 		#rom012if {$funzione_grup_ter ne "A" && $funzione_grup_ter_note_altro ne ""} {}
 		if {$flag_altro ne"S" && $funzione_grup_ter_note_altro ne ""} {#rom12 sostituita precedente if
 		    element::set_error $form_name funzione_grup_ter_note_altro "Compilare solo se viene scelto \"Si\" alla voce \"Altro\""
-		    #element::set_error $form_name funzione_grup_ter_note_altro "Per specificare le Note Ã¨ necessario selezionare 'Altro' in 'Funzione del Gruppo Termico'"
+		    #element::set_error $form_name funzione_grup_ter_note_altro "Per specificare le Note e necessario selezionare 'Altro' in 'Funzione del Gruppo Termico'"
 		    incr error_num
 		}
 	    };#rom05
@@ -2770,6 +3091,7 @@ if {[form is_valid $form_name]} {
 
 	if {$flag_tipo_impianto eq "F"} {#rom21 aggiunta if e suo contenuto
 
+	    if {$coimtgen(regione) ne "FRIULI-VENEZIA GIULIA"} {#rom35 Aggiunta if ma non il suo contenuto
 	    if {([string equal $flag_clima_invernale "S"] && [string equal $flag_clim_est "S"]) &&
 		($is_null_riscaldamento_p || $is_null_raffrescamento_p )} {
 
@@ -2793,13 +3115,19 @@ if {[form is_valid $form_name]} {
 		incr error_num
 		incr error_bloccante
 	    } else {
-
+	    }
+	    } else {#rom35 Aggiunta else e il suo contenuto
+		if {$is_null_riscaldamento_p || $is_null_raffrescamento_p} {
+		    element::set_error $form_name per "Valorizzare tutte le potenze del Raffrescamento e Riscaldamento."
+		    incr error_num
+		    incr error_bloccante
+		}	    
 	    }
 	}
 	
 	set cod_coimtpin ""
 	set descrizione_tpin ""
-
+	if {$coimtgen(flag_controllo_abilitazioni)} {#rom30 aggiunta if ma non il contenuto
 	if {$flag_tipo_impianto ne "" && $cod_combustibile ne "" && $cod_manutentore ne ""} {#rom03M if e suo contenuto
 	    
 	    	if {$flag_tipo_impianto eq "F"} {#sim
@@ -2853,6 +3181,7 @@ if {[form is_valid $form_name]} {
 	};#sim
 	    
 	};#rom03M
+	};#rom30
 	if {$flag_tipo_impianto eq "R"} {#rom02 if e contenuto 
 	    if {![string equal $rend_ter_max ""]} {#sim08 if e suo contenuto
 		set rend_ter_max [iter_check_num $rend_ter_max 2]
@@ -2941,6 +3270,12 @@ if {[form is_valid $form_name]} {
     #sim07 inizio:dato che il controllo diventa bloccante ho spostato qui il pezzo di codice che prima
     #sim07 si trovava in fondo al programma. Eseguo il controllo solo se non ho nessun errore sulle variepotenze
     #gac08 sostituito error_num con error_bloccante
+    #rom40 Aggiunta condizione per Napoli
+    if {($coimtgen(regione) eq "FRIULI-VENEZIA GIULIA" || $coimtgen(ente) eq "PNA") && ($id_settore in [list "ente" "system"] && [string equal $id_ruolo "admin"])} {#rom35 Aggiunta if e il suo contenuto
+        set error_num 0
+	set error_bloccante 0
+    }
+
     if {$error_bloccante == 0} {
 	
 
@@ -2959,8 +3294,8 @@ if {[form is_valid $form_name]} {
                       , sum(pot_focolare_nom) as tot_pot_focolare_nom
                       , sum(pot_utile_nom)    as tot_pot_utile_nom
                       , sum(pot_utile_nom_freddo) as tot_pot_utile_nom_freddo --sim04
-                      , sum(pot_focolare_lib) as tot_pot_focolare_lib --sim01 per il freddo Ã¨ la potenza riscaldam. nominale
-                      , sum(pot_utile_lib)    as tot_pot_utile_lib    --sim01 per il freddo Ã¨ la potenza riscaldamento utile
+                      , sum(pot_focolare_lib) as tot_pot_focolare_lib --sim01 per il freddo e la potenza riscaldam. nominale
+                      , sum(pot_utile_lib)    as tot_pot_utile_lib    --sim01 per il freddo e la potenza riscaldamento utile
                    from coimgend
                   where cod_impianto = :cod_impianto
                     and gen_prog != :gen_prog --sim07
@@ -2978,7 +3313,7 @@ if {[form is_valid $form_name]} {
                             , coalesce(:tot_pot_focolare_lib,0.00) + coalesce(:pot_focolare_lib,0.00) as tot_pot_focolare_lib
                             , coalesce(:tot_pot_utile_lib,0.00) + coalesce(:pot_utile_lib,0.00)    as tot_pot_utile_lib "
 	}    	    
-	
+	 
 	#sim01 Per i generatori del freddo, mettiamo nell'impianto la potenza maggiore
 	#sim01 tra quella di raffreddamento e quella di riscaldamento
 	#sim01 (viene valvata nella potenza libretto).
@@ -2988,10 +3323,12 @@ if {[form is_valid $form_name]} {
 	    #25/11/2019 Rivisto con Sandro. Per calcolare la fascia di potenza usiamo la max tra Potenza frigorifera nominale
 	    #           e la  Potenza termica nominale
 	    if {$tot_pot_focolare_lib > $tot_pot_focolare_nom} {
-		set tot_pot_focolare_nom $tot_pot_focolare_lib
+		#mic01 set tot_pot_focolare_nom $tot_pot_focolare_lib
 		set tot_pot_utile_nom $tot_pot_focolare_lib;#sim14
+		set pot_max $tot_pot_focolare_lib;#mic01
 	    } else {#sim14 else e suo contenuto
 		set tot_pot_utile_nom $tot_pot_focolare_nom
+		set pot_max $tot_pot_focolare_nom;#mic01
 	    }
 	    
 	    if {$tot_pot_utile_lib > $tot_pot_utile_nom} {
@@ -3005,12 +3342,18 @@ if {[form is_valid $form_name]} {
 #		set tot_pot_utile_nom $tot_pot_focolare_lib
 #	    }
 
+	    set tot_pot_focolare_nom $tot_pot_focolare_nom;#rom30
+	    set tot_pot_utile_nom    $tot_pot_focolare_lib;#rom30
+
 	}
 
-	
 	#nic03 if {$coimtgen(regione) eq "MARCHE"} #san02
 	if {$coimtgen(flag_potenza) eq "pot_utile_nom"} {#nic03 (cambiata if)
-	    set tot_potenza_chk $tot_pot_utile_nom;#san02
+	    if {$flag_tipo_impianto eq "F" } { #mic01 aggiunta if, else e suo contenuto
+		set tot_potenza_chk $pot_max;
+	    } else {
+		set tot_potenza_chk $tot_pot_utile_nom;#san02
+	    }
 	    if {$flag_tipo_impianto eq "F" } {;#sim04 if else e loro contenuto
 		set campo_potenza_per_errore "pot_utile_nom_freddo"
 	    } else {
@@ -3057,13 +3400,13 @@ if {[form is_valid $form_name]} {
 
 	if {$flag_tipo_impianto eq "R" && $num_prove_fumi_old ne "" && $num_prove_fumi_old != $num_prove_fumi} {
 
-	    element::set_error $form_name num_prove_fumi "Esistono giÃ  RCEE col numero prove fumi indicato.<br>Dismettere il generatore e aggiungerne uno nuovo."
+	    element::set_error $form_name num_prove_fumi "Esistono gi&agrave; RCEE col numero prove fumi indicato.<br>Dismettere il generatore e aggiungerne uno nuovo."
 	    incr error_num
 	}
 
 	if {$flag_tipo_impianto eq "F" && $num_circuiti_old ne "" && $num_circuiti_old != $num_circuiti} {
 
-	    element::set_error $form_name num_circuiti "Esistono giÃ  RCEE col numero circuiti indicato.<br> Dismettere il generatore e aggiungerne uno nuovo."
+	    element::set_error $form_name num_circuiti "Esistono gi&agrave; RCEE col numero circuiti indicato.<br> Dismettere il generatore e aggiungerne uno nuovo."
 	    incr error_num
 	}
 	
@@ -3222,13 +3565,13 @@ if {[form is_valid $form_name]} {
                                             where cod_impianto     = :cod_impianto
                                               and flag_sostituito != 'S'"]
     } else {
-	#rom07 Altrimenti gen_prog_est rimane lo stesso che ha già.
+	#rom07 Altrimenti gen_prog_est rimane lo stesso che ha gia.
 	set gen_prog_est_dis $gen_prog_est
     };#rom07
 	
 	
 	
-	#rom07 un generatore sostituito e disattivato non può essere riattivato 
+	#rom07 un generatore sostituito e disattivato non puo essere riattivato 
     if {[db_0or1row q "select 1 
                          from coimgend 
                         where cod_impianto    = :cod_impianto 
@@ -3264,10 +3607,10 @@ if {[form is_valid $form_name]} {
                        where i.cod_combustibile = c.cod_combustibile
                          and i.cod_impianto     = :cod_impianto"
 	
-	#gac08 se il tipo combustibile selezionato è diverso da quello del combustibile precedente
+	#gac08 se il tipo combustibile selezionato e diverso da quello del combustibile precedente
 	#gac08 mostro il warning
 	if {$tipo_comb_old ne $tipo_comb} {
-	    set msg_cod_combustibile "Attenzione: il tipo di combustibile del generatore selezionato è differente dal combustibile dell'impianto"
+	    set msg_cod_combustibile "Attenzione: il tipo di combustibile del generatore selezionato &egrave; differente dal combustibile dell'impianto"
 	} else {
 	    set msg_cod_combustibile ""
 	}
@@ -3279,8 +3622,16 @@ if {[form is_valid $form_name]} {
 	
     }
 
+    #rom40 Aggiunta condizione per Napoli
+    if {($coimtgen(regione) eq "FRIULI-VENEZIA GIULIA" || $coimtgen(ente) eq "PNA") && ($id_settore in [list "ente" "system"] && [string equal $id_ruolo "admin"])} {#rom35 Aggiunta if e il suo contenuto
+        set error_num 0
+	set error_bloccante 0
+    }
+
     #gac02 fine controlli
+
     if {$error_num > 0} {
+	#ns_log notice "coimgend-gest LUCAR: [template::form::get_errors $form_name]"
         ad_return_template
         return
     }       
@@ -3293,7 +3644,7 @@ if {[form is_valid $form_name]} {
     }
 
     if {$flag_tipo_impianto eq "T" && $coimtgen(regione) eq "MARCHE"} {#sim13
-	#in questo modo non dovrò aggiornare i vari controlli sulle potenze
+	#in questo modo non dovro aggiornare i vari controlli sulle potenze
 	set pot_utile_nom $pot_focolare_nom
 	set tot_pot_utile_nom $tot_pot_focolare_nom
 	set tot_potenza_chk $tot_pot_focolare_nom
@@ -3475,19 +3826,24 @@ if {[form is_valid $form_name]} {
 	#rom09bis   }
 		}
 		M {
+
+		    if {[string equal $flag_attivo "N"] && [string is space $data_rottamaz]} {#rom26 Aggiunta if e il suo contenuto.
+			set data_rottamaz $current_date
+		    }		    
+		    
 		    db_dml upd_gend_x "update coimgend
                    set gen_prog         = :gen_prog
                      , descrizione      = :descrizione
                      , matricola        = :matricola
                      , modello          = :modello
                      , cod_cost         = :cod_cost
-                     , matricola_bruc   = :matricola_bruc
-                     , modello_bruc     = :modello_bruc
-                     , cod_cost_bruc    = :cod_cost_bruc
+          --rom28    , matricola_bruc   = :matricola_bruc
+          --rom28    , modello_bruc     = :modello_bruc
+          --rom28    , cod_cost_bruc    = :cod_cost_bruc
                      , tipo_foco        = :tipo_foco
                      , mod_funz         = :mod_funz
                      , cod_utgi         = :cod_utgi
-                     , tipo_bruciatore  = :tipo_bruciatore
+          --rom28    , tipo_bruciatore  = :tipo_bruciatore
                      , tiraggio         = :tiraggio
                      , locale           = :locale
                      , cod_emissione    = :cod_emissione
@@ -3506,12 +3862,12 @@ if {[form is_valid $form_name]} {
                      , utente           = :id_utente
 		     , gen_prog_est     = :gen_prog_est_dis --rom07
                      , data_costruz_gen    = :data_costruz_gen
-                     , data_costruz_bruc   = :data_costruz_bruc
-                     , data_installaz_bruc = :data_installaz_bruc
-                     , data_rottamaz_bruc  = :data_rottamaz_bruc
+          --rom28    , data_costruz_bruc   = :data_costruz_bruc
+          --rom28    , data_installaz_bruc = :data_installaz_bruc
+          --rom28    , data_rottamaz_bruc  = :data_rottamaz_bruc
                      , marc_effic_energ    = :marc_effic_energ
-                     , campo_funzion_max   = :campo_funzion_max
-                     , campo_funzion_min   = :campo_funzion_min
+          --rom28    , campo_funzion_max   = :campo_funzion_max
+          --rom28    , campo_funzion_min   = :campo_funzion_min
                      , dpr_660_96          = :dpr_660_96
                      , cod_tpco            = :cod_tpco            -- dpr74
                      , cod_flre            = :cod_flre            -- dpr74
@@ -3562,6 +3918,47 @@ if {[form is_valid $form_name]} {
         #rom09bis                                  , utente              = :id_utente
         #rom09bis                              where cod_impianto        = :cod_impianto"
         #rom09bis   }
+
+		    if {$coimtgen(regione) eq "MARCHE"} {#rom25 Aggiunta if e il suo contenuto
+			if {($flag_attivo eq "N" &&
+			    ![db_0or1row q "select 1
+                                              from coimgend
+                                             where cod_impianto = :cod_impianto 
+                                               and gen_prog    != :gen_prog_old
+                                               and flag_attivo  = 'S'
+                                             limit 1"])
+			    && [db_0or1row q "select 1
+                                                from coimaimp
+                                               where cod_impianto = :cod_impianto
+                                                 and stato        = 'A'"]
+			} {
+			    # Se vengono resi non attivi i generatori l'impianto assume lo stato di NON ATTIVO.
+
+			    db_dml upd_aimp_dis "update coimaimp
+                                                    set stato         = 'N'
+                                                      , data_rottamaz = current_date
+                                                      , data_mod      = current_date
+                                                  where cod_impianto = :cod_impianto"
+			}
+			#rom29 Aggiunta condizione && $cod_manutentore eq ""
+			if {$flag_attivo eq "S" &&
+			    [db_0or1row q "select 1
+                                             from coimaimp
+                                            where cod_impianto = :cod_impianto
+                                              and stato        = 'N'"] &&
+			    $cod_manutentore eq ""} {
+			    #Se l'impianto e' non Attivo e viene riattivato il generatore anche l'impianto passa in stato Attivo.
+			    #rom29 La riattivazione dell'impianto viene fatta solo se il generatore e' stato riattivato dall'ente.
+			    db_dml upd_aimp_att "update coimaimp
+                                                   set stato          = 'A'
+                                                     , data_attivaz   = current_date
+                                                      , data_rottamaz = null
+                                                     , data_mod       = current_date
+                                                 where cod_impianto = :cod_impianto"
+			}
+			
+		    }
+		    
 		}
 		D {
 		    db_dml del_gend_x "delete from coimgend
@@ -3569,7 +3966,19 @@ if {[form is_valid $form_name]} {
                    and gen_prog     = :gen_prog"
 		    db_dml del_gend_pote "delete from coimgend_pote
                  where cod_impianto = :cod_impianto
-                   and gen_prog     = :gen_prog";#rom100 elimino le potenze delle singole prove fumi.
+                   and gen_prog     = :gen_prog";#rom26 elimino le potenze delle singole prove fumi.
+
+		    if {[db_0or1row q "select gen_prog as gen_prog_sostituente
+                                         from coimgend
+                                        where cod_impianto = :cod_impianto
+                                          and gen_prog_originario = :gen_prog"]} {#rom23 aggiunta if e suo contenuto
+
+			db_dml upd_gen_sost "update coimgend
+                                                 set gen_prog_originario = null
+                                               where cod_impianto = :cod_impianto
+                                                 and gen_prog     = :gen_prog_sostituente"
+		    }		       
+		    
 		}
 		S {
 		    
@@ -3580,7 +3989,7 @@ if {[form is_valid $form_name]} {
                     #sim11                                      and flag_sostituito = 'S' --rom07.bis "];#rom07
 
 
-		    #sim11 dopo un'analisi successiva si è chiarito che il sostituito mantiene il suo numero est
+		    #sim11 dopo un'analisi successiva si e chiarito che il sostituito mantiene il suo numero est
 		    db_dml upd_gend_sost "update coimgend
                    set flag_sostituito  = 'S' --rom07
                      , flag_attivo      = 'N' --rom07 il generatore sostituito non deve essere attivo 
@@ -3695,7 +4104,7 @@ if {[form is_valid $form_name]} {
                      ,:pot_focolare_nom
                      ,:pot_utile_nom
                      ,:pot_utile_nom_freddo --sim04
-                     ,'S' --rom07 nella sostituzione il nuovo generatore sarà quello attivo
+                     ,'S' --rom07 nella sostituzione il nuovo generatore sara quello attivo
                      ,:motivazione_disattivo --rom12
                      ,:note
                      , current_date
@@ -3842,7 +4251,9 @@ if {[form is_valid $form_name]} {
         ad_return_template
         return
     }
-    
+
+    set invio_mail_2 "N";#mat03
+    set testo_mail_2 "";#mat03
     if {$coimtgen(regione) eq "MARCHE"} {#rom09 if e contenuto
 	set cod_manutentore [iter_check_uten_manu $id_utente]
 	if {$cod_manutentore ne ""} {
@@ -3859,6 +4270,18 @@ if {[form is_valid $form_name]} {
                         where a.cod_impianto = :cod_impianto 
                           and a.gen_prog     = :gen_prog --rom09bis"
 	    set testo_mail ""
+
+	    if {$funzione eq "M" && $flag_attivo eq "S" && $flag_attivo_db ne "S" && [db_0or1row q "select 1
+                                                                                                          from coimaimp
+                                                                                                         where (stato = 'N' or stato = 'U')
+                                                                                                           and cod_impianto = :cod_impianto
+                                                                                                          limit 1"]} { #mat03 aggiunta if e contenuto
+
+		set codice_impianto [db_string q "select cod_impianto_est from coimaimp where cod_impianto = :cod_impianto"]
+		set invio_mail_2 "S"
+		set testo_mail_2 "All'autorità competente si richiede l'attivazione dell'impianto $codice_impianto per inserimento RCEE."
+	    }
+
 	    if {$cod_installatore_new eq $cod_installatore_old} {
 		set invio_mail "N"
 	    } else {
@@ -3871,20 +4294,41 @@ if {[form is_valid $form_name]} {
 "
 		}
 		if {$cod_installatore_old ne "" && $cod_installatore_new eq ""} {
-		    append testo_mail "Il vecchio Installatore $installatore_old è stato rimosso.
+		    append testo_mail "Il vecchio Installatore $installatore_old &egrave; stato rimosso.
 "
 		}
 		if {($cod_installatore_old ne "" && $cod_installatore_new ne "") && ($cod_installatore_old ne $cod_installatore_new)} {
-		    append testo_mail "Il vecchio Installatore $installatore_old è stato cambiato con $installatore_new.
+		    append testo_mail "Il vecchio Installatore $installatore_old &egrave; stato cambiato con $installatore_new.
 "
                 }
+		if {$funzione eq "M" && $matricola ne $matricola_old} { #mat03 aggiunta if e contenuto
+		    append testo_mail "E' stata cambiata la matricola da $matricola_old a $matricola."
+		}
 		
 	    }
 
 	    if {$invio_mail eq "S" && $data_installaz >= "20180701"} {
 		iter_get_coimdesc
 		#proc per invio mail
-		acs_mail_lite::send -send_immediately -to_addr "$coimdesc(email)" -from_addr "$coimdesc(email)" -subject "Modifica Installatore ITER" -body $testo_mail
+		if {$coimtgen(ente) eq "PFM"} {#rom38 aggiunta if e suo contenuto
+		    #rom38 La Provincia di Fermo ha problemi di ricezione delle mail
+		    #rom38 quindi metto come mittente la mail di regione Marche
+		    acs_mail_lite::send -send_immediately -to_addr "$coimdesc(email)" -from_addr "impiantitermici@regione.marche.it" -subject "Modifica Installatore ITER" -body $testo_mail
+		} else {#rom38 Aggiunta else ma non il suo contenuto
+		    acs_mail_lite::send -send_immediately -to_addr "$coimdesc(email)" -from_addr "$coimdesc(email)" -subject "Modifica Installatore ITER" -body $testo_mail
+		};#rom38
+	    }
+
+	    if {$invio_mail_2 eq "S"} {#mat03 aggiunta if e contenuto
+		iter_get_coimdesc
+		#proc per invio mail
+		if {$coimtgen(ente) eq "PFM"} {#rom38 aggiunta if e suo contenuto
+		    #rom38 La Provincia di Fermo ha problemi di ricezione delle mail
+		    #rom38 quindi metto come mittente la mail di regione Marche
+		    acs_mail_lite::send -send_immediately -to_addr "$coimdesc(email)" -from_addr "impiantitermici@regione.marche.it" -subject "Richiesta attivazione impianto" -body $testo_mail_2
+		} else {#rom38 Aggiunta else ma non il suo contenuto
+		    acs_mail_lite::send -send_immediately -to_addr "$coimdesc(email)" -from_addr "$coimdesc(email)" -subject "Richiesta attivazione impianto" -body $testo_mail_2
+		};#rom38
 	    }
 	}
     };#rom09 
@@ -3899,7 +4343,11 @@ if {[form is_valid $form_name]} {
 	    set codice_impianto_mail [db_string q "select cod_impianto_est from coimaimp where cod_impianto = :cod_impianto"]
 	    set invio_mail "S"
 	    append testo_mail "ATTENZIONE: il generatore numero $gen_prog_est dell'impianto con codice $codice_impianto_mail è stato indicato con camera di combustione aperta e scarico fumi a camino collettivo."
-	    acs_mail_lite::send -send_immediately -to_addr "$coimdesc(email)" -from_addr "$coimdesc(email)" -subject "Modifica Generatore $gen_prog_est dell'impianto $codice_impianto_mail" -body $testo_mail
+	    if {$coimtgen(ente) eq "PFM"} {#rom41 aggiunta if ma non contenuto
+		acs_mail_lite::send -send_immediately -to_addr "$coimdesc(email)" -from_addr "impiantitermici@regione.marche.it" -subject "Modifica Generatore $gen_prog_est dell'impianto $codice_impianto_mail" -body $testo_mail
+	    } else {#rom41 Aggiunta else e contenuto
+		acs_mail_lite::send -send_immediately -to_addr "$coimdesc(email)" -from_addr "$coimdesc(email)" -subject "Modifica Generatore $gen_prog_est dell'impianto $codice_impianto_mail" -body $testo_mail
+	    }
 	}
 	
 
@@ -3919,8 +4367,11 @@ if {[form is_valid $form_name]} {
         V {set return_url   "coimgend-list?$link_list"}
 	S {set return_url   "coimgend-gest?funzione=V&$link_gest"}
     }
-
-    ad_returnredirect $return_url
+    set message "";#mat03
+    if {$invio_mail_2 eq "S"} { #mat03 aggiunta if e contenuto
+	set message "E' stata inviata all'ente la richiesta per la riattivazone dell'impianto."
+    } 
+    ad_returnredirect -message $message $return_url
     ad_script_abort
 }
 

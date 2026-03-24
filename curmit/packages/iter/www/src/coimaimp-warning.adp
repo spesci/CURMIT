@@ -33,7 +33,7 @@
 <p>
 <br>
 <if @caller@ eq "warning">
-<div align=center><input type=button onClick="javascript:window.close();" value ="Chiudi"></input></div>
+<div align=center><input type=button class="form_submit" onClick="javascript:window.close();" value ="Chiudi"></input></div>
 </if>
 </br>
 

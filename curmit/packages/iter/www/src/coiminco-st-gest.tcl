@@ -14,6 +14,11 @@ ad_page_contract {
                      navigazione con navigation bar
     @param extra_par Variabili extra da restituire alla lista
     @cvs-id          coiminco-st-gest.tcl
+
+    USER  DATA       MODIFICHE
+    ===== ========== ====================================================================================================
+    rom01 27/03/2023 Commentata la variabile dett_tab perche' non viene usata nell'adp e fa andare in errore il programma.
+
 } {
     
     {st_progressivo   ""}
@@ -74,7 +79,7 @@ if {[string equal $nome_funz_caller ""]} {
     set nome_funz_caller $nome_funz
 }
 
-set dett_tab [iter_tab_form $cod_impianto]
+#set dett_tab [iter_tab_form $cod_impianto]
 if {$flag_aimp == "S"} {
     set link_tab [iter_links_form $cod_impianto $nome_funz_caller $url_list_aimp $url_aimp]
 } else {

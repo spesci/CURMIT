@@ -15,6 +15,8 @@ ad_page_contract {
     
     USER  DATA       MODIFICHE
     ===== ========== ============================================================================================
+    but01 20/06/2023 Aggiunto la classe ah-jquery-date al campo dat_prev. 
+
     sim01 04/04/2019 In base al parametro tabella_caricamento_rcee_tipo_1 vedo se usare il vecchio tracciato del
     sim01            caricamento o il nuovo semplificato
 
@@ -85,15 +87,20 @@ switch $funzione {
         set disabled_fld \{\}
        }
 }
+set jq_date "";#but01
+if {$funzione in "M I S"} {#but01 Aggiunta if e contenuto
+    set jq_date "class ah-jquery-date"
+}
+
 
 form create $form_name \
 -html    $onsubmit_cmd
-
+#but01 Aggiunto la classe ah-jquery-date al campo dat_prev.
 element create $form_name dat_prev \
 -label   "Data partenza" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 $readonly_fld {} class form_element" \
+-html    "size 10 maxlength 10 $readonly_fld {} class form_element $jq_date" \
 -optional
 
 element create $form_name ora_prev \

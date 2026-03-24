@@ -1,5 +1,11 @@
 <?xml version="1.0"?>
+/*
+    USER  DATA       MODIFICHE
+    ===== ========== ==========================================================================================
+    rom01 02/11/2022 Corretta query sel_fatture, dalla coimfatt devo andare in left join su coimmovi e coimaimp
+    rom01            altrimenti non vengono stampate tutte le fatture.  
 
+*/
 <queryset>
     <rdbms><type>postgresql</type><version>7.1</version></rdbms>
 
@@ -25,13 +31,15 @@
                 , b.riferimento
                 , iter_edit_data(b.data_compet) as data_compet
              from coimfatt  as a
-                  , coimmovi as  b
-                  , coimaimp  as c
+     --rom01    , coimmovi as  b
+     --rom01    , coimaimp  as c
+             left outer join coimmovi b on b.cod_fatt     = a.cod_fatt       --rom01
+	     left outer join coimaimp c on c.cod_impianto = b.cod_impianto   --rom01
             where lpad(a.num_fatt, 10, '0') >= lpad(:f_da_num_fatt, 10, '0')
               and lpad(a.num_fatt, 10, '0') <= lpad(:f_a_num_fatt, 10, '0')
               and to_char(data_fatt, 'yyyy') = :anno_fatt
-              and a.cod_fatt = b.cod_fatt
-              and b.cod_impianto = c.cod_impianto
+     --rom01  and a.cod_fatt = b.cod_fatt
+     --rom01  and b.cod_impianto = c.cod_impianto
        </querytext>
     </fullquery>
 

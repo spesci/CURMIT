@@ -8,6 +8,12 @@ ad_page_contract {
     @param nome_funz identifica l'entrata di menu, server per le autorizzazioni
                      serve se lista e' uno zoom che permetti aggiungi.
     @cvs-id          coimstin-filter.tcl
+
+    USER  DATA       MODIFICHE
+    ===== ========== =========================================================================
+    but01 19/06/2023 Aggiunto la classe ah-jquery-date ai campi:da_data_app, a_data_app.
+
+    
 } {
     {funzione        "V"}
     {caller      "index"}
@@ -122,19 +128,19 @@ if {$flag_cod_tecn == "f"} {
     element create $form_name cod_opve -widget hidden -datatype text -optional
     element set_properties $form_name cod_opve        -value $cod_opve
 }
-
+#but01 Aggiunto la classe ah-jquery-date ai campi:da_data_app, a_data_app.
 element create $form_name da_data_app \
 -label   "da_data_app" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 class form_element" \
+-html    "size 10 maxlength 10 class form_element class ah-jquery-date" \
 -optional 
 
 element create $form_name a_data_app \
 -label   "a_data_app" \
 -widget   text \
 -datatype text \
--html    "size 10 maxlength 10 class form_element" \
+-html    "size 10 maxlength 10 class form_element class ah-jquery-date" \
 -optional
 
 if {$flag_ente == "C"} {

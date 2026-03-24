@@ -1,5 +1,11 @@
 ad_page_contract {
     Lista tabella coimtabs (dob 2013)
+
+    USER  DATA       MODIFICHE
+    ===== ========== =======================================================================
+    but01 14/07/2023 Aggiunta class"link-button-2" nel actions"Selez"
+
+
 } { 
    {search_word       ""}
    {rows_per_page     ""}
@@ -37,7 +43,7 @@ set link_aggiungi   "<a href=\"$gest_prog?funzione=I&[export_url_vars caller nom
 
 set link    "\[export_url_vars nome_tabella nome_colonna nome_funz extra_par\]"
 set actions "
-<td nowrap><a href=\"$gest_prog?funzione=V&$link\">Selez.</a></td>"
+<td nowrap><a href=\"$gest_prog?funzione=V&$link\" class=\"link-button-2\">Selez.</a></td>"
 set js_function ""
 
 # imposto la struttura della tabella

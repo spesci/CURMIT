@@ -8,6 +8,16 @@ ad_page_contract {
     @param nome_funz identifica l'entrata di menu, server per le autorizzazioni
                      serve se lista e' uno zoom che permetti aggiungi.
     @cvs-id          coiminco-filter.tcl     
+
+    USER  DATA       MODIFICHE
+    ===== ========== ===========================================================================
+    rom02 20/06/2025 Ricevo e gestisco il campo f_enve che ha preso il posto di f_rgen.
+
+    but01 31/10/2024 Aggiunto class=table_s nella tabella.
+    
+    rom01 25/01/2022 Su segnalazione di Regione Marche se l'ente che fa lestrazione csv  e' una
+    rom01            Provincia, allora deve esserci anche la colonna Comune nel file csv.
+
 } {
     {f_cod_comune       ""}
     {f_tipologia        ""}
@@ -21,6 +31,7 @@ ad_page_contract {
     {f_cod_combustibile ""}
     {f_cod_tpim         ""}
     {f_rgen             ""}
+    {f_enve             ""}
     {flag_tipo_impianto ""}
     {caller        "index"}
     {funzione          "V"}
@@ -139,6 +150,12 @@ if {![string equal $f_rgen ""]} {
     set where_rgen ""
 }
 
+if {![string equal $f_enve ""]} {#rom02 Aggiunta if e contenuto
+    set where_enve "and p.cod_enve = :f_enve"
+} else {
+    set where_enve ""
+}
+
 #dpr74
 if {![string equal $flag_tipo_impianto ""]} {
     set where_tipo_imp "and b.flag_tipo_impianto = :flag_tipo_impianto"
@@ -184,8 +201,12 @@ db_1row get_todo_si_vie_num ""
 
 
 # Setto la prima riga del csv
-puts $file_csv "TI;Data Verbale;Num.Verbale;Responsabile;Indirizzo Resp.;Cod.impianto;Ubicazione;Tipologia;Dt.Scad.Anomalia;DataControllo;Note"
+if {[string equal $coimtgen(flag_ente) "C"]} {#rom01 Aggiunta if ma non il suo contenuto
+    puts $file_csv "TI;Data Verbale;Num.Verbale;Responsabile;Indirizzo Resp.;Cod.impianto;Ubicazione;Tipologia;Dt.Scad.Anomalia;DataControllo;Note"
+} else {#rom01 Aggiunta else e il suo contenuto
 
+    puts $file_csv "TI;Data Verbale;Num.Verbale;Responsabile;Indirizzo Resp.;Cod.impianto;Comune;Ubicazione;Tipologia;Dt.Scad.Anomalia;DataControllo;Note"
+}
 
 iter_get_coimdesc
 set ente              $coimdesc(nome_ente)
@@ -268,7 +289,7 @@ if {![string equal $f_cod_comune   ""]
     ||  ![string equal $f_data_evas_a  ""]
     } {
 	db_1row edit_date_dual ""
-        append stampa "<br>Data evasione compresa tra $data_evas_da_ed e $data_evas_a_ed"
+        append stampa "&nbsp;- Data evasione compresa tra $data_evas_da_ed e $data_evas_a_ed"
     }
     if {![string equal $f_data_controllo_da ""] || ![string equal $f_data_controllo_a  ""]} {
 	db_1row query "select iter_edit_data(:f_data_controllo_da) as data_controllo_da_ed
@@ -297,7 +318,7 @@ if {![string equal $f_cod_comune   ""]
 }
 
 # Costruisco descrittivi tabella
-append stampa "<table border=1 width=100%>"
+append stampa "<table border=1 width=100% class=table_s><br>";#but01
 
 set inizio "S"
 set conta 0
@@ -305,7 +326,7 @@ set conta 0
 append stampa "
 	  <tr>
           <th align=left width=$n1>TI</th>
-	  <th align=left width=$n1>Cod. Impianto</th>
+	  <th align=left width=$n1>Cod. impianto</th>
           <th align=left width=$n2>Indirizzo</th>
           <th align=left width=$n3>Responsabile</th>
           <th align=left width=$n4>Note</th>
@@ -375,8 +396,13 @@ db_foreach $get_todo "" {
     regsub -all {\n} $note " " note
     regsub -all {\r} $note " " note
     
-    puts $file_csv "$flag_tipo_impianto;$data_verbale;$num_verbale;$resp;$indirizzo_resp;$cod_imp;$indirizzo;$tipologia;$data_scadenza;$data_controllo;\"$note\" "
-
+    if {[string equal $coimtgen(flag_ente) "C"]} {#rom01 Aggiunta if ma non il suo contenuto
+	puts $file_csv "$flag_tipo_impianto;$data_verbale;$num_verbale;$resp;$indirizzo_resp;$cod_imp;$indirizzo;$tipologia;$data_scadenza;$data_controllo;\"$note\" "
+    } else {#rom01 Aggiunta if e suo contenuto
+	puts $file_csv "$flag_tipo_impianto;$data_verbale;$num_verbale;$resp;$indirizzo_resp;$cod_imp;$comune;$indirizzo;$tipologia;$data_scadenza;$data_controllo;\"$note\" "
+    }
+    
+	
 
 } if_no_rows {
     set testata ""

@@ -1,6 +1,8 @@
 <!--
     USER  DATA       MODIFICHE
     ===== ========== =========================================================================
+    rom01 12/03/2024 Aggiunto filtro f_con_data_app
+
     nic01 22/06/2015 Sandro vuole che tutti gli utenti abbiano il filtro campagna, che venga
     nic01            prevalorizzato con la campagna aperta e che siano obbligati a sceglierne
     nic01            una.
@@ -194,13 +196,15 @@
     </td>
 </tr>
 
-
-
-
-
 </if>
 
-
+<tr><td valign=top align=right class=form_title>Con data appuntamento?</td>
+    <td valign=top colspan=3><formwidget id="f_con_data_app">
+        <formerror  id="f_con_data_app"><br>
+        <span class="errori">@formerror.f_con_data_app;noquote@</span>
+        </formerror>
+    </td>
+</tr>
 
 
 <if @flag_ente@ eq P>
